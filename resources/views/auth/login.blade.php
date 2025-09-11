@@ -68,9 +68,9 @@
                             in</button>
                     </form>
                     <div class="text-center mt-5 text-lg fs-4">
-                        <p class="text-gray-600">Don't have an account? <a href="auth-register.html"
+                        {{-- <p class="text-gray-600">Don't have an account? <a href="auth-register.html"
                                 class="font-bold">Sign
-                                up</a>.</p>
+                                up</a>.</p> --}}
                         <p><a class="font-bold" href="auth-forgot-password.html">Forgot password?</a>.</p>
                     </div>
                 </div>
