@@ -15,13 +15,13 @@
 @endsection
 @section('sbi4')
 @endsection
-@section('headings') Manage Employee @endsection
+@section('headings') {{$title}} Employee @endsection
 
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('hr.employees') }}">Employee Management</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Manage</li>
+            <li class="breadcrumb-item active" aria-current="page">{{$title}}</li>
         </ol>
     </nav>
     @if(session('success'))
@@ -50,13 +50,12 @@
                         </div>
                         <div class="card-content">
                             <div class="card-body">
-
                                 <div class="row">
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="first_name">First Name *</label>
                                             <input type="text" id="first_name" class="form-control" placeholder="Taylor"
-                                                name="first_name" required>
+                                                name="first_name" value="{{ old('first_name', $data['first_name'] ?? '') }}" required>
                                             @error('first_name')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -66,7 +65,7 @@
                                         <div class="form-group">
                                             <label for="middle_name">Middle Name</label>
                                             <input type="text" id="middle_name" class="form-control" placeholder="Alison"
-                                                name="middle_name">
+                                                name="middle_name" value="{{ old('middle_name', $data['middle_name'] ?? '') }}">
                                             @error('middle_name')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -76,20 +75,25 @@
                                         <div class="form-group">
                                             <label for="last_name">Last Name *</label>
                                             <input type="text" id="last_name" class="form-control" placeholder="Swift"
-                                                name="last_name" required>
+                                                name="last_name" value="{{ old('last_name', $data['last_name'] ?? '') }}" required>
                                             @error('last_name')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
-                                        </div>
+                                        </div> 
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-
                                             <label for="gender">Gender *</label>
                                             <select class="form-select" id="gender" name="gender">
-                                                <option>Male</option>
-                                                <option selected>Female</option>
-                                                <option>Other</option>
+                                                <option value="" disabled selected>Choose Gender</option>
+                                                <option value="Male" {{ old('gender', $data['gender']) == 'Male' ? 'selected' : '' }}>Male
+                                                </option>
+                                                <option value="Female" {{ old('gender', $data['gender']) == 'Female' ? 'selected' : '' }}>
+                                                    Female
+                                                </option>
+                                                <option value="Preferred not to say" {{ old('gender', $data['gender']) == 'Preferred not to say' ? 'selected' : '' }}>
+                                                    Preferred not to say
+                                                </option>
                                             </select>
                                             @error('gender')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -100,7 +104,7 @@
                                         <div class="form-group">
                                             <label for="birth_date">Birthdate *</label>
                                             <input type="date" id="birth_date" class="form-control" name="birth_date"
-                                                placeholder="Dec-12-1989">
+                                                placeholder="Dec-12-1989" value="{{ old('birth_date', optional($data['birth_date'])->format('Y-m-d')?? '') }}" required>
                                             @error('birth_date')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -110,7 +114,7 @@
                                         <div class="form-group">
                                             <label for="age">Age</label>
                                             <input type="text" id="age" class="form-control" name="age" readonly
-                                                placeholder="34">
+                                                placeholder="34" value="{{ old('age', $data['age'] ?? '') }}">
                                             @error('age')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -120,7 +124,7 @@
                                         <div class="form-group">
                                             <label for="address">Address *</label>
                                             <input type="text" id="address" class="form-control" placeholder="Tennessee"
-                                                name="address">
+                                                name="address" value="{{ old('address', $data['address'] ?? '') }}">
                                             @error('address')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -130,7 +134,7 @@
                                         <div class="form-group">
                                             <label for="postal_code">Postal Code </label>
                                             <input type="tel" id="postal_code" class="form-control" name="postal_code"
-                                                placeholder="19611">
+                                                placeholder="19611" value="{{ old('postal_code', $data['postal_code'] ?? '') }}">
                                             @error('postal_code')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -139,8 +143,8 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="email">Email *</label>
-                                            <input type="email" id="email" class="form-control" name="email"
-                                                placeholder="tswift@yahoo.com">
+                                            <input type="email" id="email" class="form-control" name="email" data-value="{{ $id }}"
+                                                placeholder="tswift@yahoo.com" value="{{ old('email', $data['email'] ?? '') }}" required>
                                             @error('email')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -151,7 +155,7 @@
                                             <label for="phone_number">Phone Number *</label>
                                             <input type="tel" id="phone_number" class="form-control" name="phone_number"
                                                 pattern="^(09|\+639)\d{9}$" maxlength="11" minlength="11"
-                                                placeholder="09121319890">
+                                                placeholder="09121319890" value="{{ old('phone_number', $data['phone_number'] ?? '') }}">
                                             @error('phone_number')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -161,7 +165,7 @@
                                         <div class="form-group">
                                             <label for="citizenship">Citizenship</label>
                                             <input type="text" id="citizenship" class="form-control" name="citizenship"
-                                                placeholder="American">
+                                                placeholder="American" value="{{ old('citizenship', $data['citizenship'] ?? '') }}">
                                             @error('citizenship')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -186,7 +190,7 @@
                                             <select id="department" class="form-select" name="department" required>
                                                 <option value="" disabled selected>Choose Department</option>
                                                 @foreach ($departments as $department)
-                                                    <option value="{{ $department->id }}">
+                                                    <option value="{{ $department->id }}" {{ old('department', $data['department']) == $department->id ? 'selected' : '' }}>
                                                         {{ $department->name }}
                                                     </option>
                                                 @endforeach
@@ -199,10 +203,16 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="position">Position *</label>
-                                            <select class="form-select" id="position" name="position">
-                                                <option>Supervisor</option>
-                                                <option>Manager</option>
-                                                <option selected>Staff</option>
+                                            <select class="form-select" id="position" name="position" required>
+                                                <option value="" disabled selected>Choose Position</option>
+                                                <option value="Supervisor" {{ old('position', $data['position']) == 'Supervisor' ? 'selected' : '' }}>Supervisor
+                                                </option>
+                                                <option value="Manager" {{ old('position', $data['position']) == 'Manager' ? 'selected' : '' }}>
+                                                    Manager
+                                                </option>
+                                                <option value="Staff" {{ old('position', $data['position']) == 'Staff' ? 'selected' : '' }}>
+                                                    Staff
+                                                </option>
                                             </select>
                                             @error('position')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -212,8 +222,8 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="direct_supervisor">Direct Supervisor *</label>
-                                            <select id="direct_supervisor" name="direct_supervisor" class="form-select">
-                                                <option value="" disabled selected>Choose Supervisor</option>
+                                            <select id="direct_supervisor" name="direct_supervisor" class="form-select" data-value="{{ $data['direct_supervisor'] }}|{{ $data['direct_supervisor_id'] }}">
+                                                <option value=""  disabled selected>Choose Supervisor</option>
                                                 {{-- This will be populated dynamically --}}
                                             </select>
                                             @error('direct_supervisor')
@@ -237,7 +247,7 @@
                                         <div class="form-group">
                                             <label for="salary">Salary *</label>
                                             <input type="number" id="salary" class="form-control" placeholder="0.00"
-                                                name="salary" required>
+                                                name="salary" value="{{ old('salary', $data['salary'] ?? '') }}" required>
                                             @error('salary')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -247,7 +257,7 @@
                                         <div class="form-group">
                                             <label for="sss">SSS *</label>
                                             <input type="number" id="sss" class="form-control" placeholder="0.00"
-                                                name="sss">
+                                                name="sss" value="{{ old('sss', $data['sss'] ?? '') }}">
                                             @error('sss')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -257,7 +267,7 @@
                                         <div class="form-group">
                                             <label for="pagibig">Pag-ibig *</label>
                                             <input type="number" id="pagibig" class="form-control" placeholder="0.00"
-                                                name="pagibig">
+                                                name="pagibig" value="{{ old('pagibig', $data['pagibig'] ?? '') }}">
                                             @error('pagibig')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -267,15 +277,15 @@
                                         <div class="form-group">
                                             <label for="philhealth">Philhealth *</label>
                                             <input type="number" id="philhealth" class="form-control" placeholder="0.00"
-                                                name="philhealth">
+                                                name="philhealth" value="{{ old('philhealth', $data['philhealth'] ?? '') }}">
                                             @error('philhealth')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
-
                                     <div class="col-12 mt-3 d-flex justify-content-start">
-                                        <button id="submit-btn-employee" class="btn btn-primary me-1 mb-1">Submit</button>
+                                        <button id="insert-btn-employee" data-mode="{{$mode}}" class="btn btn-primary me-1 mb-1">Add Employee</button>
+                                        <button id="edit-btn-employee" hidden class="btn btn-primary me-1 mb-1">Update Employee</button>
                                         <button id="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
                                     </div>
                                 </div>

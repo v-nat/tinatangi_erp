@@ -45,10 +45,6 @@ class HR_Controller extends Controller
         }
     }
 
-
-
-
-
     public function otApp()
     {
         return view('pages.admin.human_resources.ot-app');
