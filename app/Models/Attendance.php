@@ -23,7 +23,7 @@ class Attendance extends Model
         'hours_late' => 'integer', // Keep overtime_minutes in the attendance table
     ];
 
-    public function employee()
+    public function atEmployeeRS()
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }

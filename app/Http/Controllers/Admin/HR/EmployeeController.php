@@ -23,10 +23,11 @@ class EmployeeController extends Controller
         $supervisors = Employee::where('position', 'LIKE', '%supervisor%')
             ->whereNull('deleted_at') // if using soft deletes
             ->get();
-        $data = ['address' => '', 'first_name' => '', 'middle_name' => '', 'last_name' => '', 'email' => '', 'phone_number' => '', 'postal_code' => '', 'gender' => '', 'birth_date' => '', 'age' => '', 'citizenship' => '', 'department' => '', 'position' => '', 'direct_supervisor' => '', 'direct_supervisor_id' => '', 'sss' => '', 'pagibig' => '', 'philhealth' => '', 'salary' => '',];
+        $data = [ 'address' => '', 'first_name' => '', 'middle_name' => '', 'last_name' => '', 'email' => '', 'phone_number' => '', 'postal_code' => '', 'gender' => '', 'birth_date' => '', 'age' => '', 'citizenship' => '', 'department' => '', 'position' => '', 'direct_supervisor' => '', 'direct_supervisor_id' => '', 'sss' => '', 'pagibig' => '', 'philhealth' => '', 'salary' => '',];
         $mode = 'add';
         $title = 'Add';
-        return view('pages.admin.human_resources.manage-employee', compact('departments', 'data', 'mode', 'title'));
+        $id = null;
+        return view('pages.admin.human_resources.manage-employee', compact('departments', 'data', 'mode', 'title', 'id'));
     }
 
     public function getSupervisors(Request $request)

@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DepartmentSeeder::class);
         $this->call(StatusSeeder::class);
         User::create([
+            'id' => 1,
             'first_name' => 'Taylor',
             'last_name' => 'Swift',
             'email' => 'ts13@mail.com',
@@ -28,6 +29,7 @@ class DatabaseSeeder extends Seeder
             'user_type'=> 'employee',
         ]);
         User::create([
+            'id'=> 2,
             'first_name' => 'Nathaniel',
             'last_name' => 'Vasquez',
             'email' => 'nat@mail.com',
@@ -35,5 +37,6 @@ class DatabaseSeeder extends Seeder
             'phone_number'=> '09123456789',
             'user_type'=> 'employee',
         ]);
+
     }
 }

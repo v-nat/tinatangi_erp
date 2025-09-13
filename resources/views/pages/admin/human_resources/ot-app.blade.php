@@ -3,9 +3,11 @@
 @section('sidebar-title') Human Resources Management @endsection
 @section('dsh') 
 @endsection
-@section('emplMngt')active
+@section('emplMngt')@endsection
+@section('emplMngt2')@endsection
+@section('appMngt')active
 @endsection
-@section('emplMngt2')active
+@section('appMngt2')active
 @endsection
 @section('sbi1')
 @endsection

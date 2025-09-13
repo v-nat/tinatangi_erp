@@ -100,6 +100,14 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                                 <li class="submenu-item @yield('sbi2') ">
                                     <a href="{{ route('hr.manage') }}">Manage Emloyee</a>
                                 </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item @yield('appMngt') has-sub">
+                            <a href="" class='sidebar-link '>
+                                <i class="bi bi-clipboard-check"></i>
+                                <span>Approval Management</span>
+                            </a>
+                            <ul class="submenu @yield('appMngt2')">
                                 <li class="submenu-item @yield('sbi3') ">
                                     <a href="{{ route('hr.ot-app') }}">Overtime Approvals</a>
                                 </li>
@@ -211,6 +219,19 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
             </div>
         </div>
     </div>
+    <div id="LoadingScreen"
+        style="display: none; position: fixed; z-index: 9999; background: rgba(255,255,255,0.7); top: 0; left: 0; width: 100%; height: 100%;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <script src="{{ asset('source/jquery/datatables.js') }}"></script>
+    <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
+    {{-- <link href="{{ asset( 'source/css/datatables.css') }}" rel="stylesheet"></link> --}}
+    {{-- <link href="{{ asset( 'source/css/datatables.min.css') }}" rel="stylesheet"></link> --}}
+    
     <script src="{{ asset('js/logout.js') }}"></script>
     @yield('scripts')
 </body>

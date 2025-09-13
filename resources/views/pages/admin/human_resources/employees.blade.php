@@ -7,6 +7,10 @@
 @endsection
 @section('emplMngt2')active
 @endsection
+@section('appMngt')
+@endsection
+@section('appMngt2')
+@endsection
 @section('sbi1')active
 @endsection
 @section('sbi2')
@@ -69,10 +73,6 @@
     </section>
 @endsection
 @section('scripts')
-    <script src="{{ asset('source/jquery/datatables.js') }}"></script>
-    <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
-    {{-- <link href="{{ asset( 'source/css/datatables.css') }}" rel="stylesheet"></link>
-    <link href="{{ asset( 'source/css/datatables.min.css') }}" rel="stylesheet"></link> --}}
     
     <script src="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}   "></script>
 

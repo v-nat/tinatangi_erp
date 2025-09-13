@@ -24,7 +24,7 @@ class HR_Controller extends Controller
     public function getEmployees()
     {
         try {
-            $employees = Employee::with(['user', 'departmentRS', 'user.statusRS', 'directSupervisorRS.user'])->get();
+            $employees = Employee::with(['user', 'departmentRS', 'user.statusRS', 'directSupervisorRS.user'])->orderBy('created_at', 'desc')->get();
             // dd($employees);
             return response()->json([
                 'data' => $employees->map(function ($e) {

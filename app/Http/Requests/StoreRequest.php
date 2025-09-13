@@ -36,9 +36,9 @@ class StoreRequest extends FormRequest
             'department' => 'required|integer',
             'position' => 'required',
             'direct_supervisor' => 'required',
-            'sss' => 'required|integer',
-            'pagibig' => 'required|integer',
-            'philhealth' => 'required|integer',
+            'sss' => 'required|numeric|min:0',
+            'pagibig' => 'required|numeric|min:0',
+            'philhealth' => 'required|numeric|min:0',
             'salary' => 'required|numeric|min:0',
         ];
     }

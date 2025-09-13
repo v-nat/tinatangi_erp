@@ -128,8 +128,7 @@ $("#insert-btn-employee").click(function (e) {
                 title: "Success!",
                 text: response.message,
                 icon: "success",
-            });
-            $("#employeeForm")[0].reset();
+            }).then(() => location.reload());
         },
         error: function (xhr) {
             // console.error('Error response:', xhr);
