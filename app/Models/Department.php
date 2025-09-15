@@ -11,7 +11,12 @@ class Department extends Model
     //
     use SoftDeletes;
 
-    public function employees(): HasMany {
+    public function employees(): HasMany
+    {
         return $this->hasMany(Employee::class, 'department');
+    }
+    public function getNameAttribute(): string
+    {
+        return trim($this->attributes['name']);
     }
 }

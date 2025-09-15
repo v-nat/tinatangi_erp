@@ -1,9 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Hr\AttendanceController;
 use App\Http\Controllers\Admin\Hr\HR_Controller;
 use App\Http\Controllers\Admin\Hr\EmployeeController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\HR\OvertimeController;
+use App\Http\Controllers\Admin\HR\LeaveController;
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'attendanceList']);
@@ -21,9 +23,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/humanresources/manage', [EmployeeController::class, 'manage'])->name('hr.manage');
     Route::get('/supervisors-by-department', [EmployeeController::class, 'getSupervisors']);
     Route::get('/ceo', [EmployeeController::class, 'getCEO']);
-    // Route::any('/humanresources/manage/store-employee', function () {
-    //     dd('Fallback route hit');
-    // });
+
     Route::get('/overtimes', [HR_Controller::class, 'otApp'])->name('hr.ot-app');
+    Route::get('/humanresources/overtimes/get', [OvertimeController::class, 'index']);
+    Route::put('/humanresources/overtime/approve/{id}', [OvertimeController::class,'approve']);
+
     Route::get('/leaves', [HR_Controller::class, 'leaveApp'])->name('hr.leave-app');
+    Route::get('/humanresources/leaves/get', [LeaveController::class,'index']);
+
 });

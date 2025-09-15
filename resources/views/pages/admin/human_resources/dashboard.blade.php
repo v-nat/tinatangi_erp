@@ -124,8 +124,8 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="attendanceTable" class="table table-bordered table-hover" style="width:100%">
-                        <thead class="table-light">
+                    <table id="attendanceTable" class="table table-striped table-hover" style="width:100%">
+                        <thead >
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
@@ -149,23 +149,6 @@
 
     </section>
     <style>
-        .action-btns .btn {
-            width: auto;
-            margin: 2px;
-        }
-
-        .table-warning {
-            background-color: rgba(255, 193, 7, 0.1);
-        }
-
-        .table-active {
-            background-color: rgba(13, 110, 253, 0.1);
-        }
-
-        #attendanceTable {
-            font-size: 0.9rem;
-        }
-
         #realtimeClock {
             font-size: 3rem;
             font-weight: bold;
@@ -191,10 +174,6 @@
 
         .card-header {
             padding: 1rem 1.25rem;
-        }
-
-        .table-responsive {
-            margin-top: 0.5rem;
         }
     </style>
 @endsection

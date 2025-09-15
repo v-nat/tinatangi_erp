@@ -103,11 +103,11 @@ class AttendanceController extends Controller
     private function getStatusText($statusCode)
     {
         $statuses = [
-            8 => '<span class="badge bg-success">Present</span>',
-            9 => '<span class="badge bg-primary">On Time</span>',
-            10 => '<span class="badge bg-warning">Late</span>',
-            11 => '<span class="badge bg-danger">Absent</span>',
-            null => '<span class="badge bg-secondary">Unknown</span>'
+            8 => '<span class="badge bg-light-success">Present</span>',
+            9 => '<span class="badge bg-light-primary">On Time</span>',
+            10 => '<span class="badge bg-light-warning">Late</span>',
+            11 => '<span class="badge bg-light-danger">Absent</span>',
+            null => '<span class="badge bg-light-secondary">Unknown</span>'
         ];
         return $statuses[$statusCode] ?? $statuses[null];
     }
@@ -119,7 +119,7 @@ class AttendanceController extends Controller
                 'atEmployeeRS',
                 'leaveRS',
                 'overtimeRS'
-            ])->orderBy('date', 'desc');
+            ]);
             $attendance = $query->get();
 
             $result = $attendance->map(function ($attendance) {

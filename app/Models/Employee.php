@@ -49,9 +49,12 @@ class Employee extends Model
     }
     public function departmentRS(): BelongsTo
     {
-        return $this->belongsTo(Department::class, 'department');
+        return $this->belongsTo(Department::class, 'department_id');
     }
     public function directSupervisorRS(): BelongsTo {
         return $this->belongsTo(Employee::class, 'direct_supervisor');
+    }
+    public function deptRS(): BelongsTo {
+        return $this->belongsTo(Department::class, 'department');
     }
 }

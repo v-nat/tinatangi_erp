@@ -44,12 +44,12 @@
 
     <section class="section">
         <div class="card">
-
             <div class="card-header">
                 Employee Table
             </div>
             <div class="card-body">
-                <table class="table table-striped" id="employee_table">
+                <div class="table-responsive">
+                <table class="table table-striped" id="employee_table" style="width:100%">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -66,11 +66,11 @@
 
                     </tbody>
                 </table>
+                </div>
             </div>
-
         </div>
-
     </section>
+    
 @endsection
 @section('scripts')
     

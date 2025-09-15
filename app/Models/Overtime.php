@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Overtime extends Model
 {
@@ -39,5 +40,9 @@ class Overtime extends Model
     public function attendanceRS()
     {
         return $this->belongsTo(Attendance::class);
+    }
+    
+    public function departmentRS(): BelongsTo{
+        return $this->belongsTo(Department::class,'name');
     }
 }
