@@ -75,7 +75,7 @@
                     </h6>
                     <form id="approvalForm">
                         @csrf
-                        <input type="hidden" name="overtime_id" id="approvalLeaveId">
+                        <input type="hidden" name="leave_id" id="approvalLeaveId">
                         <div class="form-group">
                             <label for="approvalNotes">Approval Notes (Optional)</label>
                             <textarea class="form-control" id="approvalNotes" name="reason" rows="3"></textarea>
@@ -114,10 +114,10 @@
                     <h6>You are about to Reject this Leave Request</h6>
                     <form id="rejectionForm">
                         @csrf
-                        <input type="hidden" name="overtime_id" id="rejectionLeaveId">
+                        <input type="hidden" name="leave_id" id="rejectionLeaveId">
                         <div class="form-group">
-                            <label for="approvalNotes">Rejection Notes (Optional)</label>
-                            <textarea class="form-control" id="rejectionlNotes" name="reason" rows="3"></textarea>
+                            <label for="rejectionNotes">Rejection Notes (Optional)</label>
+                            <textarea class="form-control" id="rejectionNotes" name="reason" rows="3"></textarea>
                         </div>
                     </form>
                 </div>

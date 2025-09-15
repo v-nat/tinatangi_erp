@@ -3,7 +3,7 @@ $(document).ready(function () {
         const options = { year: "numeric", month: "long", day: "numeric" };
         return new Date(dateString).toLocaleDateString("en-US", options);
     }
-    
+
     $("#leaves_table").DataTable({
         processing: true,
         serverSide: false,
@@ -39,9 +39,9 @@ $(document).ready(function () {
                 },
                 type: "date", // Ensure proper date sorting
             },
-            
+
             {
-                data: "reason"
+                data: "reason",
             },
             {
                 data: "status",
@@ -50,20 +50,23 @@ $(document).ready(function () {
             {
                 data: "leave_id",
                 render: function (data, type, row) {
-                    if (row.status !== '<span class="badge bg-warning">Pending</span>') {
-                        return ""; 
+                    if (
+                        row.status !==
+                        '<span class="badge bg-warning">Pending</span>'
+                    ) {
+                        return "";
                     } else {
                         return `
                             <div>
                                 <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 approve-btn"
-                                data-id="${row.overtime_id}"
+                                data-id="${row.leave_id}"
                                 title="Approve">
                                     <i class="fa-solid fa-check"></i>
                                 </a>
                                 <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
                                 data-id="${data}"
                                 data-name="${row.name}"
-                                data-overtime-id="${row.overtime_id}"
+                                data-leave-id="${row.leave_id}"
                                 title="Reject">
                                     <i class="fa-solid fa-x"></i>
                                 </a>
@@ -80,13 +83,14 @@ $(document).ready(function () {
     $(document).on("click", ".approve-btn", function (e) {
         e.preventDefault();
         const leaveId = $(this).data("id");
-        $("#approvalleaveId").val(leaveId);
+        // console.log(leaveId);
+        $("#approvalLeaveId").val(leaveId);
         $("#ApprovalConfirmation").modal("show");
     });
     $(document).on("click", ".reject-btn", function (e) {
         e.preventDefault();
         const leaveId = $(this).data("id");
-        $("#rejectionleaveId").val(leaveId);
+        $("#rejectionLeaveId").val(leaveId);
         $("#RejectionConfirmation").modal("show");
     });
 
@@ -94,10 +98,12 @@ $(document).ready(function () {
         e.preventDefault();
         let leaveId = $("#approvalLeaveId").val();
         let reason = $("#approvalNotes").val();
+        // console.log(leaveId);
         $("#LoadingScreen").fadeIn(200);
         $("#approvalModal").modal("hide");
         $.ajax({
             url: `/humanresources/leave/approve/${leaveId}`,
+            // url: "{{route()}}"
             method: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr("content"),
@@ -107,6 +113,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     // updateOvertimeStatus(leaveId, 13, "Approved", reason);
+                    $("#LoadingScreen").fadeOut(200);
                     Swal.fire("Approved!", response.message, "success");
                 } else {
                     Swal.fire("Error", response.message, "error");
@@ -126,10 +133,12 @@ $(document).ready(function () {
         e.preventDefault();
         let leaveId = $("#rejectionLeaveId").val();
         let reason = $("#rejectionNotes").val();
+        console.log(leaveId);
         $("#LoadingScreen").fadeIn(200);
         $("#rejectionModal").modal("hide");
         $.ajax({
             url: `/humanresources/leave/reject/${leaveId}`,
+            // url: "{{ route('hr.leave-reject', ['leave_id' => $leave->id]) }}",
             method: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr("content"),
@@ -139,6 +148,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     // updateOvertimeStatus(leaveId, 13, "Rejected", reason);
+                    $("#LoadingScreen").fadeOut(200);
                     Swal.fire("Rejected!", response.message, "success");
                 } else {
                     Swal.fire("Error", response.message, "error");

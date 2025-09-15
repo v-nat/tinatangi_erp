@@ -32,6 +32,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/humanresources/leaves', [HR_Controller::class, 'leaveApp'])->name('hr.leave-app');
     Route::get('/humanresources/leaves/get', [LeaveController::class,'index']);
     Route::post('/humanresources/leave/approve/{leave_id}', [LeaveController::class,'approve']);
-    Route::post('/humanresources/leave/reject/{leave_id}', [LeaveController::class,'reject'])->name('hr.leave-reject');
+    Route::post('/humanresources/leave/reject/{leave_id}', [LeaveController::class,'reject']);
 
 });
