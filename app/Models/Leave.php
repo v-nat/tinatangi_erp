@@ -21,7 +21,7 @@ class Leave extends Model
         'approval_date',
     ];
 
-    public function employee()
+    public function employeeRS()
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
@@ -29,5 +29,13 @@ class Leave extends Model
     public function approver()
     {
         return $this->belongsTo(Employee::class, 'approved_by', 'id');
+    }
+    public function attendanceRS()
+    {
+        return $this->belongsTo(Attendance::class);
+    }
+    public function statusRS()
+    {
+        return $this->belongsTo(Status::class, 'status');
     }
 }

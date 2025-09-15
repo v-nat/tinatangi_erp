@@ -44,6 +44,9 @@ class Employee extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function userRS(): BelongsTo{
+        return $this->belongsTo(User::class, 'user_id');
+    }
     public function departmentRS(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department');

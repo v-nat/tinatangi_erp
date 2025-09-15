@@ -1,4 +1,4 @@
-@extends('layouts.hr-app')
+@extends('layouts.app')
 @section('title') Human Resources Dashboard @endsection
 @section('sidebar-title') Human Resources Management @endsection
 @section('dsh') active @endsection
@@ -128,12 +128,14 @@
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
-                                <th>Date</th>
                                 <th>Name</th>
+                                <th>Date</th>
                                 <th>Time In</th>
                                 <th>Time Out</th>
                                 <th>Total Minutes</th>
+                                <th>Overtime Minutes</th>
                                 <th>Tardiness Minutes</th>
+                                <th>Leave Date</th>
                                 <th>Status</th>
                             </tr>
                         </thead>

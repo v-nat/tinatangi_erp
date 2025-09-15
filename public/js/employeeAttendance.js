@@ -205,6 +205,10 @@ $(document).ready(function () {
                 className: "text-center",
             },
             {
+                data: "name",
+                className: "text-center",
+            },
+            {
                 data: "date",
                 className: "text-center",
                 render: function (data) {
@@ -229,16 +233,28 @@ $(document).ready(function () {
                 },
             },
             {
+                data: "overtime",
+                className: "text-center",
+            },
+            {
                 data: "tardiness",
+                className: "text-center",
+            },
+            {
+                data: "leave_info",
+                className: "text-center",
+            },
+            {
+                data: "status",
                 className: "text-center",
             },
         ],
         order: [
+            [2, "desc"],
             [3, "desc"],
-            [4, "desc"],
-        ], // Sort by date descending first, then by time_in descending
+        ], 
         columnDefs: [
-            { targets: [3, 4], type: "date" }, // Specify date type for both date and time columns
+            { targets: [2, 3], type: "date" }, 
         ],
     });
 });

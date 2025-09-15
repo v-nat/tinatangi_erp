@@ -19,10 +19,13 @@ return new class extends Migration
 
             $table->date('date')->nullable();
             $table->time('time_start')->nullable();
-            $table->time('end_time')->nullable();
+            $table->time('time_end')->nullable();
             $table->integer('total_minutes')->nullable();
             $table->string('approved_by')->nullable();
             $table->string('approval_date')->nullable();
+
+            $table->unsignedBigInteger('status')->default('7'); //pending
+            $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 
             $table->timestamps();
             $table->softDeletes();

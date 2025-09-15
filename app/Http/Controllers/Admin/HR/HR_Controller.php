@@ -3,11 +3,7 @@
 namespace App\Http\Controllers\Admin\HR;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Employee;
-use App\Models\User;
-use App\Models\Department;
-use Illuminate\Support\Facades\Log;
 
 class HR_Controller extends Controller
 {

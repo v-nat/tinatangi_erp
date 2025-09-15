@@ -21,9 +21,11 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->string('reason')->nullable();
-            $table->unsignedBigInteger('status')->default('8');
             $table->string('approved_by')->nullable();
             $table->string('approval_date')->nullable();
+
+            $table->unsignedBigInteger('status')->default('7'); //pending
+            $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 
             $table->timestamps();
             $table->softDeletes();

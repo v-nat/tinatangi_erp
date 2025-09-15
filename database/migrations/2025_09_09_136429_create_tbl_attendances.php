@@ -21,7 +21,17 @@ return new class extends Migration
             $table->time('time_in')->nullable();
             $table->time('time_out')->nullable();
             $table->decimal('hours_worked', 5, 2)->default(0);
-            $table->integer('hours_late',)->default(0);
+            $table->integer('tardiness',)->default(0);
+            $table->boolean('is_leave')->default(false);
+            $table->integer('tardiness_minutes')->default(0);
+            $table->integer('overtime_minutes')->default(0);
+            $table->unsignedBigInteger('leave_id')->nullable();
+            $table->unsignedBigInteger('overtime_id')->nullable();
+            $table->unsignedBigInteger('status')->default(8); //preset
+            $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
+            $table->foreign('leave_id')->references('id')->on('leaves')->nullOnDelete();
+            $table->foreign('overtime_id')->references('id')->on('overtimes')->nullOnDelete();
+
 
             $table->unique(['employee_id', 'date']);
 

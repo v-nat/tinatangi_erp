@@ -30,6 +30,7 @@ $(document).ready(function () {
                 data: 'employee_id',
                 render: function(data, type, row) {
                     return `
+                    <div>
                         <a href="#" class="action-btn btn-edit bs-tooltip me-2"
                            data-id="${data}"
                            data-name="${row.name}"
@@ -37,6 +38,14 @@ $(document).ready(function () {
                            title="Edit">
                             <i class="fa-solid fa-user-pen"></i>
                         </a>
+                        <a href="#" class="action-btn generate-payroll bs-tooltip"
+                           title="Generate Payroll"
+                           data-employee-id="${row.id}"
+                           data-name="${row.name}"
+                           data-employee-id-number="${row.employee_id}">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </a>
+                    </div>
                         `;
                 }
             }

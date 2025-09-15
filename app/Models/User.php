@@ -59,7 +59,6 @@ class User extends Authenticatable
         return trim($this->first_name . ' ' . $this->last_name);
     }
 
-
     public function employeeRS(): HasMany
     {
         return $this->hasMany(Employee::class);
@@ -68,4 +67,5 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Status::class, 'status');
     }
+    
 }

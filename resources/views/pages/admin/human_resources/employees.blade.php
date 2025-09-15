@@ -1,4 +1,4 @@
-@extends('layouts.hr-app')
+@extends('layouts.app')
 @section('title') Human Resources @endsection
 @section('sidebar-title') Human Resources Management @endsection
 @section('dsh')

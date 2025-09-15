@@ -14,7 +14,9 @@ class StatusSeeder extends Seeder
     public function run(): void
     {
         //
-        $statuses = ['active', 'inactive', 'suspended', 'terminated', 'on leave', 'resigned', 'pending'];
+        $statuses = ['active', 'inactive', 'suspended', 'terminated', 'on leave', 'resigned', 'pending',
+        'Present','On Time','Late','Absent',
+        ];
 
         foreach ($statuses as $status) {
             Status::create(['status' => $status]);
