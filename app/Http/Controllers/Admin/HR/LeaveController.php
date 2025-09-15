@@ -37,4 +37,50 @@ class LeaveController extends Controller
             return response()->json(['error' => 'Server error'], 500);
         }
     }
+
+    public function approve($leave_id)
+    {
+        try {
+            $leave = Leave::findOrFail($leave_id);
+            // $employee = Auth::user()->id;
+
+            $leave->status = 13;
+            $leave->reason = request()->input('reason', '');
+            $leave->approved_by = auth('')->user()->id;
+            $leave->approval_date = now();
+            $leave->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Leave request approved successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to approve leave request: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function reject($leave_id)
+    {
+        try {
+            $leave = Leave::findOrFail($leave_id);
+            // $employee = Auth::user()->id;
+
+            $leave->status = 12;
+            $leave->reason = request()->input('reason', '');
+            $leave->approved_by = auth('')->user()->id;
+            $leave->approval_date = now();
+            $leave->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Leave request rejected successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to reject leave request: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

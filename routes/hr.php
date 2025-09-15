@@ -24,11 +24,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/supervisors-by-department', [EmployeeController::class, 'getSupervisors']);
     Route::get('/ceo', [EmployeeController::class, 'getCEO']);
 
-    Route::get('/overtimes', [HR_Controller::class, 'otApp'])->name('hr.ot-app');
+    Route::get('/humanresources/overtimes', [HR_Controller::class, 'otApp'])->name('hr.ot-app');
     Route::get('/humanresources/overtimes/get', [OvertimeController::class, 'index']);
-    Route::put('/humanresources/overtime/approve/{id}', [OvertimeController::class,'approve']);
+    Route::post('/humanresources/overtime/approve/{overtime_id}', [OvertimeController::class,'approve']);
+    Route::post('/humanresources/overtime/reject/{overtime_id}', [OvertimeController::class,'reject']);
 
-    Route::get('/leaves', [HR_Controller::class, 'leaveApp'])->name('hr.leave-app');
+    Route::get('/humanresources/leaves', [HR_Controller::class, 'leaveApp'])->name('hr.leave-app');
     Route::get('/humanresources/leaves/get', [LeaveController::class,'index']);
+    Route::post('/humanresources/leave/approve/{leave_id}', [LeaveController::class,'approve']);
+    Route::post('/humanresources/leave/reject/{leave_id}', [LeaveController::class,'reject'])->name('hr.leave-reject');
 
 });

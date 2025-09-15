@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Overtime;
 use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\UpdateOvertimeRequest;
 
 class OvertimeController extends Controller
 {
@@ -13,7 +14,7 @@ class OvertimeController extends Controller
     public function index()
     {
         try {
-            $query = Overtime::with(['statusRS', 'employeeRS', 'employeeRS.deptRS'])->orderBy('date', 'desc');
+            $query = Overtime::with(['statusRS', 'employeeRS', 'employeeRS.deptRS'])->orderBy('updated_at', 'desc');
             // dd($query);
             $overtimes = $query->get();
             $result = $overtimes->map(function ($ot) {
@@ -38,23 +39,17 @@ class OvertimeController extends Controller
         }
     }
 
-    public function approve($id)
+    public function approve($overtime_id)
     {
         try {
-            $overtime = Overtime::findOrFail($id);
-            $employee = Auth::user()->id;
+            $overtime = Overtime::findOrFail($overtime_id);
+            // $employee = Auth::user()->id;
 
-            if (!$employee) {
-                throw new \Exception("Employee data not found for this user");
-            }
-
-            $overtime->update([
-                'status' => 13, // Approved    
-                'reason' => request()->input('reason', ''),
-                'approved_by' => $employee->id, // Use employee_id instead of user id
-                'approval_date' => now()
-            ]);
-
+            $overtime->status = 13;
+            $overtime->reason = request()->input('reason', '');
+            $overtime->approved_by = auth('')->user()->id;
+            $overtime->approval_date = now();
+            $overtime->save();
             return response()->json([
                 'success' => true,
                 'message' => 'Overtime request approved successfully'
@@ -67,25 +62,17 @@ class OvertimeController extends Controller
         }
     }
 
-    public function reject($id)
+    public function reject($overtime_id)
     {
         try {
-            request()->validate(['reason' => 'required|string']);
+            $overtime = Overtime::findOrFail($overtime_id);
+            // $employee = Auth::user()->id;
 
-            $overtime = Overtime::findOrFail($id);
-            $employee = Auth::user()->id; // Get the employee data for the logged in user
-
-            if (!$employee) {
-                throw new \Exception("Employee data not found for this user");
-            }
-
-            $overtime->update([
-                'status' => 12, // Rejected
-                'reason' => request()->input('reason'),
-                'approved_by' => $employee->id, // Use employee_id instead of user id
-                'approval_date' => now()
-            ]);
-
+            $overtime->status = 12;
+            $overtime->reason = request()->input('reason', '');
+            $overtime->approved_by = auth('')->user()->id;
+            $overtime->approval_date = now();
+            $overtime->save();
             return response()->json([
                 'success' => true,
                 'message' => 'Overtime request rejected successfully'

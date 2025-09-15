@@ -19,7 +19,7 @@ class Status extends Model
         $statuses = [
             7 => '<span class="badge bg-warning">Pending</span>',
             13 => '<span class="badge bg-success">Approved</span>',
-            12 => '<span class="badge bg-primary">Rejected</span>',
+            12 => '<span class="badge bg-danger">Rejected</span>',
             null => '<span class="badge bg-secondary">Unknown</span>'
         ];
         return $statuses[$statusCode];
