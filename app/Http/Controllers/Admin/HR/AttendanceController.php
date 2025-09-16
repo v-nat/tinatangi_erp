@@ -119,7 +119,9 @@ class AttendanceController extends Controller
                 'atEmployeeRS',
                 'leaveRS',
                 'overtimeRS'
-            ]);
+            ])->orderBy('date', 'desc')
+                   ->orderBy('time_in', 'desc');
+
             $attendance = $query->get();
 
             $result = $attendance->map(function ($attendance) {

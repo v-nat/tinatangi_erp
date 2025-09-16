@@ -116,8 +116,9 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.success) {
-                    updateOvertimeStatus(overtimeId, 13, "Approved", reason);
-                    Swal.fire("Approved!", response.message, "success");
+                    // updateOvertimeStatus(overtimeId, 13, "Approved", reason);
+                    $("#LoadingScreen").fadeOut(200);
+                    Swal.fire("Approved!", response.message, "success").then(() => location.reload());;
                 } else {
                     Swal.fire("Error", response.message, "error");
                 }
@@ -151,8 +152,9 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.success) {
-                    updateOvertimeStatus(overtimeId, 13, "Rejected", reason);
-                    Swal.fire("Rejected!", response.message, "success");
+                    // updateOvertimeStatus(overtimeId, 13, "Rejected", reason);
+                    $("#LoadingScreen").fadeOut(200);
+                    Swal.fire("Rejected!", response.message, "success").then(() => location.reload());;
                 } else {
                     Swal.fire("Error", response.message, "error");
                 }
@@ -167,28 +169,24 @@ $(document).ready(function () {
         });
     });
 
-    function updateOvertimeStatus(overtimeId, status, statusText, reason) {
-        $("#approvalModal").modal("hide");
-        $("#LoadingScreen").fadeOut(200);
-        var row = $('a.approve-btn[data-id="' + overtimeId + '"]').closest(
-            "tr"
-        );
-        var statusBadgeClass = status === 13 ? "bg-success" : "bg-danger";
-        row.find("td:nth-child(9)").html(
-            '<span class="badge ' +
-                statusBadgeClass +
-                '">' +
-                statusText +
-                "</span>"
-        );
+    // function updateOvertimeStatus(overtimeId, status, statusText, reason) {
+    //     $("#approvalModal").modal("hide");
+    //     $("#LoadingScreen").fadeOut(200);
+    //     var row = $('a.approve-btn[data-id="' + overtimeId + '"]').closest(
+    //         "tr"
+    //     );
+    //     var statusBadgeClass = status === 13 ? "bg-success" : "bg-danger";
+    //     row.find("td:nth-child(9)").html(
+    //         '<span class="badge ' + statusBadgeClass + '">' + statusText + "</span>"
+    //     );
 
-        row.find(".approve-btn, .reject-btn").remove();
+    //     row.find(".approve-btn, .reject-btn").remove();
 
-        row.data("updated", {
-            status: status,
-            reason: reason || "",
-            approved_by: "{{ Auth::user()->full_name }}",
-            approved_at: new Date().toLocaleString(),
-        });
-    }
+    //     row.data("updated", {
+    //         status: status,
+    //         reason: reason || "",
+    //         // approved_by: "{{ Auth::user()->full_name }}",
+    //         // approved_at: new Date().toLocaleString(),
+    //     });
+    // }
 });

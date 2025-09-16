@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Hr\HR_Controller;
 use App\Http\Controllers\Admin\Hr\EmployeeController;
 use App\Http\Controllers\Admin\HR\OvertimeController;
 use App\Http\Controllers\Admin\HR\LeaveController;
+use App\Http\Controllers\Admin\HR\PayrollController;
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'attendanceList']);
@@ -34,4 +35,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/humanresources/leave/approve/{leave_id}', [LeaveController::class,'approve']);
     Route::post('/humanresources/leave/reject/{leave_id}', [LeaveController::class,'reject']);
 
+    Route::get('/humanresources/payroll',[PayrollController::class, 'indexOnHr'])->name('hr.payroll');
 });

@@ -25,7 +25,6 @@ $(document).ready(function () {
             { data: "position" },
             {
                 data: "start_date",
-                className: "text-center",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
@@ -33,7 +32,6 @@ $(document).ready(function () {
             },
             {
                 data: "end_date",
-                className: "text-center",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
@@ -83,7 +81,6 @@ $(document).ready(function () {
     $(document).on("click", ".approve-btn", function (e) {
         e.preventDefault();
         const leaveId = $(this).data("id");
-        // console.log(leaveId);
         $("#approvalLeaveId").val(leaveId);
         $("#ApprovalConfirmation").modal("show");
     });
@@ -98,12 +95,10 @@ $(document).ready(function () {
         e.preventDefault();
         let leaveId = $("#approvalLeaveId").val();
         let reason = $("#approvalNotes").val();
-        // console.log(leaveId);
         $("#LoadingScreen").fadeIn(200);
         $("#approvalModal").modal("hide");
         $.ajax({
             url: `/humanresources/leave/approve/${leaveId}`,
-            // url: "{{route()}}"
             method: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr("content"),
@@ -112,9 +107,9 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.success) {
-                    // updateOvertimeStatus(leaveId, 13, "Approved", reason);
+                    // updateLeaveStatus(leaveId, 13, "Approved", reason);
                     $("#LoadingScreen").fadeOut(200);
-                    Swal.fire("Approved!", response.message, "success");
+                    Swal.fire("Approved!", response.message, "success").then(() => location.reload());
                 } else {
                     Swal.fire("Error", response.message, "error");
                 }
@@ -133,12 +128,10 @@ $(document).ready(function () {
         e.preventDefault();
         let leaveId = $("#rejectionLeaveId").val();
         let reason = $("#rejectionNotes").val();
-        console.log(leaveId);
         $("#LoadingScreen").fadeIn(200);
         $("#rejectionModal").modal("hide");
         $.ajax({
             url: `/humanresources/leave/reject/${leaveId}`,
-            // url: "{{ route('hr.leave-reject', ['leave_id' => $leave->id]) }}",
             method: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr("content"),
@@ -147,9 +140,9 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.success) {
-                    // updateOvertimeStatus(leaveId, 13, "Rejected", reason);
+                    // updateLeaveStatus(leaveId, 13, "Rejected", reason);
                     $("#LoadingScreen").fadeOut(200);
-                    Swal.fire("Rejected!", response.message, "success");
+                    Swal.fire("Rejected!", response.message, "success").then(() => location.reload());
                 } else {
                     Swal.fire("Error", response.message, "error");
                 }
@@ -163,4 +156,20 @@ $(document).ready(function () {
             },
         });
     });
+    function updateLeaveStatus(leaveId, status, statusText, reason) {
+        $("#approvalModal").modal("hide");
+        $("#LoadingScreen").fadeOut(200);
+        var row = $('a.approve-btn[data-id="' + leaveId + '"]').closest("tr");
+        var statusBadgeClass = status == 13 ? "bg-success" : "bg-danger";
+        row.find("td:nth-child(8)").html(
+            '<span class="badge ' + statusBadgeClass + '">' + statusText + "</span>"
+        );
+        row.data("updated", {
+            status: status,
+            reason: reason || "",
+            // approved_by: "{{ Auth::user()->full_name }}",
+            // approved_at: new Date().toLocaleString(),
+        });
+        row.find(".approve-btn, .reject-btn").remove();
+    }
 });

@@ -255,9 +255,9 @@
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="sss">SSS *</label>
-                                            <input type="number" id="sss" class="form-control" placeholder="0.00"
-                                                name="sss" value="{{ old('sss', $data['sss'] ?? '') }}">
+                                            <label for="sss">SSS</label>
+                                            <input type="number" id="sss" class="form-control"
+                                                name="sss" value="600" readonly>
                                             @error('sss')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -265,9 +265,9 @@
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="pagibig">Pag-ibig *</label>
-                                            <input type="number" id="pagibig" class="form-control" placeholder="0.00"
-                                                name="pagibig" value="{{ old('pagibig', $data['pagibig'] ?? '') }}">
+                                            <label for="pagibig">Pag-ibig</label>
+                                            <input type="number" id="pagibig" class="form-control"
+                                                name="pagibig" value="100" readonly>
                                             @error('pagibig')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -275,9 +275,9 @@
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="philhealth">Philhealth *</label>
-                                            <input type="number" id="philhealth" class="form-control" placeholder="0.00"
-                                                name="philhealth" value="{{ old('philhealth', $data['philhealth'] ?? '') }}">
+                                            <label for="philhealth">Philhealth</label>
+                                            <input type="number" id="philhealth" class="form-control"
+                                                name="philhealth" value="450" readonly>
                                             @error('philhealth')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror

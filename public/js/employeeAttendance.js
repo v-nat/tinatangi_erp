@@ -202,15 +202,12 @@ $(document).ready(function () {
                 render: function (data, type, row, meta) {
                     return meta.row + 1;
                 },
-                className: "text-center",
             },
             {
                 data: "name",
-                className: "text-center",
             },
             {
                 data: "date",
-                className: "text-center",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
@@ -218,43 +215,30 @@ $(document).ready(function () {
             },
             {
                 data: "time_in",
-                className: "text-center",
                 type: "date", // Ensure proper time sorting
             },
             {
                 data: "time_out",
-                className: "text-center",
             },
             {
                 data: "total_minutes",
-                className: "text-center",
                 render: function (data) {
                     return data ? formatMinutesToHours(data) : "N/A";
                 },
             },
             {
                 data: "overtime",
-                className: "text-center",
             },
             {
                 data: "tardiness",
-                className: "text-center",
             },
             {
                 data: "leave_info",
-                className: "text-center",
             },
             {
                 data: "status",
                 className: "text-center",
             },
-        ],
-        order: [
-            [2, "desc"],
-            [3, "desc"],
-        ], 
-        columnDefs: [
-            { targets: [2, 3], type: "date" }, 
-        ],
+        ]
     });
 });

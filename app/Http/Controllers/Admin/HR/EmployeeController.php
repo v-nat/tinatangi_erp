@@ -95,9 +95,9 @@ class EmployeeController extends Controller
                 'department' => $validated['department'],
                 'position' => $validated['position'],
                 'direct_supervisor' => $validated['direct_supervisor'],
-                'sss' => $validated['sss'],
-                'pagibig' => $validated['pagibig'],
-                'philhealth' => $validated['philhealth'],
+                'sss' => 600,
+                'pagibig' => 100,
+                'philhealth' => 450,
                 'salary' => $validated['salary'],
             ]);
             DB::commit();
@@ -178,9 +178,6 @@ class EmployeeController extends Controller
             $employee->department = $validated['department'];
             $employee->position = $validated['position'];
             $employee->direct_supervisor = $validated['direct_supervisor'];
-            $employee->sss = $validated['sss'];
-            $employee->pagibig = $validated['pagibig'];
-            $employee->philhealth = $validated['philhealth'];
             $employee->salary = $validated['salary'];
             $user->save();
             $employee->save();
