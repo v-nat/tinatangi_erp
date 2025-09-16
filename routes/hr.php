@@ -36,4 +36,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/humanresources/leave/reject/{leave_id}', [LeaveController::class,'reject']);
 
     Route::get('/humanresources/payroll',[PayrollController::class, 'indexOnHr'])->name('hr.payroll');
+    Route::get('/humanresources/payroll/list', [PayrollController::class,'getPayrollList']);
+    Route::post('/humanresources/payroll/generate',[PayrollController::class, 'generatePayroll'])->name('hr.payroll.generate');
 });

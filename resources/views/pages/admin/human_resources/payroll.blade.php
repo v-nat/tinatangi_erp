@@ -3,13 +3,13 @@
 @section('sidebar-title') Human Resources Management @endsection
 @section('payroll') active
 @endsection
-@section('headings') Payroll @endsection
+@section('headings') Payroll List @endsection
 
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('hr.dashboard') }}">Human Resources</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Payroll List</li>
+            <li class="breadcrumb-item active" aria-current="page">Payroll</li>
         </ol>
     </nav>
     <section class="section">
@@ -19,7 +19,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="payrollTbl" class="table table-striped table-hover" style="width:100%">
+                    <table id="payrollsTable" class="table table-striped table-hover" style="width:100%">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -52,5 +52,5 @@
     <script src="{{ asset('assets/js/pages/dashboard.js') }}   "></script>
 
     <script src="{{ asset('assets/js/main2.js') }}   "></script>
-    <script src="{{ asset('js/employeeAttendance.js') }}"></script>
+    <script src="{{ asset('js/hrPayroll.js') }}"></script>
 @endsection

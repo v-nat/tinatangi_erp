@@ -64,7 +64,7 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="middle_name">Middle Name</label>
-                                            <input type="text" id="middle_name" class="form-control" placeholder="Alison"
+                                            <input type="text" id="middle_name" class="form-control" placeholder="Optional"
                                                 name="middle_name" value="{{ old('middle_name', $data['middle_name'] ?? '') }}">
                                             @error('middle_name')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
