@@ -41,7 +41,7 @@ class PayrollController extends Controller
                     'department' => optional(optional($payroll->employee)->deptRS)->name,
                     'position' => optional($payroll->employee)->position,
                     'period' => $this->getMonthString($payroll->month) ?? '',
-                    'salary' => $payroll->salary_before_tax ?? '',
+                    'reg_pay' => $payroll->regular_hour_pay ?? '',
                     'gross_pay' => $payroll->gross_pay ?? '',
                     'gross_deduction' => $payroll->deduction ?? '',
                     'net_pay' => $payroll->net_pay ?? '',
@@ -108,7 +108,7 @@ class PayrollController extends Controller
 
     const WORKING_DAYS_PER_MONTH = 26;
     const WORKING_HOURS_PER_DAY = 8;
-    const WORKING_PAY_PER_DAY = 80;
+    const WORKING_PAY_PER_DAY = 800;
     const OVERTIME_RATE_MULTIPLIER = 1.25;
 
     // FUNCTIONS
@@ -135,7 +135,7 @@ class PayrollController extends Controller
             $payroll_end_date = Carbon::parse($request->end_date);
 
             $data = $this->overallComputation($employee, $payroll_start_date, $payroll_end_date);
-
+            // dd  ($data);
             $payroll = Payroll::create([
                 'employee_id' => $employee->id,
                 'month' => Carbon::parse($request->start_date)->format('m'),
@@ -199,9 +199,9 @@ class PayrollController extends Controller
         if ($working_days >= self::WORKING_DAYS_PER_MONTH) {
             return ($days_present / self::WORKING_DAYS_PER_MONTH) * $employee->salary;
         }
-
         // 15's  30's
-        $dailyRate = $employee->salary / self::WORKING_DAYS_PER_MONTH;
+        // $dailyRate = $employee->salary / self::WORKING_DAYS_PER_MONTH;
+        $dailyRate = 800;
         return $days_present * $dailyRate;
     }
 
@@ -217,7 +217,7 @@ class PayrollController extends Controller
             ->whereBetween('date', [$start_date, $end_date])
             ->sum('overtime_minutes');
 
-        return $minutes / 60;
+        return $minutes;
     }
 
     protected function absencesTotal($employeeID, $start_date, $end_date)

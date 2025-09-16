@@ -45,6 +45,13 @@ class HR_Controller extends Controller
     {
         return view('pages.admin.human_resources.ot-app');
     }
+
+    public function otApplication($id){
+        return view('pages.admin.human_resources.ot-application', compact('id'));
+    }
+    public function leaveApplication($id){
+        return view('pages.admin.human_resources.leave-application', compact('id'));
+    }
     public function leaveApp()
     {
         return view('pages.admin.human_resources.leave-app');

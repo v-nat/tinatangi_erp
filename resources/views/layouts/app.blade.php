@@ -201,14 +201,20 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                                 <li>
                                     <h6 class="dropdown-header">Hello, {{ auth()->user()->first_name }}!</h6>
                                 </li>
-                                <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-person me-2"></i> My
-                                        Profile</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-gear me-2"></i>
+                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-clock"></i>
+                                        Attendance</a></li>
+                                <li><a class="dropdown-item" href="{{route('hr.ot-application', ['id' => Auth::user()->id])}}"><i class="fa-solid fa-business-time"></i>
+                                        Apply Overtime</a></li>
+                                <li><a class="dropdown-item" href="{{route('hr.leave-application', ['id' => Auth::user()->id])}}"><i class="fa-solid fa-calendar-days"></i>
+                                        Apply Leave</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i>
+                                        Prpfile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i>
                                         Settings</a></li>
                                 <hr class="dropdown-divider">
                                 </li>
-                                <li id="logout-btn"><a class="dropdown-item" href="#"><i
-                                            class="icon-mid bi bi-box-arrow-left me-2"></i> Logout</a></li>
+                                <li id="logout-btn"><a class="dropdown-item" href="#">
+                                    <i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
                             </ul>
                         </div>
                     </div>

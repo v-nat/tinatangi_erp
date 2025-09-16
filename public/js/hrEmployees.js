@@ -33,18 +33,18 @@ $(document).ready(function () {
                 render: function (data, type, row) {
                     return `
                     <div>
-                        <a href="#" class="action-btn btn-edit bs-tooltip me-2"
+                        <a href="#" class="btn icon btn-primary btn-edit bs-tooltip me-2"
                            data-id="${data}"
                            data-name="${row.name}"
                            data-employee-id="${row.employee_id}"
                            title="Edit">
-                            <i class="fa-solid fa-user-pen"></i>
+                            <i class="fa-solid fa-pen"></i>
                         </a>
-                        <a href="#" class="action-btn generate-payroll bs-tooltip"
+                        <a href="#" class="btn icon btn-info generate-payroll bs-tooltip"
                            title="Generate Payroll"
                            data-id="${data}"
                            data-name="${row.name}">
-                            <i class="fa-solid fa-file-invoice"></i>
+                            <i class="fa-solid fa-money-check-dollar"></i>
                         </a>
                     </div>
                         `;
@@ -141,7 +141,7 @@ $(document).ready(function () {
                         }
                     },
                     error: function(xhr) {
-                        let errorMessage = 'Failed to generate payslip';
+                        let errorMessage = 'Failed to generate payroll';
                         if (xhr.responseJSON && xhr.responseJSON.error) {
                             errorMessage = xhr.responseJSON.error;
                         }
@@ -154,7 +154,7 @@ $(document).ready(function () {
                     },
                     complete: function() {
                         // Re-enable button
-                        submitBtn.prop('disabled', false).html('Generate Payslip');
+                        submitBtn.prop('disabled', false).html('Generate Payroll');
                     }
                 });
             }

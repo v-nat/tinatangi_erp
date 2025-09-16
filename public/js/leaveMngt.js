@@ -156,20 +156,4 @@ $(document).ready(function () {
             },
         });
     });
-    function updateLeaveStatus(leaveId, status, statusText, reason) {
-        $("#approvalModal").modal("hide");
-        $("#LoadingScreen").fadeOut(200);
-        var row = $('a.approve-btn[data-id="' + leaveId + '"]').closest("tr");
-        var statusBadgeClass = status == 13 ? "bg-success" : "bg-danger";
-        row.find("td:nth-child(8)").html(
-            '<span class="badge ' + statusBadgeClass + '">' + statusText + "</span>"
-        );
-        row.data("updated", {
-            status: status,
-            reason: reason || "",
-            // approved_by: "{{ Auth::user()->full_name }}",
-            // approved_at: new Date().toLocaleString(),
-        });
-        row.find(".approve-btn, .reject-btn").remove();
-    }
 });

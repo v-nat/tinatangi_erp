@@ -20,7 +20,7 @@ class Payroll extends Model
         'days_present',
         'total_hours_worked',
         'regular_hour_pay',
-        'overtime_hour_pay',
+        'overtime_pay',
         'days_absent',
         'days_absent_deduction',
         'tardiness_deduction',

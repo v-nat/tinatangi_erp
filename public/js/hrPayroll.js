@@ -31,7 +31,7 @@ $(document).ready(function () {
                 // type: "date", // Ensure proper date sorting
             },
             {
-                data: "salary",
+                data: "reg_pay",
                 render: function (data, type, row) {
                     return (
                         "₱ " +

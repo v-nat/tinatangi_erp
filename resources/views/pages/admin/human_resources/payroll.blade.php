@@ -27,7 +27,7 @@
                                 <th>Department</th>
                                 <th>Position</th>
                                 <th>Pay Period</th>
-                                <th>Salary</th>
+                                <th>Regular Pay</th>
                                 <th>Gross Pay</th>
                                 <th>Deductions</th>
                                 <th>Net Pay</th>

@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Admin\HR;
 
 use App\Http\Controllers\Controller;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 use App\Models\Leave;
 use App\Models\Status;
 
@@ -81,6 +86,29 @@ class LeaveController extends Controller
                 'success' => false,
                 'message' => 'Failed to reject leave request: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function getUserReq($id)
+    {
+        try {
+            $query = Leave::where('employee_id', $id);
+
+            $leaves = $query->get();
+            // dd($query);
+            $result = $leaves->map(function ($leave) {
+                return [
+                    'start_date'        => $leave->start_date ?? 'N/A',
+                    'end_date'          => $leave->end_date ?? 'N/A',
+                    'reason'            => $leave->reason ?? 'N/A',
+                    'status'            => Status::getStatusText($leave->status),
+                ];
+            });
+            // dd($result);
+            return response()->json(['data' => $result]);
+        } catch (\Exception $e) {
+            Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Server error'], 500);
         }
     }
 }

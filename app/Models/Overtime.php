@@ -16,8 +16,9 @@ class Overtime extends Model
         'employee_id',
         'date',
         'time_start',
-        'end_time',
+        'time_end',
         'total_minutes',
+        'reason',
         'approved_by',
         'approval_date',
     ];

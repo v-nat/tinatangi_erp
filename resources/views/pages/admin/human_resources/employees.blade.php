@@ -84,7 +84,7 @@
                     @csrf
                     <div class="modal-body">
                         <div class="text-left">
-                            <p>You are about to generate payslip for:</p>
+                            <p>You are about to generate payroll for:</p>
                             <ul class="list-unstyled">
                                 <li><strong>Employee ID:</strong> <span id="empId"></span></li>
                                 <li><strong>Name:</strong> <span id="empName"></span></li>
