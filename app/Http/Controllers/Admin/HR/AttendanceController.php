@@ -61,7 +61,6 @@ class AttendanceController extends Controller
     {
         $employee = Auth::user()->id;
 
-        // Check if already timed in today
         $existing = Attendance::where('employee_id', $employee)
             ->whereDate('date', now())
             ->exists();
@@ -75,7 +74,7 @@ class AttendanceController extends Controller
             'employee_id' => Auth::user()->id,
             'date' => now(),
             'time_in' => now(),
-            'status' => 9 
+            'status' => 9
         ]);
 
         return back()->with('success', 'Time in recorded');
@@ -115,16 +114,15 @@ class AttendanceController extends Controller
     public function attendanceList()
     {
         try {
-            $query = Attendance::with([
+            $attendances = Attendance::with([
                 'atEmployeeRS',
                 'leaveRS',
                 'overtimeRS'
             ])->orderBy('date', 'desc')
-                   ->orderBy('time_in', 'desc');
-
-            $attendance = $query->get();
-
-            $result = $attendance->map(function ($attendance) {
+                ->orderBy('time_in', 'desc')
+                ->get();
+                // dd($attendances->count());
+            $result = $attendances->map(function ($attendance) {
                 return [
                     'id' => $attendance->id,
                     'employee_id' => $attendance->employee_id ?? 'N/A',

@@ -111,4 +111,40 @@ class LeaveController extends Controller
             return response()->json(['error' => 'Server error'], 500);
         }
     }
+
+    public function submitReq(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $validator = Validator::make($request->all(), [
+                'employee_id' => 'required|integer|exists:employees,id',
+                'start_date'=> 'required',
+                'end_date' => 'required',
+                'reason'=> 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => 'Validation failed',
+                    'messages' => $validator->errors()->all()
+                ], 422);
+            }
+            // dd($request);
+            Leave::create([
+                'employee_id' => $request->employee_id,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'reason' => $request->reason ?? '',
+                'status' => 7,
+            ]);
+            DB::commit();
+            return response()->json(['message' => 'Leave submitted successfully!'], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Controller Error: ' . $e->getMessage()], 500);
+        }
+    }
 }

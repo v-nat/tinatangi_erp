@@ -112,7 +112,7 @@
                         </div>
 
                         <p class="time-record mt-2">
-                            Total Minutes Rendered: <span id="totalHours" class="text-primary">0 minutes</span>
+                            Minutes Rendered Today: <span id="totalHours" class="text-primary">0 minutes</span>
                         </p>
                     </form>
                 </div>
@@ -120,7 +120,7 @@
         </div>
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Employee Attendance</h4>
+                <h4 class="card-title">Employees Attendance</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

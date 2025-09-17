@@ -56,9 +56,6 @@ $(document).ready(function () {
     // CLOCK
     function updateClock() {
         $("#realtimeClock").text(getCurrentManilaTime());
-        if (isTimeIn) {
-            $("#totalHours").text(calculateMinutesWorked(formatTime(timeIn)));
-        }
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -125,20 +122,20 @@ $(document).ready(function () {
         Swal.fire({
             title: "Confirm Time In?",
             text: "This will record your current time as Time In",
-            icon: "question",
+            icon: "info",
             showCancelButton: true,
-            confirmButtonText: "Yes, Time In",
+            confirmButtonText: "Time In",
             cancelButtonText: "Cancel",
         }).then((result) => {
             if (result.isConfirmed) {
                 $.post("/attendance/time-in")
                     .done(function (response) {
-                        hasAttendanceToday(); // Refresh the display
+                        hasAttendanceToday();
                         timeIn = $("#timeInDisplay").text;
                         isTimeIn = true;
                         $("#attendanceTable")
                             .DataTable()
-                            .ajax.reload(null, false); // Preserve current page
+                            .ajax.reload(null, false); 
                         showSuccess("Time in recorded successfully!");
                     })
                     .fail(function (xhr) {
@@ -158,9 +155,9 @@ $(document).ready(function () {
         Swal.fire({
             title: "Confirm Time Out?",
             text: "This will record your current time as Time Out",
-            icon: "question",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Yes, Time Out",
+            confirmButtonText: "Continue",
             cancelButtonText: "Cancel",
         }).then((result) => {
             if (result.isConfirmed) {

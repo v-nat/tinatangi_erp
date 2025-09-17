@@ -26,17 +26,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ceo', [EmployeeController::class, 'getCEO']);
 
     Route::get('/humanresources/overtimes', [HR_Controller::class, 'otApp'])->name('hr.ot-app');
-    Route::get('/overtimes/{id}', [HR_Controller::class, 'otApplication'])->name('hr.ot-application');
-    Route::get('/overtimes/requests/list/{id}', [OvertimeController::class, 'getUserReq']);
-    Route::post('/overtimes/request/submit', [OvertimeController::class, 'submitReq']);
+    Route::get('/employee/overtimes/{id}', [HR_Controller::class, 'otApplication'])->name('hr.ot-application');
+    Route::get('/employee/overtimes/requests/list/{id}', [OvertimeController::class, 'getUserReq']);
+    Route::post('/employee/overtimes/request/submit', [OvertimeController::class, 'submitReq']);
     Route::get('/humanresources/overtimes/get', [OvertimeController::class, 'index']);
     Route::post('/humanresources/overtime/approve/{overtime_id}', [OvertimeController::class,'approve']);
     Route::post('/humanresources/overtime/reject/{overtime_id}', [OvertimeController::class,'reject']);
 
     Route::get('/humanresources/leaves', [HR_Controller::class, 'leaveApp'])->name('hr.leave-app');
-    Route::get('/leaves/{id}', [HR_Controller::class, 'leaveApplication'])->name('hr.leave-application');
-    Route::get('/leaves/requests/list/{id}', [LeaveController::class,'getUserReq']);
-    Route::get('/leaves/requests/submit', [LeaveController::class,'submitReq']);
+    Route::get('/employee/leaves/{id}', [HR_Controller::class, 'leaveApplication'])->name('hr.leave-application');
+    Route::get('/employee/leaves/requests/list/{id}', [LeaveController::class,'getUserReq']);
+    Route::post('/employee/leaves/request/submit', [LeaveController::class,'submitReq']);
     Route::get('/humanresources/leaves/get', [LeaveController::class,'index']);
     Route::post('/humanresources/leave/approve/{leave_id}', [LeaveController::class,'approve']);
     Route::post('/humanresources/leave/reject/{leave_id}', [LeaveController::class,'reject']);

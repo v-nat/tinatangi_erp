@@ -24,7 +24,7 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="date">Date</label>
-                                            <input type="date" id="date" class="form-control py-3"
+                                            <input type="date" id="date" class="form-control py-3" required
                                                 placeholder="" name="date">
                                         </div>
                                     </div>
@@ -35,14 +35,14 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="time_start">Time Start</label>
-                                            <input type="time" id="time_start" class="form-control py-3"
+                                            <input type="time" id="time_start" class="form-control py-3" required
                                                 placeholder="" name="time_start">
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="time_end">Time End</label>
-                                            <input type="time" id="time_end" class="form-control py-3" placeholder=""
+                                            <input type="time" id="time_end" class="form-control py-3" placeholder="" required
                                                 name="time_end">
                                         </div>
                                     </div>

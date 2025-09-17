@@ -18,7 +18,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: false,
         ajax: {
-            url: "/overtimes/requests/list/" + id,
+            url: "/employee/overtimes/requests/list/" + id,
             type: "GET",
             dataSrc: "data",
         },
@@ -104,7 +104,7 @@ $(document).ready(function () {
                             "content"
                         ),
                     },
-                    url: "/overtimes/request/submit",
+                    url: "/employee/overtimes/request/submit",
                     type: "POST",
                     data: formData,
                     processData: false,

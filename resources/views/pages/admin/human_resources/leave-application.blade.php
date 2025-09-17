@@ -17,7 +17,7 @@
                 <div class="card">
                     <div class="card-content">
                         <div class="card-body">
-                            <form class="form" id="otApplication" enctype="multipart/form-data">
+                            <form class="form" id="leaveApplication" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" id="employee_id" name="employee_id" value="{{$id}}">
                                 <div class="row">
@@ -25,17 +25,17 @@
                                         <div class="form-group">
                                             <label for="start_date">Start Date</label>
                                             <input type="date" id="start_date" class="form-control py-3" placeholder=""
-                                                name="start_date">
+                                                required name="start_date">
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="end_date">End Date</label>
                                             <input type="date" id="end_date" class="form-control py-3" placeholder=""
-                                                name="end_date">
+                                                required name="end_date">
                                         </div>
                                     </div>
-                                    <div class="w-100 mb-10">
+                                    <div id="reasonDiv" class="w-100 mb-10">
                                         <label for="reason" class="form-label">Reason</label>
                                         <select class="form-select py-3" id="reason" name="reason" required>
                                             <option value="" selected disabled>Select leave reason</option>
@@ -47,7 +47,7 @@
                                         </select>
                                     </div>
                                     <div class="w-100 mb-10" id="textAreaDiv">
-                                        <label for="textAreaReason" class="form-label">Reason</label>
+                                        <label for="textAreaReason" class="form-label">Provide Reason</label>
                                         <textarea class="form-control" name="textAreaReason" id="textAreaReason"
                                             rows="3"></textarea>
                                     </div>
