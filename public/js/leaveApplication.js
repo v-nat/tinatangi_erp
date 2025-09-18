@@ -118,7 +118,7 @@ $(document).ready(function () {
                                 "content"
                             ),
                         },
-                        url: "employee/leaves/request/submit",
+                        url: "/employee/leaves/request/submit",
                         type: "POST",
                         data: formData,
                         processData: false,
