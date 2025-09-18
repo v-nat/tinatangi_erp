@@ -187,7 +187,7 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                                             {{auth()->user()->first_name . ' ' . auth()->user()->last_name}}
                                         </h6>
                                         <p class="mb-0 text-sm text-gray-600">
-                                            {{ \Illuminate\Support\Str::upper($position) }}
+                                            {{ \Illuminate\Support\Str::upper($position->name) }}
                                         </p>
                                     </div>
                                     <div class="user-img d-flex align-items-center">

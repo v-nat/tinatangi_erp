@@ -121,7 +121,7 @@ $(document).ready(function () {
 
         Swal.fire({
             title: "Confirm Time In?",
-            text: "This will record your current time as Time In",
+            text: "This will count as your Time In",
             icon: "info",
             showCancelButton: true,
             confirmButtonText: "Time In",
@@ -154,7 +154,7 @@ $(document).ready(function () {
 
         Swal.fire({
             title: "Confirm Time Out?",
-            text: "This will record your current time as Time Out",
+            text: "You are about to Time Out",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Continue",

@@ -9,15 +9,22 @@ use App\Models\Payroll;
 use App\Models\Attendance;
 use App\Models\Overtime;
 use App\Models\Status;
+use App\Services\CompensationCalculator;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Type\Integer;
 
 class PayrollController extends Controller
 {
 
+    public function __construct(
+        protected CompensationCalculator $calculator
+    ) {}
     // for views
 
     public function indexOnHr()
@@ -27,6 +34,7 @@ class PayrollController extends Controller
 
     public function getPayrollList()
     {
+
         try {
             $query = Payroll::with([
                 'employee',
@@ -39,11 +47,11 @@ class PayrollController extends Controller
                     'employee_id' => $payroll->employee_id ?? 'N/A',
                     'name' => optional(optional($payroll->employee)->userRS)->full_name,
                     'department' => optional(optional($payroll->employee)->deptRS)->name,
-                    'position' => optional($payroll->employee)->position,
+                    'position' => optional(optional($payroll->employee)->position)->name ?? 'N/A',
                     'period' => $this->getMonthString($payroll->month) ?? '',
                     'reg_pay' => $payroll->regular_hour_pay ?? '',
                     'gross_pay' => $payroll->gross_pay ?? '',
-                    'gross_deduction' => $payroll->deduction ?? '',
+                    'gross_deduction' => $payroll->deduction + $payroll->days_absent_deduction ?? '',
                     'net_pay' => $payroll->net_pay ?? '',
                     'status' => Status::getStatusText($payroll->status),
                 ];
@@ -102,13 +110,9 @@ class PayrollController extends Controller
 
 
     // VARIABLES 
-    const SSS = 600;
-    const PHILHEALTH = 450;
-    const PAGIBIG = 100;
-
     const WORKING_DAYS_PER_MONTH = 26;
+    const DAY_OFF_PER_MONTH = 4;
     const WORKING_HOURS_PER_DAY = 8;
-    const WORKING_PAY_PER_DAY = 800;
     const OVERTIME_RATE_MULTIPLIER = 1.25;
 
     // FUNCTIONS
@@ -134,30 +138,11 @@ class PayrollController extends Controller
             $payroll_start_date = Carbon::parse($request->start_date);
             $payroll_end_date = Carbon::parse($request->end_date);
 
-            $data = $this->overallComputation($employee, $payroll_start_date, $payroll_end_date);
-            // dd  ($data);
-            $payroll = Payroll::create([
-                'employee_id' => $employee->id,
-                'month' => Carbon::parse($request->start_date)->format('m'),
-                'start_date' => $payroll_start_date,
-                'end_date' => $payroll_end_date,
-                'payroll_date' => now(),
-                'days_present' => $data['days_present'],
-                'total_hours_worked' => $data['total_hours'],
-                'regular_hour_pay' => $data['regular_pay'],
-                'overtime_pay' => $data['overtime_pay'],
-                'days_absent' => $data['days_absent'],
-                'days_absent_deduction' => $data['absent_deduction'],
-                'tardiness_deduction' => $data['tardiness_deduction'],
-                'deduction' => $data['mandatory_deductions']['total'] ?? 0,
-                'tax_deduction' => $data['tax'],
-                'gross_pay' => $data['gross_pay'],
-                'salary_before_tax' => $data['gross_pay'] -
-                    $data['absent_deduction'] -
-                    $data['tardiness_deduction'],
-                'net_pay' => $data['net_pay'],
-                'status' => 7
-            ]);
+            $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date);
+            $breakdown = $this->calculator->fromPayrollAttributes($data);
+
+            $payroll = Payroll::create(array_merge($data, $breakdown));
+            $payroll->save();
 
             DB::commit();
 
@@ -173,6 +158,58 @@ class PayrollController extends Controller
         }
     }
 
+    protected function initialComputation($employee, $start_date, $end_date)
+    {
+        ///// for calculation
+        $per_hour_rate = $this->ratePerHour($employee->base_salary);
+        $working_days = $this->getTotalWorkingDays($start_date, $end_date);
+        $daily_rate = $employee->base_salary / $working_days;
+
+        ///// to pass for computation
+
+        ///// pay
+        $days_present = $this->getTotalPresentDays($employee->id, $start_date, $end_date);
+        $total_hours_worked = $this->totalHoursWorked($employee->id, $start_date, $end_date);
+        $regular_pay = $this->regularPay($employee, $working_days, $days_present);
+        $overtime_pay = $this->overtimePay($employee, $start_date, $end_date, $per_hour_rate);
+
+        ///// deduct
+        $days_absent = $this->absencesTotal($employee->id, $start_date, $end_date, $working_days);
+        $days_absent_deduction = $this->absentDeduction($days_absent, $daily_rate);
+        $tardiness_total = $this->tardinessTotal($employee->id, $start_date, $end_date);
+        $tardiness_deduction = $this->tardinessDeduction($employee->id, $start_date, $end_date, $per_hour_rate);
+        $mandatory_deduction = $this->totalMandatoryDeductions();
+
+        return [
+            'days_present' => $days_present,
+            'total_hours_worked' => $total_hours_worked,
+            'regular_hour_pay' => $regular_pay,
+            'overtime_pay' => $overtime_pay,
+            'days_absent' => $days_absent,
+            'days_absent_deduction' => $days_absent_deduction,
+            'tardiness_deduction' => $tardiness_deduction,
+            'mandatory_deduction' => $mandatory_deduction,
+            'deduction' => $mandatory_deduction['total'],
+
+            'per_hour_rate' => $per_hour_rate,
+            'daily_rate' => $daily_rate,
+            'working_days' => $working_days,
+            'tardiness_total' => $tardiness_total,
+
+            'employee_id' => $employee->id,
+            'month' => Carbon::parse($start_date)->format('m'),
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'payroll_date' => now(),
+            'status' => 7,
+        ];
+    }
+
+
+    protected function ratePerHour($base_salary)
+    {
+        return $base_salary / (self::WORKING_DAYS_PER_MONTH * self::WORKING_HOURS_PER_DAY);
+    }
     protected function getTotalPresentDays($employeeID, $start_date, $end_date)
     {
         return Attendance::where('employee_id', $employeeID)
@@ -196,13 +233,37 @@ class PayrollController extends Controller
 
     protected function regularPay($employee, $working_days, $days_present)
     {
+        /////// whole month
         if ($working_days >= self::WORKING_DAYS_PER_MONTH) {
-            return ($days_present / self::WORKING_DAYS_PER_MONTH) * $employee->salary;
+            return ($days_present / self::WORKING_DAYS_PER_MONTH) * $employee->base_salary;
         }
-        // 15's  30's
-        // $dailyRate = $employee->salary / self::WORKING_DAYS_PER_MONTH;
-        $dailyRate = 800;
+        ////// half month
+        $dailyRate = $employee->base_salary / self::WORKING_DAYS_PER_MONTH;
         return $days_present * $dailyRate;
+    }
+
+    protected function getTotalWorkingDays($startDate, $endDate): int
+    {
+        // Ensure Carbon instances
+        $start = $startDate instanceof Carbon
+            ? $startDate
+            : Carbon::parse($startDate);
+
+        $end = $endDate instanceof Carbon
+            ? $endDate
+            : Carbon::parse($endDate);
+
+        // Full days in period
+        $daysInPeriod = $start->diffInDays($end) + 1;
+
+        // Days in that month
+        $daysInMonth = $start->daysInMonth;
+
+        // Configurable working days
+        $standardDays = Config::get('payroll.working_days_per_month', 26);
+
+        // Prorate and round
+        return (int) round($daysInPeriod / $daysInMonth * $standardDays);
     }
 
     protected function overtimePay($employee, $start_date, $end_date, $per_hour)
@@ -220,30 +281,32 @@ class PayrollController extends Controller
         return $minutes;
     }
 
-    protected function absencesTotal($employeeID, $start_date, $end_date)
+    protected function absencesTotal($employeeID, $start_date, $end_date, $working_days)
     {
-        // Get all dates the employee was present
-        $present_days = Attendance::where('employee_id', $employeeID)
-            ->whereBetween('date', [$start_date, $end_date])
+        // 1) Fetch all the dates this employee was present (Y-m-d strings)
+        $presentDays = Attendance::where('employee_id', $employeeID)
+            ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
             ->whereNotNull('time_in')
             ->whereNotNull('time_out')
             ->pluck('date')
+            ->map(fn($d) => Carbon::parse($d)->toDateString())
+            ->unique()
             ->toArray();
 
-        $present_days = array_map(function ($date) {
-            return Carbon::parse($date)->format('Y-m-d');
-        }, $present_days);
-
-        $absents = 0;
-        $current = $start_date->copy();
-
-        while ($current <= $end_date) {
-            if ($current->isWeekday() && !in_array($current->format('Y-m-d'), $present_days)) {
-                $absents++;
-            }
-            $current->addDay();
+        // 2) Determine how many working days to expect
+        if (empty($working_days) || $working_days < 1) {
+            // Count actual weekdays in the range if no override provided
+            $period = CarbonPeriod::create($start_date, '1 day', $end_date);
+            $working_days = collect($period)
+                ->filter(fn(Carbon $date) => $date->isWeekday())
+                ->count();
         }
-        return $absents;
+
+        // 3) Number of days actually present (but never more than $working_days)
+        $presentCount = min(count($presentDays), $working_days);
+
+        // 4) Absent days = expected working days minus days present
+        return max($working_days - $presentCount, 0);
     }
 
     protected function absentDeduction($days_absent, $daily_rate)
@@ -251,9 +314,9 @@ class PayrollController extends Controller
         return $days_absent * $daily_rate;
     }
 
-    protected function tardinessDeduction($employee, $start_date, $end_date, $hourlyRate)
+    protected function tardinessDeduction($employee_id, $start_date, $end_date, $hourlyRate)
     {
-        $tardinessHours = $this->tardinessTotal($employee->id, $start_date, $end_date) / 60;
+        $tardinessHours = $this->tardinessTotal($employee_id, $start_date, $end_date) / 60;
         return $tardinessHours * $hourlyRate;
     }
 
@@ -266,103 +329,15 @@ class PayrollController extends Controller
 
     protected function totalMandatoryDeductions()
     {
-        $sss = self::SSS;
-
-        $philhealth = self::PHILHEALTH;
-
-        $pagibig = self::PAGIBIG;
-
+        $sss = 600;
+        $philhealth = 450;
+        $pagibig = 100;
+        $total = $sss + $philhealth + $pagibig;
         return [
             'sss' => $sss,
             'philhealth' => $philhealth,
             'pagibig' => $pagibig,
-            'total' => $sss + $philhealth + $pagibig
+            'total' => $total
         ];
     }
-
-    protected function taxableIncome($grossPay, $absentDeduction, $tardinessDeduction, $mandatoryDeductions)
-    {
-        return $grossPay - $absentDeduction - $tardinessDeduction - $mandatoryDeductions;
-    }
-
-    protected function taxAmount($taxableIncome)
-    {
-        if ($taxableIncome <= 20833) {
-            return 0;
-        } elseif ($taxableIncome <= 33332) {
-            return ($taxableIncome - 20833) * 0.20;
-        } elseif ($taxableIncome <= 66666) {
-            return 2500 + ($taxableIncome - 33333) * 0.25;
-        } elseif ($taxableIncome <= 166666) {
-            return 10833.33 + ($taxableIncome - 66667) * 0.30;
-        } elseif ($taxableIncome <= 666666) {
-            return 40833.33 + ($taxableIncome - 166667) * 0.32;
-        } else {
-            return 200833.33 + ($taxableIncome - 666667) * 0.35;
-        }
-    }
-
-    protected function getTotalWorkingDays($startDate, $endDate): int
-    {
-        $totalDays = $startDate->diffInDaysFiltered(function ($date) {
-            return true; // include all days
-        }, $endDate) + 1;
-
-        $weeks = floor($totalDays / 7);
-        return $totalDays - $weeks;
-    }
-
-    protected function overallComputation($employee, $startDate, $endDate)
-    {
-        $salary = $employee->salary;
-        // $hourlyRate = $this->calculateHourlyRate($salary);
-        $dailyRate = self::WORKING_PAY_PER_DAY;
-        $workingDays = $this->getTotalWorkingDays($startDate, $endDate);
-        $daysPresent = $this->getTotalPresentDays($employee->id, $startDate, $endDate);
-        $regularPay = $this->regularPay($employee, $workingDays, $daysPresent);
-        $overtimePay = $this->overtimePay($employee, $startDate, $endDate, $salary);
-        $daysAbsent = $this->absencesTotal($employee->id, $startDate, $endDate);
-        $absentDeduction = $this->absentDeduction($daysAbsent, $dailyRate);
-        $tardinessDeduction = $this->tardinessDeduction($employee, $startDate, $endDate, $salary);
-        $mandatoryDeductions = $this->totalMandatoryDeductions();
-
-        $grossPay = $regularPay + $overtimePay;
-        $taxableIncome = $this->taxableIncome(
-            $grossPay,
-            $absentDeduction,
-            $tardinessDeduction,
-            $mandatoryDeductions['total']
-        );
-        $tax = $this->taxAmount($taxableIncome);
-
-        $grossDeduction = $absentDeduction +
-            $tardinessDeduction +
-            $mandatoryDeductions['total'] +
-            $tax;
-        $netPay = $grossPay - $grossDeduction;
-
-        return [
-            'days_present' => $daysPresent,
-            'days_absent' => $daysAbsent,
-            'total_hours' => $this->totalHoursWorked($employee->id, $startDate, $endDate),
-            'overtime_hours' => $this->overtimeHours($employee->id, $startDate, $endDate),
-            'tardiness_minutes' => $this->tardinessTotal($employee->id, $startDate, $endDate),
-            'regular_pay' => $regularPay,
-            'overtime_pay' => $overtimePay,
-            'absent_deduction' => $absentDeduction,
-            'tardiness_deduction' => $tardinessDeduction,
-            'mandatory_deductions' => $mandatoryDeductions,
-            'tax' => $tax,
-            'gross_pay' => $grossPay,
-            'total_deductions' => $grossDeduction,
-            'net_pay' => max($netPay, 0)
-        ];
-    }
-
-
-
-
-
-
-    //
 }

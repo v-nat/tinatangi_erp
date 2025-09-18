@@ -51,6 +51,7 @@
                         <div class="card-content">
                             <div class="card-body">
                                 <div class="row">
+                                    {{-- PERSONAL INFORMATION --}}
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="first_name">First Name *</label>
@@ -177,9 +178,12 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- WORK INFORMATION --}}
+
                     <div class="card">
                         <div class="card-header mt-6">
-                            <h4 class="card-title">Work Information</h4>
+                            <h4 class="card-title">Oraganizational Information</h4>
                         </div>
                         <div class="card-content">
                             <div class="card-body">
@@ -200,35 +204,37 @@
                                             @enderror
                                         </div>
                                     </div>
+
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="position">Position *</label>
-                                            <select class="form-select" id="position" name="position" required>
-                                                <option value="" disabled selected>Choose Position</option>
-                                                <option value="Supervisor" {{ old('position', $data['position']) == 'Supervisor' ? 'selected' : '' }}>Supervisor
-                                                </option>
-                                                <option value="Manager" {{ old('position', $data['position']) == 'Manager' ? 'selected' : '' }}>
-                                                    Manager
-                                                </option>
-                                                <option value="Staff" {{ old('position', $data['position']) == 'Staff' ? 'selected' : '' }}>
-                                                    Staff
-                                                </option>
+                                            <label for="supervisor">Direct Supervisor *</label>
+                                            <select id="supervisor" name="supervisor_id" class="form-select" data-value="{{ $data['supervisor'] }} | {{$data['supervisor_id']}}">
+                                                <option value=""  disabled selected>Choose Supervisor</option>
+                                                {{-- This will be populated dynamically --}}
                                             </select>
-                                            @error('position')
+                                            @error('supervisor_id')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
+
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="direct_supervisor">Direct Supervisor *</label>
-                                            <select id="direct_supervisor" name="direct_supervisor" class="form-select" data-value="{{ $data['direct_supervisor'] }}|{{ $data['direct_supervisor_id'] }}">
-                                                <option value=""  disabled selected>Choose Supervisor</option>
-                                                {{-- This will be populated dynamically --}}
+                                            <label for="position">Position *</label>
+                                            <select class="form-select" id="position" name="position_id" data-value="{{$data['position']}}|{{$data['position_id']}}|{{$data['level']}}" required>
+                                                <option value="" disabled selected>Choose Position</option>
+                                                
                                             </select>
-                                            @error('direct_supervisor')
+                                            @error('position_id')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="Level">Role *</label>
+                                            <input type="text" name="level" id="level" class="form-control" readonly>
                                         </div>
                                     </div>
 
@@ -236,6 +242,9 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- SALARY --}}
+
                     <div class="card">
                         <div class="card-header mt-6">
                             <h4 class="card-title">Salary Information</h4>
@@ -245,10 +254,10 @@
                                 <div class="row">
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="salary">Salary *</label>
-                                            <input type="number" id="salary" class="form-control" placeholder="0.00"
-                                                name="salary" value="{{ old('salary', $data['salary'] ?? '') }}" required>
-                                            @error('salary')
+                                            <label for="salary">Base Salary *</label>
+                                            <input type="number" id="base_salary" class="form-control" placeholder="0.00"
+                                                name="base_salary" value="{{ old('base_salary', $data['base_salary'] ?? '') }}" readonly>
+                                            @error('base_salary')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
                                         </div>
@@ -257,7 +266,7 @@
                                         <div class="form-group">
                                             <label for="sss">SSS</label>
                                             <input type="number" id="sss" class="form-control"
-                                                name="sss" value="600" readonly>
+                                                name="sss" value="600.00" readonly>
                                             @error('sss')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -267,7 +276,7 @@
                                         <div class="form-group">
                                             <label for="pagibig">Pag-ibig</label>
                                             <input type="number" id="pagibig" class="form-control"
-                                                name="pagibig" value="100" readonly>
+                                                name="pagibig" value="100.00" readonly>
                                             @error('pagibig')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -277,7 +286,7 @@
                                         <div class="form-group">
                                             <label for="philhealth">Philhealth</label>
                                             <input type="number" id="philhealth" class="form-control"
-                                                name="philhealth" value="450" readonly>
+                                                name="philhealth" value="450.00" readonly>
                                             @error('philhealth')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror

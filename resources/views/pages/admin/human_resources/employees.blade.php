@@ -57,7 +57,7 @@
                                 <th>Position</th>
                                 <th>Department</th>
                                 <th>Email</th>
-                                <th>Direct Supervisor</th>
+                                <th>Reporting Manager</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>

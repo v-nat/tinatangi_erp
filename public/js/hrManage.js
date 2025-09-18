@@ -44,46 +44,76 @@ $(document).ready(function () {
 $(document).ready(function () {
     const departmentSelect = document.getElementById("department");
     const positionSelect = document.getElementById("position");
-    const supervisorSelect = document.getElementById("direct_supervisor");
+    const supervisorSelect = document.getElementById("supervisor");
+    const baseSalary = [20800.00, 16640.00, 15600.00, 14560.00, 13520.00];
+
     if (mode === "add") {
-        departmentSelect.addEventListener("change", updateSupervisors);
+        departmentSelect.addEventListener("change", updatePositions);
         positionSelect.addEventListener("change", updateSupervisors);
     } else if (mode === "edit") {
-        const value = $("#direct_supervisor").data("value").split("|");
-        // console.log('Direct Supervisor Value:', value);
+        const value = $("#supervisor").data("value").split("|");
+        const raw = $("#position").data("value");
+        const [position, positionId, levelValue] = raw.split("|");
+
+        console.log(levelValue);
         supervisorSelect.innerHTML;
-        // '<option value="' +value[1] +'" disabled selected>' +value[0] +"</option>";
         const option = document.createElement("option");
         option.value = value[1];
         option.textContent = value[0];
         supervisorSelect.appendChild(option).selected = true;
-        departmentSelect.addEventListener("change", updateSupervisors);
+
+        
+        positionSelect.innerHTML;
+        const opt = document.createElement("option");
+        opt.value = positionId;
+        option.dataset.level = levelValue;
+        opt.textContent = position;
+        positionSelect.appendChild(opt).selected = true;
+
+        $("#level").val(levelValue.toUpperCase());
+
+        departmentSelect.addEventListener("change", updatePositions);
         positionSelect.addEventListener("change", updateSupervisors);
+    }
+    function updatePositions() {
+        $("#level").val("");
+        $("#base_salary").val("");
+        const department = departmentSelect.value;
+        if (department) {
+            fetch(
+                `/positions-by-department?department=${encodeURIComponent(
+                    department
+                )}`
+            )
+                .then((res) => res.json())
+                .then((data) => {
+                    const positionSelect = document.getElementById("position");
+                    positionSelect.innerHTML =
+                        '<option value="" disabled selected>Choose...</option>';
+
+                    data.forEach((p) => {
+                        const option = document.createElement("option");
+                        option.dataset.level = p.level;
+                        option.value = p.id;
+                        option.textContent = p.name;
+                        positionSelect.appendChild(option);
+                    });
+                });
+        }
     }
     function updateSupervisors() {
         // console.log('Department or Position changed');
         const department = departmentSelect.value;
         const position = positionSelect.value;
-
-        if (position.toLowerCase() !== "supervisor" && department) {
+        const level = $("#position option:selected").data("level");
+        $("#level").val(level.toUpperCase());
+        updateSalary();
+        if (position && department) {
             fetch(
-                `/supervisors-by-department?department=${encodeURIComponent(
+                `/supervisors-by-department-and-position?department=${encodeURIComponent(
                     department
-                )}`
+                )}&position=${encodeURIComponent(position)}`
             )
-                .then((response) => response.json())
-                .then((data) => {
-                    supervisorSelect.innerHTML =
-                        '<option value="" disabled selected>Choose...</option>';
-                    data.forEach((s) => {
-                        const option = document.createElement("option");
-                        option.value = s.id;
-                        option.textContent = s.first_name + " " + s.last_name;
-                        supervisorSelect.appendChild(option);
-                    });
-                });
-        } else if (position.toLowerCase() === "supervisor") {
-            fetch(`/ceo`)
                 .then((response) => response.json())
                 .then((data) => {
                     supervisorSelect.innerHTML =
@@ -98,6 +128,27 @@ $(document).ready(function () {
         } else {
             supervisorSelect.innerHTML =
                 '<option value="" disabled selected>Choose...</option>';
+        }
+    }
+    function updateSalary(){
+        const position = $("#position option:selected").val();
+        // console.log(typeof(position));
+        switch(position){
+            case "1": $("#base_salary").val(baseSalary[0]); return;
+            case "2": $("#base_salary").val(baseSalary[0]); return;
+            case "3": $("#base_salary").val(baseSalary[1]); return;
+            case "4": $("#base_salary").val(baseSalary[0]); return;
+            case "5": $("#base_salary").val(baseSalary[0]); return;
+            case "6": $("#base_salary").val(baseSalary[0]); return;
+            case "7": $("#base_salary").val(baseSalary[1]); return;
+            case "8": $("#base_salary").val(baseSalary[0]); return;
+            case "9": $("#base_salary").val(baseSalary[2]); return;
+            case "10": $("#base_salary").val(baseSalary[4]); return;
+            case "11": $("#base_salary").val(baseSalary[0]); return;
+            case "12": $("#base_salary").val(baseSalary[1]); return;
+            case "13": $("#base_salary").val(baseSalary[4]); return;
+            case "14": $("#base_salary").val(baseSalary[3]); return;
+            case "15": $("#base_salary").val(baseSalary[4]); return;
         }
     }
 });

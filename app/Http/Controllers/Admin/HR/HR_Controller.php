@@ -20,17 +20,17 @@ class HR_Controller extends Controller
     public function getEmployees()
     {
         try {
-            $employees = Employee::with(['user', 'user.statusRS', 'directSupervisorRS.user'])->orderBy('created_at', 'desc')->get();
+            $employees = Employee::with(['user', 'user.statusRS', 'supervisor.user', 'position'])->orderBy('created_at', 'desc')->get();
             // dd($employees);
             return response()->json([
                 'data' => $employees->map(function ($e) {
                     return [
                         'employee_id'       => $e->id,
                         'name'              => $e->user->full_name ?? 'N/A',
-                        'position'          => $e->position ?? 'N/A',
+                        'position'          => $e->position->name ?? 'N/A',
                         'department'        => $e->deptRS->name ?? 'N/A',
                         'email'             => $e->user->email ?? 'N/A',
-                        'direct_supervisor' => optional(optional($e->directSupervisorRS)->user)->full_name ?? 'Unassigned',
+                        'direct_supervisor' => optional(optional($e->supervisor)->user)->full_name ?? 'Unassigned',
                         'status'            => $e->user->statusRS->status ?? 'N/A',
                     ];
                 })

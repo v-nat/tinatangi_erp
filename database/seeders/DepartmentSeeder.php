@@ -15,11 +15,14 @@ class DepartmentSeeder extends Seeder
     {
         //
         $departments = [
+            'Administrator',
             'Human Resources Management',
             'Finance Risk Management',
-            'Supply Chain Management',
-            'Manufacturing',
-            'Customer Relationship Management',
+            'Procurement',
+            'Customer Service',
+            'Service Operations',
+            'Barista Department',
+            'Kitchen Department',
         ];
 
         foreach ($departments as $name) {

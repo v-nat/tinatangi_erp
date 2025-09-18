@@ -22,7 +22,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/humanresources/update-employee/{id}', [EmployeeController::class, 'updateEmployee'])->name('update.employee');
 
     Route::get('/humanresources/manage', [EmployeeController::class, 'manage'])->name('hr.manage');
-    Route::get('/supervisors-by-department', [EmployeeController::class, 'getSupervisors']);
+    Route::get('/supervisors-by-department-and-position', [EmployeeController::class, 'getSupervisorForPosition']);
+    Route::get('/positions-by-department', [EmployeeController::class, 'getPositions']);
     Route::get('/ceo', [EmployeeController::class, 'getCEO']);
 
     Route::get('/humanresources/overtimes', [HR_Controller::class, 'otApp'])->name('hr.ot-app');

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->time('time_start')->nullable();
             $table->time('time_end')->nullable();
             $table->integer('total_minutes')->nullable();
+            $table->string('reason')->nullable();
             $table->string('approved_by')->nullable();
             $table->string('approval_date')->nullable();
 

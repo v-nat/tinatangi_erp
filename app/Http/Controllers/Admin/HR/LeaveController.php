@@ -28,7 +28,7 @@ class LeaveController extends Controller
                     'leave_id'       => $leave->id,
                     'employee'          => optional(optional($leave->employeeRS)->userRS)->full_name,
                     'department'        => optional(optional($leave->employeeRS)->deptRS)->name,
-                    'position'          => $leave->employeeRS->position ?? 'N/A',
+                    'position'          => optional(optional($leave->employeeRS)->position)->name ?? 'N/A',
                     'start_date'         => $leave->start_date ?? 'N/A',
                     'end_date'          => $leave->end_date ?? 'N/A',
                     'reason'            => $leave->reason ?? 'N/A',

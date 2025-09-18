@@ -26,17 +26,19 @@ class Employee extends Model
         'phone_number',
         'citizenship',
         'department',
-        'position',
-        'direct_supervisor',
+        'level',
+        'position_id',
+        'supervisor_id',
         'sss',
         'pagibig',
         'philhealth',
-        'salary',
+        'base_salary',
     ];
 
     protected $casts = [
         'birth_date' => 'date',
-        'salary' => 'decimal:2',
+        'level' => \App\Enums\Level::class,
+        'base_salary' => 'decimal:2',
         'sss' => 'decimal:2',
         'pagibig' => 'decimal:2',
         'philhealth' => 'decimal:2',
@@ -45,20 +47,40 @@ class Employee extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function userRS(): BelongsTo{
+    public function userRS(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
     public function departmentRS(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
     }
-    public function directSupervisorRS(): BelongsTo {
-        return $this->belongsTo(Employee::class, 'direct_supervisor');
+    ///////////////////////////////////////////////////////////////////
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
     }
-    public function deptRS(): BelongsTo {
+
+    public function supervisor()
+    {
+        return $this->belongsTo(Employee::class, 'supervisor_id');
+    }
+
+    public function subordinates()
+    {
+        return $this->hasMany(Employee::class, 'supervisor_id');
+    }
+    // ////////////////////////////////////////////////
+    // public function directSupervisorRS(): BelongsTo
+    // {
+    //     return $this->belongsTo(Employee::class, 'direct_supervisor');
+    // }
+    public function deptRS(): BelongsTo
+    {
         return $this->belongsTo(Department::class, 'department');
     }
-    public function payrolls(): HasMany {
+    public function payrolls(): HasMany
+    {
         return $this->hasMany(Payroll::class);
     }
 }

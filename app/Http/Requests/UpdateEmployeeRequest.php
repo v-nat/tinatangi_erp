@@ -33,12 +33,13 @@ class UpdateEmployeeRequest extends FormRequest
             'phone_number' => ['required', 'string', 'max:13', 'regex:/^(09|\+639)\d{9}$/'],
             'citizenship' => 'required|string|max:50',
             'department' => 'required|integer',
-            'position' => 'required',
-            'direct_supervisor' => 'required',
+            'level'=> 'required',
+            'position_id' => 'required',
+            'supervisor_id' => 'required',
             'sss' => 'required|numeric|min:0',
             'pagibig' => 'required|numeric|min:0',
             'philhealth' => 'required|numeric|min:0',
-            'salary' => 'required|numeric|min:0',
+            'base_salary' => 'required|numeric|min:0',
         ];
     }
 }

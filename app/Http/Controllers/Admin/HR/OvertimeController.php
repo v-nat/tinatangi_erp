@@ -30,7 +30,7 @@ class OvertimeController extends Controller
                     'overtime_id'       => $ot->id,
                     'employee'          => optional(optional($ot->employeeRS)->userRS)->full_name,
                     'department'        => optional(optional($ot->employeeRS)->deptRS)->name,
-                    'position'          => $ot->employeeRS->position ?? 'N/A',
+                    'position'          => optional(optional($ot->employeeRS)->position)->name ?? 'N/A',
                     'date'              => $ot->date ?? 'N/A',
                     'time_start'        => $ot->time_start ?? 'N/A',
                     'time_end'          => $ot->time_end ?? 'N/A',
