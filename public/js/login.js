@@ -48,7 +48,7 @@ $(document).ready(function () {
             );
 
         $.ajax({
-            url: url,
+            url: `/login-account`,
             type: "POST",
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
