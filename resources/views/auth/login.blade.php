@@ -17,23 +17,6 @@
 </head>
 
 <body>
-    {{-- use App\Models\User;
-    use Illuminate\Support\Facades\Hash;
-    DB::beginTransaction();
-    $user = User::create([
-    'first_name' => 'username',
-    'email' => 'admin@gmail.com',
-    'password' => Hash::make('admin123'),
-    'middle_name' => 'middle_name',
-    'last_name' => 'last_name',
-    'phone_number' => '09162627995',
-    'user_type' => 'unknown',
-    'status' => 1,
-    ]);
-    DB::commit(); --}}
-
-    {{--
-    <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
     <div id="auth">
         <div class="row h-100">
             <div class="col-lg-5 col-12">
