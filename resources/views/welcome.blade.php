@@ -37,7 +37,6 @@
 </head>
 
 <body class="index-page">
-<h1>askhfiagfiuagiuagia</h1>
   <header id="header" class="header fixed-top">
 
     {{-- <div class="topbar d-flex align-items-center">
