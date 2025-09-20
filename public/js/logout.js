@@ -21,9 +21,10 @@ $(document).on("click", "#logout-btn", function (e) {
             type: "POST", // HTTP method
             success: function (data) {
                 // console.log("Logout successful", data);
+                $("#LoadingScreen").fadeOut(200);
 
-                // Optional: Display a success message with SweetAlert or Toastr
-                Swal.fire("Logged Out", "You have been logged out.", "success");
+                // Optional: Display a suc  cess message with SweetAlert or Toastr
+                Toast.fire("Logged Out", "You have been logged out.", "success");
 
                 window.location.href = "/login"; // Redirect to login page
             },

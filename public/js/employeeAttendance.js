@@ -23,7 +23,7 @@ $(document).ready(function () {
     }
 
     function showError(message) {
-        Swal.fire({
+        Toast.fire({
             icon: "error",
             title: "Error",
             text: message,
@@ -32,7 +32,7 @@ $(document).ready(function () {
     }
 
     function showSuccess(message) {
-        Swal.fire({
+        Toast.fire({
             icon: "success",
             title: "Success",
             text: message,

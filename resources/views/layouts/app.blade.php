@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}  ">
     {{--
     <script src="assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script> --}}
-    
+
     <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
 
@@ -32,7 +32,22 @@
 </head>
 
 <body>
-
+    @if(session('success'))
+        <script>
+            Toast.fire({
+                icon: "success",
+                title: "{{ session('success') }}"
+            });
+        </script>
+    @endif
+    @if(session('failed'))
+        <script>
+            Toast.fire({
+                icon: "error",
+                title: "{{ session('failed') }}"
+            });
+        </script>
+    @endif
     {{-- <div id="load_screen">
         <div class="loader">
             <div class="loader-content">
@@ -59,6 +74,18 @@
 
             // Prevent default to delay navigation (only if using setTimeout)
             e.preventDefault();
+        });
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "bottom",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            },
         });
     </script>
 
@@ -200,9 +227,13 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                                 </li>
                                 <li><a class="dropdown-item" href="#"><i class="fa-solid fa-clock"></i>
                                         Attendance</a></li>
-                                <li><a class="dropdown-item" href="{{route('hr.ot-application', ['id' => Auth::user()->id])}}"><i class="fa-solid fa-business-time"></i>
+                                <li><a class="dropdown-item"
+                                        href="{{route('hr.ot-application', ['id' => Auth::user()->id])}}"><i
+                                            class="fa-solid fa-business-time"></i>
                                         Apply Overtime</a></li>
-                                <li><a class="dropdown-item" href="{{route('hr.leave-application', ['id' => Auth::user()->id])}}"><i class="fa-solid fa-calendar-days"></i>
+                                <li><a class="dropdown-item"
+                                        href="{{route('hr.leave-application', ['id' => Auth::user()->id])}}"><i
+                                            class="fa-solid fa-calendar-days"></i>
                                         Apply Leave</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i>
                                         Prpfile</a></li>
@@ -211,7 +242,7 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                                 <hr class="dropdown-divider">
                                 </li>
                                 <li id="logout-btn"><a class="dropdown-item" href="#">
-                                    <i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                                        <i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
                             </ul>
                         </div>
                     </div>

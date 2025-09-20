@@ -51,7 +51,7 @@ $(document).ready(function() {
                     });
                 } else {
                     // This handles cases where response is successful but login actually failed
-                    Swal.fire({
+                    Toast.fire({
                         title: "Login Failed",
                         text: response.errors ? Object.values(response.errors)[0] : "Invalid credentials",
                         icon: "error",

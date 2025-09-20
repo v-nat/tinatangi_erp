@@ -45,7 +45,7 @@ $(document).ready(function () {
     const departmentSelect = document.getElementById("department");
     const positionSelect = document.getElementById("position");
     const supervisorSelect = document.getElementById("supervisor");
-    const baseSalary = [20800.00, 16640.00, 15600.00, 14560.00, 13520.00];
+    const baseSalary = [20800.0, 16640.0, 15600.0, 14560.0, 13520.0];
 
     if (mode === "add") {
         departmentSelect.addEventListener("change", updatePositions);
@@ -62,7 +62,6 @@ $(document).ready(function () {
         option.textContent = value[0];
         supervisorSelect.appendChild(option).selected = true;
 
-        
         positionSelect.innerHTML;
         const opt = document.createElement("option");
         opt.value = positionId;
@@ -130,25 +129,55 @@ $(document).ready(function () {
                 '<option value="" disabled selected>Choose...</option>';
         }
     }
-    function updateSalary(){
+    function updateSalary() {
         const position = $("#position option:selected").val();
         // console.log(typeof(position));
-        switch(position){
-            case "1": $("#base_salary").val(baseSalary[0]); return;
-            case "2": $("#base_salary").val(baseSalary[0]); return;
-            case "3": $("#base_salary").val(baseSalary[1]); return;
-            case "4": $("#base_salary").val(baseSalary[0]); return;
-            case "5": $("#base_salary").val(baseSalary[0]); return;
-            case "6": $("#base_salary").val(baseSalary[0]); return;
-            case "7": $("#base_salary").val(baseSalary[1]); return;
-            case "8": $("#base_salary").val(baseSalary[0]); return;
-            case "9": $("#base_salary").val(baseSalary[2]); return;
-            case "10": $("#base_salary").val(baseSalary[4]); return;
-            case "11": $("#base_salary").val(baseSalary[0]); return;
-            case "12": $("#base_salary").val(baseSalary[1]); return;
-            case "13": $("#base_salary").val(baseSalary[4]); return;
-            case "14": $("#base_salary").val(baseSalary[3]); return;
-            case "15": $("#base_salary").val(baseSalary[4]); return;
+        switch (position) {
+            case "1":
+                $("#base_salary").val(baseSalary[0]);
+                return;
+            case "2":
+                $("#base_salary").val(baseSalary[0]);
+                return;
+            case "3":
+                $("#base_salary").val(baseSalary[1]);
+                return;
+            case "4":
+                $("#base_salary").val(baseSalary[0]);
+                return;
+            case "5":
+                $("#base_salary").val(baseSalary[0]);
+                return;
+            case "6":
+                $("#base_salary").val(baseSalary[0]);
+                return;
+            case "7":
+                $("#base_salary").val(baseSalary[1]);
+                return;
+            case "8":
+                $("#base_salary").val(baseSalary[0]);
+                return;
+            case "9":
+                $("#base_salary").val(baseSalary[2]);
+                return;
+            case "10":
+                $("#base_salary").val(baseSalary[4]);
+                return;
+            case "11":
+                $("#base_salary").val(baseSalary[0]);
+                return;
+            case "12":
+                $("#base_salary").val(baseSalary[1]);
+                return;
+            case "13":
+                $("#base_salary").val(baseSalary[4]);
+                return;
+            case "14":
+                $("#base_salary").val(baseSalary[3]);
+                return;
+            case "15":
+                $("#base_salary").val(baseSalary[4]);
+                return;
         }
     }
 });
@@ -175,8 +204,7 @@ $("#insert-btn-employee").click(function (e) {
         contentType: false,
         success: function (response) {
             $("#LoadingScreen").fadeOut(200);
-            Swal.fire({
-                title: "Success!",
+            Toast.fire({
                 text: response.message,
                 icon: "success",
             }).then(() => location.reload());
@@ -231,8 +259,7 @@ $("#edit-btn-employee").click(function (e) {
             contentType: false,
             success: function (response) {
                 $("#LoadingScreen").fadeOut(200);
-                Swal.fire({
-                    title: "Success!",
+                Toast.fire({
                     text: response.message,
                     icon: "success",
                 }).then(() => location.reload());
@@ -244,9 +271,9 @@ $("#edit-btn-employee").click(function (e) {
                     let errorMessages = Object.values(xhr.responseJSON.errors)
                         .flat()
                         .join("\n");
-                    Swal.fire("Validation Error", errorMessages, "error");
+                    Toast.fire("Validation Error", errorMessages, "error");
                 } else {
-                    Swal.fire(
+                    Toast.fire(
                         "Error",
                         "An unexpected error occurred.",
                         "error"
