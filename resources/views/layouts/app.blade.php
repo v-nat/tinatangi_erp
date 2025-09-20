@@ -100,7 +100,7 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                             </a>
                         </li>
                         <li class="sidebar-item @yield('emplMngt') has-sub">
-                            <a href="#" class='sidebar-link '>
+                            <a href=" " class='sidebar-link '>
                                 <i class="bi bi-people-fill"></i>
                                 <span>Employee Management</span>
                             </a>
@@ -114,7 +114,7 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                             </ul>
                         </li>
                         <li class="sidebar-item @yield('appMngt') has-sub">
-                            <a href="#" class='sidebar-link '>
+                            <a href=" " class='sidebar-link '>
                                 <i class="bi bi-person-check-fill"></i>
                                 <span>Approval Management</span>
                             </a>
