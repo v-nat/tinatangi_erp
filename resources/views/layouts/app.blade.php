@@ -12,9 +12,7 @@
     <link rel="stylesheet" href="{{ asset('css/font/Nunito/static/stylesheet.css')}}">
     {{--
     <link rel="stylesheet" href="{{ asset('css/font/Nunito/stylesheet.css')}}"> --}}
-    {{--
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    --}}
+
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}  ">
 
     <link rel="stylesheet" href="{{ asset('assets/vendors/iconly/bold.css') }}  ">
@@ -22,10 +20,9 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.css') }}  ">
     <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-icons/bootstrap-icons.css') }}  ">
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}  ">
-
-    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
     {{--
     <script src="assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script> --}}
+    
     <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
 
