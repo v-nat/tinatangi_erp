@@ -108,7 +108,7 @@ class AttendanceController extends Controller
             11 => '<span class="badge bg-light-danger">Absent</span>',
             null => '<span class="badge bg-light-secondary">Unknown</span>'
         ];
-        return $statuses[$statusCode] ?? $statuses[null];
+        return $statuses[$statusCode];
     }
 
     public function attendanceList()
