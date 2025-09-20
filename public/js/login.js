@@ -39,7 +39,7 @@ $(document).ready(function () {
     function Login() {
         // Get form data including CSRF token
         let formData = $("#login_form").serialize();
-
+        const url = "{{ route('admin.login') }}";
         // Show loading state
         $(".login-btn")
             .prop("disabled", true)
@@ -48,7 +48,7 @@ $(document).ready(function () {
             );
 
         $.ajax({
-            url: ADMIN_LOGIN_ROUTE,
+            url: url,
             type: "POST",
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
