@@ -249,14 +249,24 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
             </div>
         </div>
     </div>
-    <div id="LoadingScreen"
+    {{-- <div id="LoadingScreen"
         style="display: none; position: fixed; z-index: 9999; background: rgba(255,255,255,0.7); top: 0; left: 0; width: 100%; height: 100%;">
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
+    </div> --}}
+
+    <div id="loadingScreen"
+        style="position: fixed; z-index: 9999; background-color: rgba(255, 255, 255, 0.7); top: 0; left: 0; width: 100%; height: 100%;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%)">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
     </div>
+
     <script src="{{ asset('source/jquery/datatables.js') }}"></script>
     <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
     {{--
@@ -265,7 +275,13 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
     {{--
     <link href="{{ asset( 'source/css/datatables.min.css') }}" rel="stylesheet">
     </link> --}}
-
+    <script>
+        window.addEventListener("load", function () {
+            const loader = document.getElementById("loadingScreen");
+            loader.style.opacity = "0";
+            setTimeout(() => loader.style.display = "none", 300);
+        });
+    </script>
     <script src="{{ asset('js/logout.js') }}"></script>
     @yield('scripts')
 </body>
