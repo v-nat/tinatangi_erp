@@ -27,8 +27,7 @@
                     <h1 class="auth-title">Log in.</h1>
                     <p class="auth-subtitle mb-5">Log in with your credentials.</p>
 
-                    <form id="login_form" action="{{ route('admin.login') }}" method="POST"
-                        data-login-url="{{ route('admin.login') }}">
+                    <form id="login_form" method="POST">
                         <div class="form-group position-relative has-icon-left mb-4">
                             <input type="email" class="form-control form-control-xl" placeholder="Username" name="email"
                                 id="email" required autofocus>
