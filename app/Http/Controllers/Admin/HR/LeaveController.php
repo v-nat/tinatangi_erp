@@ -48,7 +48,7 @@ class LeaveController extends Controller
         try {
             $leave = Leave::findOrFail($leave_id);
             // $employee = Auth::user()->id;
-
+            
             $leave->status = 13;
             $leave->reason = request()->input('reason', '');
             $leave->approved_by = auth('')->user()->id;

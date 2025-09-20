@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\Hr\AttendanceController;
-use App\Http\Controllers\Admin\Hr\HR_Controller;
-use App\Http\Controllers\Admin\Hr\EmployeeController;
+use App\Http\Controllers\Admin\HR\AttendanceController;
+use App\Http\Controllers\Admin\HR\HR_Controller;
+use App\Http\Controllers\Admin\HR\EmployeeController;
 use App\Http\Controllers\Admin\HR\OvertimeController;
 use App\Http\Controllers\Admin\HR\LeaveController;
 use App\Http\Controllers\Admin\HR\PayrollController;
