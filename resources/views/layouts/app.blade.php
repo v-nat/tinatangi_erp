@@ -267,7 +267,7 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                 if (!href || href === "#" || href.startsWith("javascript:")) return;
 
                 // Show loader
-                $("#loadingScreen").fadeIn();
+                $("#LoadingScreen").fadeIn();
 
                 // Optional: delay navigation for a moment so loader shows clearly
                 // Comment out if you want instant navigation
