@@ -73,8 +73,8 @@
 
     <div id="app">
         <?php
-        $userId = auth()->user()->id;
-        $position = App\Models\Employee::where('id', $userId)->first()->position;         
+$userId = auth()->user()->id;
+$position = App\Models\Employee::where('id', $userId)->first()->position;         
         ?>
         <div id="sidebar" class="active">
             <div class="sidebar-wrapper active">
@@ -247,24 +247,38 @@
             </div>
         </div>
     </div>
-    {{-- <div id="LoadingScreen"
+    <div id="LoadingScreen"
         style="display: none; position: fixed; z-index: 9999; background: rgba(255,255,255,0.7); top: 0; left: 0; width: 100%; height: 100%;">
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
-    </div> --}}
-
-    <div id="loadingScreen"
-        style="position: fixed; z-index: 9999; background-color: rgba(255, 255, 255, 0.7); top: 0; left: 0; width: 100%; height: 100%;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%)">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
     </div>
 
+    <script>
+        $(document).on(
+            "click",
+            'a[href]:not([target="_blank"]):not([href^="#"])',
+            function (e) {
+                // Optional: check if it's a same-page anchor or already loading
+                var href = $(this).attr("href");
+                if (!href || href === "#" || href.startsWith("javascript:")) return;
+
+                // Show loader
+                $("#loadingScreen").fadeIn();
+
+                // Optional: delay navigation for a moment so loader shows clearly
+                // Comment out if you want instant navigation
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 200);
+
+                // Prevent default to delay navigation (only if using setTimeout)
+                e.preventDefault();
+            }
+        );
+    </script>
     <script src="{{ asset('source/jquery/datatables.js') }}"></script>
     <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
     {{--
@@ -273,13 +287,7 @@
     {{--
     <link href="{{ asset( 'source/css/datatables.min.css') }}" rel="stylesheet">
     </link> --}}
-    <script>
-        window.addEventListener("load", function () {
-            const loader = document.getElementById("loadingScreen");
-            loader.style.opacity = "0";
-            setTimeout(() => loader.style.display = "none", 300);
-        });
-    </script>
+
     <script src="{{ asset('js/logout.js') }}"></script>
     @yield('scripts')
 </body>

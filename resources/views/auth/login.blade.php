@@ -17,6 +17,29 @@
 </head>
 
 <body>
+    <script>
+        $(document).on(
+            "click",
+            'a[href]:not([target="_blank"]):not([href^="#"])',
+            function (e) {
+                // Optional: check if it's a same-page anchor or already loading
+                var href = $(this).attr("href");
+                if (!href || href === "#" || href.startsWith("javascript:")) return;
+
+                // Show loader
+                $("#loadingScreen").fadeIn();
+
+                // Optional: delay navigation for a moment so loader shows clearly
+                // Comment out if you want instant navigation
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 200);
+
+                // Prevent default to delay navigation (only if using setTimeout)
+                e.preventDefault();
+            }
+        );
+    </script>
     <div id="auth">
         <div class="row h-100">
             <div class="col-lg-5 col-12">
