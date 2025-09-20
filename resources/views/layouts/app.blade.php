@@ -261,6 +261,7 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
             "click",
             'a[href]:not([target="_blank"]):not([href^="#"])',
             function (e) {
+                console.log('loading');
                 // Optional: check if it's a same-page anchor or already loading
                 var href = $(this).attr("href");
                 if (!href || href === "#" || href.startsWith("javascript:")) return;
