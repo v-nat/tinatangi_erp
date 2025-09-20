@@ -111,7 +111,7 @@ $(document).ready(function () {
                     console.error("Error parsing response:", e);
                 }
 
-                Swal.fire({
+                Toast.fire({
                     title: "Login Failed",
                     text: errorMessage,
                     icon: "error",
