@@ -73,10 +73,8 @@
 
     <div id="app">
         <?php
-
-$userId = auth()->user()->id;
-$position = App\Models\Employee::where('id', $userId)->first()->position;    
-            
+        $userId = auth()->user()->id;
+        $position = App\Models\Employee::where('id', $userId)->first()->position;         
         ?>
         <div id="sidebar" class="active">
             <div class="sidebar-wrapper active">
