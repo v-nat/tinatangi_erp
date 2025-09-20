@@ -17,22 +17,23 @@
 </head>
 
 <body>
- {{-- use App\Models\User;
- use Illuminate\Support\Facades\Hash;
- DB::beginTransaction();
- $user = User::create([
-     'first_name' => 'username',
-     'email' => 'admin@gmail.com',
-     'password' => Hash::make('admin123'),
-     'middle_name' => 'middle_name',
-     'last_name' => 'last_name',
-     'phone_number' => '09162627995',
-     'user_type' => 'unknown',
-     'status' => 1,
- ]);
- DB::commit(); --}}
+    {{-- use App\Models\User;
+    use Illuminate\Support\Facades\Hash;
+    DB::beginTransaction();
+    $user = User::create([
+    'first_name' => 'username',
+    'email' => 'admin@gmail.com',
+    'password' => Hash::make('admin123'),
+    'middle_name' => 'middle_name',
+    'last_name' => 'last_name',
+    'phone_number' => '09162627995',
+    'user_type' => 'unknown',
+    'status' => 1,
+    ]);
+    DB::commit(); --}}
 
-    {{-- <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
+    {{--
+    <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
     <div id="auth">
         <div class="row h-100">
             <div class="col-lg-5 col-12">
@@ -46,8 +47,8 @@
                     <form id="login_form" action="{{ route('admin.login') }}" method="POST"
                         data-login-url="{{ route('admin.login') }}">
                         <div class="form-group position-relative has-icon-left mb-4">
-                            <input type="email" class="form-control form-control-xl" placeholder="Username"
-                                name="email" id="email" required autofocus>
+                            <input type="email" class="form-control form-control-xl" placeholder="Username" name="email"
+                                id="email" required autofocus>
                             <div class="form-control-icon">
                                 <i class="bi bi-person"></i>
                             </div>
@@ -82,7 +83,14 @@
                 </div>
             </div>
         </div>
-
+        <div id="LoadingScreen"
+            style="display: none; position: fixed; z-index: 9999; background: rgba(255,255,255,0.7); top: 0; left: 0; width: 100%; height: 100%;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
         const ADMIN_LOGIN_ROUTE = "{{ route('admin.login') }}";
