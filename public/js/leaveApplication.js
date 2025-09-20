@@ -61,7 +61,7 @@ $(document).ready(function () {
         const end = $("#end_date").val();
 
         if (start && end && start > end) {
-            Swal.fire({
+            Toast.fire({
                 title: "Warning!",
                 text: "Date End should not be earlier than Date Start",
                 icon: "warning",
@@ -82,7 +82,7 @@ $(document).ready(function () {
 
         if (selectedReason === "Other" && textAreaReason.length < 1) {
             e.preventDefault();
-            Swal.fire({
+            Toast.fire({
                 title: "Missing Reason",
                 text: "Please provide a reason in the text area.",
                 icon: "warning",
@@ -125,7 +125,7 @@ $(document).ready(function () {
                         contentType: false,
                         success: function (response) {
                             $("#LoadingScreen").fadeOut(200);
-                            Swal.fire({
+                            Toast.fire({
                                 title: "Success!",
                                 text: response.message,
                                 icon: "success",
@@ -140,13 +140,13 @@ $(document).ready(function () {
                                 )
                                     .flat()
                                     .join("\n");
-                                Swal.fire(
+                                Toast.fire(
                                     "Validation Error",
                                     errorMessages,
                                     "error"
                                 );
                             } else {
-                                Swal.fire(
+                                Toast.fire(
                                     "Error",
                                     "An unexpected error occurred.",
                                     "error"

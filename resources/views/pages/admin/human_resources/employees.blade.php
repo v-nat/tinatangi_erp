@@ -108,7 +108,7 @@
                             <i class="bx bx-x d-block d-sm-none"></i>
                             <span class="d-none d-sm-block">Cancel</span>
                         </button>
-                        <button type="submit" class="btn btn-primary ml-1">
+                        <button type="submit" class="btn btn-primary ml-1" data-bs-dismiss="modal">
                             <i class="bx bx-check d-block d-sm-none"></i>
                             <span class="d-none d-sm-block">Generate</span>
                         </button>

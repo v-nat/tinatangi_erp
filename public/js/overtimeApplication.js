@@ -70,7 +70,7 @@ $(document).ready(function () {
         const end = $("#time_end").val();
 
         if (start && end && start > end) {
-            Swal.fire({
+            Toast.fire({
                 title: "Warning!",
                 text: "Time End should not be earlier than Time Start",
                 icon: "warning",
@@ -111,7 +111,7 @@ $(document).ready(function () {
                     contentType: false,
                     success: function (response) {
                         $("#LoadingScreen").fadeOut(200);
-                        Swal.fire({
+                        Toast.fire({
                             title: "Success!",
                             text: response.message,
                             icon: "success",
@@ -126,13 +126,13 @@ $(document).ready(function () {
                             )
                                 .flat()
                                 .join("\n");
-                            Swal.fire(
+                            Toast.fire(
                                 "Validation Error",
                                 errorMessages,
                                 "error"
                             );
                         } else {
-                            Swal.fire(
+                            Toast.fire(
                                 "Error",
                                 "An unexpected error occurred.",
                                 "error"

@@ -118,13 +118,13 @@ $(document).ready(function () {
                 if (response.success) {
                     // updateOvertimeStatus(overtimeId, 13, "Approved", reason);
                     $("#LoadingScreen").fadeOut(200);
-                    Swal.fire("Approved!", response.message, "success").then(() => location.reload());;
+                    Toast.fire("Approved!", response.message, "success").then(() => location.reload());;
                 } else {
-                    Swal.fire("Error", response.message, "error");
+                    Toast.fire("Error", response.message, "error");
                 }
             },
             error: function (xhr) {
-                Swal.fire(
+                Toast.fire(
                     "Error",
                     xhr.responseJSON?.message || "Something went wrong",
                     "error"
@@ -154,13 +154,13 @@ $(document).ready(function () {
                 if (response.success) {
                     // updateOvertimeStatus(overtimeId, 13, "Rejected", reason);
                     $("#LoadingScreen").fadeOut(200);
-                    Swal.fire("Rejected!", response.message, "success").then(() => location.reload());;
+                    Toast.fire("Rejected!", response.message, "success").then(() => location.reload());;
                 } else {
-                    Swal.fire("Error", response.message, "error");
+                    Toast.fire("Error", response.message, "error");
                 }
             },
             error: function (xhr) {
-                Swal.fire(
+                Toast.fire(
                     "Error",
                     xhr.responseJSON?.message || "Something went wrong",
                     "error"

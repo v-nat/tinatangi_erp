@@ -87,14 +87,14 @@ $(document).ready(function () {
         $("#generatePayroll").modal("show");
     });
 
-    $('#payrollForm').on('submit', function(e) {
+    $("#payrollForm").on("submit", function (e) {
         e.preventDefault();
 
         const form = $(this);
         const formData = form.serialize();
         const submitBtn = form.find('button[type="submit"]');
-        const startDate = $('#start_date').val();
-        const endDate = $('#end_date').val();
+        const startDate = $("#start_date").val();
+        const endDate = $("#end_date").val();
 
         Swal.fire({
             title: "Confirm Payroll Generation",
@@ -108,54 +108,61 @@ $(document).ready(function () {
                 </div>`,
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#d33',
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#d33",
             confirmButtonText: "Generate Payroll",
             cancelButtonText: "Cancel",
-            width: '500px'
+            width: "500px",
         }).then((result) => {
             if (result.isConfirmed) {
                 // Disable button to prevent duplicate submissions
-                submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+                submitBtn
+                    .prop("disabled", true)
+                    .html(
+                        '<i class="fas fa-spinner fa-spin"></i> Processing...'
+                    );
 
                 $.ajax({
-                    url: form.attr('action'),
-                    type: 'POST',
+                    url: form.attr("action"),
+                    type: "POST",
                     data: formData,
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             // Close the modal
-                            $('#generatePayrollModal').modal('hide');
+                            $("#generatePayrollModal").modal("hide");
 
                             // Open printable page in new tab
                             // window.open(response.redirect_url, '_blank');
 
                             // Show success message
-                            Swal.fire({
-                                title: 'Success!',
-                                text: 'Payroll generated successfully',
-                                icon: 'success',
-                                timer: 300,
-                                showConfirmButton: false
-                            }).then(() => window.location.href = "/humanresources/payroll");
+                            Toast.fire({
+                                text: "Payroll Generated Successfully!",
+                                icon: "success",
+                            }).then(
+                                () =>
+                                    (window.location.href =
+                                        "/humanresources/payroll")
+                            );
                         }
                     },
-                    error: function(xhr) {
-                        let errorMessage = 'Failed to generate payroll';
+                    error: function (xhr) {
+                        let errorMessage = "Failed to generate payroll";
                         if (xhr.responseJSON && xhr.responseJSON.error) {
                             errorMessage = xhr.responseJSON.error;
                         }
 
-                        Swal.fire({
-                            title: 'Error!',
+                        Toast.fire({
+                            title: "Error!",
                             text: errorMessage,
-                            icon: 'error'
+                            icon: "error",
                         });
                     },
-                    complete: function() {
+                    complete: function () {
                         // Re-enable button
-                        submitBtn.prop('disabled', false).html('Generate Payroll');
-                    }
+                        submitBtn
+                            .prop("disabled", false)
+                            .html("Generate Payroll");
+                    },
                 });
             }
         });
