@@ -93,6 +93,17 @@
         </div>
     </div>
     <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "bottom",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            },
+        });
         const ADMIN_LOGIN_ROUTE = "{{ route('admin.login') }}";
     </script>
     <script src="{{ asset('js/login.js') }}"></script>
