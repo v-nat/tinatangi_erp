@@ -34,7 +34,7 @@ class AttendanceController extends Controller
                     'time_in' => optional($attendance->time_in)->format('H:i:s') ?? "",
                     'time_out' => optional($attendance->time_out)->format('H:i:s') ?? "",
                     'hours_worked' => $attendance->hours_worked ?? '',
-                    'isLeave' => $attendance->is_leave ??'',
+                    'isLeave' => $attendance->is_leave ?? false,
                 ] : null
             ]);
         } catch (\Exception $e) {
