@@ -31,9 +31,10 @@ class AttendanceController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $attendance ? [
-                    'time_in' => $attendance->time_in->format('H:i:s'),
-                    'time_out' => $attendance->time_out?->format('H:i:s'),
-                    'hours_worked' => $attendance->hours_worked
+                    'time_in' => optional($attendance->time_in)->format('H:i:s') ?? "YOU'RE ON LEAVE",
+                    'time_out' => optional($attendance->time_out)->format('H:i:s') ?? "YOU'RE ON LEAVE",
+                    'hours_worked' => $attendance->hours_worked ?? '',
+                    'isLeave' => $attendance->is_leave ??'',
                 ] : null
             ]);
         } catch (\Exception $e) {
@@ -65,8 +66,13 @@ class AttendanceController extends Controller
             ->whereDate('date', now())
             ->exists();
 
+        $isOnLeave = optional($existing)->is_leave ?? false;
+
         if ($existing) {
             return back()->with('error', 'You already timed in today');
+        }
+        if ($isOnLeave) {
+            return back()->with('error', "You're on Leave today");
         }
 
         // Create new attendance record
@@ -106,6 +112,8 @@ class AttendanceController extends Controller
             9 => '<span class="badge bg-light-primary">On Time</span>',
             10 => '<span class="badge bg-light-warning">Late</span>',
             11 => '<span class="badge bg-light-danger">Absent</span>',
+            13 => '<span class="badge bg-light-success">Approved</span>',
+            16 => '<span class="badge bg-light-primary">On Leave</span>',
             null => '<span class="badge bg-light-secondary">Unknown</span>'
         ];
         return $statuses[$statusCode];
@@ -121,7 +129,7 @@ class AttendanceController extends Controller
             ])->orderBy('date', 'desc')
                 ->orderBy('time_in', 'desc')
                 ->get();
-                // dd($attendances->count());
+            // dd($attendances->count());
             $result = $attendances->map(function ($attendance) {
                 return [
                     'id' => $attendance->id,
@@ -134,10 +142,10 @@ class AttendanceController extends Controller
                     'status' => $this->getStatusText($attendance->status),
                     'tardiness' => $attendance->tardiness_minutes ? $this->formatMinutes($attendance->tardiness_minutes) : 'None',
                     'overtime' => $attendance->overtime_minutes ? $this->formatHours($attendance->overtime_minutes) : 'None',
-                    'leave_info' => optional(optional( Carbon::parse($attendance->leaveRS)->format('M j, Y'))->start_date)
-                        ? Carbon::parse($attendance->leave->start_date)->format('M j') . ' - ' .
-                        Carbon::parse($attendance->leave->end_date)->format('M j, Y')
+                    'leave_info' => $attendance->status == 16
+                        ? $this->getStatusText(optional($attendance->leaveRS)->status)
                         : 'N/A',
+
                 ];
             });
             // dd($result);

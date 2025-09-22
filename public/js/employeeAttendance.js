@@ -27,7 +27,7 @@ $(document).ready(function () {
             icon: "error",
             title: "Error",
             text: message,
-            timer: 3000,
+            timer: 500,
         });
     }
 
@@ -36,10 +36,10 @@ $(document).ready(function () {
             icon: "success",
             title: "Success",
             text: message,
-            timer: 3000,
+            timer: 500,
         });
     }
-    let isTimeIn = false;
+    let isOnLeave = false;
     let timeIn = null;
 
     function getCurrentManilaTime() {
@@ -77,7 +77,9 @@ $(document).ready(function () {
             .done(function (response) {
                 if (response.success) {
                     const data = response.data;
-                    if (data) {
+                    if (!data.isLeave) {
+                        // console.log("notLeave");
+
                         $("#timeInDisplay").text(formatTime(data.time_in));
                         if (data.time_out) {
                             $("#timeOutDisplay").text(
@@ -92,6 +94,13 @@ $(document).ready(function () {
                             $("#timeOutBtn").prop("disabled", false);
                             $("#timeInBtn").prop("disabled", true);
                         }
+                    } else if (data.isLeave) {
+                        // console.log("onleave");
+                        isOnLeave = true;
+                        $("#timeInDisplay").text("On Leave");
+                        $("#timeOutDisplay").text("On Leave");
+                        $("#timeOutBtn").prop("disabled", true);
+                        $("#timeInBtn").prop("disabled", false);
                     } else {
                         $("#timeInBtn").prop("disabled", false);
                         $("#timeOutBtn").prop("disabled", true);
@@ -118,34 +127,42 @@ $(document).ready(function () {
     // Time In Handler
     $("#timeInBtn").click(function (e) {
         e.preventDefault();
-
-        Swal.fire({
-            title: "Confirm Time In?",
-            text: "This will count as your Time In",
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Time In",
-            cancelButtonText: "Cancel",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.post("/attendance/time-in")
-                    .done(function (response) {
-                        hasAttendanceToday();
-                        timeIn = $("#timeInDisplay").text;
-                        isTimeIn = true;
-                        $("#attendanceTable")
-                            .DataTable()
-                            .ajax.reload(null, false); 
-                        showSuccess("Time in recorded successfully!");
-                    })
-                    .fail(function (xhr) {
-                        showError(
-                            xhr.responseJSON?.message ||
-                                "Failed to record Time In"
-                        );
-                    });
-            }
-        });
+        if (isOnLeave) {
+            Swal.fire({
+                icon: "warning",
+                title: "You're on Leave",
+                text: '',
+                timer: 3000,
+            });
+        } else {
+            Swal.fire({
+                title: "Confirm Time In?",
+                text: "This will count as your Time In",
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonText: "Time In",
+                cancelButtonText: "Cancel",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post("/attendance/time-in")
+                        .done(function (response) {
+                            hasAttendanceToday();
+                            timeIn = $("#timeInDisplay").text;
+                            isTimeIn = true;
+                            $("#attendanceTable")
+                                .DataTable()
+                                .ajax.reload(null, false);
+                            showSuccess("Time in recorded successfully!");
+                        })
+                        .fail(function (xhr) {
+                            showError(
+                                xhr.responseJSON?.message ||
+                                    "Failed to record Time In"
+                            );
+                        });
+                }
+            });
+        }
     });
 
     // Time Out Handler
@@ -235,6 +252,6 @@ $(document).ready(function () {
                 data: "status",
                 className: "text-center",
             },
-        ]
+        ],
     });
 });

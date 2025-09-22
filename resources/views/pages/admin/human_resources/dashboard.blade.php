@@ -24,6 +24,42 @@
                     <div class="card-body px-3 py-4-5">
                         <div class="row">
                             <div class="col-md-4">
+                                <div class="stats-icon blue">
+                                    <i class="iconly-boldProfile"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="text-muted font-semibold">Total Employees</h6>
+                                <h6 class="font-extrabold mb-0">{{ $totalActive }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3 col-md-6">
+                <div class="card">
+                    <div class="card-body px-3 py-4-5">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="stats-icon green">
+                                    <i class="iconly-boldAdd-User"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="text-muted font-semibold">New Hires</h6>
+                                <h6 class="font-extrabold mb-0">{{ $newHires }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3 col-md-6">
+                <div class="card">
+                    <div class="card-body px-3 py-4-5">
+                        <div class="row">
+                            <div class="col-md-4">
                                 <div class="stats-icon purple">
                                     <i class="iconly-boldShow"></i>
                                 </div>
@@ -36,40 +72,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-6 col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="card-body px-3 py-4-5">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="stats-icon blue">
-                                    <i class="iconly-boldProfile"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <h6 class="text-muted font-semibold">Total Employees</h6>
-                                <h6 class="font-extrabold mb-0">183.000</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="card-body px-3 py-4-5">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="stats-icon green">
-                                    <i class="iconly-boldAdd-User"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <h6 class="text-muted font-semibold">New Hires</h6>
-                                <h6 class="font-extrabold mb-0">80.000</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+
             <div class="col-6 col-lg-3 col-md-6">
                 <div class="card">
                     <div class="card-body px-3 py-4-5">
@@ -125,7 +129,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="attendanceTable" class="table table-striped table-hover" style="width:100%">
-                        <thead >
+                        <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
@@ -135,7 +139,7 @@
                                 <th>Total Minutes</th>
                                 <th>Overtime Minutes</th>
                                 <th>Tardiness Minutes</th>
-                                <th>Leave Date</th>
+                                <th>Leave Status</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -173,6 +177,33 @@
 
         .card-header {
             padding: 1rem 1.25rem;
+        }
+
+        @media (max-width: 576px) {
+            #realtimeClock {
+                font-size: 2rem;
+                text-align: center;
+            }
+
+            .time-record {
+                font-size: 16px;
+                text-align: center;
+            }
+
+            .btn-lg {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .card {
+                padding: 15px;
+                margin-bottom: 1rem;
+            }
+
+            .card-header {
+                padding: 0.75rem 1rem;
+                text-align: center;
+            }
         }
     </style>
 @endsection

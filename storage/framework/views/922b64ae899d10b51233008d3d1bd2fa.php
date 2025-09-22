@@ -47,29 +47,11 @@
     <?php endif; ?>
     
     <script>
-        $(document).on('click', 'a[href]:not([target="_blank"]):not([href^="#"])', function (e) {
-            // Optional: check if it's a same-page anchor or already loading
-            var href = $(this).attr('href');
-            if (!href || href === '#' || href.startsWith('javascript:')) return;
-
-            // Show loader
-            $('#load_screen').fadeIn();
-
-            // Optional: delay navigation for a moment so loader shows clearly
-            // Comment out if you want instant navigation
-            setTimeout(() => {
-                window.location.href = href;
-            }, 200);
-
-            // Prevent default to delay navigation (only if using setTimeout)
-            e.preventDefault();
-        });
-
         const Toast = Swal.mixin({
             toast: true,
-            position: "bottom",
+            position: "top",
             showConfirmButton: false,
-            timer: 3000,
+            timer: 500,
             timerProgressBar: true,
             didOpen: (toast) => {
                 toast.onmouseenter = Swal.stopTimer;
@@ -80,10 +62,8 @@
 
     <div id="app">
         <?php
-
 $userId = auth()->user()->id;
-$position = App\Models\Employee::where('id', $userId)->first()->position;    
-            
+$position = App\Models\Employee::where('id', $userId)->first()->position;         
         ?>
         <div id="sidebar" class="active">
             <div class="sidebar-wrapper active">
@@ -109,7 +89,7 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                             </a>
                         </li>
                         <li class="sidebar-item <?php echo $__env->yieldContent('emplMngt'); ?> has-sub">
-                            <a href="" class='sidebar-link '>
+                            <a href=" " class='sidebar-link '>
                                 <i class="bi bi-people-fill"></i>
                                 <span>Employee Management</span>
                             </a>
@@ -123,7 +103,7 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                             </ul>
                         </li>
                         <li class="sidebar-item <?php echo $__env->yieldContent('appMngt'); ?> has-sub">
-                            <a href="" class='sidebar-link '>
+                            <a href=" " class='sidebar-link '>
                                 <i class="bi bi-person-check-fill"></i>
                                 <span>Approval Management</span>
                             </a>
@@ -136,7 +116,6 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                                 </li>
                             </ul>
                         </li>
-                        
                         <li class="sidebar-item <?php echo $__env->yieldContent('payroll'); ?> ">
                             <a href="<?php echo e(route('hr.payroll')); ?>" class='sidebar-link'>
                                 <i class="bi bi-credit-card-2-front-fill"></i>
@@ -254,11 +233,53 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
     <div id="LoadingScreen"
         style="display: none; position: fixed; z-index: 9999; background: rgba(255,255,255,0.7); top: 0; left: 0; width: 100%; height: 100%;">
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem" role="status"></div>
         </div>
     </div>
+
+    <div id="untilLoaded"
+        style="display:block; position: fixed; z-index: 9999; background: rgba(255,255,255,0.7); top: 0; left: 0; width: 100%; height: 100%;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem" role="status"></div>
+        </div>
+    </div>
+
+    <style>
+        #untilLoaded {
+            transition: opacity 0.5s ease;
+        }
+    </style>
+
+    <script>
+        $(document).on(
+            "click",
+            'a[href]:not([target="_blank"]):not([href^="#"]):not([href^=" "])',
+            function (e) {
+                // console.log('loading');
+                // Optional: check if it's a same-page anchor or already loading
+                var href = $(this).attr("href");
+                if (!href || href === "#" || href.startsWith("javascript:")) return;
+
+                // Show loader
+                $("#LoadingScreen").fadeIn(200);
+
+                // Optional: delay navigation for a moment so loader shows clearly
+                // Comment out if you want instant navigation
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 200);
+
+                // Prevent default to delay navigation (only if using setTimeout)
+                e.preventDefault();
+            }
+        );
+        window.addEventListener('load', function () {
+            const loader = document.getElementById('untilLoaded');
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 500);
+        });
+
+    </script>
     <script src="<?php echo e(asset('source/jquery/datatables.js')); ?>"></script>
     <script src="<?php echo e(asset('source/jquery/datatables.min.js')); ?>"></script>
     

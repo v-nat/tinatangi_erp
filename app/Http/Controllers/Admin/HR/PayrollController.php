@@ -38,7 +38,7 @@ class PayrollController extends Controller
         try {
             $query = Payroll::with([
                 'employee',
-            ]);
+            ])->orderBy('updated_at','desc');
             $payroll = $query->get();
 
             $result = $payroll->map(function ($payroll) {
@@ -286,6 +286,7 @@ class PayrollController extends Controller
         // 1) Fetch all the dates this employee was present (Y-m-d strings)
         $presentDays = Attendance::where('employee_id', $employeeID)
             ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
+            ->where('is_leave', false)
             ->whereNotNull('time_in')
             ->whereNotNull('time_out')
             ->pluck('date')

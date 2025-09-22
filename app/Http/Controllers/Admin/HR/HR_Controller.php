@@ -4,13 +4,18 @@ namespace App\Http\Controllers\Admin\HR;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
+use Carbon\Carbon;
 
 class HR_Controller extends Controller
 {
     //
     public function index()
     {
-        return view('pages.admin.human_resources.dashboard');
+        $totalActive = Employee::whereNull('deleted_at')->count();
+        $newHires = Employee::whereNull('deleted_at')
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->count();
+        return view('pages.admin.human_resources.dashboard', compact('totalActive', 'newHires'));
     }
 
     public function employees()
@@ -46,10 +51,12 @@ class HR_Controller extends Controller
         return view('pages.admin.human_resources.ot-app');
     }
 
-    public function otApplication($id){
+    public function otApplication($id)
+    {
         return view('pages.admin.human_resources.ot-application', compact('id'));
     }
-    public function leaveApplication($id){
+    public function leaveApplication($id)
+    {
         return view('pages.admin.human_resources.leave-application', compact('id'));
     }
     public function leaveApp()

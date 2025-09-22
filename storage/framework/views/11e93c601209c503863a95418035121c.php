@@ -1,4 +1,3 @@
-
 <?php $__env->startSection('title'); ?> Human Resources <?php $__env->stopSection(); ?>
 <?php $__env->startSection('sidebar-title'); ?> Human Resources Management <?php $__env->stopSection(); ?>
 <?php $__env->startSection('dsh'); ?>
@@ -103,7 +102,7 @@
                             <i class="bx bx-x d-block d-sm-none"></i>
                             <span class="d-none d-sm-block">Cancel</span>
                         </button>
-                        <button type="submit" class="btn btn-primary ml-1">
+                        <button type="submit" class="btn btn-primary ml-1" >
                             <i class="bx bx-check d-block d-sm-none"></i>
                             <span class="d-none d-sm-block">Generate</span>
                         </button>
