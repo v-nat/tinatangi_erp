@@ -72,7 +72,7 @@
                 </div>
             </div>
 
-            
+
             <div class="col-6 col-lg-3 col-md-6">
                 <div class="card">
                     <div class="card-body px-3 py-4-5">
@@ -176,6 +176,33 @@
 
         .card-header {
             padding: 1rem 1.25rem;
+        }
+
+        @media (max-width: 576px) {
+            #realtimeClock {
+                font-size: 2rem;
+                text-align: center;
+            }
+
+            .time-record {
+                font-size: 16px;
+                text-align: center;
+            }
+
+            .btn-lg {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .card {
+                padding: 15px;
+                margin-bottom: 1rem;
+            }
+
+            .card-header {
+                padding: 0.75rem 1rem;
+                text-align: center;
+            }
         }
     </style>
 <?php $__env->stopSection(); ?>

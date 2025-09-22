@@ -77,8 +77,7 @@ $(document).ready(function () {
             .done(function (response) {
                 if (response.success) {
                     const data = response.data;
-                    if (!data.isLeave) {
-                        // console.log("notLeave");
+                    if (data) {
                         $("#timeInDisplay").text(formatTime(data.time_in));
                         if (data.time_out) {
                             $("#timeOutDisplay").text(
@@ -93,13 +92,6 @@ $(document).ready(function () {
                             $("#timeOutBtn").prop("disabled", false);
                             $("#timeInBtn").prop("disabled", true);
                         }
-                    } else if (data.isLeave) {
-                        // console.log("onleave");
-                        isOnLeave = true;
-                        $("#timeInDisplay").text("On Leave");
-                        $("#timeOutDisplay").text("On Leave");
-                        $("#timeOutBtn").prop("disabled", true);
-                        $("#timeInBtn").prop("disabled", false);
                     } else {
                         $("#timeInBtn").prop("disabled", false);
                         $("#timeOutBtn").prop("disabled", true);
@@ -120,8 +112,32 @@ $(document).ready(function () {
                 );
             });
     }
+    function isOnLeaveToday() {
+        $.get("/attendance/isOnLeave")
+            .done(function (response) {
+                if (response.success) {
+                    const data = response.data;
+                    if (data) {
+                        isOnLeave = data.isLeave;
+                        $("#timeOutBtn").prop("disabled", true);
+                        $("#timeInBtn").prop("disabled", false);
+                    }
+                } else {
+                    showError(
+                        response.message || "Failed to load today's attendance"
+                    );
+                }
+            })
+            .fail(function (xhr) {
+                showError(
+                    xhr.responseJSON?.message ||
+                        "Failed to check today's attendance"
+                );
+            });
+    }
     // Initial check
     hasAttendanceToday();
+    isOnLeaveToday();
 
     // Time In Handler
     $("#timeInBtn").click(function (e) {
@@ -130,7 +146,7 @@ $(document).ready(function () {
             Swal.fire({
                 icon: "warning",
                 title: "You're on Leave",
-                text: '',
+                text: "",
                 timer: 3000,
             });
             return;

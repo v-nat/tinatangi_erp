@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\HR\PayrollController;
 Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'attendanceList']);
     Route::get('/attendance/this-day', [AttendanceController::class, 'thisDay']);
+    Route::get('/attendance/isOnLeave', [AttendanceController::class, 'isOnLeave']);
     Route::post('/attendance/time-in', [AttendanceController::class, 'timeIn']);
     Route::post('/attendance/time-out', [AttendanceController::class, 'timeOut']);
 

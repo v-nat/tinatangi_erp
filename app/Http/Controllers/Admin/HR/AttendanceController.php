@@ -31,11 +31,40 @@ class AttendanceController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $attendance ? [
-                    'time_in' => optional($attendance->time_in)->format('H:i:s') ?? "",
-                    'time_out' => optional($attendance->time_out)->format('H:i:s') ?? "",
-                    'hours_worked' => $attendance->hours_worked ?? '',
-                    'isLeave' => $attendance->is_leave ?? false,
+                    'time_in' => optional($attendance->time_in)->format('H:i:s'),
+                    'time_out' => optional($attendance->time_out)->format('H:i:s'),
+                    'hours_worked' => $attendance->hours_worked
                 ] : null
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Today attendance error: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch today\'s attendance'
+            ], 500);
+        }
+    }
+
+    public function isOnLeave()
+    {
+        try {
+            $user = Auth::user();
+            if (!$user || !$user->user_type == 'employee') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Employee record not found'
+                ], 404);
+            }
+
+            $attendance = Attendance::where('employee_id', $user->id)
+                ->whereDate('date', now())
+                ->first();
+                
+            return response()->json([
+                'success' => true,
+                'data' => $attendance ? [
+                    'isLeave' => $attendance->is_leave
+                ] : ['isLeave' => false]
             ]);
         } catch (\Exception $e) {
             Log::error("Today attendance error: " . $e->getMessage());
