@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use App\Models\Leave;
+use App\Models\Attendance;
 use App\Models\Status;
 
 class LeaveController extends Controller
@@ -19,7 +20,7 @@ class LeaveController extends Controller
     public function index()
     {
         try {
-            $query = Leave::with(['statusRS', 'employeeRS', 'employeeRS.deptRS' ])->orderBy('start_date', 'desc');
+            $query = Leave::with(['statusRS', 'employeeRS', 'employeeRS.deptRS'])->orderBy('start_date', 'desc');
             // dd($query);
             $leaves = $query->get();
             $result = $leaves->map(function ($leave) {
@@ -48,12 +49,40 @@ class LeaveController extends Controller
         try {
             $leave = Leave::findOrFail($leave_id);
             // $employee = Auth::user()->id;
-            
+
             $leave->status = 13;
             $leave->reason = request()->input('reason', '');
             $leave->approved_by = auth('')->user()->id;
             $leave->approval_date = now();
             $leave->save();
+
+            $startDate = Carbon::create($leave->start_date);
+            $endDate = Carbon::create($leave->end_date );
+
+            $records = [];
+
+            for ($i = 0; $startDate->copy()->addDays($i)->lte($endDate); $i++) {
+                $date = $startDate->copy()->addDays($i)->toDateString();
+
+                $records[] = [
+                    'employee_id'        => $leave->employee_id,
+                    'date'               => $date,
+                    'time_in'            => null,
+                    'time_out'           => null,
+                    'hours_worked'       => 0,
+                    'tardiness'          => 0,
+                    'is_leave'           => true,
+                    'tardiness_minutes'  => 0,
+                    'leave_id'           => $leave_id,
+                    'overtime_minutes'   => 0,
+                    'overtime_id'        => null,
+                    'created_at'         => Carbon::now(),
+                    'updated_at'         => Carbon::now(),
+                ];
+            }
+
+            DB::table('attendances')->insert($records);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Leave request approved successfully'
@@ -119,9 +148,9 @@ class LeaveController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'employee_id' => 'required|integer|exists:employees,id',
-                'start_date'=> 'required',
+                'start_date' => 'required',
                 'end_date' => 'required',
-                'reason'=> 'required|string',
+                'reason' => 'required|string',
             ]);
 
             if ($validator->fails()) {

@@ -134,7 +134,7 @@ class AttendanceController extends Controller
                     'status' => $this->getStatusText($attendance->status),
                     'tardiness' => $attendance->tardiness_minutes ? $this->formatMinutes($attendance->tardiness_minutes) : 'None',
                     'overtime' => $attendance->overtime_minutes ? $this->formatHours($attendance->overtime_minutes) : 'None',
-                    'leave_info' => $attendance->leave
+                    'leave_info' => optional(optional( Carbon::parse($attendance->leaveRS)->format('M j, Y'))->start_date)
                         ? Carbon::parse($attendance->leave->start_date)->format('M j') . ' - ' .
                         Carbon::parse($attendance->leave->end_date)->format('M j, Y')
                         : 'N/A',
