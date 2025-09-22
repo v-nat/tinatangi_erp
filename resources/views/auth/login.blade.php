@@ -17,29 +17,6 @@
 </head>
 
 <body>
-    <script>
-        $(document).on(
-            "click",
-            'a[href]:not([target="_blank"]):not([href^="#"])',
-            function (e) {
-                // Optional: check if it's a same-page anchor or already loading
-                var href = $(this).attr("href");
-                if (!href || href === "#" || href.startsWith("javascript:")) return;
-
-                // Show loader
-                $("#LoadingScreen").fadeIn();
-
-                // Optional: delay navigation for a moment so loader shows clearly
-                // Comment out if you want instant navigation
-                setTimeout(() => {
-                    window.location.href = href;
-                }, 200);
-
-                // Prevent default to delay navigation (only if using setTimeout)
-                e.preventDefault();
-            }
-        );
-    </script>
     <div id="auth">
         <div class="row h-100">
             <div class="col-lg-5 col-12">
@@ -74,12 +51,12 @@
                         <button class="login-btn btn btn-primary btn-block btn-lg shadow-lg mt-5" type="submit">Log
                             in</button>
                     </form>
-                    <div class="text-center mt-5 text-lg fs-4">
-                        {{-- <p class="text-gray-600">Don't have an account? <a href="auth-register.html"
+                    {{-- <div class="text-center mt-5 fs-4">
+                        <p class="text-gray-600">Don't have an account? <a href="auth-register.html"
                                 class="font-bold">Sign
-                                up</a>.</p> --}}
-                        <p><a class="font-bold" href="auth-forgot-password.html">Forgot password?</a>.</p>
-                    </div>
+                                up</a>.</p>
+                        <p><a class="font-bold" href="auth-forgot-password.html">Forgot password?</a></p>
+                    </div> --}}
                 </div>
             </div>
             <div class="col-lg-7 d-none d-lg-block">
@@ -109,6 +86,29 @@
                 toast.onmouseleave = Swal.resumeTimer;
             },
         });
+    </script>
+    <script>
+        $(document).on(
+            "click",
+            'a[href]:not([target="_blank"]):not([href^="#"])',
+            function (e) {
+                // Optional: check if it's a same-page anchor or already loading
+                var href = $(this).attr("href");
+                if (!href || href === "#" || href.startsWith("javascript:")) return;
+
+                // Show loader
+                $("#LoadingScreen").fadeIn();
+
+                // Optional: delay navigation for a moment so loader shows clearly
+                // Comment out if you want instant navigation
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 200);
+
+                // Prevent default to delay navigation (only if using setTimeout)
+                e.preventDefault();
+            }
+        );
     </script>
     <script src="{{ asset('js/login.js') }}"></script>
 </body>
