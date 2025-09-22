@@ -72,47 +72,6 @@ $(document).ready(function () {
         return diffMinutes;
     }
 
-    function hasAttendanceToday() {
-        $.get("/attendance/this-day")
-            .done(function (response) {
-                if (response.success) {
-                    const data = response.data;
-                    if (data) {
-                        $("#timeInDisplay").text(formatTime(data.time_in));
-                        console.log('a');
-                        if (data.time_out) {
-                            $("#timeOutDisplay").text(
-                                formatTime(data.time_out)
-                            );
-                            $("#totalHours").text(
-                                formatMinutesToHours(data.hours_worked)
-                            );
-                            $("#timeOutBtn").prop("disabled", true);
-                            $("#timeInBtn").prop("disabled", true);
-                        } else {
-                            $("#timeOutBtn").prop("disabled", false);
-                            $("#timeInBtn").prop("disabled", true);
-                        }
-                    } else {
-                        $("#timeInBtn").prop("disabled", false);
-                        $("#timeOutBtn").prop("disabled", true);
-                        $("#timeInDisplay").text("--:-- --");
-                        $("#timeOutDisplay").text("--:-- --");
-                        $("#totalHours").text("0h 0m");
-                    }
-                } else {
-                    showError(
-                        response.message || "Failed to load today's attendance"
-                    );
-                }
-            })
-            .fail(function (xhr) {
-                showError(
-                    xhr.responseJSON?.message ||
-                        "Failed to check today's attendance"
-                );
-            });
-    }
     function isOnLeaveToday() {
         return $.get("/attendance/isOnLeave")
             .then(function (response) {
@@ -130,6 +89,60 @@ $(document).ready(function () {
                 );
                 return false;
             });
+    }
+
+    function hasAttendanceToday() {
+        isOnLeaveToday().then(function (isLeave) {
+            if (isLeave) {
+                $("#timeInBtn").prop("disabled", false);
+                $("#timeOutBtn").prop("disabled", true);
+                $("#timeInDisplay").text("--:-- --");
+                $("#timeOutDisplay").text("--:-- --");
+                $("#totalHours").text("0h 0m");
+            } else {
+                $.get("/attendance/this-day")
+                    .done(function (response) {
+                        if (response.success) {
+                            const data = response.data;
+                            if (data) {
+                                $("#timeInDisplay").text(
+                                    formatTime(data.time_in)
+                                );
+                                if (data.time_out) {
+                                    $("#timeOutDisplay").text(
+                                        formatTime(data.time_out)
+                                    );
+                                    $("#totalHours").text(
+                                        formatMinutesToHours(data.hours_worked)
+                                    );
+                                    $("#timeOutBtn").prop("disabled", true);
+                                    $("#timeInBtn").prop("disabled", true);
+                                } else {
+                                    $("#timeOutBtn").prop("disabled", false);
+                                    $("#timeInBtn").prop("disabled", true);
+                                }
+                            } else {
+                                $("#timeInBtn").prop("disabled", false);
+                                $("#timeOutBtn").prop("disabled", true);
+                                $("#timeInDisplay").text("--:-- --");
+                                $("#timeOutDisplay").text("--:-- --");
+                                $("#totalHours").text("0h 0m");
+                            }
+                        } else {
+                            showError(
+                                response.message ||
+                                    "Failed to load today's attendance"
+                            );
+                        }
+                    })
+                    .fail(function (xhr) {
+                        showError(
+                            xhr.responseJSON?.message ||
+                                "Failed to check today's attendance"
+                        );
+                    });
+            }
+        });
     }
 
     // Initial check
