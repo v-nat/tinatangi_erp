@@ -147,7 +147,8 @@ $(document).ready(function () {
 
     // Initial check
     hasAttendanceToday();
-    // Time In Handler
+    
+    
     $("#timeInBtn").click(function (e) {
         e.preventDefault();
         isOnLeaveToday().then(function (isLeave) {
