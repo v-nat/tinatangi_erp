@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     // Handle form submission
     $("#login_form").on("submit", function (e) {
         e.preventDefault();
@@ -47,6 +46,7 @@ $(document).ready(function () {
                         position: "center",
                         backdrop: true,
                     }).then(() => {
+                        $("#LoadingScreen").fadeIn();
                         // Handle redirect based on user type
                         if (response.redirect) {
                             window.location.href = response.redirect;
