@@ -31,8 +31,8 @@ class AttendanceController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $attendance ? [
-                    'time_in' => optional($attendance->time_in)->format('H:i:s') ?? "YOU'RE ON LEAVE",
-                    'time_out' => optional($attendance->time_out)->format('H:i:s') ?? "YOU'RE ON LEAVE",
+                    'time_in' => optional($attendance->time_in)->format('H:i:s') ?? "",
+                    'time_out' => optional($attendance->time_out)->format('H:i:s') ?? "",
                     'hours_worked' => $attendance->hours_worked ?? '',
                     'isLeave' => $attendance->is_leave ??'',
                 ] : null

@@ -79,7 +79,6 @@ $(document).ready(function () {
                     const data = response.data;
                     if (!data.isLeave) {
                         // console.log("notLeave");
-
                         $("#timeInDisplay").text(formatTime(data.time_in));
                         if (data.time_out) {
                             $("#timeOutDisplay").text(
@@ -134,6 +133,7 @@ $(document).ready(function () {
                 text: '',
                 timer: 3000,
             });
+            return;
         } else {
             Swal.fire({
                 title: "Confirm Time In?",
