@@ -64,7 +64,7 @@ class AttendanceController extends Controller
                 'success' => true,
                 'data' => $attendance ? [
                     'isLeave' => $attendance->is_leave
-                ] : ['isLeave' => false]
+                ] : false
             ]);
         } catch (\Exception $e) {
             Log::error("Today attendance error: " . $e->getMessage());

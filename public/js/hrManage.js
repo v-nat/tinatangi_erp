@@ -188,44 +188,69 @@ $("#reset").click(function (e) {
 
 $("#insert-btn-employee").click(function (e) {
     e.preventDefault();
-    // console.log('Submit button clicked');
-    let form = document.getElementById("employeeForm");
-    let formData = new FormData(form);
-    $("#LoadingScreen").fadeIn(200);
+    let isValid = true;
 
-    $.ajax({
-        url: "/humanresources/store-employee",
-        type: "POST",
-        headers: {
-            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-        },
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (response) {
-            $("#LoadingScreen").fadeOut(200);
-            Toast.fire({
-                text: response.message,
-                icon: "success",
-            }).then(() => location.reload());
-        },
-        error: function (xhr) {
-            // console.error('Error response:', xhr);
-            $("#LoadingScreen").fadeOut(200);
-            if (xhr.responseJSON?.errors) {
-                let errorMessages = Object.values(xhr.responseJSON.errors)
-                    .flat()
-                    .join("\n");
-                Swal.fire("Validation Error", errorMessages, "error");
+    $(this)
+        .find("[required]")
+        .each(function () {
+            if (!$(this).val().trim()) {
+                isValid = false;
+                $(this).addClass("is-invalid"); // Bootstrap-style feedback
             } else {
-                Swal.fire("Error", "An unexpected error occurred.", "error");
+                $(this).removeClass("is-invalid");
             }
-        },
-    });
+        });
+
+    if (!isValid) {
+        Toast.fire({
+            text: "Please fill in all required fields.",
+            icon: "warning",
+        });
+    } else {
+        let form = document.getElementById("employeeForm");
+        let formData = new FormData(form);
+        $("#LoadingScreen").fadeIn(200);
+
+        $.ajax({
+            url: "/humanresources/store-employee",
+            type: "POST",
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $("#LoadingScreen").fadeOut(200);
+                Toast.fire({
+                    text: response.message,
+                    icon: "success",
+                }).then(() => location.reload());
+            },
+            error: function (xhr) {
+                // console.error('Error response:', xhr);
+                $("#LoadingScreen").fadeOut(200);
+                if (xhr.responseJSON?.errors) {
+                    let errorMessages = Object.values(xhr.responseJSON.errors)
+                        .flat()
+                        .join("\n");
+                    Swal.fire("Validation Error", errorMessages, "error");
+                } else {
+                    Swal.fire(
+                        "Error",
+                        "An unexpected error occurred.",
+                        "error"
+                    );
+                }
+            },
+        });
+    }
+    // console.log('Submit button clicked');
 });
 
 $("#edit-btn-employee").click(function (e) {
     e.preventDefault();
+
     // console.log('Submit button clicked');
     let form = document.getElementById("employeeForm");
     let employee_id = $("#email").data("value");

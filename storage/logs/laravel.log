@@ -44398,3 +44398,4 @@ Did you mean one of these?
 #59 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\Users\\\\Nathan...')
 #60 {main}
 "} 
+[2025-09-22 19:57:23] local.ERROR: Today attendance error: Attempt to read property "is_leave" on null  

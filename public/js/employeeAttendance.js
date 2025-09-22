@@ -39,7 +39,7 @@ $(document).ready(function () {
             timer: 500,
         });
     }
-    let isOnLeave = false;
+    let isOnLeave;
     let timeIn = null;
 
     function getCurrentManilaTime() {
@@ -79,6 +79,7 @@ $(document).ready(function () {
                     const data = response.data;
                     if (data) {
                         $("#timeInDisplay").text(formatTime(data.time_in));
+                        console.log('a');
                         if (data.time_out) {
                             $("#timeOutDisplay").text(
                                 formatTime(data.time_out)
@@ -113,72 +114,67 @@ $(document).ready(function () {
             });
     }
     function isOnLeaveToday() {
-        $.get("/attendance/isOnLeave")
-            .done(function (response) {
-                if (response.success) {
-                    const data = response.data;
-                    if (data) {
-                        isOnLeave = data.isLeave;
-                        $("#timeOutBtn").prop("disabled", true);
-                        $("#timeInBtn").prop("disabled", false);
-                    }
-                } else {
-                    showError(
-                        response.message || "Failed to load today's attendance"
-                    );
+        return $.get("/attendance/isOnLeave")
+            .then(function (response) {
+                if (response.success && response.data) {
+                    $("#timeOutBtn").prop("disabled", true);
+                    $("#timeInBtn").prop("disabled", false);
+                    return true;
                 }
+                return false;
             })
-            .fail(function (xhr) {
-                showError(
+            .catch(function (xhr) {
+                console.error(
                     xhr.responseJSON?.message ||
                         "Failed to check today's attendance"
                 );
+                return false;
             });
     }
+
     // Initial check
     hasAttendanceToday();
-    isOnLeaveToday();
-
     // Time In Handler
     $("#timeInBtn").click(function (e) {
         e.preventDefault();
-        if (isOnLeave) {
-            Swal.fire({
-                icon: "warning",
-                title: "You're on Leave",
-                text: "",
-                timer: 3000,
-            });
-            return;
-        } else {
-            Swal.fire({
-                title: "Confirm Time In?",
-                text: "This will count as your Time In",
-                icon: "info",
-                showCancelButton: true,
-                confirmButtonText: "Time In",
-                cancelButtonText: "Cancel",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post("/attendance/time-in")
-                        .done(function (response) {
-                            hasAttendanceToday();
-                            timeIn = $("#timeInDisplay").text;
-                            isTimeIn = true;
-                            $("#attendanceTable")
-                                .DataTable()
-                                .ajax.reload(null, false);
-                            showSuccess("Time in recorded successfully!");
-                        })
-                        .fail(function (xhr) {
-                            showError(
-                                xhr.responseJSON?.message ||
-                                    "Failed to record Time In"
-                            );
-                        });
-                }
-            });
-        }
+        isOnLeaveToday().then(function (isLeave) {
+            if (isLeave) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "You're on Leave",
+                    text: "",
+                    timer: 3000,
+                });
+            } else {
+                Swal.fire({
+                    title: "Confirm Time In?",
+                    text: "This will count as your Time In",
+                    icon: "info",
+                    showCancelButton: true,
+                    confirmButtonText: "Time In",
+                    cancelButtonText: "Cancel",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.post("/attendance/time-in")
+                            .done(function (response) {
+                                hasAttendanceToday();
+                                timeIn = $("#timeInDisplay").text;
+                                isTimeIn = true;
+                                $("#attendanceTable")
+                                    .DataTable()
+                                    .ajax.reload(null, false);
+                                showSuccess("Time in recorded successfully!");
+                            })
+                            .fail(function (xhr) {
+                                showError(
+                                    xhr.responseJSON?.message ||
+                                        "Failed to record Time In"
+                                );
+                            });
+                    }
+                });
+            }
+        });
     });
 
     // Time Out Handler
