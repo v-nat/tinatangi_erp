@@ -53,5 +53,6 @@ Route::middleware(['auth'])->group(function () {
     ///////////////////////////////// PAYROLL ///////////////////////////////////////////////
     Route::get('/humanresources/payroll', [PayrollController::class, 'indexOnHr'])->name('hr.payroll');
     Route::get('/humanresources/payroll/list', [PayrollController::class, 'getPayrollList']);
+    Route::get('/humanresources/payroll/view/{id}', [PayrollController::class, 'getPayrollview']);
     Route::post('/humanresources/payroll/generate', [PayrollController::class, 'generatePayroll'])->name('hr.payroll.generate');
 });

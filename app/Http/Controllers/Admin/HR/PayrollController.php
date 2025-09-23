@@ -38,7 +38,7 @@ class PayrollController extends Controller
         try {
             $query = Payroll::with([
                 'employee',
-            ])->orderBy('updated_at','desc');
+            ])->orderBy('updated_at', 'desc');
             $payroll = $query->get();
 
             $result = $payroll->map(function ($payroll) {
@@ -59,7 +59,48 @@ class PayrollController extends Controller
             // dd($result);
             return response()->json(["data" => $result]);
         } catch (\Exception $e) {
-            Log::error('Attendance list error: ' . $e->getMessage());
+            Log::error('Payroll list error: ' . $e->getMessage());
+            return response()->json(["data" => []]);
+        }
+    }
+    public function getPayrollView($id)
+    {
+
+        try {
+            $payroll = Payroll::findOrFail($id);
+            // dd  ($payroll);
+            $result = [
+                'id' => $payroll->id,
+                'employee_id' => $payroll->employee_id ?? 'N/A',
+                'name' => optional(optional($payroll->employee)->userRS)->full_name,
+                'department' => optional(optional($payroll->employee)->deptRS)->name,
+                'position' => optional(optional($payroll->employee)->position)->name ?? 'N/A',
+                'start_date' => optional(Carbon::parse($payroll->start_date))->format('M d, Y'),
+                'end_date' => optional(Carbon::parse($payroll->end_date))->format('M d, Y'),
+                'working_days' => $this->getTotalWorkingDays($payroll->start_date, $payroll->end_date),
+                'period' => $this->getMonthString($payroll->month) ?? '',
+                'days_present' => $payroll->days_present,
+                'days_absent' => $payroll->days_absent,
+                'reg_pay' => $payroll->regular_hour_pay ?? '',
+                'total_hours' => $payroll->total_hours_worked ?? '',
+                'overtime_pay' => $payroll->overtime_pay ?? '',
+                'gross_pay' => $payroll->gross_pay ?? '',
+                'absent_deduction' => $payroll->days_absent_deduction ?? '',
+                'tardiness_deduction' => $payroll->tardiness_deduction ?? '',
+                'sss' => self::SSS,
+                'philhealth' => self::PHILHEALTH,
+                'pagibig' => self::PAGIBIG,
+                'mandatory_deduction' => $payroll->deduction,
+                'tax_deduction' => $payroll->tardiness_deduction,
+                'salary_before_tax' => $payroll->salary_before_tax,
+                'gross_deduction' => $payroll->deduction + $payroll->days_absent_deduction ?? '',
+                'net_pay' => $payroll->net_pay ?? '',
+                'status' => Status::getStatusText($payroll->status),
+            ];
+            // dd($result);
+            return response()->json(["data" => $result]);
+        } catch (\Exception $e) {
+            Log::error('Payroll View error: ' . $e->getMessage());
             return response()->json(["data" => []]);
         }
     }
@@ -110,10 +151,14 @@ class PayrollController extends Controller
 
 
     // VARIABLES 
+    const SSS = 600;
+    const PHILHEALTH = 450;
+    const PAGIBIG = 100;
     const WORKING_DAYS_PER_MONTH = 26;
     const DAY_OFF_PER_MONTH = 4;
     const WORKING_HOURS_PER_DAY = 8;
     const OVERTIME_RATE_MULTIPLIER = 1.25;
+
 
     // FUNCTIONS
     public function generatePayroll(StorePayrollRequest $request)
