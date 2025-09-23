@@ -44399,3 +44399,7 @@ Did you mean one of these?
 #60 {main}
 "} 
 [2025-09-22 19:57:23] local.ERROR: Today attendance error: Attempt to read property "is_leave" on null  
+[2025-09-23 17:59:25] local.ERROR: Payroll View error: Call to undefined method App\Models\Payroll::map()  
+[2025-09-23 17:59:26] local.ERROR: Payroll View error: Call to undefined method App\Models\Payroll::map()  
+[2025-09-23 17:59:41] local.ERROR: Payroll View error: Call to undefined method App\Models\Payroll::map()  
+[2025-09-23 18:03:30] local.ERROR: Payroll View error: Call to undefined method App\Models\Payroll::map()  
