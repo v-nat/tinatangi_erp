@@ -158,7 +158,7 @@ class OvertimeController extends Controller
                 'time_end' => $request->time_end,
                 'total_minutes' => $total_minutes,
                 'reason' => $request->reason ?? '',
-                'status' => 7,
+                'status' => 11,
             ]);
             DB::commit();
             return response()->json(['message' => 'Overtime submitted successfully!'], 201);

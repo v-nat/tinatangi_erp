@@ -251,7 +251,7 @@ class PayrollController extends Controller
             'start_date' => $start_date,
             'end_date' => $end_date,
             'payroll_date' => now(),
-            'status' => 7,
+            'status' => 11,
         ];
     }
 
@@ -328,7 +328,7 @@ class PayrollController extends Controller
             ->whereBetween('date', [$start_date, $end_date])
             ->sum('overtime_minutes');
 
-        return $minutes;
+        return $minutes / 60;
     }
 
     protected function absencesTotal($employeeID, $start_date, $end_date, $working_days)

@@ -83,5 +83,5 @@
     <script src="{{ asset('assets/js/pages/dashboard.js') }}   "></script>
 
     <script src="{{ asset('assets/js/main2.js') }}   "></script>
-    <script src="{{ asset('js/hrPayroll.js') }}   "></script>
+    <script src="{{ asset('js/financePayroll.js') }}   "></script>
 @endsection

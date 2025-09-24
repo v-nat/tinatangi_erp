@@ -30,13 +30,10 @@ return new class extends Migration
             $table->foreignId('department')->nullable()
                 ->constrained('departments')->onUpdate('cascade')->onDelete('set null');
 
-            // $table->foreignId('direct_supervisor')->nullable()
-            //     ->constrained('employees')->onUpdate('cascade')->onDelete('set null');
-
             $table->foreignId('supervisor_id')->nullable()->constrained('employees')->onDelete('set null');
             $table->enum('level', ['staff', 'supervisor', 'manager', 'ceo'])->default('staff');
 
-            $table->foreignId('position')->nullable()
+            $table->foreignId('position_id')->nullable()
                 ->constrained('positions')->onUpdate('cascade')->onDelete('set null');
 
             // Mandatory Deductions
@@ -46,6 +43,10 @@ return new class extends Migration
 
             // Salary
             $table->decimal('base_salary', 10, 2)->default(0.00);
+
+            
+            $table->unsignedBigInteger('status')->default(1);
+            $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 
             $table->timestamps();
             $table->softDeletes();

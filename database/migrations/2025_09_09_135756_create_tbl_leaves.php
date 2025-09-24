@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('approved_by')->nullable();
             $table->string('approval_date')->nullable();
 
-            $table->unsignedBigInteger('status')->default('7'); //pending
+            $table->unsignedBigInteger('status')->default(11); //pending
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 
             $table->timestamps();

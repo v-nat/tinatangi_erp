@@ -178,7 +178,7 @@ class EmployeeController extends Controller
 
 
         $positionName = $employee->position->name;
-        // dd($positionInfo);
+        // dd($positionName);
         $mode = 'edit';
         $direct_supervisor = User::find($employee->supervisor_id);
         $direct_supervisor_name = $direct_supervisor->first_name . ' ' . $direct_supervisor->last_name;

@@ -26,4 +26,8 @@ class Position extends Model
     {
         return $query->where('department_id', $deptId);
     }
+    public function getAttributeNameAttribute()
+    {
+        return $this->name;
+    }
 }

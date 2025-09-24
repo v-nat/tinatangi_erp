@@ -15,17 +15,19 @@ class StatusSeeder extends Seeder
     {
         //
         $statuses = [
-            'active',
-            'inactive',
-            'suspended',
-            'terminated',
-            'on leave',
-            'resigned',
-            'pending',
+            'Active',
+            'Inactive',
+            'Suspended',
+            'Terminated',
+            'Resigned',
             'Present',
             'On Time',
+            'On leave',
             'Late',
             'Absent',
+            'Pending',
+            'Rejected',
+            'Approved',
         ];
 
         foreach ($statuses as $status) {
