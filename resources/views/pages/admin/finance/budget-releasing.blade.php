@@ -4,35 +4,34 @@
 @section('human_resources') d-none @endsection
 @section('finance') d-block @endsection
 @section('procurement') d-none @endsection
-@section('financePayroll') active
+@section('financeBudgets') active
 @endsection
-@section('headings') Payroll List @endsection
+@section('headings') Requests List @endsection
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('finance.payroll') }}">Finance</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Payroll</li>
+            <li class="breadcrumb-item active" aria-current="page">Budgets</li>
         </ol>
     </nav>
 
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Payroll Table</h4>
+                <h4 class="card-title">Approved Requests - Awaiting Budget Release</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="payrollsTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="approvalTable" class="table table-striped table-hover" style="width:100%">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Employee</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Requested by</th>
+                                <th>Requested at</th>
                                 <th>Department</th>
-                                <th>Position</th>
-                                <th>Pay Period</th>
-                                <th>Gross Pay</th>
-                                <th>Deductions</th>
-                                <th>Net Pay</th>
+                                <th>Notes</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -46,34 +45,6 @@
         </div>
     </section>
 
-    <!-- view modal-->
-    <div class="modal fade text-left w-100" id="viewPayroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel20">View Payroll</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <i data-feather="x"></i>
-                    </button>
-                </div>
-                <div class="modal-body p-4">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                        <i class="bx bx-x d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Close</span>
-                    </button>
-                    {{-- <button type="button" class="btn btn-primary ml-1" data-bs-dismiss="modal">
-                        <i class="bx bx-check d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Accept</span>
-                    </button> --}}
-                </div>
-            </div>
-        </div>
-    </div>
-
 
     <div class="modal fade text-left" id="RejectionConfirmation" tabindex="-1" role="dialog"
         aria-labelledby="myModalLabel120" aria-hidden="true">
@@ -81,20 +52,21 @@
             <div class="modal-content">
                 <div class="modal-header bg-danger">
                     <h5 class="modal-title white" id="myModalLabel120">
-                        Payroll Request Rejection
+                        Budget Request Rejection
                     </h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <i data-feather="x"></i>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <h6>You are about to Reject this Payroll Request</h6>
+                    <h6>You are about to Reject this Budget Request</h6>
                     <form id="rejectionForm">
                         @csrf
-                        <input type="hidden" name="payroll_id" id="rejectionPayrollId">
+                        <input type="hidden" name="request_id" id="rejectionRequestId">
+                        <input type="hidden" name="release_id" id="rejectionReleaseId">
                         <div class="form-group">
                             <label for="rejectionNotes">Rejection Notes (Required)</label>
-                            <textarea class="form-control" id="rejectionNotes" name="remarks" rows="3" required></textarea>
+                            <textarea class="form-control" id="rejectionNotes" name="notes" rows="3" required></textarea>
                         </div>
                     </form>
                 </div>
@@ -111,13 +83,6 @@
             </div>
         </div>
     </div>
-
-    <style>
-        .action-btns {
-            display: flex;
-            justify-content: center
-        }
-    </style>
 @endsection
 @section('scripts')
     <script src="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}   "></script>
@@ -127,5 +92,5 @@
     <script src="{{ asset('assets/js/pages/dashboard.js') }}   "></script>
 
     <script src="{{ asset('assets/js/main2.js') }}   "></script>
-    <script src="{{ asset('js/financePayroll.js') }}   "></script>
+    <script src="{{ asset('js/budgetRelease.js') }}   "></script>
 @endsection

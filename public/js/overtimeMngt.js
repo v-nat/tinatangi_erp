@@ -139,9 +139,7 @@ $(document).ready(function () {
         let reason = $("#rejectionNotes").val();
         $("#LoadingScreen").fadeIn(200);
         $("#rejectionModal").modal("hide");
-        // console.log(overtimeId);
-        // let url = `/humanresources/overtime/approve/${overtimeId}`;
-        // const url = "{{ route('hr.ot-approve', id) }}";
+        
         $.ajax({
             url: `/humanresources/overtime/reject/${overtimeId}`,
             method: "POST",

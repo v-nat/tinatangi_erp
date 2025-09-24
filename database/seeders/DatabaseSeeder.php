@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DepartmentSeeder::class);
         $this->call(StatusSeeder::class);
         $this->call(PositionSeeder::class);
+
         User::create([
             'id' => 1,
             'first_name' => 'Taylor',
@@ -39,5 +40,6 @@ class DatabaseSeeder extends Seeder
             'user_type'=> 'employee',
         ]);
 
+        $this->call(EmployeeSeeder::class);
     }
 }

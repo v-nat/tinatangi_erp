@@ -7,6 +7,7 @@ use App\Http\Requests\StorePayrollRequest;
 use App\Models\Employee;
 use App\Models\Payroll;
 use App\Models\Attendance;
+use App\Models\BudgetRelease;
 use App\Models\Overtime;
 use App\Models\Status;
 use App\Services\CompensationCalculator;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Type\Integer;
 
@@ -73,6 +75,13 @@ class PayrollController extends Controller
 
         try {
             $payroll = Payroll::findOrFail($id);
+             if ($payroll->remarks == 'payroll released') {
+                $remarks = '<div class="alert alert-success"> Released: ' . $payroll->remarks . '</div>';
+            } else if ($payroll->remarks) {
+                $remarks = '<div class="alert alert-danger"> Rejected: ' . $payroll->remarks . '</div>';
+            } else {
+                $remarks = '';
+            }
             // dd  ($payroll);
             $result = [
                 'id' => $payroll->id,
@@ -100,6 +109,7 @@ class PayrollController extends Controller
                 'salary_before_tax' => $payroll->salary_before_tax,
                 'gross_deduction' => $payroll->deduction + $payroll->days_absent_deduction ?? '',
                 'net_pay' => $payroll->net_pay ?? '',
+                'remarks' => $remarks ?? '',
                 'status' => Status::getStatusText($payroll->status),
             ];
             // dd($result);
@@ -107,6 +117,70 @@ class PayrollController extends Controller
         } catch (\Exception $e) {
             Log::error('Payroll View error: ' . $e->getMessage());
             return response()->json(["data" => []]);
+        }
+    }
+
+    public function putOnProcess(Request $request, $id, $status)
+    {
+        try {
+            DB::beginTransaction();
+
+            $payroll = Payroll::find($id);
+            $payroll->remarks = $request->remarks;
+            $payroll->status = $status;
+            $payroll->save();
+
+            $year = Carbon::now()->format('Y');
+            do {
+                $random = rand(10000, 99999);
+                $release_id = $year . $random;
+            } while (BudgetRelease::pluck('id')->contains($release_id));
+
+            $release = BudgetRelease::create([
+                'release_id'        => $release_id, 
+                'type'              => 'Payroll', 
+                'amount'            => $payroll->net_pay,
+                'request_id'        => $id,
+                'requested_by_id'   => auth('')->user()->id, 
+                'requested_at'      => now(),
+                'released_by_id'    => null, 
+                'released_at'       => null,
+                'department'        => 2, 
+                'notes'             => '',
+                'status'            => 11, 
+            ]);
+
+            $release->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Payroll is now on Process!'], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function releasePayroll($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $payroll = Payroll::find($id);
+            $payroll->remarks = 'payroll released';
+            $payroll->status = 15;
+            $payroll->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Payroll Released Successfully!'], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }
 

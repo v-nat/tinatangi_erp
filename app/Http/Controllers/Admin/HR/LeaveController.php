@@ -33,7 +33,7 @@ class LeaveController extends Controller
                     'start_date'         => $leave->start_date ?? 'N/A',
                     'end_date'          => $leave->end_date ?? 'N/A',
                     'reason'            => $leave->reason ?? 'N/A',
-                    'status' =>         Status::getStatusText($leave->status),
+                    'status'            => Status::getStatusText($leave->status),
                 ];
             });
             // dd($result);

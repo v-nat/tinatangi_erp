@@ -65,6 +65,18 @@
                             <span>Payroll Approvals</span>
                         </a>
                     </li>
+                    <li class="sidebar-item @yield('financePurchases') ">
+                        <a href="{{route('finance.purchases')}}" class='sidebar-link'>
+                            <i class="bi bi-bag-fill"></i>
+                            <span>Purchase Order Approvals</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item @yield('financeBudgets') ">
+                        <a href="{{route('finance.budgets')}}" class='sidebar-link'>
+                            <i class="bi bi-cash"></i>
+                            <span>Budget Releasing</span>
+                        </a>
+                    </li>
                 </div>
 
                 <div class="@yield('procurement')">
