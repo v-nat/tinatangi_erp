@@ -27,7 +27,7 @@ return new class extends Migration
             $table->integer('overtime_minutes')->default(0);
             $table->unsignedBigInteger('leave_id')->nullable();
             $table->unsignedBigInteger('overtime_id')->nullable();
-            $table->unsignedBigInteger('status')->default(8); //preset
+            $table->unsignedBigInteger('status')->default(6);
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
             $table->foreign('leave_id')->references('id')->on('leaves')->nullOnDelete();
             $table->foreign('overtime_id')->references('id')->on('overtimes')->nullOnDelete();

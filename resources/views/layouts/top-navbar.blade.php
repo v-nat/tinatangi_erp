@@ -38,7 +38,7 @@
                     <div class="user-menu d-flex">
                         <div class="user-name text-end me-3">
                             <h6 class="mb-0 text-gray-600">
-                                {{auth()->user()->first_name . ' ' . auth()->user()->last_name}}
+                                {{auth()->user()->full_name}}
                             </h6>
                             <p class="mb-0 text-sm text-gray-600">
                                 {{ \Illuminate\Support\Str::upper($position->name) }}

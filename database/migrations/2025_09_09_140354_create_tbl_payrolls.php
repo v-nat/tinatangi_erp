@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
 
             $table->integer('month');
-            $table->integer('days_start')->default(0); 
             $table->date('start_date');
             $table->date('end_date');
             $table->dateTime('payroll_date');
@@ -43,7 +42,8 @@ return new class extends Migration
             $table->decimal('salary_before_tax', 10, 2)->default(0);
             $table->decimal('net_pay', 10, 2)->default(0);
 
-            $table->string('status')->default('pending');
+            $table->unsignedBigInteger('status')->default(11);
+            $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 
             $table->timestamps();
             $table->softDeletes();

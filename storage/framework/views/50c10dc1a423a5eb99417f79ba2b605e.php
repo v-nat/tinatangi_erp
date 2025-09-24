@@ -38,7 +38,7 @@
                     <div class="user-menu d-flex">
                         <div class="user-name text-end me-3">
                             <h6 class="mb-0 text-gray-600">
-                                <?php echo e(auth()->user()->first_name . ' ' . auth()->user()->last_name); ?>
+                                <?php echo e(auth()->user()->full_name); ?>
 
                             </h6>
                             <p class="mb-0 text-sm text-gray-600">

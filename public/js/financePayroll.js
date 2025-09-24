@@ -86,12 +86,24 @@ $(document).ready(function () {
                 data: "id",
                 render: function (data, type, row) {
                     return `
-                    <div>
-                        <a href="#" class="btn icon btn-primary btn-view bs-tooltip me-2"
+                    <div class="action-btns">
+                        <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
                            data-id="${data}"
                            data-employee-id="${row.employee_id}"
                            title="View">
                             <i class="fa-solid fa-eye"></i>
+                        </a>
+                        <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 approve-btn"
+                            data-id="${data}"
+                           data-employee-id="${row.employee_id}"
+                            title="Approve">
+                                <i class="fa-solid fa-check"></i>
+                        </a>
+                        <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
+                            data-id="${data}"
+                           data-employee-id="${row.employee_id}"
+                            title="Reject">
+                                <i class="fa-solid fa-x"></i>
                         </a>
                     </div>
                         `;

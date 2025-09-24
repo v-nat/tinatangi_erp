@@ -11,6 +11,7 @@ class HR_Controller extends Controller
     //
     public function index()
     {
+        $employees = Employee::with(['position'])->get();
         $totalActive = Employee::whereNull('deleted_at')->count();
         $newHires = Employee::whereNull('deleted_at')
             ->where('created_at', '>=', Carbon::now()->subDays(30))

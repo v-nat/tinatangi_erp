@@ -110,7 +110,7 @@ class AttendanceController extends Controller
             'employee_id' => Auth::user()->id,
             'date' => now(),
             'time_in' => now(),
-            'status' => 9
+            'status' => 7
         ]);
 
         return back()->with('success', 'Time in recorded');
@@ -129,7 +129,8 @@ class AttendanceController extends Controller
 
         $attendance->update([
             'time_out' => now(),
-            'hours_worked' => $attendance->time_in->diffInMinutes(now())
+            'hours_worked' => $attendance->time_in->diffInMinutes(now()),
+            'status' => 6
         ]);
 
         return back()->with('success', 'Time out recorded');
@@ -138,12 +139,12 @@ class AttendanceController extends Controller
     private function getStatusText($statusCode)
     {
         $statuses = [
-            8 => '<span class="badge bg-light-success">Present</span>',
-            9 => '<span class="badge bg-light-primary">On Time</span>',
-            10 => '<span class="badge bg-light-warning">Late</span>',
-            11 => '<span class="badge bg-light-danger">Absent</span>',
+            6 => '<span class="badge bg-light-success">Present</span>',
+            7 => '<span class="badge bg-light-primary">On Time</span>',
+            8 => '<span class="badge bg-light-primary">On Leave</span>',
+            9 => '<span class="badge bg-light-warning">Late</span>',
+            10 => '<span class="badge bg-light-danger">Absent</span>',
             13 => '<span class="badge bg-light-success">Approved</span>',
-            16 => '<span class="badge bg-light-primary">On Leave</span>',
             null => '<span class="badge bg-light-secondary">Unknown</span>'
         ];
         return $statuses[$statusCode];
@@ -172,7 +173,7 @@ class AttendanceController extends Controller
                     'status' => $this->getStatusText($attendance->status),
                     'tardiness' => $attendance->tardiness_minutes ? $this->formatMinutes($attendance->tardiness_minutes) : 'None',
                     'overtime' => $attendance->overtime_minutes ? $this->formatHours($attendance->overtime_minutes) : 'None',
-                    'leave_info' => $attendance->status == 16
+                    'leave_info' => $attendance->status == 8
                         ? $this->getStatusText(optional($attendance->leaveRS)->status)
                         : 'N/A',
 

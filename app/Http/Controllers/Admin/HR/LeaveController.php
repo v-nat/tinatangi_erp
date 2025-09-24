@@ -76,7 +76,7 @@ class LeaveController extends Controller
                     'leave_id'           => $leave_id,
                     'overtime_minutes'   => 0,
                     'overtime_id'        => null,
-                    'status'             => 16,
+                    'status'             => 8,
                     'created_at'         => Carbon::now(),
                     'updated_at'         => Carbon::now(),
                 ];
@@ -166,7 +166,7 @@ class LeaveController extends Controller
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'reason' => $request->reason ?? '',
-                'status' => 7,
+                'status' => 11,
             ]);
             DB::commit();
             return response()->json(['message' => 'Leave submitted successfully!'], 201);
