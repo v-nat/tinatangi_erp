@@ -83,4 +83,8 @@ class Employee extends Model
     {
         return $this->hasMany(Payroll::class);
     }
+    public function budgetRequests(): HasMany
+    {
+        return $this->hasMany(BudgetRelease::class, 'requested_by_id');
+    }
 }

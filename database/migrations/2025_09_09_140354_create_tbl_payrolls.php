@@ -42,6 +42,8 @@ return new class extends Migration
             $table->decimal('salary_before_tax', 10, 2)->default(0);
             $table->decimal('net_pay', 10, 2)->default(0);
 
+            $table->string('remarks')->nullable();
+
             $table->unsignedBigInteger('status')->default(11);
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 

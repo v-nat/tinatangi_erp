@@ -75,6 +75,12 @@
             </div>
         </div>
     </div>
+    <style>
+        .action-btns {
+            display: flex;
+            justify-content: center
+        }
+    </style>
 @endsection
 @section('scripts')
     <script src="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}   "></script>

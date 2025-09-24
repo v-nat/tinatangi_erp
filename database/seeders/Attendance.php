@@ -15,7 +15,7 @@ class Attendance extends Seeder
     public function run(): void
     {
         //
-        $employeeId = 1;
+        $employeeId = 2;
 
         // Start date: September 1, 2025
         $startDate = Carbon::create(2025, 9, 1);
@@ -23,7 +23,7 @@ class Attendance extends Seeder
         $records = [];
 
         // Loop 13 days from the start date
-        for ($i = 0; $i < 13; $i++) {
+        for ($i = 0; $i < 26; $i++) {
             $date = $startDate->copy()->addDays($i)->toDateString();
 
             $records[] = [

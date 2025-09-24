@@ -65,6 +65,18 @@
                             <span>Payroll Approvals</span>
                         </a>
                     </li>
+                    <li class="sidebar-item <?php echo $__env->yieldContent('financePurchases'); ?> ">
+                        <a href="<?php echo e(route('finance.purchases')); ?>" class='sidebar-link'>
+                            <i class="bi bi-bag-fill"></i>
+                            <span>Purchase Order Approvals</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item <?php echo $__env->yieldContent('financeBudgets'); ?> ">
+                        <a href="<?php echo e(route('finance.budgets')); ?>" class='sidebar-link'>
+                            <i class="bi bi-cash"></i>
+                            <span>Budget Releasing</span>
+                        </a>
+                    </li>
                 </div>
 
                 <div class="<?php echo $__env->yieldContent('procurement'); ?>">

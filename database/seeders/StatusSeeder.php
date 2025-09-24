@@ -28,6 +28,8 @@ class StatusSeeder extends Seeder
             'Pending',
             'Rejected',
             'Approved',
+            'On Process',
+            'Released',
         ];
 
         foreach ($statuses as $status) {

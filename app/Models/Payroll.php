@@ -29,6 +29,7 @@ class Payroll extends Model
         'gross_pay',
         'salary_before_tax',
         'net_pay',
+        'remarks',
         'status',
     ];
 
