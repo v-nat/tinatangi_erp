@@ -1,5 +1,8 @@
 <?php $__env->startSection('title'); ?> Human Resources Dashboard <?php $__env->stopSection(); ?>
 <?php $__env->startSection('sidebar-title'); ?> Human Resources Management <?php $__env->stopSection(); ?>
+<?php $__env->startSection('human_resources'); ?> d-block <?php $__env->stopSection(); ?>
+<?php $__env->startSection('finance'); ?> d-none <?php $__env->stopSection(); ?>
+<?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?>
 <?php $__env->startSection('dsh'); ?> active <?php $__env->stopSection(); ?>
 <?php $__env->startSection('emplMngt'); ?><?php $__env->stopSection(); ?>
 <?php $__env->startSection('appMngt'); ?><?php $__env->stopSection(); ?>

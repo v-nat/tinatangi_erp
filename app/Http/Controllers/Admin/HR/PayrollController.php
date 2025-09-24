@@ -31,6 +31,11 @@ class PayrollController extends Controller
     {
         return view("pages.admin.human_resources.payroll");
     }
+    public function indexOnFinance()
+    {
+        return view("pages.admin.finance.finance-payroll");
+    }
+
 
     public function getPayrollList()
     {

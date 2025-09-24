@@ -1,6 +1,9 @@
 
 <?php $__env->startSection('title'); ?> Human Resources <?php $__env->stopSection(); ?>
 <?php $__env->startSection('sidebar-title'); ?> Human Resources Management <?php $__env->stopSection(); ?>
+<?php $__env->startSection('human_resources'); ?> d-block <?php $__env->stopSection(); ?>
+<?php $__env->startSection('finance'); ?> d-none <?php $__env->stopSection(); ?>
+<?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?>
 <?php $__env->startSection('appMngt'); ?>active
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('appMngt2'); ?>active

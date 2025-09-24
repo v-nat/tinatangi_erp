@@ -1,20 +1,20 @@
-@extends('layouts.app')
-@section('title') Human Resources Dashboard @endsection
-@section('sidebar-title') Human Resources Management @endsection
-@section('human_resources') d-block @endsection
-@section('finance') d-none @endsection
-@section('procurement') d-none @endsection
-@section('payroll') active
-@endsection
-@section('headings') Payroll List @endsection
 
-@section('content')
+<?php $__env->startSection('title'); ?> Finance Risk Management <?php $__env->stopSection(); ?>
+<?php $__env->startSection('sidebar-title'); ?> Finance Risk Management <?php $__env->stopSection(); ?>
+<?php $__env->startSection('human_resources'); ?> d-none <?php $__env->stopSection(); ?>
+<?php $__env->startSection('finance'); ?> d-block <?php $__env->stopSection(); ?>
+<?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?>
+<?php $__env->startSection('financePayroll'); ?> active
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('headings'); ?> Payroll List <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('hr.dashboard') }}">Human Resources</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo e(route('finance.payroll')); ?>">Finance</a></li>
             <li class="breadcrumb-item active" aria-current="page">Payroll</li>
         </ol>
     </nav>
+
     <section class="section">
         <div class="card">
             <div class="card-header">
@@ -45,7 +45,6 @@
                 </div>
             </div>
         </div>
-
     </section>
 
     <!-- view modal-->
@@ -60,29 +59,26 @@
                     </button>
                 </div>
                 <div class="modal-body p-4">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
                         <i class="bx bx-x d-block d-sm-none"></i>
                         <span class="d-none d-sm-block">Close</span>
                     </button>
-                    {{-- <button type="button" class="btn btn-primary ml-1" data-bs-dismiss="modal">
-                        <i class="bx bx-check d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Accept</span>
-                    </button> --}}
+                    
                 </div>
             </div>
         </div>
     </div>
-@endsection
-@section('scripts')
-    <script src="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}   "></script>
-    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}   "></script>
-    {{--
-    <script src="assets/vendors/apexcharts/apexcharts.js"></script> --}}
-    <script src="{{ asset('assets/js/pages/dashboard.js') }}   "></script>
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('scripts'); ?>
+    <script src="<?php echo e(asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js')); ?>   "></script>
+    <script src="<?php echo e(asset('assets/js/bootstrap.bundle.min.js')); ?>   "></script>
+    
+    <script src="<?php echo e(asset('assets/js/pages/dashboard.js')); ?>   "></script>
 
-    <script src="{{ asset('assets/js/main2.js') }}   "></script>
-    <script src="{{ asset('js/hrPayroll.js') }}"></script>
-@endsection
+    <script src="<?php echo e(asset('assets/js/main2.js')); ?>   "></script>
+    <script src="<?php echo e(asset('js/hrPayroll.js')); ?>   "></script>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/finance/finance-payroll.blade.php ENDPATH**/ ?>
