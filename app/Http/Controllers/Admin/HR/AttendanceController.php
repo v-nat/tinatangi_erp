@@ -58,6 +58,7 @@ class AttendanceController extends Controller
 
             $attendance = Attendance::where('employee_id', $user->id)
                 ->whereDate('date', now())
+                ->where('is_leave', 1)
                 ->first();
                 
             return response()->json([
