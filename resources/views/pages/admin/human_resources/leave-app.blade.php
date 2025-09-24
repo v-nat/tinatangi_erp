@@ -1,19 +1,13 @@
 @extends('layouts.app')
 @section('title') Human Resources @endsection
 @section('sidebar-title') Human Resources Management @endsection
-@section('dsh')
-@endsection
-@section('emplMngt')@endsection
+@section('human_resources') d-block @endsection
+@section('finance') d-none @endsection
+@section('procurement') d-none @endsection
 @section('emplMngt2')@endsection
 @section('appMngt')active
 @endsection
 @section('appMngt2')active
-@endsection
-@section('sbi1')
-@endsection
-@section('sbi2')
-@endsection
-@section('sbi3')
 @endsection
 @section('sbi4')active
 @endsection

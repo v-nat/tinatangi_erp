@@ -1,20 +1,20 @@
 @extends('layouts.app')
-@section('title') Human Resources Dashboard @endsection
-@section('sidebar-title') Human Resources Management @endsection
-@section('human_resources') d-block @endsection
-@section('finance') d-none @endsection
+@section('title') Finance Risk Management @endsection
+@section('sidebar-title') Finance Risk Management @endsection
+@section('human_resources') d-none @endsection
+@section('finance') d-block @endsection
 @section('procurement') d-none @endsection
-@section('payroll') active
+@section('financePayroll') active
 @endsection
 @section('headings') Payroll List @endsection
-
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('hr.dashboard') }}">Human Resources</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('finance.payroll') }}">Finance</a></li>
             <li class="breadcrumb-item active" aria-current="page">Payroll</li>
         </ol>
     </nav>
+
     <section class="section">
         <div class="card">
             <div class="card-header">
@@ -45,7 +45,6 @@
                 </div>
             </div>
         </div>
-
     </section>
 
     <!-- view modal-->
@@ -60,7 +59,7 @@
                     </button>
                 </div>
                 <div class="modal-body p-4">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
@@ -84,5 +83,5 @@
     <script src="{{ asset('assets/js/pages/dashboard.js') }}   "></script>
 
     <script src="{{ asset('assets/js/main2.js') }}   "></script>
-    <script src="{{ asset('js/hrPayroll.js') }}"></script>
+    <script src="{{ asset('js/hrPayroll.js') }}   "></script>
 @endsection

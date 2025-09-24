@@ -1,19 +1,13 @@
 
 <?php $__env->startSection('title'); ?> Human Resources <?php $__env->stopSection(); ?>
 <?php $__env->startSection('sidebar-title'); ?> Human Resources Management <?php $__env->stopSection(); ?>
-<?php $__env->startSection('dsh'); ?>
-<?php $__env->stopSection(); ?>
-<?php $__env->startSection('emplMngt'); ?><?php $__env->stopSection(); ?>
+<?php $__env->startSection('human_resources'); ?> d-block <?php $__env->stopSection(); ?>
+<?php $__env->startSection('finance'); ?> d-none <?php $__env->stopSection(); ?>
+<?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?>
 <?php $__env->startSection('emplMngt2'); ?><?php $__env->stopSection(); ?>
 <?php $__env->startSection('appMngt'); ?>active
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('appMngt2'); ?>active
-<?php $__env->stopSection(); ?>
-<?php $__env->startSection('sbi1'); ?>
-<?php $__env->stopSection(); ?>
-<?php $__env->startSection('sbi2'); ?>
-<?php $__env->stopSection(); ?>
-<?php $__env->startSection('sbi3'); ?>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('sbi4'); ?>active
 <?php $__env->stopSection(); ?>
