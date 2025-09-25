@@ -7,6 +7,8 @@
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('headings'); ?> Budget Releasing <?php $__env->stopSection(); ?>
 <?php $__env->startSection('content'); ?>
+    <link rel="stylesheet" href="<?php echo e(asset('source/css/buttons.dataTables.min.css')); ?>">
+
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="<?php echo e(route('finance.payroll')); ?>">Finance</a></li>
@@ -53,15 +55,16 @@
                     <table id="historyTable" class="table table-striped table-hover" style="width:100%">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th class="no-print">#</th>
                                 <th>Release ID</th>
                                 <th>Type</th>
                                 <th>Amount</th>
+                                <th>Requested by</th>
+                                <th>Requested at</th>
                                 <th>Department</th>
                                 <th>Released by</th>
                                 <th>Released at</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th class="no-print">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -115,6 +118,8 @@
 <?php $__env->startSection('scripts'); ?>
     <script src="<?php echo e(asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js')); ?>   "></script>
     <script src="<?php echo e(asset('assets/js/bootstrap.bundle.min.js')); ?>   "></script>
+    <script src="<?php echo e(asset('source/jquery/buttons.print.min.js')); ?>   "></script>
+    <script src="<?php echo e(asset('source/jquery/dataTables.buttons.min.js')); ?>   "></script>
     
     <script src="<?php echo e(asset('assets/js/pages/dashboard.js')); ?>   "></script>
 

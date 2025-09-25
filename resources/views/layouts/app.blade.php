@@ -7,6 +7,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
 
+    <link href="{{ asset('source/css/dataTables.uikit.css') }}" rel="stylesheet">
+    </link>
+{{-- 
+    <link href="{{ asset('source/css/uikit.min.css') }}" rel="stylesheet">
+    </link> --}}
+
     {{--
     <link rel="preconnect" href="https://fonts.gstatic.com"> --}}
     <link rel="stylesheet" href="{{ asset('css/font/Nunito/static/stylesheet.css')}}">
@@ -14,7 +20,6 @@
     <link rel="stylesheet" href="{{ asset('css/font/Nunito/stylesheet.css')}}"> --}}
 
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}  ">
-
     <link rel="stylesheet" href="{{ asset('assets/vendors/iconly/bold.css') }}  ">
 
     <link rel="stylesheet" href="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.css') }}  ">
@@ -138,13 +143,6 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
         </script>
         <script src="{{ asset('source/jquery/datatables.js') }}"></script>
         <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
-        {{--
-        <link href="{{ asset( 'source/css/datatables.css') }}" rel="stylesheet">
-        </link> --}}
-        {{--
-        <link href="{{ asset( 'source/css/datatables.min.css') }}" rel="stylesheet">
-        </link> --}}
-
         <script src="{{ asset('js/logout.js') }}"></script>
         @yield('scripts')
 </body>

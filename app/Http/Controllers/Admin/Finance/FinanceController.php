@@ -67,6 +67,8 @@ class FinanceController extends Controller
                         'type'              => $r->type,
                         'amount'            => $r->amount,
                         'request_id'        => $r->request_id,
+                        'requested_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
+                        'requested_at'      => optional(Carbon::parse($r->requested_at))->format('M d, Y'),
                         'released_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
                         'released_at'      => optional(Carbon::parse($r->requested_at))->format('M d, Y'),
                         'department'        => optional($r->departmentRS)->name,

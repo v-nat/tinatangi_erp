@@ -7,12 +7,15 @@
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title><?php echo $__env->yieldContent('title'); ?></title>
 
+    <link href="<?php echo e(asset('source/css/dataTables.uikit.css')); ?>" rel="stylesheet">
+    </link>
+
+
     
     <link rel="stylesheet" href="<?php echo e(asset('css/font/Nunito/static/stylesheet.css')); ?>">
     
 
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/bootstrap.css')); ?>  ">
-
     <link rel="stylesheet" href="<?php echo e(asset('assets/vendors/iconly/bold.css')); ?>  ">
 
     <link rel="stylesheet" href="<?php echo e(asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.css')); ?>  ">
@@ -135,9 +138,6 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
         </script>
         <script src="<?php echo e(asset('source/jquery/datatables.js')); ?>"></script>
         <script src="<?php echo e(asset('source/jquery/datatables.min.js')); ?>"></script>
-        
-        
-
         <script src="<?php echo e(asset('js/logout.js')); ?>"></script>
         <?php echo $__env->yieldContent('scripts'); ?>
 </body>
