@@ -110,8 +110,8 @@ $(document).ready(function () {
                 contentType: false,
                 success: function (response) {
                     $("#LoadingScreen").fadeOut(200);
-                    reloadTable('approvalTable');
-                    reloadTable('historyTable');
+                    reloadTable("approvalTable");
+                    reloadTable("historyTable");
                     Toast.fire({
                         text: response.message,
                         icon: "success",
@@ -159,13 +159,9 @@ $(document).ready(function () {
                 success: function (response) {
                     if (response.success) {
                         $("#LoadingScreen").fadeOut(200);
-                        reloadTable('approvalTable');
-                        reloadTable('historyTable');
-                        Toast.fire(
-                            "Rejected!",
-                            response.message,
-                            "success"
-                        );
+                        reloadTable("approvalTable");
+                        reloadTable("historyTable");
+                        Toast.fire("Rejected!", response.message, "success");
                     } else {
                         Toast.fire("Error", response.message, "error");
                     }
@@ -188,7 +184,33 @@ $(document).ready(function () {
         }
     });
 
+    $("#printBtn").on("click", function () {
+        $("#historyTable").DataTable().button(".buttons-print").trigger();
+    });
+
     $("#historyTable").DataTable({
+        dom: "Bfrtip", // B = Buttons, f = filter, r = processing, t = table, i = info, p = pagination
+        buttons: [
+            {
+                extend: "print",
+                text: "Print Table",
+                title: "Budget Releases",
+                exportOptions: {
+                    columns: ":not(.no-print)", // only print visible columns
+                },
+                customize: function (win) {
+                    $(win.document.body).css("font-size", "10pt");
+                    $(win.document.body)
+                        .find("table")
+                        .addClass("compact")
+                        .css("font-size", "inherit");
+                },
+            },
+        ],
+        // buttons: ["copy", "excel", "pdf"],
+        layout: {
+            topStart: "buttons",
+        },
         autoWidth: false,
         processing: true,
         serverSide: false,
@@ -220,6 +242,8 @@ $(document).ready(function () {
                     );
                 },
             },
+            { data: "requested_by_id" },
+            { data: "requested_at" },
             { data: "department" },
             { data: "released_by_id" },
             { data: "released_at" },
@@ -227,38 +251,11 @@ $(document).ready(function () {
                 data: "status",
                 className: "text-center",
             },
-            {
-                data: "id",
-                render: function (data, type, row) {
-                    if (
-                        row.status !==
-                        '<span class="badge bg-warning">Pending</span>'
-                    ) {
-                        return " ";
-                    } else {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 approve-btn"
-                                data-id="${data}"
-                                data-request-id="${row.request_id}"
-                                title="Approve">
-                                    <i class="fa-solid fa-check"></i>
-                            </a>
-                            <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
-                                data-id="${data}"
-                                data-request-id="${row.request_id}"
-                                title="Reject">
-                                    <i class="fa-solid fa-x"></i>
-                            </a>
-                        </div>
-                        `;
-                    }
-                },
-                className: "text-center",
-            },
         ],
     });
     function reloadTable(tableId) {
-        $("#" + tableId).DataTable().ajax.reload(null, false);
+        $("#" + tableId)
+            .DataTable()
+            .ajax.reload(null, false);
     }
 });
