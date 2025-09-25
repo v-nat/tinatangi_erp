@@ -32,10 +32,13 @@ $(document).ready(function () {
         if (mode === "add") {
             $("#insert-btn-employee").removeAttr("hidden");
             $("#edit-btn-employee").attr("hidden", true);
+            $("#cancel").attr("hidden", true);
             $("#email").removeAttr("readonly");
         } else if (mode === "edit") {
             $("#insert-btn-employee").attr("hidden", true);
+            $("#reset").attr("hidden", true);
             $("#edit-btn-employee").removeAttr("hidden");
+            $("#cancel").removeAttr("hidden");
             $("#email").attr("readonly", "readonly");
         }
     }
@@ -55,7 +58,6 @@ $(document).ready(function () {
         const raw = $("#position").data("value");
         const [position, positionId, levelValue] = raw.split("|");
 
-        console.log(levelValue);
         supervisorSelect.innerHTML;
         const option = document.createElement("option");
         option.value = value[1];
@@ -101,7 +103,6 @@ $(document).ready(function () {
         }
     }
     function updateSupervisors() {
-        // console.log('Department or Position changed');
         const department = departmentSelect.value;
         const position = positionSelect.value;
         const level = $("#position option:selected").data("level");
@@ -183,30 +184,36 @@ $(document).ready(function () {
 });
 
 $("#reset").click(function (e) {
-    $("#employeeForm")[0].reset();
+    e.preventDefault();
+    const $form = $("#employeeForm");
+    $form.find("select").val("").trigger("change"); // for Select2
+    $form.find('input[type="date"]').val(""); // for date inputs
+    $form.find('input, select').val('');
+    $form.find(".is-invalid").removeClass("is-invalid");
+    $form.find(".invalid-feedback").remove();
+});
+$("#cancel").click(function (e) {
+    e.preventDefault();
+    window.history.back();
 });
 
 $("#insert-btn-employee").click(function (e) {
     e.preventDefault();
     let isValid = true;
+    const $form = $("#employeeForm");
 
-    $(this)
-        .find("[required]")
-        .each(function () {
-            if (!$(this).val().trim()) {
-                isValid = false;
-                $(this).addClass("is-invalid"); // Bootstrap-style feedback
-            } else {
-                $(this).removeClass("is-invalid");
-            }
-        });
+    $form.find("input, select, option").each(function () {
+        const $field = $(this);
+        const value = $field.val();
+        if ($field.prop("required") && (!value || !value.trim())) {
+            $field.addClass("is-invalid");
+            isValid = false;
+        } else {
+            $field.removeClass("is-invalid");
+        }
+    });
 
-    if (!isValid) {
-        Toast.fire({
-            text: "Please fill in all required fields.",
-            icon: "warning",
-        });
-    } else {
+    if (isValid) {
         let form = document.getElementById("employeeForm");
         let formData = new FormData(form);
         $("#LoadingScreen").fadeIn(200);

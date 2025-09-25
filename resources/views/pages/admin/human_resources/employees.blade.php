@@ -66,7 +66,7 @@
     <div class="modal fade text-left" id="generatePayroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel160">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-primary">
+                <div class="modal-header bg-info">
                     <h5 class="modal-title white" id="myModalLabel160">
                         Generate Payroll
                     </h5>
@@ -99,7 +99,7 @@
                             <i class="bx bx-x d-block d-sm-none"></i>
                             <span class="d-none d-sm-block">Cancel</span>
                         </button>
-                        <button type="submit" class="btn btn-primary ml-1" >
+                        <button type="submit" class="btn btn-info ml-1">
                             <i class="bx bx-check d-block d-sm-none"></i>
                             <span class="d-none d-sm-block">Generate</span>
                         </button>
@@ -108,7 +108,7 @@
             </div>
         </div>
     </div>
-    </div>
+
 
 @endsection
 @section('scripts')

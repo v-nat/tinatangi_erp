@@ -6,7 +6,7 @@
 @section('procurement') d-none @endsection
 @section('financeBudgets') active
 @endsection
-@section('headings') Requests List @endsection
+@section('headings') Budget Releasing @endsection
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -32,6 +32,35 @@
                                 <th>Requested at</th>
                                 <th>Department</th>
                                 <th>Notes</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded via DataTables -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Released Budget History</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="historyTable" class="table table-striped table-hover" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Release ID</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Department</th>
+                                <th>Released by</th>
+                                <th>Released at</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>

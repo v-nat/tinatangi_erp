@@ -150,10 +150,11 @@ $(document).ready(function () {
                 contentType: false,
                 success: function (response) {
                     $("#LoadingScreen").fadeOut(200);
+                    reloadTable('payrollsTable');
                     Toast.fire({
                         text: response.message,
                         icon: "success",
-                    }).then(() => location.reload());
+                    });
                 },
                 error: function (xhr) {
                     // console.error('Error response:', xhr);
@@ -202,11 +203,12 @@ $(document).ready(function () {
                 success: function (response) {
                     if (response.success) {
                         $("#LoadingScreen").fadeOut(200);
+                        reloadTable('payrollsTable');
                         Toast.fire(
                             "Rejected!",
                             response.message,
                             "success"
-                        ).then(() => location.reload());
+                        );
                     } else {
                         Toast.fire("Error", response.message, "error");
                     }
@@ -228,6 +230,10 @@ $(document).ready(function () {
             });
         }
     });
+
+    function reloadTable(tableId) {
+        $("#" + tableId).DataTable().ajax.reload(null, false);
+    }
 
     function buildPayslipModal(data) {
         const html = `

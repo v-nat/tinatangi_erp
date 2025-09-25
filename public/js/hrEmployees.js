@@ -64,6 +64,11 @@ $(document).ready(function () {
         return [year, month, day].join("-");
     }
 
+    function formatDateString(dateString) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        return new Date(dateString).toLocaleDateString("en-US", options);
+    }
+
     $(document).on("click", ".btn-edit", function (e) {
         e.preventDefault();
         const id = $(this).data("id");
@@ -82,7 +87,6 @@ $(document).ready(function () {
         const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         $("#start_date").val(formatDate(firstDay));
         $("#end_date").val(formatDate(lastDay));
-        // $("#generatedPayroll").removeAttr("aria-hidden");
 
         $("#generatePayroll").modal("show");
     });
@@ -93,23 +97,20 @@ $(document).ready(function () {
         const form = $(this);
         const formData = form.serialize();
         const submitBtn = form.find('button[type="submit"]');
-        const startDate = $("#start_date").val();
-        const endDate = $("#end_date").val();
+        const startDate = formatDateString($("#start_date").val());
+        const endDate = formatDateString($("#end_date").val());
 
         Swal.fire({
             title: "Confirm Payroll Generation",
             html: `<div class="text-left">
-                    <p>You are about to generate payroll for the following period:</p>
                     <ul class="list-unstyled">
-                        <li><strong>Start Date:</strong> ${startDate}</li>
-                        <li><strong>End Date:</strong> ${endDate}</li>
+                        <li>From: ${startDate}</li>
+                        <li>To: ${endDate}</li>
                     </ul>
                     <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> Please verify the dates before proceeding.</p>
                 </div>`,
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#28a745",
-            cancelButtonColor: "#d33",
             confirmButtonText: "Generate Payroll",
             cancelButtonText: "Cancel",
             width: "500px",

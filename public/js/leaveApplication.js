@@ -125,11 +125,13 @@ $(document).ready(function () {
                         contentType: false,
                         success: function (response) {
                             $("#LoadingScreen").fadeOut(200);
+                            $('#leaveApplication').trigger('reset');
+                            reloadTable('leaveRequests');
                             Toast.fire({
                                 title: "Success!",
                                 text: response.message,
                                 icon: "success",
-                            }).then(() => location.reload());
+                            });
                         },
                         error: function (xhr) {
                             // console.error('Error response:', xhr);
@@ -158,4 +160,7 @@ $(document).ready(function () {
             });
         }
     });
+    function reloadTable(tableId) {
+        $("#" + tableId).DataTable().ajax.reload(null, false);
+    }
 });
