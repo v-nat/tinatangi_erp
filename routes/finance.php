@@ -8,9 +8,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/finance/payroll', [PayrollController::class, 'indexOnFinance'])->name('finance.payroll');
     Route::put('/finance/payroll/process/{id}/{status}', [PayrollController::class, 'putOnProcess']);
 
-
     Route::get('/finance/budgets', [FinanceController::class, 'budgetsIndex'])->name('finance.budgets');
     Route::get('/finance/budgets/requests', [FinanceController::class, 'getPendingRequests']);
+    Route::get('/finance/budgets/history', [FinanceController::class, 'getRequestsHistory']);
     Route::put('/finance/budgets/requests/approve/{id}/{req_id}', [FinanceController::class,'approveRequest']);
     Route::put('/finance/budgets/requests/reject/{id}', [FinanceController::class,'rejectRequest']);
 

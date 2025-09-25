@@ -36,4 +36,8 @@ class BudgetRelease extends Model
     {
         return $this->belongsTo(Status::class, 'status');
     }
+    public function departmentRS(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department');
+    }
 }

@@ -99,7 +99,7 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
                 toast: true,
                 position: "top",
                 showConfirmButton: false,
-                timer: 500,
+                timer: 1500,
                 timerProgressBar: true,
                 didOpen: (toast) => {
                     toast.onmouseenter = Swal.stopTimer;

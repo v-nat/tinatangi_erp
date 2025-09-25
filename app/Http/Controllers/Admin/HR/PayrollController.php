@@ -76,7 +76,7 @@ class PayrollController extends Controller
         try {
             $payroll = Payroll::findOrFail($id);
              if ($payroll->remarks == 'payroll released') {
-                $remarks = '<div class="alert alert-success"> Released: ' . $payroll->remarks . '</div>';
+                $remarks = '<div class="alert alert-success">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
             } else if ($payroll->remarks) {
                 $remarks = '<div class="alert alert-danger"> Rejected: ' . $payroll->remarks . '</div>';
             } else {

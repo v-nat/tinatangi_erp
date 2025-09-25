@@ -50,11 +50,12 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="first_name">First Name *</label>
-                                            <input type="text" id="first_name" class="form-control" placeholder="Taylor"
+                                            <input type="text" id="first_name" class="form-control" placeholder="Enter Firstname"
                                                 name="first_name" value="{{ old('first_name', $data['first_name'] ?? '') }}" required>
                                             @error('first_name')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">First Name is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
@@ -70,17 +71,18 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="last_name">Last Name *</label>
-                                            <input type="text" id="last_name" class="form-control" placeholder="Swift"
+                                            <input type="text" id="last_name" class="form-control" placeholder="Enter Lastname"
                                                 name="last_name" value="{{ old('last_name', $data['last_name'] ?? '') }}" required>
                                             @error('last_name')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Last Name is required.</div>
                                         </div> 
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="gender">Gender *</label>
-                                            <select class="form-select" id="gender" name="gender">
+                                            <select class="form-select" id="gender" name="gender" required>
                                                 <option value="" disabled selected>Choose Gender</option>
                                                 <option value="Male" {{ old('gender', $data['gender']) == 'Male' ? 'selected' : '' }}>Male
                                                 </option>
@@ -94,23 +96,25 @@
                                             @error('gender')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Gender is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="birth_date">Birthdate *</label>
                                             <input type="date" id="birth_date" class="form-control" name="birth_date"
-                                                placeholder="Dec-12-1989" value="{{ old('birth_date', optional($data['birth_date'])->format('Y-m-d')?? '') }}" required>
+                                                placeholder="1989-12-13" value="{{ old('birth_date', optional($data['birth_date'])->format('Y-m-d')?? '') }}" required>
                                             @error('birth_date')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Birthdate is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="age">Age</label>
                                             <input type="text" id="age" class="form-control" name="age" readonly
-                                                placeholder="34" value="{{ old('age', $data['age'] ?? '') }}">
+                                                placeholder="00" value="{{ old('age', $data['age'] ?? '') }}">
                                             @error('age')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
@@ -119,52 +123,57 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="address">Address *</label>
-                                            <input type="text" id="address" class="form-control" placeholder="Tennessee"
+                                            <input type="text" id="address" class="form-control" placeholder="Enter Address" required
                                                 name="address" value="{{ old('address', $data['address'] ?? '') }}">
                                             @error('address')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Address is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="postal_code">Postal Code </label>
-                                            <input type="tel" id="postal_code" class="form-control" name="postal_code"
+                                            <input type="tel" id="postal_code" class="form-control" name="postal_code" required
                                                 placeholder="19611" value="{{ old('postal_code', $data['postal_code'] ?? '') }}">
                                             @error('postal_code')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Postal Code is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="email">Email *</label>
                                             <input type="email" id="email" class="form-control" name="email" data-value="{{ $id }}"
-                                                placeholder="tswift@yahoo.com" value="{{ old('email', $data['email'] ?? '') }}" required>
+                                                placeholder="example@mail.com" value="{{ old('email', $data['email'] ?? '') }}" required>
                                             @error('email')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Email is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="phone_number">Phone Number *</label>
                                             <input type="tel" id="phone_number" class="form-control" name="phone_number"
-                                                pattern="^(09|\+639)\d{9}$" maxlength="11" minlength="11"
-                                                placeholder="09121319890" value="{{ old('phone_number', $data['phone_number'] ?? '') }}">
+                                                pattern="^(09|\+639)\d{9}$" maxlength="11" minlength="11" required
+                                                placeholder="09123456789" value="{{ old('phone_number', $data['phone_number'] ?? '') }}">
                                             @error('phone_number')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Phone Number is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="citizenship">Citizenship</label>
-                                            <input type="text" id="citizenship" class="form-control" name="citizenship"
-                                                placeholder="American" value="{{ old('citizenship', $data['citizenship'] ?? '') }}">
+                                            <input type="text" id="citizenship" class="form-control" name="citizenship" required
+                                                placeholder="Enter Citizenship" value="{{ old('citizenship', $data['citizenship'] ?? '') }}">
                                             @error('citizenship')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Citizenship is required.</div>
                                         </div>
                                     </div>
 
@@ -197,19 +206,21 @@
                                             @error('department')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Department is required.</div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="supervisor">Direct Supervisor *</label>
-                                            <select id="supervisor" name="supervisor_id" class="form-select" data-value="{{ $data['supervisor'] }} | {{$data['supervisor_id']}}">
+                                            <select id="supervisor" name="supervisor_id" class="form-select" data-value="{{ $data['supervisor'] }} | {{$data['supervisor_id']}}" required>
                                                 <option value=""  disabled selected>Choose Supervisor</option>
                                                 {{-- This will be populated dynamically --}}
                                             </select>
                                             @error('supervisor_id')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Direct Supervisor is required.</div>
                                         </div>
                                     </div>
 
@@ -223,13 +234,14 @@
                                             @error('position_id')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
+                                            <div class="invalid-feedback">Position is required.</div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="Level">Role *</label>
-                                            <input type="text" name="level" id="level" class="form-control" readonly>
+                                            <label for="Level">Role</label>
+                                            <input type="text" name="level" id="level" class="form-control" readonly placeholder="staff">
                                         </div>
                                     </div>
 
@@ -249,7 +261,7 @@
                                 <div class="row">
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="salary">Base Salary *</label>
+                                            <label for="salary">Base Salary</label>
                                             <input type="number" id="base_salary" class="form-control" placeholder="0.00"
                                                 name="base_salary" value="{{ old('base_salary', $data['base_salary'] ?? '') }}" readonly>
                                             @error('base_salary')
@@ -260,7 +272,7 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="sss">SSS</label>
-                                            <input type="number" id="sss" class="form-control"
+                                            <input type="number" id="sss" class="form-control" placeholder="0.00"
                                                 name="sss" value="600.00" readonly>
                                             @error('sss')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -270,7 +282,7 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="pagibig">Pag-ibig</label>
-                                            <input type="number" id="pagibig" class="form-control"
+                                            <input type="number" id="pagibig" class="form-control" placeholder="0.00"
                                                 name="pagibig" value="100.00" readonly>
                                             @error('pagibig')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -280,7 +292,7 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="philhealth">Philhealth</label>
-                                            <input type="number" id="philhealth" class="form-control"
+                                            <input type="number" id="philhealth" class="form-control" placeholder="0.00"
                                                 name="philhealth" value="450.00" readonly>
                                             @error('philhealth')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -291,6 +303,7 @@
                                         <button id="insert-btn-employee" data-mode="{{$mode}}" class="btn btn-primary me-1 mb-1">Add Employee</button>
                                         <button id="edit-btn-employee" hidden class="btn btn-primary me-1 mb-1">Update Employee</button>
                                         <button id="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                                        <button id="cancel" hidden class="btn btn-light-secondary me-1 mb-1">Cancel</button>
                                     </div>
                                 </div>
                             </div>

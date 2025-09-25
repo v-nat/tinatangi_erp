@@ -75,6 +75,11 @@ $(document).ready(function () {
             },
         ],
     });
+
+    function reloadTable(tableId) {
+        $("#" + tableId).DataTable().ajax.reload(null, false);
+    }
+
     $(".modal").on("hidden.bs.modal", function () {
         $(this).find("form").trigger("reset");
     });
@@ -107,9 +112,9 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.success) {
-                    // updateLeaveStatus(leaveId, 13, "Approved", reason);
                     $("#LoadingScreen").fadeOut(200);
-                    Toast.fire("Approved!", response.message, "success").then(() => location.reload());
+                    reloadTable('leaves_table');
+                    Toast.fire("Approved!", response.message, "success");
                 } else {
                     Toast.fire("Error", response.message, "error");
                 }
@@ -140,9 +145,9 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.success) {
-                    // updateLeaveStatus(leaveId, 13, "Rejected", reason);
                     $("#LoadingScreen").fadeOut(200);
-                    Toast.fire("Rejected!", response.message, "success").then(() => location.reload());
+                    reloadTable('leaves_table');
+                    Toast.fire("Rejected!", response.message, "success");
                 } else {
                     Toast.fire("Error", response.message, "error");
                 }
