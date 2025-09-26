@@ -13,4 +13,9 @@ class Item extends Model
     public function categories(){
         return $this->belongsTo(Category::class);
     }
+
+    public function scopeInCategory($query, $catId)
+    {
+        return $query->where('category_id', $catId);
+    }
 }

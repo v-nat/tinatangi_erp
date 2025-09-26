@@ -1,9 +1,4 @@
 $(document).ready(function () {
-    const id = $("#employee_id").val();
-    function formatDate(dateString) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        return new Date(dateString).toLocaleDateString("en-US", options);
-    }
     $("#orderRequest").DataTable({
         columns: [
             {
@@ -38,10 +33,15 @@ $(document).ready(function () {
         ],
     });
 
+    const categorySelect = document.getElementById("category");
+    const itemSelect = document.getElementById("item");
+
+    categorySelect.addEventListener("change", getItems);
+
     function getSuppliers() {
         const supplierSelect = document.getElementById("supplier");
-        
-        fetch(`/procurement/supplier/get-active-supplier`)
+
+        fetch(`/procurement/create-purchase-order/get-active-supplier`)
             .then((response) => response.json())
             .then((data) => {
                 supplierSelect.innerHTML =
@@ -54,8 +54,47 @@ $(document).ready(function () {
                 });
             });
     }
+    function getCategories() {
+        fetch(`/procurement/create-purchase-order/get-categories`)
+            .then((response) => response.json())
+            .then((data) => {
+                categorySelect.innerHTML =
+                    '<option value="" disabled selected>Choose Category</option>';
+                data.forEach((s) => {
+                    const option = document.createElement("option");
+                    option.value = s.id;
+                    option.textContent = s.name;
+                    categorySelect.appendChild(option);
+                });
+            });
+    }
+
+    function getItems() {
+        const category = categorySelect.value;
+        if (category) {
+            fetch(
+                `/procurement/create-purchase-order/get-items?category=${encodeURIComponent(
+                    category
+                )}`
+            )
+                .then((res) => res.json())
+                .then((data) => {
+                    const itemSelect = document.getElementById("item");
+                    itemSelect.innerHTML =
+                        '<option value="" disabled selected>Choose Item</option>';
+
+                    data.forEach((p) => {
+                        const option = document.createElement("option");
+                        option.value = p.id;
+                        option.textContent = p.name;
+                        itemSelect.appendChild(option);
+                    });
+                });
+        }
+    }
 
     getSuppliers();
+    getCategories();
 
     function reloadTable(tableId) {
         $("#" + tableId)

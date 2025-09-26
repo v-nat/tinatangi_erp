@@ -41,7 +41,6 @@ class SupplierController extends Controller
         $suppliers = Supplier::where('status', 1)
             ->select('id', 'supplier_name')
             ->get();
-        // dd ($positions);
 
         return response()->json($suppliers);
     }
