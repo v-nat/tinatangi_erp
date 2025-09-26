@@ -58,7 +58,7 @@ class FinanceController extends Controller
             $requests = BudgetRelease::with(['employeeRS', 'statusRS', 'departmentRS'])
                 ->where('status', 15)
                 ->orderBy('released_at', 'desc')->get();
-            // dd($employees);
+            // dd($requests);
             return response()->json([
                 'data' => $requests->map(function ($r) {
                     return [
@@ -69,8 +69,8 @@ class FinanceController extends Controller
                         'request_id'        => $r->request_id,
                         'requested_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
                         'requested_at'      => optional(Carbon::parse($r->requested_at))->format('M d, Y'),
-                        'released_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
-                        'released_at'      => optional(Carbon::parse($r->requested_at))->format('M d, Y'),
+                        'released_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name ?? '',
+                        'released_at'      => optional(Carbon::parse($r->released_at))->format('M d, Y') ?? '',
                         'department'        => optional($r->departmentRS)->name,
                         'status'            => Status::getStatusText($r->status),
                     ];
@@ -87,7 +87,7 @@ class FinanceController extends Controller
 
         try {
             DB::beginTransaction();
-
+            
             $validator = Validator::make($request->all(), [
                 'request_id' => 'required',
                 'notes' => 'required'
@@ -105,14 +105,17 @@ class FinanceController extends Controller
             $release->status = 12;
             $release->save();
 
-            $payroll = Payroll::find($request->request_id);
-            $payroll->remarks = $request->notes;
-            $payroll->status = 12;
-            $payroll->save();
+
+            if ($release->type == 'Payroll') {
+                $payroll = Payroll::findOrFail($request->request_id);
+                $payroll->remarks = $request->notes;
+                $payroll->status = 12;
+                $payroll->save();
+            }
 
             DB::commit();
 
-            return response()->json(['message' => 'Request is Rejected!'], 200);
+            return response()->json(['success' => true,'message' => 'Request is Rejected!'], 200);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
@@ -133,14 +136,14 @@ class FinanceController extends Controller
             $release->save();
 
             if ($release->type == 'Payroll') {
-                $payroll = Payroll::find($req_id);
+                $payroll = Payroll::findOrFail($req_id);
                 $payroll->status = 13;
                 $payroll->save();
             }
 
             DB::commit();
 
-            return response()->json(['message' => 'Request is Released!'], 200);
+            return response()->json(['success' => true,'message' => 'Request is Released!'], 200);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {

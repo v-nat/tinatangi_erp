@@ -82,13 +82,29 @@
                 <div class="@yield('procurement')">
                     <li class="sidebar-item @yield('procurementIndex') ">
                         <a href="{{route('procurement.index')}}" class='sidebar-link'>
-                            <i class="bi bi-bag-fill"></i>
-                            <span>Index</span>
+                            <i class="bi bi-grid-1x2-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item @yield('createPO') ">
+                        <a href="{{route('procurement.createPO')}}" class='sidebar-link'>
+                            <i class="bi bi-receipt-cutoff"></i>
+                            <span>Create Purchase Order</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item @yield('purchaseOrders') ">
+                        <a href="{{route('procurement.purchaseOrders')}}" class='sidebar-link'>
+                            <i class="bi bi-cart"></i>
+                            <span>Purchase Orders</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item @yield('supplier') ">
+                        <a href="{{route('procurement.supplier')}}" class='sidebar-link'>
+                            <i class="bi bi-truck"></i>
+                            <span>Suppliers</span>
                         </a>
                     </li>
                 </div>
-
-
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

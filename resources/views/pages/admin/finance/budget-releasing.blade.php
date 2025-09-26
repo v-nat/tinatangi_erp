@@ -8,7 +8,7 @@
 @endsection
 @section('headings') Budget Releasing @endsection
 @section('content')
-    <link rel="stylesheet" href="{{ asset('source/css/buttons.dataTables.min.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('source/css/buttons.dataTables.min.css') }}"> --}}
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -119,8 +119,8 @@
 @section('scripts')
     <script src="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}   "></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}   "></script>
-    <script src="{{ asset('source/jquery/buttons.print.min.js') }}   "></script>
-    <script src="{{ asset('source/jquery/dataTables.buttons.min.js') }}   "></script>
+    {{-- <script src="{{ asset('source/jquery/buttons.print.min.js') }}   "></script>
+    <script src="{{ asset('source/jquery/dataTables.buttons.min.js') }}   "></script> --}}
     {{--
     <script src="assets/vendors/apexcharts/apexcharts.js"></script> --}}
     <script src="{{ asset('assets/js/pages/dashboard.js') }}   "></script>

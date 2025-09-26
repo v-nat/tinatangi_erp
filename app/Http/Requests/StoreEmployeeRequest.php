@@ -31,7 +31,7 @@ class StoreEmployeeRequest extends FormRequest
             'gender' => 'required|string',
             'birth_date' => 'required|date',
             'age' => 'required|integer|min:18',
-            'phone_number' => ['required', 'string', 'max:13', 'regex:/^(09|\+639)\d{9}$/'],
+            'phone_number' => ['required', 'string', 'max:11', 'regex:/^(09|\+639)\d{9}$/'],
             'citizenship' => 'required|string|max:50',
             'department' => 'required|integer',
             'level'=> 'required',

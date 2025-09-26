@@ -75,7 +75,7 @@ class PayrollController extends Controller
 
         try {
             $payroll = Payroll::findOrFail($id);
-             if ($payroll->remarks == 'payroll released') {
+            if ($payroll->remarks == 'payroll released') {
                 $remarks = '<div class="alert alert-success">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
             } else if ($payroll->remarks) {
                 $remarks = '<div class="alert alert-danger"> Rejected: ' . $payroll->remarks . '</div>';
@@ -125,36 +125,38 @@ class PayrollController extends Controller
         try {
             DB::beginTransaction();
 
-            $payroll = Payroll::find($id);
+            $payroll = Payroll::findOrFail($id);
             $payroll->remarks = $request->remarks;
             $payroll->status = $status;
             $payroll->save();
 
-            $year = Carbon::now()->format('Y');
-            do {
-                $random = rand(10000, 99999);
-                $release_id = $year . $random;
-            } while (BudgetRelease::pluck('id')->contains($release_id));
+            if ($status == 14) {
+                $year = Carbon::now()->format('Y');
+                do {
+                    $random = rand(10000, 99999);
+                    $release_id = $year . $random;
+                } while (BudgetRelease::pluck('id')->contains($release_id));
 
-            $release = BudgetRelease::create([
-                'release_id'        => $release_id, 
-                'type'              => 'Payroll', 
-                'amount'            => $payroll->net_pay,
-                'request_id'        => $id,
-                'requested_by_id'   => auth('')->user()->id, 
-                'requested_at'      => now(),
-                'released_by_id'    => null, 
-                'released_at'       => null,
-                'department'        => 2, 
-                'notes'             => '',
-                'status'            => 11, 
-            ]);
+                $release = BudgetRelease::create([
+                    'release_id'        => $release_id,
+                    'type'              => 'Payroll',
+                    'amount'            => $payroll->net_pay,
+                    'request_id'        => $id,
+                    'requested_by_id'   => auth('')->user()->id,
+                    'requested_at'      => now(),
+                    'released_by_id'    => null,
+                    'released_at'       => null,
+                    'department'        => 2,
+                    'notes'             => '',
+                    'status'            => 11,
+                ]);
 
-            $release->save();
-
+                $release->save();
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Payroll is now on Process!'], 200);
+            }
             DB::commit();
-
-            return response()->json(['message' => 'Payroll is now on Process!'], 200);
+            return response()->json(['success' => true, 'message' => 'Payroll Request Rejected!'], 200);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {

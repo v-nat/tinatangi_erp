@@ -82,13 +82,29 @@
                 <div class="<?php echo $__env->yieldContent('procurement'); ?>">
                     <li class="sidebar-item <?php echo $__env->yieldContent('procurementIndex'); ?> ">
                         <a href="<?php echo e(route('procurement.index')); ?>" class='sidebar-link'>
-                            <i class="bi bi-bag-fill"></i>
-                            <span>Index</span>
+                            <i class="bi bi-grid-1x2-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item <?php echo $__env->yieldContent('createPO'); ?> ">
+                        <a href="<?php echo e(route('procurement.createPO')); ?>" class='sidebar-link'>
+                            <i class="bi bi-receipt-cutoff"></i>
+                            <span>Create Purchase Order</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item <?php echo $__env->yieldContent('purchaseOrders'); ?> ">
+                        <a href="<?php echo e(route('procurement.purchaseOrders')); ?>" class='sidebar-link'>
+                            <i class="bi bi-cart"></i>
+                            <span>Purchase Orders</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item <?php echo $__env->yieldContent('supplier'); ?> ">
+                        <a href="<?php echo e(route('procurement.supplier')); ?>" class='sidebar-link'>
+                            <i class="bi bi-truck"></i>
+                            <span>Suppliers</span>
                         </a>
                     </li>
                 </div>
-
-
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
