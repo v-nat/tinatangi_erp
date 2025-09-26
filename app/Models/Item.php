@@ -9,4 +9,8 @@ class Item extends Model
 {
     //
     use SoftDeletes;
+
+    public function categories(){
+        return $this->belongsTo(Category::class);
+    }
 }

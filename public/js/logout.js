@@ -12,7 +12,7 @@ $(document).on("click", "#logout-btn", function (e) {
         if (!result.isConfirmed) {
             return;
         }
-        $("#loadingScreen").fadeIn(200);
+        $("#LoadingScreen").fadeIn(200);
         $.ajax({
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"), // Get CSRF token from meta tag
@@ -21,7 +21,7 @@ $(document).on("click", "#logout-btn", function (e) {
             type: "POST", // HTTP method
             success: function (data) {
                 // console.log("Logout successful", data);
-                $("#loadingScreen").fadeOut(200);
+                $("#LoadingScreen").fadeOut(200);
 
                 // Optional: Display a suc  cess message with SweetAlert or Toastr
                 Toast.fire("Logged Out", "You have been logged out.", "success");

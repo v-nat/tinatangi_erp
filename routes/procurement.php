@@ -12,4 +12,5 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/procurement/supplier/add-supplier', [SupplierController::class,'storeSupplier']);
     Route::get('/procurement/supplier/get-supplier', [SupplierController::class,'getSupplier']);
+    Route::get('/procurement/supplier/get-active-supplier', [SupplierController::class,'getActiveSupplier']);
 });

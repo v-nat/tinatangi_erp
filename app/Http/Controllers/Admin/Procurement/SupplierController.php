@@ -35,6 +35,16 @@ class SupplierController extends Controller
             return response()->json(['error' => 'Server error'], 500);
         }
     }
+
+    public function getActiveSupplier()
+    {
+        $suppliers = Supplier::where('status', 1)
+            ->select('id', 'supplier_name')
+            ->get();
+        // dd ($positions);
+
+        return response()->json($suppliers);
+    }
     public function storeSupplier(StoreSupplierRequest $request)
     {
          try {

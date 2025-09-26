@@ -1,4 +1,3 @@
-
 <?php $__env->startSection('title'); ?> Procurement Management <?php $__env->stopSection(); ?>
 <?php $__env->startSection('sidebar-title'); ?> Procurement Management <?php $__env->stopSection(); ?>
 <?php $__env->startSection('human_resources'); ?> d-none <?php $__env->stopSection(); ?>
