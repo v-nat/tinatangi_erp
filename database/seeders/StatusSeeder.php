@@ -30,6 +30,12 @@ class StatusSeeder extends Seeder
             'Approved',
             'On Process',
             'Released',
+            'Delivered',
+            'Partial Delivered',
+            'Approved - Pending Dispatch',
+            'Rejected - Supplier',
+            'Accepted - Supplier',
+            'Return',
         ];
 
         foreach ($statuses as $status) {

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\Employee;
@@ -20,6 +21,8 @@ class DatabaseSeeder extends Seeder
         $this->call(DepartmentSeeder::class);
         $this->call(StatusSeeder::class);
         $this->call(PositionSeeder::class);
+        $this->call(CategorySeeder::class);
+        $this->call(ItemSeeder::class);
 
         User::create([
             'id' => 1,

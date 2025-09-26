@@ -38,6 +38,25 @@ $(document).ready(function () {
         ],
     });
 
+    function getSuppliers() {
+        const supplierSelect = document.getElementById("supplier");
+        
+        fetch(`/procurement/supplier/get-active-supplier`)
+            .then((response) => response.json())
+            .then((data) => {
+                supplierSelect.innerHTML =
+                    '<option value="" disabled selected>Choose...</option>';
+                data.forEach((s) => {
+                    const option = document.createElement("option");
+                    option.value = s.id;
+                    option.textContent = s.supplier_name;
+                    supplierSelect.appendChild(option);
+                });
+            });
+    }
+
+    getSuppliers();
+
     function reloadTable(tableId) {
         $("#" + tableId)
             .DataTable()
