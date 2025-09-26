@@ -122,12 +122,11 @@ class EmployeeController extends Controller
                 'middle_name' => $validated['middle_name'] ?? null,
                 'last_name' => $validated['last_name'],
                 'email' => $validated['email'],
-                'password' => bcrypt(Sanitizer::clean($_POST["last_name"]) . $_POST["first_name"]),
+                'password' => bcrypt(Sanitizer::clean(Sanitizer::clean($_POST["last_name"]) . Sanitizer::clean($_POST["first_name"]))),
                 'phone_number' => $validated['phone_number'],
                 'user_type' => 'employee',
             ]);
-            DB::commit();
-            DB::beginTransaction();
+            $user->save();
             Employee::create([
                 'id' => User::where('email', $validated['email'])->first()->id,
                 'user_id' => User::where('email', $validated['email'])->first()->id,
@@ -153,7 +152,7 @@ class EmployeeController extends Controller
                 'email' => $validated['email'],
                 'title' => 'Welcome aboard to Tinatangi Cafe!',
                 'name' => $validated['first_name'] . ' ' . $validated['last_name'],
-                'password' => Sanitizer::clean($_POST["last_name"] . $_POST["first_name"]),
+                'password' => Sanitizer::clean(Sanitizer::clean($_POST["last_name"]) . Sanitizer::clean($_POST["first_name"])),
                 'blade_file' => 'emails.new-employee',
                 'login_link' => url('/login'),
             ];

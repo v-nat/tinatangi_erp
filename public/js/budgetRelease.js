@@ -184,33 +184,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#printBtn").on("click", function () {
-        $("#historyTable").DataTable().button(".buttons-print").trigger();
-    });
-
     $("#historyTable").DataTable({
-        dom: "Bfrtip", // B = Buttons, f = filter, r = processing, t = table, i = info, p = pagination
-        buttons: [
-            {
-                extend: "print",
-                text: "Print Table",
-                title: "Budget Releases",
-                exportOptions: {
-                    columns: ":not(.no-print)", // only print visible columns
-                },
-                customize: function (win) {
-                    $(win.document.body).css("font-size", "10pt");
-                    $(win.document.body)
-                        .find("table")
-                        .addClass("compact")
-                        .css("font-size", "inherit");
-                },
-            },
-        ],
-        // buttons: ["copy", "excel", "pdf"],
-        layout: {
-            topStart: "buttons",
-        },
         autoWidth: false,
         processing: true,
         serverSide: false,
