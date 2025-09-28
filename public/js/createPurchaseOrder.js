@@ -134,29 +134,22 @@ $(document).ready(function () {
         const unitPrice = parseFloat($('#unit_price').val());
 
         if (isValid) {
-            // Basic Validation Check (Optional, but recommended)
             if (!itemText || qnty < 1 || unitPrice <= 0) {
                 alert('Please select an item and enter valid quantity/unit price.');
                 return;
             }
 
-            // --- NEW LOGIC: Check for Existing Item ---
             let existingRow = null;
 
-            // Iterate through all data in the table
             orderTable.rows().every(function () {
                 const rowData = this.data();
-
-                // Check if the item in the current row matches the new item text
                 if (rowData.item === itemText) {
-                    existingRow = this; // Store the DataTables row object
-                    return false; // Exit the loop (like a 'break')
+                    existingRow = this;
+                    return false;
                 }
             });
 
-            // --- 3. Handle Item Found or Not Found ---
             if (existingRow) {
-                // ITEM FOUND: Update the quantity and total
                 Swal.fire({
                     title: "Duplicate Entry?",
                     text: "This item is already added, do you want to update the quantity instead?",
@@ -172,26 +165,19 @@ $(document).ready(function () {
                     $("#LoadingScreen").fadeIn(200);
                     const currentRowData = existingRow.data();
 
-                    // **Calculate the NEW Quantity and Total**
                     const newQnty = currentRowData.qnty + qnty;
                     const newTotal = newQnty * unitPrice;
 
-                    // Update the row data object
                     currentRowData.qnty = newQnty;
                     currentRowData.total = newTotal.toFixed(2);
 
-                    // Use row().data(newData) to update the row's data
                     existingRow.data(currentRowData).draw();
                     $("#LoadingScreen").fadeOut(200);
                 });
 
             } else {
-                // ITEM NOT FOUND: Add a new row
-
-                // --- Calculate Total (from original logic) ---
                 const total = qnty * unitPrice;
 
-                // --- Create the Row Data Object ---
                 const newRowData = {
                     category: categoryText,
                     item: itemText,
@@ -201,10 +187,8 @@ $(document).ready(function () {
                     action: `<button type="button" class="btn btn-sm btn-danger delete-row" data-item="${itemText}">Delete</button>`
                 };
 
-                // --- Add the New Row and Redraw the Table ---
                 orderTable.row.add(newRowData).draw();
             }
-            // Optional: Reset only the item-specific fields after adding
             $('#category').val('');
             $('#item_select').val('');
             $('#qnty').val('1');
@@ -238,7 +222,6 @@ $(document).ready(function () {
 
     $("#submit-PO").click(function (e) {
         e.preventDefault();
-        console.log('clicked before swal');
         Swal.fire({
             title: "Are you sure?",
             text: "You are about to submit this Request.",
@@ -251,9 +234,7 @@ $(document).ready(function () {
             if (!result.isConfirmed) {
                 return;
             }
-            console.log('SUBMIT CLICKED');
             // var allTableData = orderTable.rows().data().toArray();
-
             // var cleanedData = allTableData.map(function (item) {
             //     return {
             //         item: item.item,
