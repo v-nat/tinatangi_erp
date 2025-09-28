@@ -102,9 +102,9 @@ $(document).ready(function () {
 
         // --- 1. Get Values ---
         const itemElement = $('#item');
-        const itemText = itemElement.find('option:selected').text().trim(); 
+        const itemText = itemElement.find('option:selected').text().trim();
         const categoryElement = $('#category');
-        const categoryText = categoryElement.find('option:selected').text().trim(); 
+        const categoryText = categoryElement.find('option:selected').text().trim();
         const qnty = parseInt($('#qnty').val());
         const unitPrice = parseFloat($('#unit_price').val());
 
@@ -114,29 +114,85 @@ $(document).ready(function () {
             return;
         }
 
+        // --- NEW LOGIC: Check for Existing Item ---
+        let existingRow = null;
+
+        // Iterate through all data in the table
+        orderTable.rows().every(function () {
+            const rowData = this.data();
+
+            // Check if the item in the current row matches the new item text
+            if (rowData.item === itemText) {
+                existingRow = this; // Store the DataTables row object
+                return false; // Exit the loop (like a 'break')
+            }
+        });
+
         // --- 2. Calculate Total ---
-        const total = qnty * unitPrice;
 
-        // --- 3. Create the Row Data Object ---
-        // The keys MUST match the 'data' properties defined in your table initialization.
-        const newRowData = {
-            // 'null' for the auto-numbered column (#) is handled by DataTables itself
-            category: categoryText,
-            item: itemText,
-            qnty: qnty,
-            unit: unitPrice.toFixed(2), // Store as number/string, your renderer formats it with '₱'
-            total: total.toFixed(2),     // Store as number/string, your renderer formats it with '₱'
-            action: `<button type="button" class="btn btn-sm btn-danger delete-row" data-item="${itemText}">Delete</button>`
-        };
+        // --- 3. Handle Item Found or Not Found ---
+        if (existingRow) {
+            // ITEM FOUND: Update the quantity and total
 
-        // --- 4. Add the Row and Redraw the Table ---
-        // Use the API instance to add the new row object.
-        orderTable.row.add(newRowData).draw();
+            const currentRowData = existingRow.data();
 
+            // **Calculate the NEW Quantity and Total**
+            const newQnty = currentRowData.qnty + qnty;
+            const newTotal = newQnty * unitPrice;
+
+            // Update the row data object
+            currentRowData.qnty = newQnty;
+            currentRowData.total = newTotal.toFixed(2);
+
+            // Use row().data(newData) to update the row's data
+            existingRow.data(currentRowData).draw();
+
+        } else {
+            // ITEM NOT FOUND: Add a new row
+
+            // --- Calculate Total (from original logic) ---
+            const total = qnty * unitPrice;
+
+            // --- Create the Row Data Object ---
+            const newRowData = {
+                category: categoryText,
+                item: itemText,
+                qnty: qnty,
+                unit: unitPrice.toFixed(2),
+                total: total.toFixed(2),
+                action: `<button type="button" class="btn btn-sm btn-danger delete-row" data-item="${itemText}">Delete</button>`
+            };
+
+            // --- Add the New Row and Redraw the Table ---
+            orderTable.row.add(newRowData).draw();
+        }
         // Optional: Reset only the item-specific fields after adding
         $('#category').val('');
         $('#item_select').val('');
         $('#qnty').val('1');
+    });
+
+    $('#orderRequest tbody').on('click', '.delete-row', function () {
+        var row = orderTable.row($(this).parents('tr'));
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to Delete this Item.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Delete",
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+            $("#LoadingScreen").fadeIn(200);
+            row.remove();
+            orderTable.draw();
+            $("#LoadingScreen").fadeOut(200);
+        });
+
     });
 
     $("#submit-PO").click(function (e) {
