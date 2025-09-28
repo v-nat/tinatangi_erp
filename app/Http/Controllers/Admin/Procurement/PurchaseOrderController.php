@@ -16,7 +16,7 @@ class PurchaseOrderController extends Controller
         try {
             $categories = Category::all('id', 'name');
 
-        return response()->json($categories);
+            return response()->json($categories);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Server error'], 500);
         }
@@ -40,4 +40,29 @@ class PurchaseOrderController extends Controller
 
         return response()->json($items);
     }
+
+    // public function store(Request $request)
+    // {
+    //     // The request->input('order_items') will be a JSON string.
+    //     $orderItemsJson = $request->input('order_items');
+
+    //     // Convert the JSON string into a PHP array or collection
+    //     $items = json_decode($orderItemsJson, true);
+
+    //     // $items is now a standard PHP array of arrays, e.g.:
+    //     // [
+    //     //     ['item' => 'Pen', 'qnty' => 10, 'unit' => 5.00, 'total' => 50.00],
+    //     //     ['item' => 'Notebook', 'qnty' => 5, 'unit' => 20.00, 'total' => 100.00],
+    //     // ]
+
+    //     // You can now loop through $items and save each item to your database.
+
+    //     // Example:
+    //     foreach ($items as $itemData) {
+    //         // Save $itemData to your order_details table
+    //         // OrderDetail::create([...$itemData, 'order_id' => $newOrder->id]);
+    //     }
+
+    //     // ... rest of your logic
+    // }
 }
