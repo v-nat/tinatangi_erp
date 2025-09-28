@@ -95,7 +95,9 @@ $(document).ready(function () {
 
     $(document).ready(function () {
         const categorySelect = document.getElementById("category");
+        const nameInput = document.getElementById("order_name");
         categorySelect.addEventListener("change", clearInvalids);
+        nameInput.addEventListener("change", clearInvalids);
     });
 
     function clearInvalids() {
@@ -234,22 +236,22 @@ $(document).ready(function () {
             if (!result.isConfirmed) {
                 return;
             }
-            // var allTableData = orderTable.rows().data().toArray();
-            // var cleanedData = allTableData.map(function (item) {
-            //     return {
-            //         item: item.item,
-            //         qnty: item.qnty,
-            //         unit: parseFloat(item.unit), 
-            //         total: parseFloat(item.total), 
-            //     };
-            // });
-            // if (cleanedData.length === 0) {
-            //     alert("The order is empty. Please add items before submitting.");
-            //     e.preventDefault();
-            //     return;
-            // }
-            // const jsonPayload = JSON.stringify(cleanedData);
-            // $('#order_items_payload').val(jsonPayload);
+            var allTableData = orderTable.rows().data().toArray();
+            var cleanedData = allTableData.map(function (item) {
+                return {
+                    item: item.item,
+                    qnty: item.qnty,
+                    unit: parseFloat(item.unit), 
+                    total: parseFloat(item.total), 
+                };
+            });
+            if (cleanedData.length === 0) {
+                alert("The order is empty. Please add items before submitting.");
+                e.preventDefault();
+                return;
+            }
+            const jsonPayload = JSON.stringify(cleanedData);
+            $('#order_items_payload').val(jsonPayload);
         });
 
     });
