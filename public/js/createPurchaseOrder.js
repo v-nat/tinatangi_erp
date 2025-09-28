@@ -100,7 +100,10 @@ $(document).ready(function () {
 
     function clearInvalids() {
         const $form = $("#submitPORequest");
-        $field.removeClass("is-invalid");
+         $form.find("input, select, option").each(function () {
+            const $field = $(this);
+                $field.removeClass("is-invalid");
+        });
     }
 
     getSuppliers();
