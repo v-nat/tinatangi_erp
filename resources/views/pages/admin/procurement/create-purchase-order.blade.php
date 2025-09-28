@@ -93,9 +93,8 @@
                                     </div>
 
 
-
                                     <div class="d-flex justify-content-start">
-                                        <button id="reqOt" type="submit"
+                                        <button id="submit-PO" type="submit"
                                             class="btn icon icon-left btn-primary me-1 mb-1 w-100 py-3">
                                             <i class="fa-solid fa-paper-plane"></i>
                                             Submit Purchase Order</button>

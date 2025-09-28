@@ -96,6 +96,12 @@ $(document).ready(function () {
     getSuppliers();
     getCategories();
 
+    $("#submit-PO").click(function (e) {
+        e.preventDefault();
+
+        console.log('add btn clicked');
+    });
+
     function reloadTable(tableId) {
         $("#" + tableId)
             .DataTable()
