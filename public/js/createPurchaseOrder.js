@@ -100,9 +100,9 @@ $(document).ready(function () {
 
     function clearInvalids() {
         const $form = $("#submitPORequest");
-         $form.find("input, select, option").each(function () {
+        $form.find("input, select, option").each(function () {
             const $field = $(this);
-                $field.removeClass("is-invalid");
+            $field.removeClass("is-invalid");
         });
     }
 
@@ -238,6 +238,38 @@ $(document).ready(function () {
 
     $("#submit-PO").click(function (e) {
         e.preventDefault();
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to submit this Request.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Submit",
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+            console.log('SUBMIT CLICKED');
+            // var allTableData = orderTable.rows().data().toArray();
+
+            // var cleanedData = allTableData.map(function (item) {
+            //     return {
+            //         item: item.item,
+            //         qnty: item.qnty,
+            //         unit: parseFloat(item.unit), 
+            //         total: parseFloat(item.total), 
+            //     };
+            // });
+            // if (cleanedData.length === 0) {
+            //     alert("The order is empty. Please add items before submitting.");
+            //     e.preventDefault();
+            //     return;
+            // }
+            // const jsonPayload = JSON.stringify(cleanedData);
+            // $('#order_items_payload').val(jsonPayload);
+        });
 
     });
 
