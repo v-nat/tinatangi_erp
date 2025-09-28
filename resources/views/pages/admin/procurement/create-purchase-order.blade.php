@@ -20,7 +20,7 @@
                 <div class="card">
                     <div class="card-content">
                         <div class="card-body">
-                            <form class="form" id="otApplication" enctype="multipart/form-data">
+                            <form class="form" id="submitPORequest" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" id="employee_id" name="employee_id" value="">
                                 <div class="row">
