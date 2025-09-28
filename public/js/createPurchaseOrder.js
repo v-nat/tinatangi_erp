@@ -238,7 +238,7 @@ $(document).ready(function () {
 
     $("#submit-PO").click(function (e) {
         e.preventDefault();
-
+        console.log('clicked before swal');
         Swal.fire({
             title: "Are you sure?",
             text: "You are about to submit this Request.",
