@@ -93,9 +93,18 @@ $(document).ready(function () {
         }
     }
 
+    $(document).ready(function () {
+        const categorySelect = document.getElementById("category");
+        categorySelect.addEventListener("change", clearInvalids);
+    });
+
+    function clearInvalids() {
+        const $form = $("#submitPORequest");
+        $field.removeClass("is-invalid");
+    }
+
     getSuppliers();
     getCategories();
-
 
     $('#addItem').on('click', function (e) {
         e.preventDefault();
@@ -217,6 +226,9 @@ $(document).ready(function () {
             $("#LoadingScreen").fadeIn(200);
             row.remove();
             orderTable.draw();
+            $('#category').val('');
+            $('#item_select').val('');
+            $('#qnty').val('1');
             $("#LoadingScreen").fadeOut(200);
         });
     });
