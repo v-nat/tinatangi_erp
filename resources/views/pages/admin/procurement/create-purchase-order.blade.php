@@ -66,9 +66,10 @@
                                                 placeholder="1" name="qnty">
                                         </div>
                                     </div>
+                                    <input type="number" hidden value=100 id="unit_price">
 
                                     <div class="col-md-3 col-12 d-flex justify-content-center align-items-center">
-                                        <button class="btn btn-lg btn-primary">Add Item</button>
+                                        <button id="addItem" class="btn btn-lg btn-primary">Add Item</button>
                                     </div>
 
                                     <div class="col-md-12 col-12 mt-5 mb-5 border border-r-8">
