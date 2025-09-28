@@ -100,7 +100,20 @@ $(document).ready(function () {
     $('#addItem').on('click', function (e) {
         e.preventDefault();
 
-        // --- 1. Get Values ---
+        let isValid = true;
+        const $form = $("#submitPORequest");
+
+        $form.find("input, select, option").each(function () {
+            const $field = $(this);
+            const value = $field.val();
+            if ($field.prop("required") && (!value || !value.trim())) {
+                $field.addClass("is-invalid");
+                isValid = false;
+            } else {
+                $field.removeClass("is-invalid");
+            }
+        });
+
         const itemElement = $('#item');
         const itemText = itemElement.find('option:selected').text().trim();
         const categoryElement = $('#category');
@@ -108,73 +121,87 @@ $(document).ready(function () {
         const qnty = parseInt($('#qnty').val());
         const unitPrice = parseFloat($('#unit_price').val());
 
-        // Basic Validation Check (Optional, but recommended)
-        if (!itemText || qnty < 1 || unitPrice <= 0) {
-            alert('Please select an item and enter valid quantity/unit price.');
-            return;
-        }
-
-        // --- NEW LOGIC: Check for Existing Item ---
-        let existingRow = null;
-
-        // Iterate through all data in the table
-        orderTable.rows().every(function () {
-            const rowData = this.data();
-
-            // Check if the item in the current row matches the new item text
-            if (rowData.item === itemText) {
-                existingRow = this; // Store the DataTables row object
-                return false; // Exit the loop (like a 'break')
+        if (isValid) {
+            // Basic Validation Check (Optional, but recommended)
+            if (!itemText || qnty < 1 || unitPrice <= 0) {
+                alert('Please select an item and enter valid quantity/unit price.');
+                return;
             }
-        });
 
-        // --- 2. Calculate Total ---
+            // --- NEW LOGIC: Check for Existing Item ---
+            let existingRow = null;
 
-        // --- 3. Handle Item Found or Not Found ---
-        if (existingRow) {
-            // ITEM FOUND: Update the quantity and total
+            // Iterate through all data in the table
+            orderTable.rows().every(function () {
+                const rowData = this.data();
 
-            const currentRowData = existingRow.data();
+                // Check if the item in the current row matches the new item text
+                if (rowData.item === itemText) {
+                    existingRow = this; // Store the DataTables row object
+                    return false; // Exit the loop (like a 'break')
+                }
+            });
 
-            // **Calculate the NEW Quantity and Total**
-            const newQnty = currentRowData.qnty + qnty;
-            const newTotal = newQnty * unitPrice;
+            // --- 3. Handle Item Found or Not Found ---
+            if (existingRow) {
+                // ITEM FOUND: Update the quantity and total
+                Swal.fire({
+                    title: "Duplicate Entry?",
+                    text: "This item is already added, do you want to update the quantity instead?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Confirm",
+                }).then((result) => {
+                    if (!result.isConfirmed) {
+                        return;
+                    }
+                    $("#LoadingScreen").fadeIn(200);
+                    const currentRowData = existingRow.data();
 
-            // Update the row data object
-            currentRowData.qnty = newQnty;
-            currentRowData.total = newTotal.toFixed(2);
+                    // **Calculate the NEW Quantity and Total**
+                    const newQnty = currentRowData.qnty + qnty;
+                    const newTotal = newQnty * unitPrice;
 
-            // Use row().data(newData) to update the row's data
-            existingRow.data(currentRowData).draw();
+                    // Update the row data object
+                    currentRowData.qnty = newQnty;
+                    currentRowData.total = newTotal.toFixed(2);
 
-        } else {
-            // ITEM NOT FOUND: Add a new row
+                    // Use row().data(newData) to update the row's data
+                    existingRow.data(currentRowData).draw();
+                    $("#LoadingScreen").fadeOut(200);
+                });
 
-            // --- Calculate Total (from original logic) ---
-            const total = qnty * unitPrice;
+            } else {
+                // ITEM NOT FOUND: Add a new row
 
-            // --- Create the Row Data Object ---
-            const newRowData = {
-                category: categoryText,
-                item: itemText,
-                qnty: qnty,
-                unit: unitPrice.toFixed(2),
-                total: total.toFixed(2),
-                action: `<button type="button" class="btn btn-sm btn-danger delete-row" data-item="${itemText}">Delete</button>`
-            };
+                // --- Calculate Total (from original logic) ---
+                const total = qnty * unitPrice;
 
-            // --- Add the New Row and Redraw the Table ---
-            orderTable.row.add(newRowData).draw();
+                // --- Create the Row Data Object ---
+                const newRowData = {
+                    category: categoryText,
+                    item: itemText,
+                    qnty: qnty,
+                    unit: unitPrice.toFixed(2),
+                    total: total.toFixed(2),
+                    action: `<button type="button" class="btn btn-sm btn-danger delete-row" data-item="${itemText}">Delete</button>`
+                };
+
+                // --- Add the New Row and Redraw the Table ---
+                orderTable.row.add(newRowData).draw();
+            }
+            // Optional: Reset only the item-specific fields after adding
+            $('#category').val('');
+            $('#item_select').val('');
+            $('#qnty').val('1');
         }
-        // Optional: Reset only the item-specific fields after adding
-        $('#category').val('');
-        $('#item_select').val('');
-        $('#qnty').val('1');
+
     });
 
     $('#orderRequest tbody').on('click', '.delete-row', function () {
         var row = orderTable.row($(this).parents('tr'));
-
         Swal.fire({
             title: "Are you sure?",
             text: "You are about to Delete this Item.",
@@ -192,7 +219,6 @@ $(document).ready(function () {
             orderTable.draw();
             $("#LoadingScreen").fadeOut(200);
         });
-
     });
 
     $("#submit-PO").click(function (e) {
