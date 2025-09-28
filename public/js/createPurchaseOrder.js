@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $("#orderRequest").DataTable({
+    var orderTable = $("#orderRequest").DataTable({
         columns: [
             {
                 data: "null",
@@ -96,10 +96,52 @@ $(document).ready(function () {
     getSuppliers();
     getCategories();
 
+
+    $('#addItem').on('click', function (e) {
+        e.preventDefault();
+
+        // --- 1. Get Values ---
+        const itemElement = $('#item');
+        const itemText = itemElement.find('option:selected').text().trim(); 
+        const categoryElement = $('#category');
+        const categoryText = categoryElement.find('option:selected').text().trim(); 
+        const qnty = parseInt($('#qnty').val());
+        const unitPrice = parseFloat($('#unit_price').val());
+
+        // Basic Validation Check (Optional, but recommended)
+        if (!itemText || qnty < 1 || unitPrice <= 0) {
+            alert('Please select an item and enter valid quantity/unit price.');
+            return;
+        }
+
+        // --- 2. Calculate Total ---
+        const total = qnty * unitPrice;
+
+        // --- 3. Create the Row Data Object ---
+        // The keys MUST match the 'data' properties defined in your table initialization.
+        const newRowData = {
+            // 'null' for the auto-numbered column (#) is handled by DataTables itself
+            category: categoryText,
+            item: itemText,
+            qnty: qnty,
+            unit: unitPrice.toFixed(2), // Store as number/string, your renderer formats it with '₱'
+            total: total.toFixed(2),     // Store as number/string, your renderer formats it with '₱'
+            action: `<button type="button" class="btn btn-sm btn-danger delete-row" data-item="${itemText}">Delete</button>`
+        };
+
+        // --- 4. Add the Row and Redraw the Table ---
+        // Use the API instance to add the new row object.
+        orderTable.row.add(newRowData).draw();
+
+        // Optional: Reset only the item-specific fields after adding
+        $('#category').val('');
+        $('#item_select').val('');
+        $('#qnty').val('1');
+    });
+
     $("#submit-PO").click(function (e) {
         e.preventDefault();
 
-        console.log('add btn clicked');
     });
 
     function reloadTable(tableId) {
