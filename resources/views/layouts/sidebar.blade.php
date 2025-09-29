@@ -86,10 +86,10 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="sidebar-item @yield('createPO') ">
-                        <a href="{{route('procurement.createPO')}}" class='sidebar-link'>
+                    <li class="sidebar-item @yield('createPR') ">
+                        <a href="{{route('procurement.createPR')}}" class='sidebar-link'>
                             <i class="bi bi-receipt-cutoff"></i>
-                            <span>Create Purchase Order</span>
+                            <span>Purchase Request</span>
                         </a>
                     </li>
                     <li class="sidebar-item @yield('purchaseOrders') ">
