@@ -18,31 +18,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(DepartmentSeeder::class);
         $this->call(StatusSeeder::class);
+        $this->call(DepartmentSeeder::class);
         $this->call(PositionSeeder::class);
+        $this->call(UserSeeder::class);
+        $this->call(EmployeeSeeder::class);
+        $this->call(SupplierSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(ItemSeeder::class);
-
-        User::create([
-            'id' => 1,
-            'first_name' => 'Taylor',
-            'last_name' => 'Swift',
-            'email' => 'ts13@mail.com',
-            'password'=> bcrypt('password'),
-            'phone_number'=> '09123456789',
-            'user_type'=> 'employee',
-        ]);
-        User::create([
-            'id'=> 2,
-            'first_name' => 'Nathaniel',
-            'last_name' => 'Vasquez',
-            'email' => 'nat@mail.com',
-            'password'=> bcrypt('password'),
-            'phone_number'=> '09123456789',
-            'user_type'=> 'employee',
-        ]);
-
-        $this->call(EmployeeSeeder::class);
     }
 }

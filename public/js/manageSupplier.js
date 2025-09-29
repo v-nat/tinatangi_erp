@@ -87,11 +87,7 @@ $(document).ready(function () {
             });
         }
     });
-    function reloadTable(tableId) {
-        $("#" + tableId)
-            .DataTable()
-            .ajax.reload(null, false);
-    }
+    
     $("#supplier_table").DataTable({
         processing: true,
         serverSide: false,
@@ -136,4 +132,10 @@ $(document).ready(function () {
             },
         ],
     });
+
+    function reloadTable(tableId) {
+        $("#" + tableId)
+            .DataTable()
+            .ajax.reload(null, false);
+    }
 });

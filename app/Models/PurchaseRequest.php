@@ -12,6 +12,7 @@ class PurchaseRequest extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'department',
         'type',
         'amount',
         'requested_by',

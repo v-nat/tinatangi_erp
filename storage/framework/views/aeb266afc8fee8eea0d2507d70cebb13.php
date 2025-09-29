@@ -86,10 +86,10 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="sidebar-item <?php echo $__env->yieldContent('createPO'); ?> ">
-                        <a href="<?php echo e(route('procurement.createPO')); ?>" class='sidebar-link'>
+                    <li class="sidebar-item <?php echo $__env->yieldContent('createPR'); ?> ">
+                        <a href="<?php echo e(route('procurement.createPR')); ?>" class='sidebar-link'>
                             <i class="bi bi-receipt-cutoff"></i>
-                            <span>Create Purchase Order</span>
+                            <span>Purchase Request</span>
                         </a>
                     </li>
                     <li class="sidebar-item <?php echo $__env->yieldContent('purchaseOrders'); ?> ">

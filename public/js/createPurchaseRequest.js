@@ -1,4 +1,18 @@
 $(document).ready(function () {
+    fetch(`/procurement/generateOrderID`)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
+        .then((data) => {
+            $("#order_id").val(data.order_id);
+        })
+        .catch((error) => {
+            console.error("Error fetching Order ID:", error);
+        });
+
     var orderTable = $("#orderRequest").DataTable({
         columns: [
             {
@@ -12,10 +26,13 @@ $(document).ready(function () {
                 data: "item",
             },
             {
+                data: "unit",
+            },
+            {
                 data: "qnty",
             },
             {
-                data: "unit",
+                data: "unit_price",
                 render: function (data) {
                     return "₱" + parseFloat(data).toFixed(2);
                 },
@@ -30,6 +47,26 @@ $(document).ready(function () {
             {
                 data: "action",
             },
+            {
+                data: "order_id",
+                visible: false,
+            },
+            {
+                data: "item_id",
+                visible: false,
+            },
+            {
+                data: "category_id",
+                visible: false,
+            },
+            {
+                data: "supplier",
+                visible: false,
+            },
+            {
+                data: "supplier_id",
+                visible: false,
+            },
         ],
     });
 
@@ -37,11 +74,12 @@ $(document).ready(function () {
     const itemSelect = document.getElementById("item");
 
     categorySelect.addEventListener("change", getItems);
+    itemSelect.addEventListener("change", itemSelected);
 
     function getSuppliers() {
         const supplierSelect = document.getElementById("supplier");
 
-        fetch(`/procurement/create-purchase-order/get-active-supplier`)
+        fetch(`/procurement/create-purchase-request/get-active-supplier`)
             .then((response) => response.json())
             .then((data) => {
                 supplierSelect.innerHTML =
@@ -55,7 +93,7 @@ $(document).ready(function () {
             });
     }
     function getCategories() {
-        fetch(`/procurement/create-purchase-order/get-categories`)
+        fetch(`/procurement/create-purchase-request/get-categories`)
             .then((response) => response.json())
             .then((data) => {
                 categorySelect.innerHTML =
@@ -70,10 +108,12 @@ $(document).ready(function () {
     }
 
     function getItems() {
+        $("#unit").val("");
+        $("#unit_price").val("");
         const category = categorySelect.value;
         if (category) {
             fetch(
-                `/procurement/create-purchase-order/get-items?category=${encodeURIComponent(
+                `/procurement/create-purchase-request/get-items?category=${encodeURIComponent(
                     category
                 )}`
             )
@@ -86,6 +126,8 @@ $(document).ready(function () {
                     data.forEach((p) => {
                         const option = document.createElement("option");
                         option.value = p.id;
+                        option.dataset.unit = p.unit;
+                        option.dataset.unit_price = p.unit_price;
                         option.textContent = p.name;
                         itemSelect.appendChild(option);
                     });
@@ -95,7 +137,7 @@ $(document).ready(function () {
 
     $(document).ready(function () {
         const categorySelect = document.getElementById("category");
-        const nameInput = document.getElementById("order_name");
+        const nameInput = document.getElementById("order_id");
         categorySelect.addEventListener("change", clearInvalids);
         nameInput.addEventListener("change", clearInvalids);
     });
@@ -107,11 +149,18 @@ $(document).ready(function () {
             $field.removeClass("is-invalid");
         });
     }
+    function itemSelected() {
+        const selectedOption = $("#item").find("option:selected");
+        const unit = selectedOption.data("unit");
+        const unitPrice = selectedOption.data("unit_price");
+        $("#unit").val(unit);
+        $("#unit_price").val(unitPrice);
+    }
 
     getSuppliers();
     getCategories();
 
-    $('#addItem').on('click', function (e) {
+    $("#addItem").on("click", function (e) {
         e.preventDefault();
 
         let isValid = true;
@@ -128,16 +177,28 @@ $(document).ready(function () {
             }
         });
 
-        const itemElement = $('#item');
-        const itemText = itemElement.find('option:selected').text().trim();
-        const categoryElement = $('#category');
-        const categoryText = categoryElement.find('option:selected').text().trim();
-        const qnty = parseInt($('#qnty').val());
-        const unitPrice = parseFloat($('#unit_price').val());
+        const order_id = $("#order_id").val();
+        const supplierSelectedOption = $("#supplier").find("option:selected");
+        const supplier_id = supplierSelectedOption.val();
+        const supplierText = supplierSelectedOption.text().trim();
+
+        const categorySelectedOption = $("#category").find("option:selected");
+        const categoryText = categorySelectedOption.text().trim();
+        const category_id = categorySelectedOption.val();
+
+        const itemSelectedOption = $("#item").find("option:selected");
+        const itemText = itemSelectedOption.text().trim();
+        const unit = itemSelectedOption.data("unit");
+        const item_id = itemSelectedOption.val();
+        const unitPrice = parseFloat(itemSelectedOption.data("unit_price"));
+
+        const qnty = parseInt($("#qnty").val());
 
         if (isValid) {
             if (!itemText || qnty < 1 || unitPrice <= 0) {
-                alert('Please select an item and enter valid quantity/unit price.');
+                Toast.fire(
+                    "Please select an item and enter valid quantity/unit price."
+                );
                 return;
             }
 
@@ -176,30 +237,37 @@ $(document).ready(function () {
                     existingRow.data(currentRowData).draw();
                     $("#LoadingScreen").fadeOut(200);
                 });
-
             } else {
                 const total = qnty * unitPrice;
 
                 const newRowData = {
+                    order_id: order_id,
+                    supplier: supplierText,
                     category: categoryText,
                     item: itemText,
+                    item_id: item_id,
+                    category_id: category_id,
+                    supplier_id: supplier_id,
+                    unit: unit,
                     qnty: qnty,
-                    unit: unitPrice.toFixed(2),
+                    unit_price: unitPrice.toFixed(2),
                     total: total.toFixed(2),
-                    action: `<button type="button" class="btn btn-sm btn-danger delete-row" data-item="${itemText}">Delete</button>`
+                    action: `<button type="button" class="btn btn-sm btn-danger delete-row" data-item="${itemText}">Delete</button>`,
                 };
 
                 orderTable.row.add(newRowData).draw();
             }
-            $('#category').val('');
-            $('#item_select').val('');
-            $('#qnty').val('1');
-        }
 
+            $("#category").val("");
+            $("#item").val("");
+            $("#unit").val("");
+            $("#unit_price").val("");
+            $("#qnty").val("");
+        }
     });
 
-    $('#orderRequest tbody').on('click', '.delete-row', function () {
-        var row = orderTable.row($(this).parents('tr'));
+    $("#orderRequest tbody").on("click", ".delete-row", function () {
+        var row = orderTable.row($(this).parents("tr"));
         Swal.fire({
             title: "Are you sure?",
             text: "You are about to Delete this Item.",
@@ -215,9 +283,11 @@ $(document).ready(function () {
             $("#LoadingScreen").fadeIn(200);
             row.remove();
             orderTable.draw();
-            $('#category').val('');
-            $('#item_select').val('');
-            $('#qnty').val('1');
+            $("#category").val("");
+            $("#item").val("");
+            $("#unit").val("");
+            $("#unit_price").val("");
+            $("#qnty").val("");
             $("#LoadingScreen").fadeOut(200);
         });
     });
@@ -239,26 +309,65 @@ $(document).ready(function () {
             var allTableData = orderTable.rows().data().toArray();
             var cleanedData = allTableData.map(function (item) {
                 return {
-                    item: item.item,
+                    item_id: parseInt(item.item_id),
+                    supplier_id: parseInt(item.supplier_id),
+                    category_id: parseInt(item.category_id),
                     qnty: item.qnty,
-                    unit: parseFloat(item.unit), 
-                    total: parseFloat(item.total), 
+                    unit_price: parseFloat(item.unit_price),
+                    total: parseFloat(item.total),
                 };
             });
             if (cleanedData.length === 0) {
-                alert("The order is empty. Please add items before submitting.");
+                Toast.fire({
+                    title: "The order is empty. Please add items before submitting.",
+                    icon: "warning",
+                    timer: 2000,
+                });
                 e.preventDefault();
                 return;
             }
+            // console.log(cleanedData);
             const jsonPayload = JSON.stringify(cleanedData);
-            $('#order_items_payload').val(jsonPayload);
+            $("#order_items_payload").val(jsonPayload);
+            const form = document.getElementById("submitPORequest");
+            let formData = new FormData(form);
+            $("#LoadingScreen").fadeIn(200);
+            $.ajax({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
+                },
+                url: `/procurement/create-purchase-request/submit-request`,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#LoadingScreen").fadeOut(200);
+                    Toast.fire({
+                        text: response.message,
+                        icon: "success",
+                    });
+                },
+                error: function (xhr) {
+                    $("#LoadingScreen").fadeOut(200);
+                    if (xhr.responseJSON?.errors) {
+                        let errorMessages = Object.values(
+                            xhr.responseJSON.errors
+                        )
+                            .flat()
+                            .join("\n");
+                        Toast.fire("Validation Error", errorMessages, "error");
+                    } else {
+                        Toast.fire(
+                            "Error",
+                            "An unexpected error occurred.",
+                            "error"
+                        );
+                    }
+                },
+            });
         });
-
     });
-
-    function reloadTable(tableId) {
-        $("#" + tableId)
-            .DataTable()
-            .ajax.reload(null, false);
-    }
 });

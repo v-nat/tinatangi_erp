@@ -14,16 +14,18 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
             $table->string('type');
-            $table->string('purchase_order_name');
+            $table->string('purchase_order_name')->nullable();
 
-            $table->string('po_num');
             $table->date('order_date');
-            $table->date('expected_delivery_date');
-            $table->date('delivery_date');
+            $table->date('expected_delivery_date')->nullable();
+            $table->date('delivery_date')->nullable();
 
-            $table->string('delivery_name');
+            $table->string('delivery_name')->nullable();
             $table->string('remarks')->nullable();
             
+            $table->unsignedBigInteger('purchase_request_id')->nullable();
+            $table->foreign('purchase_request_id')->references('id')->on('purchase_requests')->onDelete('cascade');
+
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('employees')->onDelete('cascade');
 
