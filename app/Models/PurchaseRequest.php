@@ -10,8 +10,10 @@ class PurchaseRequest extends Model
 {
     //
     use SoftDeletes;
-
+    protected $primaryKey = 'id';
+    protected $table = 'purchase_requests';
     protected $fillable = [
+        'id',
         'department',
         'type',
         'amount',
@@ -26,6 +28,10 @@ class PurchaseRequest extends Model
         return $this->belongsTo(Status::class, 'status');
     }
 
+    public function deptRS(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department');
+    }
     public function employeeRS(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'requested_by_id');

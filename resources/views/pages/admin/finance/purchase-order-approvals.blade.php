@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title') Finance Risk Management @endsection
-@section('sidebar-title') Finance Risk Management @endsection
+@section('title') Finance and Accounting Management @endsection
+@section('sidebar-title') Finance and Accounting Management @endsection
 @section('human_resources') d-none @endsection
 @section('finance') d-block @endsection
 @section('procurement') d-none @endsection
 @section('financePurchases') active
 @endsection
-@section('headings') Requests List @endsection
+@section('headings') Purchase Request List @endsection
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -17,7 +17,7 @@
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Requests Table</h4>
+                <h4 class="card-title">Purchase Order Request Table</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -30,6 +30,7 @@
                                 <th>Amount</th>
                                 <th>Requested by</th>
                                 <th>Requested Date</th>
+                                <th>Remarks</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>

@@ -1,5 +1,5 @@
-<?php $__env->startSection('title'); ?> Finance Risk Management <?php $__env->stopSection(); ?>
-<?php $__env->startSection('sidebar-title'); ?> Finance Risk Management <?php $__env->stopSection(); ?>
+<?php $__env->startSection('title'); ?> Finance and Accounting Management <?php $__env->stopSection(); ?>
+<?php $__env->startSection('sidebar-title'); ?> Finance and Accounting Management <?php $__env->stopSection(); ?>
 <?php $__env->startSection('human_resources'); ?> d-none <?php $__env->stopSection(); ?>
 <?php $__env->startSection('finance'); ?> d-block <?php $__env->stopSection(); ?>
 <?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?>

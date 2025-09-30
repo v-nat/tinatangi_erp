@@ -1,17 +1,20 @@
 $(document).ready(function () {
-    fetch(`/procurement/generateOrderID`)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            return response.json();
-        })
-        .then((data) => {
-            $("#order_id").val(data.order_id);
-        })
-        .catch((error) => {
-            console.error("Error fetching Order ID:", error);
-        });
+    generateOrderId();
+    function generateOrderId() {
+        fetch(`/procurement/generateOrderID`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                $("#order_id").val(data.order_id);
+            })
+            .catch((error) => {
+                console.error("Error fetching Order ID:", error);
+            });
+    }
 
     var orderTable = $("#orderRequest").DataTable({
         columns: [
@@ -344,7 +347,16 @@ $(document).ready(function () {
                 processData: false,
                 contentType: false,
                 success: function (response) {
+                    $("#order_id").val("");
+                    $("#supplier").val("");
+                    $("#category").val("");
+                    $("#item").val("");
+                    $("#unit").val("");
+                    $("#unit_price").val("");
+                    $("#qnty").val("");
                     $("#LoadingScreen").fadeOut(200);
+                    generateOrderId();
+                    orderTable.clear().draw(); 
                     Toast.fire({
                         text: response.message,
                         icon: "success",

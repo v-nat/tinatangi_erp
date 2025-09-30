@@ -93,7 +93,7 @@ $(document).ready(function () {
 
     $("#payrollForm").on("submit", function (e) {
         e.preventDefault();
-
+        $("#generatePayroll").modal("hide");
         const form = $(this);
         const formData = form.serialize();
         const submitBtn = form.find('button[type="submit"]');

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             
             $table->string('type');
-            $table->date('requested_date');
+            $table->timestamp('requested_date');
 
             $table->foreignId('department')->nullable()
                 ->constrained('departments')->onUpdate('cascade')->onDelete('set null');
