@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin\Procurement;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\BudgetRelease;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PurchaseOrderController extends Controller
 {
@@ -54,9 +56,7 @@ class PurchaseOrderController extends Controller
             foreach ($items as $item) {
                 $total_amount += (float)$item['total'];
             }
-            // dd($total_amount);
-            // dd($items);
-            // dd((int)$request->order_id);
+
             $id = (int)$request->order_id;
             DB::beginTransaction();
             $purchase_req = PurchaseRequest::create([
@@ -64,7 +64,9 @@ class PurchaseOrderController extends Controller
                 'type' => 'Purchase Order Request',
                 'department' => 4,
                 'amount' => $total_amount,
-                'requested_by' => auth('')->user()->id,
+                'requested_by_id' => auth('')->user()->id,
+                'requested_date' => now(),
+                'remarks' => 'to approve from finance',
                 'status' => 11,
             ]);
             $purchase_req->save();
@@ -72,7 +74,7 @@ class PurchaseOrderController extends Controller
                 $purchase_order = PurchaseOrder::create([
                     'type' => 'Purchase Request',
                     'purchase_request_id' => $purchase_req->id,
-                    'order_date' => now(),
+                    'order_date' => null,
                     'expected_delivery_date' => null,
                     'delivery_date' => null,
                     'delivery_name' => null,
@@ -94,13 +96,65 @@ class PurchaseOrderController extends Controller
                     'status' => 11,
                 ]);
             }
-            
+
             DB::commit();
 
             return response()->json(['message' => 'Purchase Request submitted successfully!'], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Controller Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function putOnProcess(Request $request, $id, $status)
+    {
+        try {
+            DB::beginTransaction();
+
+            $pr = PurchaseRequest::findOrFail($id);
+            $pr->remarks = $request->remarks;
+            $pr->status = $status;
+            $pr->save();
+
+            $prpo = PurchaseOrder::where('purchase_order_id', $id)->first();
+            $prpo->remarks = $request->remarks;
+            $prpo->status = $status;
+            $prpo->save();
+
+            $prpod = PurchaseOrderDetail::where('purchase_order_id', $id)->first();
+            $prpod->status = $status;
+            $prpod->save();
+
+            if ($status == 14) {
+                $year = Carbon::now()->format('Y');
+                do {
+                    $random = rand(10000, 99999);
+                    $release_id = $year . $random;
+                } while (BudgetRelease::pluck('id')->contains($release_id));
+
+                $release = BudgetRelease::create([
+                    'release_id'        => $release_id,
+                    'type'              => 'Purchase Order',
+                    'amount'            => $pr->amount,
+                    'request_id'        => $id,
+                    'requested_by_id'   => auth('')->user()->id,
+                    'requested_at'      => now(),
+                    'released_by_id'    => null,
+                    'released_at'       => null,
+                    'department'        => 4,
+                    'notes'             => '',
+                    'status'            => 11,
+                ]);
+
+                $release->save();
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Purchase Request is now on Process!'], 200);
+            }
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Purchase Request Rejected!'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }
 }

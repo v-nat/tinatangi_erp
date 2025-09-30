@@ -15,12 +15,19 @@ class PurchaseRequest extends Model
         'department',
         'type',
         'amount',
-        'requested_by',
+        'requested_by_id',
+        'requested_date',
+        'remarks',
         'status',
     ] ;
 
     public function statusRS(): BelongsTo
     {
         return $this->belongsTo(Status::class, 'status');
+    }
+
+    public function employeeRS(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'requested_by_id');
     }
 }
