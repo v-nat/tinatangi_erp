@@ -72,13 +72,14 @@ class PurchaseOrderController extends Controller
             foreach ($items as $itemData) {
                 $purchase_order = PurchaseOrder::create([
                     'type' => 'Purchase Request',
+                    'purchase_orderId'=> (int)$id,
                     'purchase_request_id' => $purchase_req->id,
                     'order_date' => null,
                     'expected_delivery_date' => null,
                     'delivery_date' => null,
                     'delivery_name' => null,
                     'remarks' => 'pending request',
-                    'created_by' => auth('')->user()->id,
+                    'created_by_id' => auth('')->user()->id,
                     'supplier_id' => $itemData['supplier_id'],
                     'status' => 11,
                 ]);

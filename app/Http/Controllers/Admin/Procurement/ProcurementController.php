@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Procurement;
 
 use App\Http\Controllers\Controller;
+use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
 use App\Models\Status;
 use Carbon\Carbon;
@@ -32,22 +33,23 @@ class ProcurementController extends Controller
     public function purchaseOrdersList()
     {
         try {
-            $requests = PurchaseRequest::with(['employeeRS', 'deptRS', 'statusRS'])
-                ->orderBy('requested_date', 'desc')->get();
-                
+            $requests = PurchaseOrder::with(['employeeRS', 'statusRS', 'supplierRS'])
+                ->orderBy('updated_at', 'desc')->get();
+
             return response()->json([
                 'data' => $requests->map(function ($r) {
                     return [
-                        'id'                => $r->id,
-                        'type'              => $r->type,
-                        'amount'            => $r->amount,
-                        'department'        => optional($r->deptRS)->name,
-                        'requested_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
-                        'requested_date'      => optional(Carbon::parse($r->requested_date))->format('M d, Y'),
-                        'released_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
-                        'released_date'      => optional(Carbon::parse($r->requested_date))->format('M d, Y'),
-                        'remarks'             => $r->remarks,
-                        'status'            => Status::getStatusText($r->status),
+                        'id'                        => $r->id,
+                        'type'                      => $r->type,
+                        'purchase_orderId'          => $r->purchase_orderId,
+                        'order_date'                => $r->order_date ?? '',
+                        'expected_delivery_date'    => $r->expected_delivery_date ?? '',
+                        'delivery_date'             => $r->delivery_date ?? '',
+                        'delivery_name'             => $r->delivery_name,
+                        'created_by_id'             => optional(optional($r->employeeRS)->userRS)->full_name,
+                        'supplier_id'               => optional($r->supplierRS)->supplier_name,
+                        'remarks'                   => $r->remarks,
+                        'status'                    => Status::getStatusText($r->status),
                     ];
                 })
             ]);

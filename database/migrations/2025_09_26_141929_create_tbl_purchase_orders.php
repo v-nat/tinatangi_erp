@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
             $table->string('type');
-            $table->string('purchase_order_name')->nullable();
+            $table->unsignedBigInteger('purchase_orderId')->nullable();
 
             $table->timestamp('order_date')->nullable();
             $table->timestamp('expected_delivery_date')->nullable();
@@ -26,8 +26,8 @@ return new class extends Migration
             $table->unsignedBigInteger('purchase_request_id')->nullable();
             $table->foreign('purchase_request_id')->references('id')->on('purchase_requests')->onDelete('cascade');
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->foreign('created_by')->references('id')->on('employees')->onDelete('cascade');
+            $table->unsignedBigInteger('created_by_id')->nullable();
+            $table->foreign('created_by_id')->references('id')->on('employees')->onDelete('cascade');
 
             $table->unsignedBigInteger('supplier_id')->nullable();
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');

@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    function formatDate(dateString) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        return new Date(dateString).toLocaleDateString("en-US", options);
+    }
     $("#purchaseOrderTable").DataTable({
         autoWidth: false,
         processing: true,
@@ -17,24 +21,32 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "50px",
             },
+            { data: "purchase_orderId" },
             { data: "type" },
-            { data: "department" },
             {
-                data: "amount",
-                render: function (data, type, row) {
-                    return (
-                        "₱ " +
-                        parseFloat(data).toLocaleString("en-PH", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        })
-                    );
+                data: "order_date",
+                render: function (data) {
+                    return data ? formatDate(data) : "N/A";
                 },
+                type: "date",
             },
-            { data: "requested_by_id" },
-            { data: "requested_date" },
-            { data: "released_by_id" },
-            { data: "released_date" },
+            { data: "supplier_id" },
+            {
+                data: "expected_delivery_date",
+                render: function (data) {
+                    return data ? formatDate(data) : "N/A";
+                },
+                type: "date",
+            },
+            {
+                data: "delivery_date",
+                render: function (data) {
+                    return data ? formatDate(data) : "N/A";
+                },
+                type: "date",
+            },
+            { data: "delivery_name" },
+            { data: "created_by_id" },
             { data: "remarks" },
             {
                 data: "status",
@@ -44,7 +56,7 @@ $(document).ready(function () {
                 data: "id",
                 render: function (data, type, row) {
                     if (
-                        row.status !==
+                        row.status ==
                         '<span class="badge bg-warning">Pending</span>'
                     ) {
                         return `
@@ -56,7 +68,10 @@ $(document).ready(function () {
                             </a>
                         </div>
                         `;
-                    } else {
+                    } else if (
+                        row.status ==
+                        '<span class="badge bg-warning">Approved</span>'
+                    ) {
                         return `
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
@@ -76,11 +91,20 @@ $(document).ready(function () {
                             </a>
                         </div>
                         `;
+                    } else {
+                        return `
+                        <div class="action-btns">
+                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
+                            data-id="${data}"
+                            title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+                        `;
                     }
                 },
                 className: "text-center",
             },
         ],
     });
-
 });

@@ -106,7 +106,7 @@ $(document).ready(function () {
             },
             { data: "name" },
             { data: "email" },
-            { data: "phone_number", className: "text-start" },
+            { data: "phone_number" },
             {
                 data: "status",
                 render: function (data) {
@@ -114,6 +114,7 @@ $(document).ready(function () {
                         data === "active" ? "success" : "danger"
                     }">${data}</span>`;
                 },
+                className: "text-center"
             },
             {
                 data: "supplier_id",

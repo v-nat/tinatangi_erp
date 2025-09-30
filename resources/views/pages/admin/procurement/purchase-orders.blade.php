@@ -25,13 +25,14 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Order ID Number</th>
                                 <th>Type</th>
-                                <th>Department</th>
-                                <th>Amount</th>
-                                <th>Requested by</th>
-                                <th>Requested Date</th>
-                                <th>Released by</th>
-                                <th>Released Date</th>
+                                <th>Order Ddate</th>
+                                <th>Supplier</th>
+                                <th>Expected Date</th>
+                                <th>Delivery Date</th>
+                                <th>Delivery Name</th>
+                                <th>Created by</th>
                                 <th>Remarks</th>
                                 <th>Status</th>
                                 <th>Action</th>

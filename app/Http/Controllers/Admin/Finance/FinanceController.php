@@ -137,6 +137,7 @@ class FinanceController extends Controller
                 $orderInstances = PurchaseOrder::where('purchase_request_id', $req_id)->pluck('id');
                 foreach ($orderInstances as $orderInstance) {
                     $prpo = PurchaseOrder::where('id', $orderInstance)->first();
+                    $prpo->type = 'Purchase Order';
                     $prpo->remarks = 'budget released';
                     $prpo->status = 18;
                     $prpo->save();
