@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Payroll;
+use App\Models\PurchaseRequest;
+use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderDetail;
 
 class FinanceController extends Controller
 {
@@ -52,6 +55,34 @@ class FinanceController extends Controller
             return response()->json(['error' => 'Server error'], 500);
         }
     }
+
+    public function purchaseRequests()
+    {
+        try {
+            $requests = PurchaseRequest::with(['employeeRS', 'statusRS'])
+                ->where('status', 11)
+                ->orderBy('requested_date', 'desc')->get();
+            // dd($employees);
+            return response()->json([
+                'data' => $requests->map(function ($r) {
+                    return [
+                        'id'                => $r->id,
+                        'type'              => $r->type,
+                        'amount'            => $r->amount,
+                        'department'        => optional(optional($r->employeeRS)->deptRS)->name,
+                        'requested_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
+                        'requested_date'      => optional(Carbon::parse($r->requested_date))->format('M d, Y'),
+                        'remarks'             => $r->remarks,
+                        'status'            => Status::getStatusText($r->status),
+                    ];
+                })
+            ]);
+        } catch (\Exception $e) {
+            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Server error'], 500);
+        }
+    }
+
     public function getRequestsHistory()
     {
         try {
@@ -82,12 +113,54 @@ class FinanceController extends Controller
         }
     }
 
+    public function approveRequest($id, $req_id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $release = BudgetRelease::findOrFail($id);
+            $release->notes = "released";
+            $release->status = 15;
+            $release->released_by_id = auth('')->user()->id;
+            $release->released_at = now();
+            $release->save();
+
+            if ($release->type == 'Payroll') {
+                $payroll = Payroll::findOrFail($req_id);
+                $payroll->status = 13;
+                $payroll->save();
+            } else if ($release->type == 'Purchase Order') {
+                $pr = PurchaseRequest::findOrFail($req_id);
+                $pr->remarks = '';
+                $pr->status = 18;
+                $pr->save();
+                $prpo = PurchaseOrder::where('purchase_order_id', $req_id)->first();
+                $prpo->remarks = '';
+                $prpo->status = 18;
+                $prpo->save();
+
+                $prpod = PurchaseOrderDetail::where('purchase_order_id', $req_id)->first();
+                $prpod->status = 18;
+                $prpod->save();
+            }
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Request is Released!'], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function rejectRequest(Request $request, $id)
     {
 
         try {
             DB::beginTransaction();
-            
+
             $validator = Validator::make($request->all(), [
                 'request_id' => 'required',
                 'notes' => 'required'
@@ -111,39 +184,24 @@ class FinanceController extends Controller
                 $payroll->remarks = $request->notes;
                 $payroll->status = 12;
                 $payroll->save();
+            } else if ($release->type == 'Purchase Order') {
+                $pr = PurchaseRequest::findOrFail($request->request_id);
+                $pr->remarks = $request->notes;
+                $pr->status = 12;
+                $pr->save();
+                $prpo = PurchaseOrder::where('purchase_order_id', $request->request_id)->first();
+                $prpo->remarks = $request->notes;
+                $prpo->status = 12;
+                $prpo->save();
+
+                $prpod = PurchaseOrderDetail::where('purchase_order_id', $request->request_id)->first();
+                $prpod->status = 12;
+                $prpod->save();
             }
 
             DB::commit();
 
-            return response()->json(['success' => true,'message' => 'Request is Rejected!'], 200);
-        } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
-        }
-    }
-    public function approveRequest($id, $req_id)
-    {
-        try {
-            DB::beginTransaction();
-
-            $release = BudgetRelease::findOrFail($id);
-            $release->notes = "released";
-            $release->status = 15;
-            $release->released_by_id = auth('')->user()->id;
-            $release->released_at = now();
-            $release->save();
-
-            if ($release->type == 'Payroll') {
-                $payroll = Payroll::findOrFail($req_id);
-                $payroll->status = 13;
-                $payroll->save();
-            }
-
-            DB::commit();
-
-            return response()->json(['success' => true,'message' => 'Request is Released!'], 200);
+            return response()->json(['success' => true, 'message' => 'Request is Rejected!'], 200);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {

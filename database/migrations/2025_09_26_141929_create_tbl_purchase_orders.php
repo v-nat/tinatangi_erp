@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('type');
             $table->string('purchase_order_name')->nullable();
 
-            $table->date('order_date');
+            $table->date('order_date')->nullable();
             $table->date('expected_delivery_date')->nullable();
             $table->date('delivery_date')->nullable();
 

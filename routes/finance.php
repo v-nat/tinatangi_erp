@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\Finance\FinanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HR\PayrollController;
+use App\Http\Controllers\Admin\Procurement\ProcurementController;
+use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/finance/payroll', [PayrollController::class, 'indexOnFinance'])->name('finance.payroll');
@@ -15,4 +17,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/finance/budgets/requests/reject/{id}', [FinanceController::class,'rejectRequest']);
 
     Route::get('/finance/purchases', [FinanceController::class, 'purchasesIndex'])->name('finance.purchases');
+    Route::get('/finance/purchases/get-requests', [FinanceController::class, 'purchaseRequests']);
+    Route::put('/finance/purchases/process/{id}/{status}', [PurchaseOrderController::class, 'putOnProcess']);
 });
