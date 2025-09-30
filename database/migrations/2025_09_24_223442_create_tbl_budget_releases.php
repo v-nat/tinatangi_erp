@@ -20,10 +20,10 @@ return new class extends Migration
             $table->unsignedBigInteger('request_id')->unique();
             $table->unsignedBigInteger('requested_by_id')->nullable();
             $table->foreign('requested_by_id')->references('id')->on('employees')->onDelete('cascade');
-            $table->date('requested_at');
+            $table->timestamp('requested_at');
             $table->unsignedBigInteger('released_by_id')->nullable();
             $table->foreign('released_by_id')->references('id')->on('employees')->onDelete('cascade');
-            $table->date('released_at')->nullable();
+            $table->timestamp('released_at')->nullable();
             $table->foreignId('department')->nullable()
                 ->constrained('departments')->onUpdate('cascade')->onDelete('set null');
 

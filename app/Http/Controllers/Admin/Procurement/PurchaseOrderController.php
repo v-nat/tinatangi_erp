@@ -56,30 +56,30 @@ class PurchaseOrderController extends Controller
             foreach ($items as $item) {
                 $total_amount += (float)$item['total'];
             }
-
-            $id = (int)$request->order_id;
+            $id = $request->order_id;
             DB::beginTransaction();
             $purchase_req = PurchaseRequest::create([
-                'id' => $id,
+                'id' => (int)$id,
                 'type' => 'Purchase Order Request',
                 'department' => 4,
                 'amount' => $total_amount,
                 'requested_by_id' => auth('')->user()->id,
                 'requested_date' => now(),
-                'remarks' => 'to approve from finance',
+                'remarks' => '',
                 'status' => 11,
             ]);
             $purchase_req->save();
             foreach ($items as $itemData) {
                 $purchase_order = PurchaseOrder::create([
                     'type' => 'Purchase Request',
+                    'purchase_orderId'=> (int)$id,
                     'purchase_request_id' => $purchase_req->id,
                     'order_date' => null,
                     'expected_delivery_date' => null,
                     'delivery_date' => null,
                     'delivery_name' => null,
                     'remarks' => 'pending request',
-                    'created_by' => auth('')->user()->id,
+                    'created_by_id' => auth('')->user()->id,
                     'supplier_id' => $itemData['supplier_id'],
                     'status' => 11,
                 ]);
@@ -112,18 +112,41 @@ class PurchaseOrderController extends Controller
             DB::beginTransaction();
 
             $pr = PurchaseRequest::findOrFail($id);
-            $pr->remarks = $request->remarks;
-            $pr->status = $status;
-            $pr->save();
 
-            $prpo = PurchaseOrder::where('purchase_order_id', $id)->first();
-            $prpo->remarks = $request->remarks;
-            $prpo->status = $status;
-            $prpo->save();
+            if ($request->remarks) {
+                $pr->remarks = $request->remarks;
+                $pr->status = $status;
+                $pr->save();
 
-            $prpod = PurchaseOrderDetail::where('purchase_order_id', $id)->first();
-            $prpod->status = $status;
-            $prpod->save();
+                $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
+                foreach ($orderInstances as $orderInstance) {
+                    $prpo = PurchaseOrder::where('id', $orderInstance)->first();
+                    $prpo->remarks = $request->remarks;
+                    $prpo->status = $status;
+                    $prpo->save();
+
+                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
+                    $prpod->status = $status;
+                    $prpod->save();
+                }
+            } else {
+                $pr->remarks = 'requesting budget';
+                $pr->status = $status;
+                $pr->save();
+
+                $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
+               
+                foreach ($orderInstances as $orderInstance) {
+                    $prpo = PurchaseOrder::where('id', $orderInstance)->first();
+                    $prpo->remarks = 'requesting budget';
+                    $prpo->status = $status;
+                    $prpo->save();
+
+                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
+                    $prpod->status = $status;
+                    $prpod->save();
+                }
+            }
 
             if ($status == 14) {
                 $year = Carbon::now()->format('Y');
@@ -142,7 +165,7 @@ class PurchaseOrderController extends Controller
                     'released_by_id'    => null,
                     'released_at'       => null,
                     'department'        => 4,
-                    'notes'             => '',
+                    'notes'             => 'requesting budget',
                     'status'            => 11,
                 ]);
 

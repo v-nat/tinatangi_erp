@@ -126,9 +126,17 @@ class PayrollController extends Controller
             DB::beginTransaction();
 
             $payroll = Payroll::findOrFail($id);
-            $payroll->remarks = $request->remarks;
-            $payroll->status = $status;
-            $payroll->save();
+
+            if ($request->remarks) {
+                $payroll->remarks = $request->remarks;
+                $payroll->status = $status;
+                $payroll->save();
+            } else {
+                $payroll->remarks = 'requesting budget';
+                $payroll->status = $status;
+                $payroll->save();
+            }
+
 
             if ($status == 14) {
                 $year = Carbon::now()->format('Y');
@@ -147,7 +155,7 @@ class PayrollController extends Controller
                     'released_by_id'    => null,
                     'released_at'       => null,
                     'department'        => 2,
-                    'notes'             => '',
+                    'notes'             => 'requesting budget',
                     'status'            => 11,
                 ]);
 

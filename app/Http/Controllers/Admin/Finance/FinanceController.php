@@ -30,7 +30,7 @@ class FinanceController extends Controller
     public function getPendingRequests()
     {
         try {
-            $requests = BudgetRelease::with(['employeeRS', 'statusRS'])
+            $requests = BudgetRelease::with(['employeeRS', 'departmentRS', 'statusRS'])
                 ->where('status', 11)
                 ->orderBy('requested_at', 'desc')->get();
             // dd($employees);
@@ -44,7 +44,7 @@ class FinanceController extends Controller
                         'request_id'        => $r->request_id,
                         'requested_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
                         'requested_at'      => optional(Carbon::parse($r->requested_at))->format('M d, Y'),
-                        'department'        => optional(optional($r->employeeRS)->deptRS)->name,
+                        'department'        => optional($r->departmentRS)->name,
                         'notes'             => $r->notes,
                         'status'            => Status::getStatusText($r->status),
                     ];
@@ -59,8 +59,7 @@ class FinanceController extends Controller
     public function purchaseRequests()
     {
         try {
-            $requests = PurchaseRequest::with(['employeeRS', 'statusRS'])
-                ->where('status', 11)
+            $requests = PurchaseRequest::with(['employeeRS', 'deptRS', 'statusRS'])
                 ->orderBy('requested_date', 'desc')->get();
             // dd($employees);
             return response()->json([
@@ -69,7 +68,7 @@ class FinanceController extends Controller
                         'id'                => $r->id,
                         'type'              => $r->type,
                         'amount'            => $r->amount,
-                        'department'        => optional(optional($r->employeeRS)->deptRS)->name,
+                        'department'        => optional($r->deptRS)->name,
                         'requested_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
                         'requested_date'      => optional(Carbon::parse($r->requested_date))->format('M d, Y'),
                         'remarks'             => $r->remarks,
@@ -127,21 +126,25 @@ class FinanceController extends Controller
 
             if ($release->type == 'Payroll') {
                 $payroll = Payroll::findOrFail($req_id);
+                $payroll->remarks = "budget released";
                 $payroll->status = 13;
                 $payroll->save();
             } else if ($release->type == 'Purchase Order') {
                 $pr = PurchaseRequest::findOrFail($req_id);
-                $pr->remarks = '';
+                $pr->remarks = 'budget released';
                 $pr->status = 18;
                 $pr->save();
-                $prpo = PurchaseOrder::where('purchase_order_id', $req_id)->first();
-                $prpo->remarks = '';
-                $prpo->status = 18;
-                $prpo->save();
-
-                $prpod = PurchaseOrderDetail::where('purchase_order_id', $req_id)->first();
-                $prpod->status = 18;
-                $prpod->save();
+                $orderInstances = PurchaseOrder::where('purchase_request_id', $req_id)->pluck('id');
+                foreach ($orderInstances as $orderInstance) {
+                    $prpo = PurchaseOrder::where('id', $orderInstance)->first();
+                    $prpo->type = 'Purchase Order';
+                    $prpo->remarks = 'budget released';
+                    $prpo->status = 18;
+                    $prpo->save();
+                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
+                    $prpod->status = 18;
+                    $prpod->save();
+                }
             }
 
             DB::commit();
@@ -189,14 +192,18 @@ class FinanceController extends Controller
                 $pr->remarks = $request->notes;
                 $pr->status = 12;
                 $pr->save();
-                $prpo = PurchaseOrder::where('purchase_order_id', $request->request_id)->first();
-                $prpo->remarks = $request->notes;
-                $prpo->status = 12;
-                $prpo->save();
 
-                $prpod = PurchaseOrderDetail::where('purchase_order_id', $request->request_id)->first();
-                $prpod->status = 12;
-                $prpod->save();
+                $orderInstances = PurchaseOrder::where('purchase_request_id', $request->request_id)->pluck('id');
+                foreach ($orderInstances as $orderInstance) {
+                    $prpo = PurchaseOrder::where('id', $orderInstance)->first();
+                    $prpo->remarks = $request->notes;
+                    $prpo->status = 12;
+                    $prpo->save();
+
+                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
+                    $prpod->status = 12;
+                    $prpod->save();
+                }
             }
 
             DB::commit();

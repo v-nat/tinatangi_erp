@@ -23,4 +23,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/procurement/create-purchase-request/get-categories', [PurchaseOrderController::class,'getCategories']);
     Route::get('/procurement/create-purchase-request/get-items', [PurchaseOrderController::class,'getItems']);
     Route::post('/procurement/create-purchase-request/submit-request', [PurchaseOrderController::class,'store']);
+
+    ///////////////////////////////////////// PURCHASE ORDER //////////////////////////////////////////////////
+    Route::get('/procurement/purchases/get-list', [ProcurementController::class, 'purchaseOrdersList']);
+
 });

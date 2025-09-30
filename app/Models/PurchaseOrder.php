@@ -14,14 +14,13 @@ class PurchaseOrder extends Model
     protected $fillable = [
         'type',
         'purchase_request_id',
-        'purchase_order_name',
-        'purchase_order_id',
+        'purchase_orderId',
         'order_date',
         'expected_delivery_date',
         'delivery_date',
         'delivery_name',
         'remarks',
-        'created_by',
+        'created_by_id',
         'supplier_id',
         'status',
     ] ;
@@ -30,12 +29,12 @@ class PurchaseOrder extends Model
     {
         return $this->belongsTo(Status::class, 'status');
     }
-    public function supplier(): BelongsTo
+    public function supplierRS(): BelongsTo
     {
-        return $this->belongsTo(Supplier::class, 'status');
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
-    public function employee(): BelongsTo
+    public function employeeRS(): BelongsTo
     {
-        return $this->belongsTo(Employee::class, 'statforeignKey: us');
+        return $this->belongsTo(Employee::class, 'created_by_id');
     }
 }
