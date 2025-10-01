@@ -75,13 +75,12 @@ class PayrollController extends Controller
 
         try {
             $payroll = Payroll::findOrFail($id);
-            if ($payroll->remarks == 'payroll released') {
-                $remarks = '<div class="alert alert-success">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
-            } else if ($payroll->remarks) {
-                $remarks = '<div class="alert alert-danger"> Rejected: ' . $payroll->remarks . '</div>';
-            } else {
-                $remarks = '';
-            }
+            $remarks = ($payroll->remarks == 'payroll released')
+                ? '<div class="alert alert-success">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>'
+                : ($payroll->remarks
+                    ? '<div class="alert alert-danger"> Rejected: ' . $payroll->remarks . '</div>'
+                    : ''
+                );
             // dd  ($payroll);
             $result = [
                 'id' => $payroll->id,
