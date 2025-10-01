@@ -35,7 +35,7 @@ class ProcurementController extends Controller
         try {
             $requests = PurchaseOrder::with(['employeeRS', 'statusRS', 'supplierRS'])
                 ->orderBy('updated_at', 'desc')->get();
-
+            
             return response()->json([
                 'data' => $requests->map(function ($r) {
                     return [
@@ -49,6 +49,7 @@ class ProcurementController extends Controller
                         'created_by_id'             => optional(optional($r->employeeRS)->userRS)->full_name,
                         'supplier_id'               => optional($r->supplierRS)->supplier_name,
                         'remarks'                   => $r->remarks,
+                        'purchase_request_id'       => $r->purchase_request_id,
                         'status'                    => Status::getStatusText($r->status),
                     ];
                 })

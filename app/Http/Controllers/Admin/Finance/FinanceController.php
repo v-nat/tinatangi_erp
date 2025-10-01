@@ -130,7 +130,7 @@ class FinanceController extends Controller
                         'requested_by_id'   => optional(optional($request_data->employeeRS)->userRS)->full_name,
                         'department'     => optional($request_data->deptRS)->name,
                         'remarks'        => $request_data->remarks,
-                        'status'         => Status::getStatusText($request_data->status),
+                        'status'         => Status::statusAlert($request_data->status),
                         'total_amount'   => (float)$request_data->amount,
 
                         'purchase_orders' => $mappedOrders,
@@ -142,6 +142,8 @@ class FinanceController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    
 
     public function getRequestsHistory()
     {

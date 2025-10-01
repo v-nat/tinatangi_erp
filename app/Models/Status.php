@@ -42,4 +42,31 @@ class Status extends Model
         ];
         return $statuses[$statusCode];
     }
+    public static function statusAlert($statusCode){
+        $statuses = [
+            1 => '<div class="alert alert-success">Active</div>',
+            2 => '<div class="alert alert-danger">Inactive</div>',
+            3 => '<div class="alert alert-warning">Suspended</div>',
+            4 => '<div class="alert alert-danger">Terminated</div>',
+            5 => '<div class="alert alert-danger">Resigned</div>',
+            6 => '<div class="alert alert-success">Present</div>',
+            7 => '<div class="alert alert-primary">On Time</div>',
+            8 => '<div class="alert alert-primary">On leave</div>',
+            9 => '<div class="alert alert-warning">Late</div>',
+            10 => '<div class="alert alert-danger">Absent</div>',
+            11 => '<div class="alert alert-warning">Pending</div>',
+            12 => '<div class="alert alert-danger">Rejected</div>',
+            13 => '<div class="alert alert-success">Approved</div>',
+            14 => '<div class="alert alert-info">On Process</div>',
+            15 => '<div class="alert alert-success">Released</div>',
+            16 => '<div class="alert alert-success">Delivered</div>',
+            17 => '<div class="alert alert-warning">Partial Delivered</div>',
+            18 => '<div class="alert alert-warning">Approved - Pending Dispatch</div>',
+            19 => '<div class="alert alert-danger">Rejected - Supplier</div>',
+            20 => '<div class="alert alert-success">Accepted - Supplier</div>',
+            21 => '<div class="alert alert-danger">Return</div>',
+            null => '<span class="badge bg-secondary">Unknown</div>'
+        ];
+        return $statuses[$statusCode];
+    }
 }

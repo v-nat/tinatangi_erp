@@ -111,7 +111,7 @@ $(document).ready(function () {
             {
                 data: "status",
                 render: function (data) {
-                    return `<span class="badge bg-light-success ${
+                    return `<span class="badge bg-success ${
                         data === "active" ? "success" : "danger"
                     }">${data}</span>`;
                 },
