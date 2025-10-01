@@ -21,33 +21,33 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "50px",
             },
-            { data: "purchase_orderId" },
-            { data: "type" },
+            { data: "purchase_orderId", className: "dt-left" },
+            { data: "type", className: "dt-left" },
             {
                 data: "order_date",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
-                type: "date",
+                type: "date", className: "dt-left"
             },
-            { data: "supplier_id" },
+            { data: "supplier_id", className: "dt-left" },
             {
                 data: "expected_delivery_date",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
-                type: "date",
+                type: "date", className: "dt-left"
             },
             {
                 data: "delivery_date",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
-                type: "date",
+                type: "date", className: "dt-left"
             },
-            { data: "delivery_name" },
-            { data: "created_by_id" },
-            { data: "remarks" },
+            { data: "delivery_name", className: "dt-left" },
+            { data: "created_by_id", className: "dt-left" },
+            { data: "remarks", className: "dt-left" },
             {
                 data: "status",
                 className: "text-center",

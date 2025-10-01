@@ -17,7 +17,7 @@
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Requests Table</h4>
+                <h4 class="card-title">Purchase  Table</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

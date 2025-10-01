@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseRequest extends Model
 {
@@ -35,5 +36,8 @@ class PurchaseRequest extends Model
     public function employeeRS(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'requested_by_id');
+    }
+    public function purchaseOrders(): HasMany {
+        return $this->hasMany(PurchaseOrder::class,'purchase_request_id');
     }
 }

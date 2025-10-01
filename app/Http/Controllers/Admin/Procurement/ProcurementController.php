@@ -54,7 +54,6 @@ class ProcurementController extends Controller
                 })
             ]);
         } catch (\Exception $e) {
-            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Server error'], 500);
         }
     }

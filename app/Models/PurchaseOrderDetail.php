@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Database\Seeders\ItemSeeder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,7 +24,7 @@ class PurchaseOrderDetail extends Model
     ];
 
     public function itemss(): BelongsTo{
-        return $this->belongsTo(ItemSeeder::class);
+        return $this->belongsTo(Item::class, 'item_id');
     }
     public function statusRS(): BelongsTo
     {
@@ -33,6 +32,6 @@ class PurchaseOrderDetail extends Model
     }
     public function purchaseOrder(): BelongsTo
     {
-        return $this->belongsTo(PurchaseOrder::class, 'status');
+        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
     }
 }

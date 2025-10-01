@@ -17,6 +17,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/finance/budgets/requests/reject/{id}', [FinanceController::class,'rejectRequest']);
 
     Route::get('/finance/purchases', [FinanceController::class, 'purchasesIndex'])->name('finance.purchases');
+    Route::get('/finance/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
     Route::get('/finance/purchases/get-requests', [FinanceController::class, 'purchaseRequests']);
     Route::put('/finance/purchases/process/{id}/{status}', [PurchaseOrderController::class, 'putOnProcess']);
 });

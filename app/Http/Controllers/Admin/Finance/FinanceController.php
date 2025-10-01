@@ -70,8 +70,8 @@ class FinanceController extends Controller
                         'amount'            => $r->amount,
                         'department'        => optional($r->deptRS)->name,
                         'requested_by_id'   => optional(optional($r->employeeRS)->userRS)->full_name,
-                        'requested_date'      => optional(Carbon::parse($r->requested_date))->format('M d, Y'),
-                        'remarks'             => $r->remarks,
+                        'requested_date'    => optional(Carbon::parse($r->requested_date))->format('M d, Y'),
+                        'remarks'           => $r->remarks,
                         'status'            => Status::getStatusText($r->status),
                     ];
                 })
@@ -79,6 +79,67 @@ class FinanceController extends Controller
         } catch (\Exception $e) {
             // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Server error'], 500);
+        }
+    }
+    public function getDetailsForViewing($id)
+    {
+        try {
+            $purchaseRequests = PurchaseRequest::with([
+                'purchaseOrders',
+                'purchaseOrders.purchaseOrderDetail',
+                'purchaseOrders.supplierRS', // Load supplier on the PO
+                'purchaseOrders.purchaseOrderDetail.itemss', // Load items on the detail
+                'statusRS',
+                'employeeRS',
+                'deptRS',
+            ])->where('id', $id)->get(); // Use find($id) if you only expect one, or keep get()
+
+            return response()->json([
+                // Since you queried by ID, you likely expect only one request, 
+                // but the final array mapping is cleaner with ->map()
+                'data' => $purchaseRequests->map(function ($request_data) {
+
+                    // --- 1. Map the Purchase Orders (Collection) ---
+                    $mappedOrders = $request_data->purchaseOrders->map(function ($order) {
+
+                        // --- 2. Map the Purchase Order Details (Collection) ---
+                        $mappedDetails = $order->purchaseOrderDetail->map(function ($detail) {
+                            return [
+                                'item_name'   => optional($detail->itemss)->name,
+                                'item_unit'   => optional($detail->itemss)->unit,
+                                'quantity'    => (int)$detail->quantity,
+                                'unit_price'  => (float)$detail->unit_price,
+                                'total_amount' => (float)$detail->total_amount,
+                            ];
+                        });
+
+                        // Return the individual Purchase Order object
+                        return [
+                            'purchase_order_id' => $order->purchase_orderId, 
+                            'supplier_name'     => optional($order->supplierRS)->supplier_name,
+
+                            // EMBED THE DETAILS ARRAY HERE
+                            'details'           => $mappedDetails,
+                        ];
+                    });
+
+                    // --- 3. Return the main Purchase Request object ---
+                    return [
+                        'id'             => $request_data->id,
+                        'requested_date' => $request_data->requested_date,
+                        'requested_by_id'   => optional(optional($request_data->employeeRS)->userRS)->full_name,
+                        'department'     => optional($request_data->deptRS)->name,
+                        'remarks'        => $request_data->remarks,
+                        'status'         => Status::getStatusText($request_data->status),
+                        'total_amount'   => (float)$request_data->amount,
+
+                        'purchase_orders' => $mappedOrders,
+                    ];
+                })
+            ]);
+        } catch (\Exception $e) {
+            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
