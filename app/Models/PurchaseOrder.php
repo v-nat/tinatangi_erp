@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseOrder extends Model
 {
@@ -23,7 +24,7 @@ class PurchaseOrder extends Model
         'created_by_id',
         'supplier_id',
         'status',
-    ] ;
+    ];
 
     public function statusRS(): BelongsTo
     {
@@ -36,5 +37,16 @@ class PurchaseOrder extends Model
     public function employeeRS(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'created_by_id');
+    }
+    public function purchaseRequest(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseRequest::class, 'purchase_request_id');
+    }
+
+    public function purchaseOrderDetail(): HasMany
+    {
+        // The relationship MUST be hasMany() for detail line items
+        // Assuming the foreign key in the details table is 'purchase_order_id' (the string ID)
+        return $this->hasMany(PurchaseOrderDetail::class, 'purchase_order_id', 'id');
     }
 }

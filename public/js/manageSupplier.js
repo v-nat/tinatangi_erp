@@ -89,6 +89,7 @@ $(document).ready(function () {
     });
     
     $("#supplier_table").DataTable({
+        scrollX: false,
         processing: true,
         serverSide: false,
         ajax: {
@@ -106,7 +107,7 @@ $(document).ready(function () {
             },
             { data: "name" },
             { data: "email" },
-            { data: "phone_number" },
+            { data: "phone_number", className: "dt-left" },
             {
                 data: "status",
                 render: function (data) {

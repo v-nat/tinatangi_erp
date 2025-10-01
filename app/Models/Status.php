@@ -34,9 +34,9 @@ class Status extends Model
             15 => '<span class="badge bg-success">Released</span>',
             16 => '<span class="badge bg-success">Delivered</span>',
             17 => '<span class="badge bg-warning">Partial Delivered</span>',
-            18 => '<span class="badge bg-warning">Approved - Pending Dispatch</span>',
-            19 => '<span class="badge bg-danger">Rejected - Supplier</span>',
-            20 => '<span class="badge bg-success">Accepted - Supplier</span>',
+            18 => '<span class="badge bg-warning">Approved<br>Pending Dispatch</span>',
+            19 => '<span class="badge bg-danger">Rejected<br>Supplier</span>',
+            20 => '<span class="badge bg-success">Accepted<br>Supplier</span>',
             21 => '<span class="badge bg-danger">Return</span>',
             null => '<span class="badge bg-secondary">Unknown</span>'
         ];
