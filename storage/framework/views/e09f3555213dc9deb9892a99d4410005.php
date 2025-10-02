@@ -1,8 +1,4 @@
-<?php $__env->startSection('title'); ?> Human Resources Dashboard <?php $__env->stopSection(); ?>
-<?php $__env->startSection('sidebar-title'); ?> Human Resources Management <?php $__env->stopSection(); ?>
-<?php $__env->startSection('human_resources'); ?> d-block <?php $__env->stopSection(); ?>
-<?php $__env->startSection('finance'); ?> d-none <?php $__env->stopSection(); ?>
-<?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?>
+<?php echo $__env->make('partials.human-resources-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->startSection('payroll'); ?> active
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('headings'); ?> Payroll List <?php $__env->stopSection(); ?>

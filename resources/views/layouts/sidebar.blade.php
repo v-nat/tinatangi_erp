@@ -3,8 +3,8 @@
         <div class="sidebar-header">
             <div class="d-flex justify-content-between">
                 <div class="logo">
-                    <a href="" class="justify-content-center align-items-center"><img style="height: 50px " src="{{ asset('tinatangilogo2 - Copy.png') }}  " alt="Logo"
-                            srcset=""></a>
+                    <a href="" class="justify-content-center align-items-center"><img style="height: 50px "
+                            src="{{ asset('tinatangilogo2 - Copy.png') }}  " alt="Logo" srcset=""></a>
                 </div>
                 <div class="toggler">
                     <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
@@ -13,13 +13,15 @@
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
+
                 <li class="sidebar-title">@yield('sidebar-title')</li>
+
+                <li class="sidebar-title">@yield('hr-admin')</li>
 
                 <div class="@yield('human_resources')">
                     <li class="sidebar-item @yield('dsh') ">
                         <a href="{{route('hr.dashboard')}}" class='sidebar-link'>
-                            <i class="bi bi-grid-1x2-fill"></i>
-                            <span>Dashboard</span>
+                            @yield('human_resources-admin')
                         </a>
                     </li>
                     <li class="sidebar-item @yield('emplMngt') has-sub">
@@ -58,6 +60,8 @@
                     </li>
                 </div>
 
+                <li class="sidebar-title">@yield('finance-admin')</li>
+
                 <div class="@yield('finance')">
                     <li class="sidebar-item @yield('financePayroll') ">
                         <a href="{{route('finance.payroll')}}" class='sidebar-link'>
@@ -79,11 +83,13 @@
                     </li>
                 </div>
 
+                <li class="sidebar-title">@yield('procurement-admin')</li>
+
                 <div class="@yield('procurement')">
+
                     <li class="sidebar-item @yield('procurementIndex') ">
                         <a href="{{route('procurement.index')}}" class='sidebar-link'>
-                            <i class="bi bi-grid-1x2-fill"></i>
-                            <span>Dashboard</span>
+                            @yield('procurement-dashboard')
                         </a>
                     </li>
                     <li class="sidebar-item @yield('createPR') ">

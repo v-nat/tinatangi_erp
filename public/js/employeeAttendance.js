@@ -227,7 +227,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: false,
         ajax: {
-            url: "/attendance/list",
+            url: "/humanresources/attendance/list",
             type: "GET",
             dataSrc: "data",
             error: function (xhr) {

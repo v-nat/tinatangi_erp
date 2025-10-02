@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -55,13 +56,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     public function getFullNameAttribute(){
         return trim($this->first_name . ' ' . $this->last_name);
     }
 
-    public function employeeRS(): HasMany
+    public function employeeRS(): HasOne
     {
-        return $this->hasMany(Employee::class);
+        return $this->hasOne(Employee::class);
     }
     public function statusRS(): BelongsTo
     {
