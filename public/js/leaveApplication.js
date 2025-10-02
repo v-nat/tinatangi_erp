@@ -22,23 +22,26 @@ $(document).ready(function () {
                 width: "45px",
             },
             {
-                data: "start_date", className: "dt-left" ,
+                data: "start_date",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
             {
-                data: "end_date", className: "dt-left" ,
+                data: "end_date",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
-            { data: "reason", className: "dt-left"  },
+            { data: "reason", className: "dt-left" },
             {
                 data: "status",
                 className: "text-center",
+                width: "150px",
             },
         ],
     });
@@ -78,6 +81,7 @@ $(document).ready(function () {
 
     $("#reqLeave").click(function (e) {
         e.preventDefault();
+
         const selectedReason = $("#reason").val();
         const textAreaReason = $("#textAreaReason").val();
 
@@ -102,66 +106,84 @@ $(document).ready(function () {
                 $("#reason").val(selectedReason);
             }
 
-            let formData = new FormData($("#leaveApplication")[0]);
-            Swal.fire({
-                title: "Confirm Request",
-                text: "You are about to submit a leave application.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Submit",
-                cancelButtonText: "Cancel",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $("#LoadingScreen").fadeIn(200);
-                    $.ajax({
-                        headers: {
-                            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                                "content"
-                            ),
-                        },
-                        url: "/employee/leaves/request/submit",
-                        type: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            $("#LoadingScreen").fadeOut(200);
-                            $('#leaveApplication').trigger('reset');
-                            reloadTable('leaveRequests');
-                            Toast.fire({
-                                title: "Success!",
-                                text: response.message,
-                                icon: "success",
-                            });
-                        },
-                        error: function (xhr) {
-                            // console.error('Error response:', xhr);
-                            $("#LoadingScreen").fadeOut(200);
-                            if (xhr.responseJSON?.errors) {
-                                let errorMessages = Object.values(
-                                    xhr.responseJSON.errors
-                                )
-                                    .flat()
-                                    .join("\n");
-                                Toast.fire(
-                                    "Validation Error",
-                                    errorMessages,
-                                    "error"
-                                );
-                            } else {
-                                Toast.fire(
-                                    "Error",
-                                    "An unexpected error occurred.",
-                                    "error"
-                                );
-                            }
-                        },
-                    });
+            let isValid = true;
+            const $form = $("#leaveApplication");
+
+            $form.find("input, select, option").each(function () {
+                const $field = $(this);
+                const value = $field.val();
+                if ($field.prop("required") && (!value || !value.trim())) {
+                    $field.addClass("is-invalid");
+                    isValid = false;
+                } else {
+                    $field.removeClass("is-invalid");
                 }
             });
+
+            if (isValid) {
+                let formData = new FormData($("#leaveApplication")[0]);
+                Swal.fire({
+                    title: "Confirm Request",
+                    text: "You are about to submit a leave application.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Submit",
+                    cancelButtonText: "Cancel",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $("#LoadingScreen").fadeIn(200);
+                        $.ajax({
+                            headers: {
+                                "X-CSRF-TOKEN": $(
+                                    'meta[name="csrf-token"]'
+                                ).attr("content"),
+                            },
+                            url: "/employee/leaves/request/submit",
+                            type: "POST",
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                $("#LoadingScreen").fadeOut(200);
+                                $("#leaveApplication").trigger("reset");
+                                reloadTable("leaveRequests");
+                                Toast.fire({
+                                    title: "Success!",
+                                    text: response.message,
+                                    icon: "success",
+                                });
+                            },
+                            error: function (xhr) {
+                                // console.error('Error response:', xhr);
+                                $("#LoadingScreen").fadeOut(200);
+                                if (xhr.responseJSON?.errors) {
+                                    let errorMessages = Object.values(
+                                        xhr.responseJSON.errors
+                                    )
+                                        .flat()
+                                        .join("\n");
+                                    Toast.fire(
+                                        "Validation Error",
+                                        errorMessages,
+                                        "error"
+                                    );
+                                } else {
+                                    Toast.fire(
+                                        "Error",
+                                        "An unexpected error occurred.",
+                                        "error"
+                                    );
+                                }
+                            },
+                        });
+                    }
+                });
+            }
         }
     });
     function reloadTable(tableId) {
-        $("#" + tableId).DataTable().ajax.reload(null, false);
+        $("#" + tableId)
+            .DataTable()
+            .ajax.reload(null, false);
     }
 });

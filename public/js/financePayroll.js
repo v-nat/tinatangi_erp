@@ -59,7 +59,7 @@ $(document).ready(function () {
             },
             {
                 data: "status",
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
             {
                 data: "id",
@@ -103,7 +103,7 @@ $(document).ready(function () {
                         `;
                     }
                 },
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
         ],
     });

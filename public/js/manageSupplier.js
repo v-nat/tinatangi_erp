@@ -116,7 +116,7 @@ $(document).ready(function () {
                         data === "active" ? "success" : "danger"
                     }">${data}</span>`;
                 },
-                className: "text-center"
+                className: "text-center", width: "150px",
             },
             {
                 data: "supplier_id",
@@ -131,7 +131,7 @@ $(document).ready(function () {
                         </a>
                     </div>
                         `;
-                },
+                }, width: "150px", className: "text-center"
             },
         ],
     });

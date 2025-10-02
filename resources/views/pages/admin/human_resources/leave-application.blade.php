@@ -29,6 +29,7 @@
                                             <label for="start_date">Start Date</label>
                                             <input type="date" id="start_date" class="form-control py-3" placeholder=""
                                                 required name="start_date">
+                                            <div class="invalid-feedback">Start Date is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
@@ -36,6 +37,7 @@
                                             <label for="end_date">End Date</label>
                                             <input type="date" id="end_date" class="form-control py-3" placeholder=""
                                                 required name="end_date">
+                                            <div class="invalid-feedback">End Date is required.</div>
                                         </div>
                                     </div>
                                     <div id="reasonDiv" class="w-100 mb-10">
@@ -48,6 +50,7 @@
                                             <option value="Maternity Leave">Maternity Leave</option>
                                             <option value="Other">Other</option>
                                         </select>
+                                        <div class="invalid-feedback">Reason is required.</div>
                                     </div>
                                     <div class="w-100 mb-10" id="textAreaDiv">
                                         <label for="textAreaReason" class="form-label">Provide Reason</label>
@@ -77,7 +80,8 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="leaveRequests" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
+                    <table id="leaveRequests" class="table table-hover dataTable no-footer"
+                        style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -99,15 +103,5 @@
 
 @endsection
 @section('scripts')
-
-    <script src="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}   "></script>
-
-    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}   "></script>
-    {{--
-    <script src="assets/vendors/apexcharts/apexcharts.js"></script> --}}
-    {{--
-    <script src="{{ asset('assets/js/pages/dashboard.js') }}   "></script> --}}
-    <script src="{{ asset('assets/vendors/simple-datatables/simple-datatables.js')}}"></script>
-    <script src="{{ asset('assets/js/main2.js') }}"></script>
     <script src="{{ asset('js/leaveApplication.js') }}"></script>
 @endsection

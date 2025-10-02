@@ -35,12 +35,13 @@
 
     <link rel="icon" href="{{ asset('logo.png') }} " type="image/x-icon">
     <style>
-        .dt-column-header  {
-            color: #6c757d !important; 
+        .dt-column-header {
+            color: #6c757d !important;
             font-weight: 610 !important;
         }
-        .card-title  {
-            color: #6c757d !important; 
+
+        .card-title {
+            color: #6c757d !important;
             font-weight: 700 !important;
         }
     </style>
@@ -153,6 +154,8 @@ $position = App\Models\Employee::where('id', $userId)->first()->position;
         </script>
         <script src="{{ asset('source/jquery/datatables.js') }}"></script>
         <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
+        <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('assets/js/main2.js') }}"></script>
         <script src="{{ asset('js/logout.js') }}"></script>
         @yield('scripts')
 </body>
