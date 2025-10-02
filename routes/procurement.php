@@ -26,5 +26,6 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
 
     ///////////////////////////////////////// PURCHASE ORDER //////////////////////////////////////////////////
     Route::get('/procurement/purchases/get-list', [ProcurementController::class, 'purchaseOrdersList']);
+    Route::put('/procurement/purchases/order/{id}/{status}', [PurchaseOrderController::class, 'processPurchaseOrders']);
 
 });

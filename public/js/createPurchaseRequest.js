@@ -26,29 +26,35 @@ $(document).ready(function () {
                 className: "text-center",
             },
             {
-                data: "item", className: "dt-left" 
+                data: "item",
+                className: "dt-left",
             },
             {
-                data: "unit", className: "dt-left" 
+                data: "unit",
+                className: "dt-left",
             },
             {
-                data: "qnty", className: "dt-left" 
+                data: "qnty",
+                className: "dt-left",
             },
             {
-                data: "unit_price", className: "dt-left" ,
+                data: "unit_price",
+                className: "dt-left",
                 render: function (data) {
                     return "₱" + parseFloat(data).toFixed(2);
                 },
             },
             {
-                data: "total", className: "dt-left" ,
+                data: "total",
+                className: "dt-left",
                 render: function (data) {
                     return "₱" + parseFloat(data).toFixed(2);
                 },
             },
 
             {
-                data: "action",width: "150px",
+                data: "action",
+                width: "150px",
             },
             {
                 data: "order_id",
@@ -74,43 +80,15 @@ $(document).ready(function () {
     });
 
     const categorySelect = document.getElementById("category");
-    const itemSelect = document.getElementById("item");
 
-    categorySelect.addEventListener("change", getItems);
-    itemSelect.addEventListener("change", itemSelected);
-
-    function getSuppliers() {
-        const supplierSelect = document.getElementById("supplier");
-
-        fetch(`/procurement/create-purchase-request/get-active-supplier`)
-            .then((response) => response.json())
-            .then((data) => {
-                supplierSelect.innerHTML =
-                    '<option value="" disabled selected>Choose...</option>';
-                data.forEach((s) => {
-                    const option = document.createElement("option");
-                    option.value = s.id;
-                    option.textContent = s.supplier_name;
-                    supplierSelect.appendChild(option);
-                });
-            });
-    }
-    function getCategories() {
-        fetch(`/procurement/create-purchase-request/get-categories`)
-            .then((response) => response.json())
-            .then((data) => {
-                categorySelect.innerHTML =
-                    '<option value="" disabled selected>Choose Category</option>';
-                data.forEach((s) => {
-                    const option = document.createElement("option");
-                    option.value = s.id;
-                    option.textContent = s.name;
-                    categorySelect.appendChild(option);
-                });
-            });
-    }
-
-    function getItems() {
+    $("#item").change(function () {
+        const selectedOption = $("#item").find("option:selected");
+        const unit = selectedOption.data("unit");
+        const unitPrice = selectedOption.data("unit_price");
+        $("#unit").val(unit);
+        $("#unit_price").val(unitPrice);
+    });
+    $("#category").change(function () {
         $("#unit").val("");
         $("#unit_price").val("");
         const category = categorySelect.value;
@@ -136,6 +114,61 @@ $(document).ready(function () {
                     });
                 });
         }
+    });
+    function getSuppliers() {
+        const supplierSelect = document.getElementById("supplier");
+
+        fetch(`/procurement/create-purchase-request/get-active-supplier`)
+            .then((response) => response.json())
+            .then((data) => {
+                supplierSelect.innerHTML =
+                    '<option value="" disabled selected>Choose...</option>';
+                data.forEach((s) => {
+                    const option = document.createElement("option");
+                    option.value = s.id;
+                    option.textContent = s.supplier_name;
+                    supplierSelect.appendChild(option);
+                });
+            });
+    }
+
+    $("#supplier").change(function () {
+        if (orderTable.rows().count() > 0) {
+            Swal.fire({
+                title: "Change Supplier?",
+                text: "Changing Supplier will reset all the fields",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirm",
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+                $("#category").val("");
+                $("#item").val("");
+                $("#unit").val("");
+                $("#unit_price").val("");
+                $("#qnty").val("");
+                orderTable.clear().draw();
+            });
+        }
+    });
+
+    function getCategories() {
+        fetch(`/procurement/create-purchase-request/get-categories`)
+            .then((response) => response.json())
+            .then((data) => {
+                categorySelect.innerHTML =
+                    '<option value="" disabled selected>Choose Category</option>';
+                data.forEach((s) => {
+                    const option = document.createElement("option");
+                    option.value = s.id;
+                    option.textContent = s.name;
+                    categorySelect.appendChild(option);
+                });
+            });
     }
 
     $(document).ready(function () {
@@ -151,13 +184,6 @@ $(document).ready(function () {
             const $field = $(this);
             $field.removeClass("is-invalid");
         });
-    }
-    function itemSelected() {
-        const selectedOption = $("#item").find("option:selected");
-        const unit = selectedOption.data("unit");
-        const unitPrice = selectedOption.data("unit_price");
-        $("#unit").val(unit);
-        $("#unit_price").val(unitPrice);
     }
 
     getSuppliers();
@@ -297,6 +323,27 @@ $(document).ready(function () {
 
     $("#submit-PO").click(function (e) {
         e.preventDefault();
+
+        var allTableData = orderTable.rows().data().toArray();
+        var cleanedData = allTableData.map(function (item) {
+            return {
+                item_id: parseInt(item.item_id),
+                supplier_id: parseInt(item.supplier_id),
+                category_id: parseInt(item.category_id),
+                qnty: item.qnty,
+                unit_price: parseFloat(item.unit_price),
+                total: parseFloat(item.total),
+            };
+        });
+        if (cleanedData.length === 0) {
+            Toast.fire({
+                title: "The order is empty. Please add items before submitting.",
+                icon: "warning",
+                timer: 2000,
+            });
+            e.preventDefault();
+            return;
+        }
         Swal.fire({
             title: "Are you sure?",
             text: "You are about to submit this Request.",
@@ -309,27 +356,7 @@ $(document).ready(function () {
             if (!result.isConfirmed) {
                 return;
             }
-            var allTableData = orderTable.rows().data().toArray();
-            var cleanedData = allTableData.map(function (item) {
-                return {
-                    item_id: parseInt(item.item_id),
-                    supplier_id: parseInt(item.supplier_id),
-                    category_id: parseInt(item.category_id),
-                    qnty: item.qnty,
-                    unit_price: parseFloat(item.unit_price),
-                    total: parseFloat(item.total),
-                };
-            });
-            if (cleanedData.length === 0) {
-                Toast.fire({
-                    title: "The order is empty. Please add items before submitting.",
-                    icon: "warning",
-                    timer: 2000,
-                });
-                e.preventDefault();
-                return;
-            }
-            // console.log(cleanedData);
+
             const jsonPayload = JSON.stringify(cleanedData);
             $("#order_items_payload").val(jsonPayload);
             const form = document.getElementById("submitPORequest");
@@ -356,7 +383,7 @@ $(document).ready(function () {
                     $("#qnty").val("");
                     $("#LoadingScreen").fadeOut(200);
                     generateOrderId();
-                    orderTable.clear().draw(); 
+                    orderTable.clear().draw();
                     Toast.fire({
                         text: response.message,
                         icon: "success",

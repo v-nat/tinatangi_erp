@@ -8,6 +8,7 @@
     @section('human_resources') d-block @endsection
     @section('finance') d-block @endsection
     @section('procurement') d-block @endsection
+    @section('supplierPage') d-none @endsection
 
     @section('human_resources-admin')
         <i class="bi bi-person-lines-fill"></i>
@@ -30,3 +31,4 @@
 @section('human_resources') d-none @endsection
 @section('finance') d-none @endsection
 @section('procurement') d-block @endsection
+@section('supplierPage') d-none @endsection

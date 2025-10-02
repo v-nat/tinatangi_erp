@@ -2,49 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title')</title>
-
-    <link href="{{ asset('source/css/datatables.min.css') }}" rel="stylesheet">
-    </link>
-    {{--
-    <link href="{{ asset('source/css/uikit.min.css') }}" rel="stylesheet">
-    </link> --}}
-
-    {{--
-    <link rel="preconnect" href="https://fonts.gstatic.com"> --}}
-    <link rel="stylesheet" href="{{ asset('css/font/Nunito/static/stylesheet.css')}}">
-    {{--
-    <link rel="stylesheet" href="{{ asset('css/font/Nunito/stylesheet.css')}}"> --}}
-
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}  ">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/iconly/bold.css') }}  ">
-
-    <link rel="stylesheet" href="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.css') }}  ">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-icons/bootstrap-icons.css') }}  ">
-    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}  ">
-    {{--
-    <script src="assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script> --}}
-
-    <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
-    <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
-
-    <link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}">
-
-    <link rel="icon" href="{{ asset('logo.png') }} " type="image/x-icon">
-    <style>
-        .dt-column-header {
-            color: #6c757d !important;
-            font-weight: 610 !important;
-        }
-
-        .card-title {
-            color: #6c757d !important;
-            font-weight: 700 !important;
-        }
-    </style>
+    @include('partials.app-head')
 </head>
 
 <body>
@@ -68,7 +26,8 @@
     <div id="app">
         <?php
 $userId = auth()->user()->id;
-$position = App\Models\Employee::where('id', $userId)->first()->position;         
+if (auth()->user()->user_type == 'supplier') {} 
+else if (auth()->user()->user_type == 'employee') {$position = App\Models\Employee::where('id', $userId)->first()->position;}
         ?>
         @include('layouts.sidebar')
         <div id="main" class="layout-navbar">

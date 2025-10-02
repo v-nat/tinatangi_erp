@@ -42,8 +42,8 @@
 
                             </h6>
                             <p class="mb-0 text-sm text-gray-600">
-                                <?php echo e(\Illuminate\Support\Str::upper($position->name)); ?>
-
+                                <?php if(auth()->user()->user_type == 'employee'): ?>
+                                <?php echo e(\Illuminate\Support\Str::upper($position->name)); ?> <?php endif; ?>
                             </p>
                         </div>
                         <div class="user-img d-flex align-items-center">
@@ -55,14 +55,19 @@
                     <li>
                         <h6 class="dropdown-header">Hello, <?php echo e(auth()->user()->first_name); ?>!</h6>
                     </li>
-                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-clock"></i>
-                            Attendance</a></li>
-                    <li><a class="dropdown-item" href="<?php echo e(route('hr.ot-application', ['id' => Auth::user()->id])); ?>"><i
-                                class="fa-solid fa-business-time"></i>
-                            Apply Overtime</a></li>
-                    <li><a class="dropdown-item" href="<?php echo e(route('hr.leave-application', ['id' => Auth::user()->id])); ?>"><i
-                                class="fa-solid fa-calendar-days"></i>
-                            Apply Leave</a></li>
+                    <div class="<?php echo $__env->yieldContent('topnavEmp'); ?>">
+                        <li><a class="dropdown-item" href="#"><i class="fa-solid fa-clock"></i>
+                                Attendance</a></li>
+                        <li><a class="dropdown-item"
+                                href="<?php echo e(route('hr.ot-application', ['id' => Auth::user()->id])); ?>"><i
+                                    class="fa-solid fa-business-time"></i>
+                                Apply Overtime</a></li>
+                        <li><a class="dropdown-item"
+                                href="<?php echo e(route('hr.leave-application', ['id' => Auth::user()->id])); ?>"><i
+                                    class="fa-solid fa-calendar-days"></i>
+                                Apply Leave</a></li>
+                    </div>
+
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i>
                             Prpfile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i>

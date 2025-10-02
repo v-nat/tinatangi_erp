@@ -23,18 +23,15 @@ class AuthController extends Controller
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed')
             ]);
-            return response()->json([
-                'errors' => [
-                    'email' => 'Invalid credentials'
-                ]
-            ], 401);
         }
 
         $request->session()->regenerate();
         $user = Auth::user();
+        $user_type = $user->user_type;
         abort_if($user->status != 1, 401, 'Your account is deactivated. Please contact the admin.');
         return response()->json([
             'message' => 'Login successful!',
+            'user'=> $user_type,
         ], 200);
         
     }

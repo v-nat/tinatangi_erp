@@ -3,12 +3,12 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
-class EmployeeMiddleware
+class SupplierMiddleware
 {
     /**
      * Handle an incoming request.
@@ -24,18 +24,13 @@ class EmployeeMiddleware
             'attendance',
             'employee',
         ];
-
         if (Auth::check()) {
             /** @var \App\Models\User */
             $user = Auth::user();
-
             $departmentId = $user->employeeRS?->department;
-
-            if (!$user->user_type == 'employee' || !$departmentId) {
-                Session::flash('error', 'Unauthorized: No employee data');
+            if (!$user->user_type == 'supplier' || $departmentId) {
                 abort(401);
             }
-
             $currentPath = trim($request->path(), '/');
 
             foreach ($excludedRoutes as $excludedRoute) {
@@ -43,13 +38,8 @@ class EmployeeMiddleware
                     return $next($request);
                 }
             }
-            $requiredPrefix = match ((int) $departmentId) {
-                1 => '/',
-                2 => 'humanresources',
-                3 => 'finance',
-                4 => 'procurement',
-                default => null,
-            };
+
+            $requiredPrefix = 'supplier';
 
             if ($requiredPrefix && $requiredPrefix !== '/') {
                 if (!str_starts_with($currentPath, $requiredPrefix)) {

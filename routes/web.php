@@ -20,3 +20,4 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/hr.php';
 require __DIR__ . '/finance.php';
 require __DIR__ . '/procurement.php';
+require __DIR__ . '/supplier.php';

@@ -37,7 +37,8 @@ class Status extends Model
             18 => '<span class="badge bg-warning">Approved<br>Pending Dispatch</span>',
             19 => '<span class="badge bg-danger">Rejected<br>Supplier</span>',
             20 => '<span class="badge bg-success">Accepted<br>Supplier</span>',
-            21 => '<span class="badge bg-danger">Return</span>',
+            21 => '<span class="badge bg-warning">Pending<br>Supplier</span>',
+            22 => '<span class="badge bg-danger">Return</span>',
             null => '<span class="badge bg-secondary">Unknown</span>'
         ];
         return $statuses[$statusCode];
@@ -64,7 +65,8 @@ class Status extends Model
             18 => '<div class="alert alert-warning">Approved - Pending Dispatch</div>',
             19 => '<div class="alert alert-danger">Rejected - Supplier</div>',
             20 => '<div class="alert alert-success">Accepted - Supplier</div>',
-            21 => '<div class="alert alert-danger">Return</div>',
+            21 => '<div class="alert alert-warning">Pending - Supplier</div>',
+            22 => '<div class="alert alert-danger">Return</div>',
             null => '<span class="badge bg-secondary">Unknown</div>'
         ];
         return $statuses[$statusCode];

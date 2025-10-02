@@ -111,6 +111,15 @@
                         </a>
                     </li>
                 </div>
+
+                <div class="<?php echo $__env->yieldContent('supplierPage'); ?>">
+                    <li class="sidebar-item <?php echo $__env->yieldContent('supplierApprove'); ?> ">
+                        <a href="<?php echo e(route('supplier.approve')); ?>" class='sidebar-link'>
+                            <i class="bi bi-truck"></i>
+                            <span>Approve Orders</span>
+                        </a>
+                    </li>
+                </div>
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

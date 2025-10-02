@@ -41,7 +41,8 @@
                                 {{auth()->user()->full_name}}
                             </h6>
                             <p class="mb-0 text-sm text-gray-600">
-                                {{ \Illuminate\Support\Str::upper($position->name) }}
+                                @if(auth()->user()->user_type == 'employee')
+                                {{\Illuminate\Support\Str::upper($position->name)}} @endif
                             </p>
                         </div>
                         <div class="user-img d-flex align-items-center">
@@ -55,14 +56,19 @@
                     <li>
                         <h6 class="dropdown-header">Hello, {{ auth()->user()->first_name }}!</h6>
                     </li>
-                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-clock"></i>
-                            Attendance</a></li>
-                    <li><a class="dropdown-item" href="{{route('hr.ot-application', ['id' => Auth::user()->id])}}"><i
-                                class="fa-solid fa-business-time"></i>
-                            Apply Overtime</a></li>
-                    <li><a class="dropdown-item" href="{{route('hr.leave-application', ['id' => Auth::user()->id])}}"><i
-                                class="fa-solid fa-calendar-days"></i>
-                            Apply Leave</a></li>
+                    <div class="@yield('topnavEmp')">
+                        <li><a class="dropdown-item" href="#"><i class="fa-solid fa-clock"></i>
+                                Attendance</a></li>
+                        <li><a class="dropdown-item"
+                                href="{{route('hr.ot-application', ['id' => Auth::user()->id])}}"><i
+                                    class="fa-solid fa-business-time"></i>
+                                Apply Overtime</a></li>
+                        <li><a class="dropdown-item"
+                                href="{{route('hr.leave-application', ['id' => Auth::user()->id])}}"><i
+                                    class="fa-solid fa-calendar-days"></i>
+                                Apply Leave</a></li>
+                    </div>
+
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i>
                             Prpfile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i>
