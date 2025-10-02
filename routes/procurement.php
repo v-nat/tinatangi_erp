@@ -5,7 +5,7 @@ use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 use App\Http\Controllers\Admin\Procurement\SupplierController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth' , 'isEmployee'])->group(function () {
     //////////////////////////////////////////  to views /////////////////////////////////////
     Route::get('/procurement', [ProcurementController::class, 'index'])->name('procurement.index');
     Route::get('/procurement/create-purchase-request', [ProcurementController::class, 'createPR'])->name('procurement.createPR');

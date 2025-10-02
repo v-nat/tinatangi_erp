@@ -15,9 +15,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/attendance/time-out', [AttendanceController::class, 'timeOut']);
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth' , 'isEmployee'])->group(function () {
     /////////////////////////// ATTENDANCE ///////////////////////////////////////
-    Route::get('/attendance/list', [AttendanceController::class, 'attendanceList']);
+    Route::get('/humanresources/attendance/list', [AttendanceController::class, 'attendanceList']);
 
     ////////////////////////////////// EMPLOYEE MANAGEMENT //////////////////////////
     Route::get('/humanresources', [HR_Controller::class, 'index'])->name('hr.dashboard');
@@ -28,8 +28,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/humanresources/update-employee/{id}', [EmployeeController::class, 'updateEmployee'])->name('update.employee');
 
     Route::get('/humanresources/manage', [EmployeeController::class, 'manage'])->name('hr.manage');
-    Route::get('/supervisors-by-department-and-position', [EmployeeController::class, 'getSupervisorForPosition']);
-    Route::get('/positions-by-department', [EmployeeController::class, 'getPositions']);
+    Route::get('/humanresources/supervisors-by-department-and-position', [EmployeeController::class, 'getSupervisorForPosition']);
+    Route::get('/humanresources/positions-by-department', [EmployeeController::class, 'getPositions']);
     Route::get('/ceo', [EmployeeController::class, 'getCEO']);
 
     //////////////////////////////// OVERTIME ///////////////////////////////////////////

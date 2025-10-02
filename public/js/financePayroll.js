@@ -4,7 +4,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: false,
         ajax: {
-            url: "/humanresources/payroll/list",
+            url: "/finance/payroll/list",
             type: "GET",
             dataSrc: "data",
         },
@@ -112,7 +112,7 @@ $(document).ready(function () {
         $("#LoadingScreen").fadeIn(200);
 
         $.get(
-            `/humanresources/payroll/view/${payroll_id}`,
+            `/finance/payroll/view/${payroll_id}`,
             function (response) {
                 buildPayslipModal(response.data);
             }

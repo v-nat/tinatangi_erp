@@ -82,7 +82,7 @@ $(document).ready(function () {
         const department = departmentSelect.value;
         if (department) {
             fetch(
-                `/positions-by-department?department=${encodeURIComponent(
+                `/humanresources/positions-by-department?department=${encodeURIComponent(
                     department
                 )}`
             )
@@ -110,7 +110,7 @@ $(document).ready(function () {
         updateSalary();
         if (position && department) {
             fetch(
-                `/supervisors-by-department-and-position?department=${encodeURIComponent(
+                `/humanresources/supervisors-by-department-and-position?department=${encodeURIComponent(
                     department
                 )}&position=${encodeURIComponent(position)}`
             )

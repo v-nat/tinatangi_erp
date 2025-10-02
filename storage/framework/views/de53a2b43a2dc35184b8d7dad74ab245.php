@@ -1,8 +1,4 @@
-<?php $__env->startSection('title'); ?> Procurement Management <?php $__env->stopSection(); ?>
-<?php $__env->startSection('sidebar-title'); ?> Procurement Management <?php $__env->stopSection(); ?>
-<?php $__env->startSection('human_resources'); ?> d-none <?php $__env->stopSection(); ?>
-<?php $__env->startSection('finance'); ?> d-none <?php $__env->stopSection(); ?>
-<?php $__env->startSection('procurement'); ?> d-block <?php $__env->stopSection(); ?>
+<?php echo $__env->make('partials.procurement-headings', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->startSection('createPR'); ?> active <?php $__env->stopSection(); ?>
 <?php $__env->startSection('headings'); ?> Create Purchase Request <?php $__env->stopSection(); ?>
 <?php $__env->startSection('content'); ?>

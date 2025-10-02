@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //
         $middleware->alias([
             'auth' => \App\Http\Middleware\Authenticate::class,
-
+            'isEmployee' => \App\Http\Middleware\EmployeeMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -6,8 +6,10 @@ use App\Http\Controllers\Admin\HR\PayrollController;
 use App\Http\Controllers\Admin\Procurement\ProcurementController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/finance/payroll', [PayrollController::class, 'indexOnFinance'])->name('finance.payroll');
+    Route::get('/finance/payroll/list', [PayrollController::class, 'getPayrollList']);
+    Route::get('/finance/payroll/view/{id}', [PayrollController::class, 'getPayrollview']);
     Route::put('/finance/payroll/process/{id}/{status}', [PayrollController::class, 'putOnProcess']);
 
     Route::get('/finance/budgets', [FinanceController::class, 'budgetsIndex'])->name('finance.budgets');

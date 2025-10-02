@@ -40,7 +40,7 @@ class AttendanceController extends Controller
             Log::error("Today attendance error: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch today\'s attendance'
+                'message' => 'Failed to fetch today\'s attendance' . $e->getMessage()
             ], 500);
         }
     }

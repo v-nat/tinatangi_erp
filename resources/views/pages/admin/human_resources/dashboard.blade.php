@@ -1,16 +1,6 @@
 @extends('layouts.app')
-@section('title') Human Resources Dashboard @endsection
-@section('sidebar-title') Human Resources Management @endsection
-@section('human_resources') d-block @endsection
-@section('finance') d-none @endsection
-@section('procurement') d-none @endsection
+@include('partials.human-resources-heading')
 @section('dsh') active @endsection
-@section('emplMngt')@endsection
-@section('appMngt')@endsection
-@section('sbi1') @endsection
-@section('sbi2') @endsection
-@section('sbi3') @endsection
-@section('sbi4') @endsection
 @section('headings') Human Resources Dashboard @endsection
 
 @section('content')

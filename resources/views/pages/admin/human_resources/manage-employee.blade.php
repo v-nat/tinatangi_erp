@@ -1,9 +1,5 @@
 @extends('layouts.app')
-@section('title') Human Resources @endsection
-@section('sidebar-title') Human Resources Management @endsection
-@section('human_resources') d-block @endsection
-@section('finance') d-none @endsection
-@section('procurement') d-none @endsection
+@include('partials.human-resources-heading')
 @section('emplMngt')active
 @endsection
 @section('emplMngt2')active

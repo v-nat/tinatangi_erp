@@ -3,8 +3,8 @@
         <div class="sidebar-header">
             <div class="d-flex justify-content-between">
                 <div class="logo">
-                    <a href="" class="justify-content-center align-items-center"><img style="height: 50px " src="<?php echo e(asset('tinatangilogo2 - Copy.png')); ?>  " alt="Logo"
-                            srcset=""></a>
+                    <a href="" class="justify-content-center align-items-center"><img style="height: 50px "
+                            src="<?php echo e(asset('tinatangilogo2 - Copy.png')); ?>  " alt="Logo" srcset=""></a>
                 </div>
                 <div class="toggler">
                     <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
@@ -13,13 +13,15 @@
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
+
                 <li class="sidebar-title"><?php echo $__env->yieldContent('sidebar-title'); ?></li>
+
+                <li class="sidebar-title"><?php echo $__env->yieldContent('hr-admin'); ?></li>
 
                 <div class="<?php echo $__env->yieldContent('human_resources'); ?>">
                     <li class="sidebar-item <?php echo $__env->yieldContent('dsh'); ?> ">
                         <a href="<?php echo e(route('hr.dashboard')); ?>" class='sidebar-link'>
-                            <i class="bi bi-grid-1x2-fill"></i>
-                            <span>Dashboard</span>
+                            <?php echo $__env->yieldContent('human_resources-admin'); ?>
                         </a>
                     </li>
                     <li class="sidebar-item <?php echo $__env->yieldContent('emplMngt'); ?> has-sub">
@@ -58,6 +60,8 @@
                     </li>
                 </div>
 
+                <li class="sidebar-title"><?php echo $__env->yieldContent('finance-admin'); ?></li>
+
                 <div class="<?php echo $__env->yieldContent('finance'); ?>">
                     <li class="sidebar-item <?php echo $__env->yieldContent('financePayroll'); ?> ">
                         <a href="<?php echo e(route('finance.payroll')); ?>" class='sidebar-link'>
@@ -79,11 +83,13 @@
                     </li>
                 </div>
 
+                <li class="sidebar-title"><?php echo $__env->yieldContent('procurement-admin'); ?></li>
+
                 <div class="<?php echo $__env->yieldContent('procurement'); ?>">
+
                     <li class="sidebar-item <?php echo $__env->yieldContent('procurementIndex'); ?> ">
                         <a href="<?php echo e(route('procurement.index')); ?>" class='sidebar-link'>
-                            <i class="bi bi-grid-1x2-fill"></i>
-                            <span>Dashboard</span>
+                            <?php echo $__env->yieldContent('procurement-dashboard'); ?>
                         </a>
                     </li>
                     <li class="sidebar-item <?php echo $__env->yieldContent('createPR'); ?> ">

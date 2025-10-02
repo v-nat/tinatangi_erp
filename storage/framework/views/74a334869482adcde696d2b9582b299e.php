@@ -1,8 +1,4 @@
-<?php $__env->startSection('title'); ?> Finance and Accounting Management <?php $__env->stopSection(); ?>
-<?php $__env->startSection('sidebar-title'); ?> Finance and Accounting Management <?php $__env->stopSection(); ?>
-<?php $__env->startSection('human_resources'); ?> d-none <?php $__env->stopSection(); ?>
-<?php $__env->startSection('finance'); ?> d-block <?php $__env->stopSection(); ?>
-<?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?>
+<?php echo $__env->make('partials.finance-accounting-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->startSection('financePurchases'); ?> active
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('headings'); ?> Purchase Request List <?php $__env->stopSection(); ?>

@@ -92,7 +92,7 @@ $(document).ready(function () {
                             <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 process-btn"
                                 data-id="${actionId}" 
                                 title="Process">
-                                    <i class="fa-solid fa-bag-shopping"></i>
+                                    <i class="fa-solid fa-cart-shopping"></i>
                             </a>
                         </div>
                         `;

@@ -1,9 +1,5 @@
 @extends('layouts.app')
-@section('title') Finance and Accounting Management @endsection
-@section('sidebar-title') Finance and Accounting Management @endsection
-@section('human_resources') d-none @endsection
-@section('finance') d-block @endsection
-@section('procurement') d-none @endsection
+@include('partials.finance-accounting-heading')
 @section('financePurchases') active
 @endsection
 @section('headings') Purchase Request List @endsection

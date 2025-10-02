@@ -1,15 +1,9 @@
 @extends('layouts.app')
-@section('title') Finance and Accounting Management @endsection
-@section('sidebar-title') Finance and Accounting Management @endsection
-@section('human_resources') d-none @endsection
-@section('finance') d-block @endsection
-@section('procurement') d-none @endsection
+@include('partials.finance-accounting-heading')
 @section('financeBudgets') active
 @endsection
 @section('headings') Budget Releasing @endsection
 @section('content')
-    {{-- <link rel="stylesheet" href="{{ asset('source/css/buttons.dataTables.min.css') }}"> --}}
-
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('finance.payroll') }}">Finance</a></li>
