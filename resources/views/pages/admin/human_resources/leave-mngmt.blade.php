@@ -1,44 +1,48 @@
 @extends('layouts.app')
-@section('title') Finance and Accounting Management @endsection
-@section('sidebar-title') Finance and Accounting Management @endsection
-@section('human_resources') d-none @endsection
-@section('finance') d-block @endsection
+@section('title') Human Resources @endsection
+@section('sidebar-title') Human Resources Management @endsection
+@section('human_resources') d-block @endsection
+@section('finance') d-none @endsection
 @section('procurement') d-none @endsection
-@section('financePayroll') active
+@section('emplMngt2')@endsection
+@section('appMngt')active
 @endsection
-@section('headings') Payroll List @endsection
+@section('appMngt2')active
+@endsection
+@section('sbi4')active
+@endsection
+@section('headings') Leave Approval @endsection
+
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('finance.payroll') }}">Finance</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Payroll</li>
+            <li class="breadcrumb-item"><a href="{{ route('hr.employees') }}">Employee Management</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Leaves</li>
         </ol>
     </nav>
-
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Payroll Table</h4>
+                Leaves Table
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="payrollsTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
+                    <table id="leaves_table" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Employee</th>
                                 <th>Department</th>
                                 <th>Position</th>
-                                <th>Pay Period</th>
-                                <th>Gross Pay</th>
-                                <th>Deductions</th>
-                                <th>Net Pay</th>
+                                <th>Date Start</th>
+                                <th>Date End</th>
+                                <th>Reason</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Data will be loaded via DataTables -->
+
                         </tbody>
                     </table>
                 </div>
@@ -46,22 +50,16 @@
         </div>
     </section>
 
-    @include('layouts.modals.finance-payroll-modal')
-
-    <style>
-        .action-btns {
-            display: flex;
-            justify-content: center
-        }
-    </style>
+    @include('layouts.modals.hr-leave-mngmnt-modal')
 @endsection
 @section('scripts')
-    <script src="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}   "></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}   "></script>
+
     {{--
     <script src="assets/vendors/apexcharts/apexcharts.js"></script> --}}
     <script src="{{ asset('assets/js/pages/dashboard.js') }}   "></script>
 
     <script src="{{ asset('assets/js/main2.js') }}   "></script>
-    <script src="{{ asset('js/financePayroll.js') }}   "></script>
+    <script src="{{ asset('js/leaveMngt.js') }}"></script>
+
 @endsection

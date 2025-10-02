@@ -15,12 +15,12 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
-                width: "50px",
+                width: "45px",
             },
-            { data: "type" },
-            { data: "department" },
+            { data: "type", className: "dt-left"  },
+            { data: "department", className: "dt-left"  },
             {
-                data: "amount",
+                data: "amount", className: "dt-left" ,
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -31,9 +31,9 @@ $(document).ready(function () {
                     );
                 },
             },
-            { data: "requested_by_id" },
-            { data: "requested_date" },
-            { data: "remarks" },
+            { data: "requested_by_id", className: "dt-left"  },
+            { data: "requested_date", className: "dt-left"  },
+            { data: "remarks", className: "dt-left"  },
             {
                 data: "status",
                 className: "text-center",

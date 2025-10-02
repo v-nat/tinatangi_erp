@@ -19,19 +19,20 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
+                width: "45px",
             },
-            { data: "employee" },
-            { data: "department" },
-            { data: "position" },
+            { data: "employee", className: "dt-left"  },
+            { data: "department", className: "dt-left"  },
+            { data: "position", className: "dt-left"  },
             {
-                data: "start_date",
+                data: "start_date", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
             {
-                data: "end_date",
+                data: "end_date", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
@@ -39,7 +40,7 @@ $(document).ready(function () {
             },
 
             {
-                data: "reason",
+                data: "reason", className: "dt-left" 
             },
             {
                 data: "status",

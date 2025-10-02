@@ -25,11 +25,11 @@
     <section class="section mt-3">
         <div class="card">
             <div class="card-header">
-                Supplier Table
+                <h4 class="card-title">Supplier  Table</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped" id="supplier_table">
+                    <table class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed" id="supplier_table">
                         <thead>
                             <tr>
                                 <th>#</th>

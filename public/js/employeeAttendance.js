@@ -241,38 +241,40 @@ $(document).ready(function () {
                 render: function (data, type, row, meta) {
                     return meta.row + 1;
                 },
+                className: "text-center",
+                width: "45px",
             },
             {
-                data: "name",
+                data: "name", className: "dt-left"
             },
             {
-                data: "date",
+                data: "date", className: "dt-left",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
             {
-                data: "time_in",
+                data: "time_in", className: "dt-left" ,
                 type: "date", // Ensure proper time sorting
             },
             {
-                data: "time_out",
+                data: "time_out", className: "dt-left"
             },
             {
-                data: "total_minutes",
+                data: "total_minutes", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatMinutesToHours(data) : "N/A";
                 },
             },
             {
-                data: "overtime",
+                data: "overtime", className: "dt-left"
             },
             {
-                data: "tardiness",
+                data: "tardiness", className: "dt-left"
             },
             {
-                data: "leave_info",
+                data: "leave_info", className: "dt-left"
             },
             {
                 data: "status",

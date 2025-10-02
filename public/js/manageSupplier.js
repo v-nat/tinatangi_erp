@@ -104,9 +104,10 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
+                width: "45px",
             },
-            { data: "name" },
-            { data: "email" },
+            { data: "name", className: "dt-left"  },
+            { data: "email", className: "dt-left"  },
             { data: "phone_number", className: "dt-left" },
             {
                 data: "status",

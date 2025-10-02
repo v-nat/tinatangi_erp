@@ -26,7 +26,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped" id="leaves_table" style="width:100%">
+                    <table id="leaves_table" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>

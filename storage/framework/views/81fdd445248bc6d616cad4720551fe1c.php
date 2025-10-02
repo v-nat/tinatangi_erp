@@ -130,7 +130,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="attendanceTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="attendanceTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -139,8 +139,8 @@
                                 <th>Time In</th>
                                 <th>Time Out</th>
                                 <th>Total Minutes</th>
-                                <th>Overtime Minutes</th>
-                                <th>Tardiness Minutes</th>
+                                <th>Overtime</th>
+                                <th>Tardiness</th>
                                 <th>Leave Status</th>
                                 <th>Status</th>
                             </tr>

@@ -49,7 +49,7 @@ class HR_Controller extends Controller
 
     public function otApp()
     {
-        return view('pages.admin.human_resources.ot-app');
+        return view('pages.admin.human_resources.ot-mngmnt');
     }
 
     public function otApplication($id)
@@ -62,6 +62,6 @@ class HR_Controller extends Controller
     }
     public function leaveApp()
     {
-        return view('pages.admin.human_resources.leave-app');
+        return view('pages.admin.human_resources.leave-mngmnt');
     }
 }

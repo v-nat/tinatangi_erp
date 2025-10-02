@@ -15,11 +15,11 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
-                width: "50px",
+                width: "45px",
             },
-            { data: "type" },
+            { data: "type", className: "dt-left"  },
             {
-                data: "amount",
+                data: "amount", className: "dt-left" ,
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -30,10 +30,10 @@ $(document).ready(function () {
                     );
                 },
             },
-            { data: "requested_by_id" },
-            { data: "requested_at" },
-            { data: "department" },
-            { data: "notes" },
+            { data: "requested_by_id", className: "dt-left"  },
+            { data: "requested_at", className: "dt-left"  },
+            { data: "department", className: "dt-left"  },
+            { data: "notes", className: "dt-left"  },
             {
                 data: "status",
                 className: "text-center",
@@ -200,12 +200,12 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
-                width: "50px",
+                width: "45px",
             },
-            { data: "release_id" },
-            { data: "type" },
+            { data: "release_id", className: "dt-left"  },
+            { data: "type", className: "dt-left"  },
             {
-                data: "amount",
+                data: "amount", className: "dt-left" ,
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -216,11 +216,11 @@ $(document).ready(function () {
                     );
                 },
             },
-            { data: "requested_by_id" },
-            { data: "requested_at" },
-            { data: "department" },
-            { data: "released_by_id" },
-            { data: "released_at" },
+            { data: "requested_by_id", className: "dt-left"  },
+            { data: "requested_at", className: "dt-left"  },
+            { data: "department", className: "dt-left"  },
+            { data: "released_by_id", className: "dt-left"  },
+            { data: "released_at", className: "dt-left"  },
             {
                 data: "status",
                 className: "text-center",

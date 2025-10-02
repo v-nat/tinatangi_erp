@@ -19,22 +19,23 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
+                width: "45px",
             },
             {
-                data: "start_date",
+                data: "start_date", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
             {
-                data: "end_date",
+                data: "end_date", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
-            { data: "reason" },
+            { data: "reason", className: "dt-left"  },
             {
                 data: "status",
                 className: "text-center",

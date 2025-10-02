@@ -16,15 +16,15 @@
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Purchase  Table</h4>
+                <h4 class="card-title">Purchase Table</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="purchaseOrderTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="purchaseOrderTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Order ID Number</th>
+                                <th>Order No.</th>
                                 <th>Type</th>
                                 <th>Order Ddate</th>
                                 <th>Supplier</th>
