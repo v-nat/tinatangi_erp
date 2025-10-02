@@ -22,19 +22,19 @@ $(document).ready(function () {
             { data: "email", className: "dt-left"  },
             { data: "direct_supervisor", className: "dt-left"  },
             {
-                data: "status", width: "100px",
+                data: "status",
                 render: function (data) {
                     return `<span class="badge bg-success ${
                         data === "active" ? "success" : "danger"
                     }">${data}</span>`;
                 },
-                className: "text-center" 
+                className: "text-center", width: "150px",
             },
             {
-                data: "employee_id", width: "100px", 
+                data: "employee_id",
                 render: function (data, type, row) {
                     return `
-                    <div>
+                    <div class="action-btns">
                         <a href="#" class="btn icon btn-primary btn-edit bs-tooltip me-2"
                            data-id="${data}"
                            data-name="${row.name}"
@@ -50,7 +50,7 @@ $(document).ready(function () {
                         </a>
                     </div>
                         `;
-                },
+                },width: "150px", className: "text-center"
             },
         ],
     });

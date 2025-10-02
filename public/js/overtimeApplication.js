@@ -32,28 +32,32 @@ $(document).ready(function () {
                 width: "45px",
             },
             {
-                data: "date", className: "dt-left" ,
+                data: "date",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
             {
-                data: "time_start", className: "dt-left" ,
+                data: "time_start",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatTime(data) : "N/A";
                 },
                 type: "time",
             },
             {
-                data: "time_end", className: "dt-left" ,
+                data: "time_end",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatTime(data) : "N/A";
                 },
                 type: "time",
             },
             {
-                data: "total_minutes", className: "dt-left" ,
+                data: "total_minutes",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatMinutesToHours(data) : "N/A";
                 },
@@ -62,6 +66,7 @@ $(document).ready(function () {
             {
                 data: "status",
                 className: "text-center",
+                width: "150px",
             },
         ],
     });
@@ -87,66 +92,83 @@ $(document).ready(function () {
 
     $("#reqOt").click(function (e) {
         e.preventDefault();
+        let isValid = true;
+        const $form = $("#otApplication");
 
-        let formData = new FormData($("#otApplication")[0]);
-        Swal.fire({
-            title: "Confirm Request",
-            text: "You are about to submit an overtime application.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Submit",
-            cancelButtonText: "Cancel",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $("#LoadingScreen").fadeIn(200);
-                $.ajax({
-                    headers: {
-                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                            "content"
-                        ),
-                    },
-                    url: "/employee/overtimes/request/submit",
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        $("#LoadingScreen").fadeOut(200);
-                        $('#otApplication').trigger('reset');
-                        reloadTable('otRequests');
-                        Toast.fire({
-                            title: "Success!",
-                            text: response.message,
-                            icon: "success",
-                        });
-                    },
-                    error: function (xhr) {
-                        // console.error('Error response:', xhr);
-                        $("#LoadingScreen").fadeOut(200);
-                        if (xhr.responseJSON?.errors) {
-                            let errorMessages = Object.values(
-                                xhr.responseJSON.errors
-                            )
-                                .flat()
-                                .join("\n");
-                            Toast.fire(
-                                "Validation Error",
-                                errorMessages,
-                                "error"
-                            );
-                        } else {
-                            Toast.fire(
-                                "Error",
-                                "An unexpected error occurred.",
-                                "error"
-                            );
-                        }
-                    },
-                });
+        $form.find("input, select, option").each(function () {
+            const $field = $(this);
+            const value = $field.val();
+            if ($field.prop("required") && (!value || !value.trim())) {
+                $field.addClass("is-invalid");
+                isValid = false;
+            } else {
+                $field.removeClass("is-invalid");
             }
         });
+
+        if (isValid) {
+            let formData = new FormData($("#otApplication")[0]);
+            Swal.fire({
+                title: "Confirm Request",
+                text: "You are about to submit an overtime application.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Submit",
+                cancelButtonText: "Cancel",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#LoadingScreen").fadeIn(200);
+                    $.ajax({
+                        headers: {
+                            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                                "content"
+                            ),
+                        },
+                        url: "/employee/overtimes/request/submit",
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            $("#LoadingScreen").fadeOut(200);
+                            $("#otApplication").trigger("reset");
+                            reloadTable("otRequests");
+                            Toast.fire({
+                                title: "Success!",
+                                text: response.message,
+                                icon: "success",
+                            });
+                        },
+                        error: function (xhr) {
+                            // console.error('Error response:', xhr);
+                            $("#LoadingScreen").fadeOut(200);
+                            if (xhr.responseJSON?.errors) {
+                                let errorMessages = Object.values(
+                                    xhr.responseJSON.errors
+                                )
+                                    .flat()
+                                    .join("\n");
+                                Toast.fire(
+                                    "Validation Error",
+                                    errorMessages,
+                                    "error"
+                                );
+                            } else {
+                                Toast.fire(
+                                    "Error",
+                                    "An unexpected error occurred.",
+                                    "error"
+                                );
+                            }
+                        },
+                    });
+                }
+            });
+        }
     });
     function reloadTable(tableId) {
-        $("#" + tableId).DataTable().ajax.reload(null, false);
+        $("#" + tableId)
+            .DataTable()
+            .ajax.reload(null, false);
     }
 });

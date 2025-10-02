@@ -44,7 +44,7 @@ $(document).ready(function () {
             },
             {
                 data: "status",
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
             {
                 data: "leave_id",
@@ -72,7 +72,7 @@ $(document).ready(function () {
                             </div>
                         `;
                     }
-                },
+                }, width: "150px",
             },
         ],
     });

@@ -3,7 +3,7 @@
         <div class="sidebar-header">
             <div class="d-flex justify-content-between">
                 <div class="logo">
-                    <a href=""><img style="height: 50px " src="<?php echo e(asset('tinatangilogo2 - Copy.png')); ?>  " alt="Logo"
+                    <a href="" class="justify-content-center align-items-center"><img style="height: 50px " src="<?php echo e(asset('tinatangilogo2 - Copy.png')); ?>  " alt="Logo"
                             srcset=""></a>
                 </div>
                 <div class="toggler">

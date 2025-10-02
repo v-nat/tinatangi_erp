@@ -46,38 +46,9 @@
         </div>
     </section>
 
-    <!-- view modal-->
-    <div class="modal fade text-left w-100" id="viewPO" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel20">View Purchase Request</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <i data-feather="x"></i>
-                    </button>
-                </div>
-                <div class="modal-body p-4">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                        <i class="bx bx-x d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Close</span>
-                    </button>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php echo $__env->make('layouts.modals.procurement-purchase-orders-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
-    <script src="<?php echo e(asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js')); ?>   "></script>
-    <script src="<?php echo e(asset('assets/js/bootstrap.bundle.min.js')); ?>   "></script>
-    
-    <script src="<?php echo e(asset('assets/js/pages/dashboard.js')); ?>   "></script>
-
-    <script src="<?php echo e(asset('assets/js/main2.js')); ?>   "></script>
     <script src="<?php echo e(asset('js/purchaseOrders.js')); ?>   "></script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/procurement/purchase-orders.blade.php ENDPATH**/ ?>

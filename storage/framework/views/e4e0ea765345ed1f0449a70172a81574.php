@@ -26,12 +26,13 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="date">Date</label>
-                                            <input type="date" id="date" class="form-control py-3" required
-                                                placeholder="" name="date">
+                                            <input type="date" id="date" class="form-control py-3" required placeholder=""
+                                                name="date">
+                                            <div class="invalid-feedback">Date is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
-                                        
+
                                     </div>
 
                                     <div class="col-md-6 col-12">
@@ -39,13 +40,15 @@
                                             <label for="time_start">Time Start</label>
                                             <input type="time" id="time_start" class="form-control py-3" required
                                                 placeholder="" name="time_start">
+                                            <div class="invalid-feedback">Time Start is required.</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="time_end">Time End</label>
-                                            <input type="time" id="time_end" class="form-control py-3" placeholder="" required
-                                                name="time_end">
+                                            <input type="time" id="time_end" class="form-control py-3" placeholder=""
+                                                required name="time_end">
+                                            <div class="invalid-feedback">Time End is required.</div>
                                         </div>
                                     </div>
                                     <div class="w-100 mb-10">
@@ -54,9 +57,10 @@
                                             <textarea class="form-control" name="reason" id="reason" rows="3"></textarea>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="d-flex justify-content-start">
-                                        <button id="reqOt" type="submit" class="btn icon icon-left btn-primary me-1 mb-1 w-100 py-3">
+                                        <button id="reqOt" type="submit"
+                                            class="btn icon icon-left btn-primary me-1 mb-1 w-100 py-3">
                                             <i class="fa-solid fa-paper-plane"></i>
                                             Submit Application</button>
                                     </div>
@@ -76,7 +80,8 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="otRequests" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
+                    <table id="otRequests" class="table table-hover dataTable no-footer"
+                        style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -99,14 +104,6 @@
 
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
-
-    <script src="<?php echo e(asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js')); ?>   "></script>
-
-    <script src="<?php echo e(asset('assets/js/bootstrap.bundle.min.js')); ?>   "></script>
-    
-    
-    <script src="<?php echo e(asset('assets/vendors/simple-datatables/simple-datatables.js')); ?>"></script>
-    <script src="<?php echo e(asset('assets/js/main2.js')); ?>"></script>
     <script src="<?php echo e(asset('js/overtimeApplication.js')); ?>"></script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/human_resources/ot-application.blade.php ENDPATH**/ ?>

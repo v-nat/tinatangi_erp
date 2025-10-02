@@ -278,7 +278,7 @@ $(document).ready(function () {
             },
             {
                 data: "status",
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
         ],
     });

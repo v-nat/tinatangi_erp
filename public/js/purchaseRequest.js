@@ -36,7 +36,7 @@ $(document).ready(function () {
             { data: "remarks", className: "dt-left"  },
             {
                 data: "status",
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
             {
                 data: "id",
@@ -76,7 +76,7 @@ $(document).ready(function () {
                         `;
                     }
                 },
-                className: "text-center",
+                className: "text-center", width: "200px",
             },
         ],
     });
@@ -303,9 +303,9 @@ $(document).ready(function () {
         <div class="px-3">
             <h5 class="mb-3 text-primary">All Associated Line Items</h5>
             <div class="table-responsive">
-                <table class="table table-sm table-bordered table-striped">
+                <table class="table table-sm table-bordered table-hover dataTable no-footer">
                     <thead>
-                        <tr class="table-secondary">
+                        <tr>
                             <th>#</th>
                             <th>Item Name</th>
                             <th>Unit</th>

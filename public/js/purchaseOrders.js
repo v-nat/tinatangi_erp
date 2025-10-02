@@ -54,11 +54,9 @@ $(document).ready(function () {
             { data: "remarks", className: "dt-left" },
             {
                 data: "status",
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
             {
-                // Setting 'data' to null or a common field lets us access everything via 'row'.
-                // We will explicitly use row.id or row.purchase_request_id as needed below.
                 data: null,
                 render: function (data, type, row) {
                     // Use the business ID for viewing details (often for display/retrieval)
@@ -72,50 +70,45 @@ $(document).ready(function () {
                         '<span class="badge bg-warning">Pending</span>'
                     ) {
                         return `
-            <div class="action-btns">
-                <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                data-id="${viewId}" 
-                title="View">
-                    <i class="fa-solid fa-eye"></i>
-                </a>
-            </div>
-            `;
+                        <div class="action-btns">
+                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
+                            data-id="${viewId}" 
+                            title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+                        `;
                     } else if (
                         row.status ==
-                        '<span class="badge bg-warning">Approved</span>'
+                        '<span class="badge bg-warning">Approved<br>Pending Dispatch</span>'
                     ) {
                         return `
-            <div class="action-btns">
-                <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                data-id="${viewId}" 
-                title="View">
-                    <i class="fa-solid fa-eye"></i>
-                </a>
-                <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 process-btn"
-                    data-id="${actionId}" 
-                    title="Process">
-                        <i class="fa-solid fa-check"></i>
-                </a>
-                <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
-                    data-id="${actionId}" 
-                    title="Reject">
-                        <i class="fa-solid fa-x"></i>
-                </a>
-            </div>
-            `;
+                        <div class="action-btns">
+                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
+                            data-id="${viewId}" 
+                            title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 process-btn"
+                                data-id="${actionId}" 
+                                title="Process">
+                                    <i class="fa-solid fa-bag-shopping"></i>
+                            </a>
+                        </div>
+                        `;
                     } else {
                         return `
-            <div class="action-btns">
-                <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                data-id="${viewId}"
-                title="View">
-                    <i class="fa-solid fa-eye"></i>
-                </a>
-            </div>
-            `;
+                        <div class="action-btns">
+                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
+                            data-id="${viewId}"
+                            title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+                        `;
                     }
                 },
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
             {
                 data: "purchase_request_id",
@@ -237,9 +230,9 @@ $(document).ready(function () {
         <div class="px-3">
             <h5 class="mb-3 text-primary">All Associated Line Items</h5>
             <div class="table-responsive">
-                <table class="table table-sm table-bordered table-striped">
+                <table class="table table-sm table-bordered table-hover dataTable no-footer">
                     <thead>
-                        <tr class="table-secondary">
+                        <tr>
                             <th>#</th>
                             <th>Item Name</th>
                             <th>Unit</th>

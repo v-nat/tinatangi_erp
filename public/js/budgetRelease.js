@@ -36,7 +36,7 @@ $(document).ready(function () {
             { data: "notes", className: "dt-left"  },
             {
                 data: "status",
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
             {
                 data: "id",
@@ -65,7 +65,7 @@ $(document).ready(function () {
                         `;
                     }
                 },
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
         ],
     });
@@ -223,7 +223,7 @@ $(document).ready(function () {
             { data: "released_at", className: "dt-left"  },
             {
                 data: "status",
-                className: "text-center",
+                className: "text-center", width: "150px",
             },
         ],
     });

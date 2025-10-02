@@ -48,7 +48,7 @@ $(document).ready(function () {
             },
 
             {
-                data: "action",
+                data: "action",width: "150px",
             },
             {
                 data: "order_id",

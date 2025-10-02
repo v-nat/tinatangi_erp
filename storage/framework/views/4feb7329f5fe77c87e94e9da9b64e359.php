@@ -444,11 +444,6 @@ unset($__errorArgs, $__bag); ?>
 
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
-    <script src="<?php echo e(asset('assets/js/bootstrap.bundle.min.js')); ?>   "></script>
-    
-    <script src="<?php echo e(asset('assets/js/pages/dashboard.js')); ?>   "></script>
-
-    <script src="<?php echo e(asset('assets/js/main2.js')); ?>   "></script>
     <script src="<?php echo e(asset('js/hrManage.js')); ?>"></script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/human_resources/manage-employee.blade.php ENDPATH**/ ?>
