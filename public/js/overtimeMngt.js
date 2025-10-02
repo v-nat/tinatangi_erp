@@ -24,33 +24,34 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
+                width: "45px",
             },
-            { data: "employee" },
-            { data: "department" },
-            { data: "position" },
+            { data: "employee", className: "dt-left"  },
+            { data: "department", className: "dt-left"  },
+            { data: "position", className: "dt-left"  },
             {
-                data: "date",
+                data: "date", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date",
             },
             {
-                data: "time_start",
+                data: "time_start", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatTime(data) : "N/A";
                 },
                 type: "time",
             },
             {
-                data: "time_end",
+                data: "time_end", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatTime(data) : "N/A";
                 },
                 type: "time",
             },
             {
-                data: "reason",
+                data: "reason", className: "dt-left" ,
             },
             {
                 data: "status",

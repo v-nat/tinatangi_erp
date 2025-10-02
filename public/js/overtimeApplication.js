@@ -29,35 +29,36 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
+                width: "45px",
             },
             {
-                data: "date",
+                data: "date", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
             {
-                data: "time_start",
+                data: "time_start", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatTime(data) : "N/A";
                 },
                 type: "time",
             },
             {
-                data: "time_end",
+                data: "time_end", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatTime(data) : "N/A";
                 },
                 type: "time",
             },
             {
-                data: "total_minutes",
+                data: "total_minutes", className: "dt-left" ,
                 render: function (data) {
                     return data ? formatMinutesToHours(data) : "N/A";
                 },
             },
-            { data: "reason" },
+            { data: "reason", className: "dt-left" },
             {
                 data: "status",
                 className: "text-center",

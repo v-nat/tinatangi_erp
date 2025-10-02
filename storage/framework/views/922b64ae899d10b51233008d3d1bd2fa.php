@@ -7,9 +7,9 @@
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title><?php echo $__env->yieldContent('title'); ?></title>
 
-    <link href="<?php echo e(asset('source/css/dataTables.uikit.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('source/css/datatables.min.css')); ?>" rel="stylesheet">
     </link>
-
+    
 
     
     <link rel="stylesheet" href="<?php echo e(asset('css/font/Nunito/static/stylesheet.css')); ?>">
@@ -29,6 +29,16 @@
     <link rel="stylesheet" href="<?php echo e(asset('css/fontawesome-free-7.0.1-web/css/all.min.css')); ?>">
 
     <link rel="icon" href="<?php echo e(asset('logo.png')); ?> " type="image/x-icon">
+    <style>
+        .dt-column-header  {
+            color: #6c757d !important; 
+            font-weight: 610 !important;
+        }
+        .card-title  {
+            color: #6c757d !important; 
+            font-weight: 700 !important;
+        }
+    </style>
 </head>
 
 <body>

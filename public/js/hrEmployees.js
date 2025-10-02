@@ -14,22 +14,24 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
+                width: "45px",
             },
-            { data: "name" },
-            { data: "position" },
-            { data: "department" },
-            { data: "email" },
-            { data: "direct_supervisor" },
+            { data: "name", className: "dt-left"  },
+            { data: "position", className: "dt-left"  },
+            { data: "department", className: "dt-left"  },
+            { data: "email", className: "dt-left"  },
+            { data: "direct_supervisor", className: "dt-left"  },
             {
-                data: "status",
+                data: "status", width: "100px",
                 render: function (data) {
                     return `<span class="badge bg-success ${
                         data === "active" ? "success" : "danger"
                     }">${data}</span>`;
                 },
+                className: "text-center" 
             },
             {
-                data: "employee_id",
+                data: "employee_id", width: "100px", 
                 render: function (data, type, row) {
                     return `
                     <div>

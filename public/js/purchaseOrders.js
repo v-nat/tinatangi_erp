@@ -4,7 +4,8 @@ $(document).ready(function () {
         return new Date(dateString).toLocaleDateString("en-US", options);
     }
     $("#purchaseOrderTable").DataTable({
-        autoWidth: false,
+        responsive: true,
+        scrollX: false,
         processing: true,
         serverSide: false,
         ajax: {
@@ -19,7 +20,7 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
-                width: "50px",
+                width: "45px",
             },
             { data: "purchase_orderId", className: "dt-left" },
             { data: "type", className: "dt-left" },

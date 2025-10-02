@@ -23,7 +23,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="approvalTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="approvalTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -52,10 +52,10 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="historyTable" class="table table-striped table-hover" style="width:100%">
+                    <table id="historyTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
-                                <th class="no-print">#</th>
+                                <th>#</th>
                                 <th>Release ID</th>
                                 <th>Type</th>
                                 <th>Amount</th>

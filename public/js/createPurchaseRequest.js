@@ -26,22 +26,22 @@ $(document).ready(function () {
                 className: "text-center",
             },
             {
-                data: "item",
+                data: "item", className: "dt-left" 
             },
             {
-                data: "unit",
+                data: "unit", className: "dt-left" 
             },
             {
-                data: "qnty",
+                data: "qnty", className: "dt-left" 
             },
             {
-                data: "unit_price",
+                data: "unit_price", className: "dt-left" ,
                 render: function (data) {
                     return "₱" + parseFloat(data).toFixed(2);
                 },
             },
             {
-                data: "total",
+                data: "total", className: "dt-left" ,
                 render: function (data) {
                     return "₱" + parseFloat(data).toFixed(2);
                 },

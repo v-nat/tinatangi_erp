@@ -15,14 +15,14 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
-                width: "50px",
+                width: "45px",
             },
-            { data: "name", width: "200px" },
-            { data: "department" },
-            { data: "position" },
-            { data: "period" },
+            { data: "name", className: "dt-left"  },
+            { data: "department", className: "dt-left"  },
+            { data: "position", className: "dt-left"  },
+            { data: "period", className: "dt-left"  },
             {
-                data: "gross_pay",
+                data: "gross_pay", className: "dt-left" ,
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -34,7 +34,7 @@ $(document).ready(function () {
                 },
             },
             {
-                data: "gross_deduction",
+                data: "gross_deduction", className: "dt-left" ,
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -46,7 +46,7 @@ $(document).ready(function () {
                 },
             },
             {
-                data: "net_pay",
+                data: "net_pay", className: "dt-left" ,
                 render: function (data, type, row) {
                     return (
                         "₱ " +
