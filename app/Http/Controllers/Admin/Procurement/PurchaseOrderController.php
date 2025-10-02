@@ -72,7 +72,7 @@ class PurchaseOrderController extends Controller
             foreach ($items as $itemData) {
                 $purchase_order = PurchaseOrder::create([
                     'type' => 'Purchase Request',
-                    'purchase_orderId'=> (int)$id,
+                    'purchase_orderId' => (int)$id,
                     'purchase_request_id' => $purchase_req->id,
                     'order_date' => null,
                     'expected_delivery_date' => null,
@@ -135,7 +135,7 @@ class PurchaseOrderController extends Controller
                 $pr->save();
 
                 $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
-               
+
                 foreach ($orderInstances as $orderInstance) {
                     $prpo = PurchaseOrder::where('id', $orderInstance)->first();
                     $prpo->remarks = 'requesting budget';
@@ -175,6 +175,79 @@ class PurchaseOrderController extends Controller
             }
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Purchase Request Rejected!'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function processPurchaseOrders($id, $status)
+    {
+        try {
+            DB::beginTransaction();
+
+            $pr = PurchaseRequest::findOrFail($id);
+
+            if ($status == 21) {
+                $pr->remarks = 'requesting approval';
+                $pr->status = $status;
+                $pr->save();
+
+                $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
+
+                foreach ($orderInstances as $orderInstance) {
+                    $prpo = PurchaseOrder::where('id', $orderInstance)->first();
+                    $prpo->order_date = now();
+                    $prpo->remarks = 'requesting approval';
+                    $prpo->status = $status;
+                    $prpo->save();
+
+                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
+                    $prpod->status = $status;
+                    $prpod->save();
+                }
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Purchase Order Sent!'], 200);
+            } else if ($status == 20) {
+                $pr->remarks = 'order accepted';
+                $pr->status = $status;
+                $pr->save();
+
+                $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
+
+                foreach ($orderInstances as $orderInstance) {
+                    $prpo = PurchaseOrder::where('id', $orderInstance)->first();
+                    $prpo->remarks = 'order accepted';
+                    $prpo->status = $status;
+                    $prpo->save();
+
+                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
+                    $prpod->status = $status;
+                    $prpod->save();
+                }
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Purchase Order Accepted!'], 200);
+            } else if ($status == 16) {
+                $pr->remarks = 'order received';
+                $pr->status = $status;
+                $pr->save();
+
+                $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
+
+                foreach ($orderInstances as $orderInstance) {
+                    $prpo = PurchaseOrder::where('id', $orderInstance)->first();
+                    $prpo->delivery_date = now();
+                    $prpo->remarks = 'order received';
+                    $prpo->status = $status;
+                    $prpo->save();
+
+                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
+                    $prpod->status = $status;
+                    $prpod->save();
+                }
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Purchase Order Received!'], 200);
+            }
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);

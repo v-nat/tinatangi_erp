@@ -111,6 +111,15 @@
                         </a>
                     </li>
                 </div>
+
+                <div class="@yield('supplierPage')">
+                    <li class="sidebar-item @yield('supplierApprove') ">
+                        <a href="{{route('supplier.approve')}}" class='sidebar-link'>
+                            <i class="bi bi-truck"></i>
+                            <span>Approve Orders</span>
+                        </a>
+                    </li>
+                </div>
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

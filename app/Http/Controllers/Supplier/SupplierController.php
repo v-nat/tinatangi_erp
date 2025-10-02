@@ -1,33 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Procurement;
+namespace App\Http\Controllers\Supplier;
 
 use App\Http\Controllers\Controller;
-use App\Models\PurchaseOrder;
+use Illuminate\Http\Request;
 use App\Models\PurchaseRequest;
 use App\Models\Status;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 
-class ProcurementController extends Controller
+class SupplierController extends Controller
 {
-    //
-    public function index()
+    public function approveRequest()
     {
-        return view("pages.admin.procurement.index");
-    }
-
-    public function createPR()
-    {
-        return view("pages.admin.procurement.create-purchase-request");
-    }
-    public function supplier()
-    {
-        return view("pages.admin.procurement.manage-supplier");
-    }
-    public function purchaseOrders()
-    {
-        return view("pages.admin.procurement.purchase-orders");
+        return view('pages.supplier.approve-purchase');
     }
 
     public function purchaseOrdersList()
@@ -35,11 +19,11 @@ class ProcurementController extends Controller
         try {
             $purchaseRequests = PurchaseRequest::with([
                 'purchaseOrders',
-                'purchaseOrders.supplierRS', 
+                'purchaseOrders.supplierRS',
                 'statusRS',
                 'employeeRS',
                 'deptRS',
-            ])->orderBy('requested_date', 'desc')->get();
+            ])->orderBy('updated_at', 'desc')->get();
 
             return response()->json([
                 'data' => $purchaseRequests->map(function ($request_data) {
@@ -49,9 +33,9 @@ class ProcurementController extends Controller
 
                         // Return the individual Purchase Order object
                         return [
-                            'purchase_order_id' => $order->purchase_orderId, 
-                            'order_date' => $order->order_date, 
-                            'delivery_date' => $order->delivery_date, 
+                            'purchase_order_id' => $order->purchase_orderId,
+                            'order_date' => $order->order_date,
+                            'delivery_date' => $order->delivery_date,
                             'supplier_name'     => optional($order->supplierRS)->supplier_name,
                         ];
                     });
@@ -73,18 +57,5 @@ class ProcurementController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Server error'], 500);
         }
-    }
-
-    public function generatePurchaseOrderID()
-    {
-        $order_id = "";
-        $year = Carbon::now()->format('Y');
-        do {
-            $random = rand(10000, 99999);
-            $order_id = $year . $random;
-        } while (PurchaseRequest::pluck('id')->contains($order_id));
-        return response()->json([
-            'order_id' => $order_id,
-        ]);
     }
 }

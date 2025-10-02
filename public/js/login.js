@@ -47,21 +47,14 @@ $(document).ready(function () {
                         backdrop: true,
                     }).then(() => {
                         $("#LoadingScreen").fadeIn();
-                        // Handle redirect based on user type
-                        if (response.redirect) {
-                            window.location.href = response.redirect;
-                        } else if (
-                            response.role == 4 ||
-                            response.role == 2 ||
-                            response.role == 3
-                        ) {
-                            window.location.href = "/admin_index";
-                        } else {
+                        console.log(response.user);
+                        if (response.user == 'employee') {
                             window.location.href = "/humanresources";
+                        } else if (response.user == 'supplier') {
+                            window.location.href = "/supplier/approve-purchase";
                         }
                     });
                 } else {
-                    // This handles cases where response is successful but login actually failed
                     Toast.fire({
                         title: "Login Failed",
                         text: response.errors

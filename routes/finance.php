@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\Finance\FinanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HR\PayrollController;
-use App\Http\Controllers\Admin\Procurement\ProcurementController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 
 Route::middleware(['auth' , 'isEmployee'])->group(function () {

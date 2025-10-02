@@ -22,48 +22,85 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "45px",
             },
-            { data: "purchase_orderId", className: "dt-left" },
+            {
+                data: "purchase_orders", // Use the array itself as data source
+                title: "Order No.",
+                className: "dt-left",
+                render: function (data) {
+                    // Check if data is an array and has at least one element
+                    if (data && data.length > 0) {
+                        // Access the specific named key from the first element
+                        return data[0].purchase_order_id;
+                    }
+                    return "N/A";
+                },
+                className: "dt-left",
+            },
             { data: "type", className: "dt-left" },
             {
-                data: "order_date",
-                render: function (data) {
-                    return data ? formatDate(data) : "N/A";
-                },
-                type: "date",
+                data: "purchase_orders",
+                title: "Order Date",
                 className: "dt-left",
-            },
-            { data: "supplier_id", className: "dt-left" },
-            {
-                data: "expected_delivery_date",
                 render: function (data) {
-                    return data ? formatDate(data) : "N/A";
+                    if (data && data.length > 0) {
+                        const orderDate = data[0].order_date;
+                        return orderDate ? formatDate(orderDate) : "N/A";
+                    }
+                    return "N/A";
                 },
                 type: "date",
                 className: "dt-left",
             },
             {
-                data: "delivery_date",
+                data: "purchase_orders",
+                title: "Supplier",
+                className: "dt-left",
                 render: function (data) {
-                    return data ? formatDate(data) : "N/A";
+                    if (data && data.length > 0) {
+                        // Access the supplier_name key from the first element
+                        return data[0].supplier_name;
+                    }
+                    return "N/A";
+                },
+                className: "dt-left",
+            },
+            // {
+            //     data: "expected_delivery_date",
+            //     render: function (data) {
+            //         return data ? formatDate(data) : "N/A";
+            //     },
+            //     type: "date",
+            //     className: "dt-left",
+            // },
+            {
+                data: "purchase_orders",
+                title: "Delivery Date",
+                render: function (data) {
+                    if (data && data.length > 0) {
+                        const deliveryDate = data[0].delivery_date;
+                        return deliveryDate ? formatDate(deliveryDate) : "N/A";
+                    }
+                    return "N/A";
                 },
                 type: "date",
                 className: "dt-left",
             },
-            { data: "delivery_name", className: "dt-left" },
-            { data: "created_by_id", className: "dt-left" },
+            // { data: "delivery_name", className: "dt-left", width: "150px" },
+            { data: "requested_by_id", className: "dt-left" },
             { data: "remarks", className: "dt-left" },
             {
                 data: "status",
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
             {
-                data: null,
+                data: "id",
                 render: function (data, type, row) {
                     // Use the business ID for viewing details (often for display/retrieval)
-                    const viewId = row.purchase_request_id;
+                    // const viewId = row.purchase_request_id;
 
                     // Use the internal primary key ID for transactional actions (Approve/Reject)
-                    const actionId = row.id;
+                    // const actionId = row.id;
 
                     if (
                         row.status ==
@@ -72,7 +109,7 @@ $(document).ready(function () {
                         return `
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${viewId}" 
+                            data-id="${data}" 
                             title="View">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
@@ -85,14 +122,32 @@ $(document).ready(function () {
                         return `
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${viewId}" 
+                            data-id="${data}" 
                             title="View">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 process-btn"
-                                data-id="${actionId}" 
+                                data-id="${data}" 
                                 title="Process">
                                     <i class="fa-solid fa-cart-shopping"></i>
+                            </a>
+                        </div>
+                        `;
+                    } else if (
+                        row.status ==
+                        '<span class="badge bg-success">Accepted<br>Supplier</span>'
+                    ) {
+                        return `
+                        <div class="action-btns">
+                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
+                            data-id="${data}" 
+                            title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 accept-btn"
+                                data-id="${data}" 
+                                title="Mark as Delivered">
+                                    <i class="fa-solid fa-truck"></i>
                             </a>
                         </div>
                         `;
@@ -100,7 +155,7 @@ $(document).ready(function () {
                         return `
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${viewId}"
+                            data-id="${data}"
                             title="View">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
@@ -108,28 +163,136 @@ $(document).ready(function () {
                         `;
                     }
                 },
-                className: "text-center", width: "150px",
-            },
-            {
-                data: "purchase_request_id",
-                visible: false,
+                className: "text-center",
+                width: "150px",
             },
         ],
     });
 
-    // --- 1. AJAX Success Handler (Fixed) ---
+    $(document).on("click", ".process-btn", function () {
+        const req_id = $(this).data("id");
+        Swal.fire({
+            title: "Process Purchase Order?",
+            text: "You are about to request this order to supplier.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirm!",
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+            $("#LoadingScreen").fadeIn(200);
+            $.ajax({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
+                },
+                url: `/procurement/purchases/order/${req_id}/21`,
+                type: "PUT",
+                data: null,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#LoadingScreen").fadeOut(200);
+                    reloadTable("purchaseOrderTable");
+                    Toast.fire({
+                        text: response.message,
+                        icon: "success",
+                    });
+                },
+                error: function (xhr) {
+                    $("#LoadingScreen").fadeOut(200);
+                    if (xhr.responseJSON?.errors) {
+                        let errorMessages = Object.values(
+                            xhr.responseJSON.errors
+                        )
+                            .flat()
+                            .join("\n");
+                        Toast.fire("Validation Error", errorMessages, "error");
+                    } else {
+                        Toast.fire(
+                            "Error",
+                            "An unexpected error occurred.",
+                            "error"
+                        );
+                    }
+                },
+            });
+        });
+    });
+    $(document).on("click", ".accept-btn", function () {
+        const req_id = $(this).data("id");
+        Swal.fire({
+            title: "Order Received?",
+            text: "You are about to mark this order as delivered.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirm!",
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+            $("#LoadingScreen").fadeIn(200);
+            $.ajax({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
+                },
+                url: `/procurement/purchases/order/${req_id}/16`,
+                type: "PUT",
+                data: null,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#LoadingScreen").fadeOut(200);
+                    reloadTable("purchaseOrderTable");
+                    Toast.fire({
+                        text: response.message,
+                        icon: "success",
+                    });
+                },
+                error: function (xhr) {
+                    $("#LoadingScreen").fadeOut(200);
+                    if (xhr.responseJSON?.errors) {
+                        let errorMessages = Object.values(
+                            xhr.responseJSON.errors
+                        )
+                            .flat()
+                            .join("\n");
+                        Toast.fire("Validation Error", errorMessages, "error");
+                    } else {
+                        Toast.fire(
+                            "Error",
+                            "An unexpected error occurred.",
+                            "error"
+                        );
+                    }
+                },
+            });
+        });
+    });
+
+    function reloadTable(tableId) {
+        $("#" + tableId)
+            .DataTable()
+            .ajax.reload(null, false);
+    }
+
     $(document).on("click", ".btn-view", function () {
         const id = $(this).data("id");
         $("#LoadingScreen").fadeIn(200);
-        
+
         $.get(`/finance/purchases/get-details/${id}`, function (response) {
             if (response.data && response.data.length > 0) {
-                // Get the single Purchase Request object
                 const requestData = response.data[0];
                 buildPOmodal(requestData);
             } else {
-                // Handle case where no record was found for the ID
-                // Use a message box/custom modal instead of alert
                 alert("Error: Purchase Request not found.");
             }
         })
@@ -137,7 +300,6 @@ $(document).ready(function () {
                 const errorMsg = xhr.responseJSON
                     ? xhr.responseJSON.error
                     : "Failed to load purchase request details.";
-                // Use a message box/custom modal instead of alert
                 alert(errorMsg);
             })
             .always(function () {
@@ -145,27 +307,20 @@ $(document).ready(function () {
             });
     });
 
-    // --- 2. Dynamic Modal Builder (Updated to include PO Header) ---
     function buildPOmodal(data) {
-        // --- PREPARE GLOBAL PR HEADER INFO (Suppliers and PO summary) ---
         const uniqueSuppliers = new Set();
-        const poSummaries = [];
-        let allDetailRowsHtml = ""; // Accumulator for all item rows across all POs
-        let itemIndex = 0; // Global index for the combined table
+        let allDetailRowsHtml = "";
+        let itemIndex = 0;
 
         if (data.purchase_orders && data.purchase_orders.length > 0) {
             data.purchase_orders.forEach((order) => {
-                // Collect unique supplier names
                 uniqueSuppliers.add(order.supplier_name || "N/A");
 
                 const details = order.details || [];
-                const supplierName = order.supplier_name || "N/A";
 
-                // --- BUILD THE DETAIL TABLE ROWS (ACCUMULATE ALL ITEMS) ---
                 if (details.length > 0) {
-                    // Loop through each detail line item and add to the single list
                     details.forEach((item) => {
-                        itemIndex++; // Increment global index
+                        itemIndex++;
                         allDetailRowsHtml += `
                         <tr>
                             <td>${itemIndex}</td>
@@ -184,19 +339,15 @@ $(document).ready(function () {
                     `;
                     });
                 }
-                // Note: No 'else' here, as we only show a "No items" message if the whole combined table is empty.
             });
         }
 
-        // Convert set to comma-separated list
         const supplierList = Array.from(uniqueSuppliers).join(", ");
 
-        // Handle case where no items were found across ALL POs
         if (allDetailRowsHtml === "") {
             allDetailRowsHtml = `<tr><td colspan="8" class="text-center">No item details were found across all Purchase Orders.</td></tr>`;
         }
 
-        // --- 4. BUILD THE MASTER MODAL HTML (USING REQUEST DATA AND DYNAMIC CONTENT) ---
         const html = `
         <div class="row mb-4 p-3">
             ${data.status}

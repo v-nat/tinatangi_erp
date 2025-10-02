@@ -35,6 +35,7 @@ class StatusSeeder extends Seeder
             'Approved - Pending Dispatch',
             'Rejected - Supplier',
             'Accepted - Supplier',
+            'Pending - Supplier',
             'Return',
         ];
 
