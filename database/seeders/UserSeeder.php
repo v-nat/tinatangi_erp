@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
                 'id' => 4,
                 'first_name' => 'Nathaniel',
                 'last_name' => 'Vasquez',
-                'email' => 'prcourement@mail.com',
+                'email' => 'procurement@mail.com',
                 'password' => bcrypt('password'),
                 'phone_number' => '09123456789',
                 'user_type' => 'employee',
