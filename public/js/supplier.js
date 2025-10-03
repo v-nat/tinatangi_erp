@@ -183,56 +183,42 @@ $(document).ready(function () {
 
     $(document).on("click", ".reject-btn", function () {
         const req_id = $(this).data("id");
-        Swal.fire({
-            title: "Decline Purchase Order?",
-            text: "You are about reject this order from Tinatangi Cafe.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm!",
-        }).then((result) => {
-            if (!result.isConfirmed) {
-                return;
-            }
-            $("#LoadingScreen").fadeIn(200);
-            $.ajax({
-                headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                        "content"
-                    ),
-                },
-                url: `/supplier/orders/process/${req_id}/19`,
-                type: "PUT",
-                data: null,
-                processData: false,
-                contentType: false,
-                success: function (response) {
+        e.preventDefault();
+        $("#rejectionOvertimeId").val(req_id);
+        $("#RejectionConfirmation").modal("show");
+    });
+
+    $("#reject-btn-confirmed").click(function (e) {
+        e.preventDefault();
+        let req_id = $("#rejectionReqId").val();
+        let reason = $("#rejectionNotes").val();
+        $("#LoadingScreen").fadeIn(200);
+        $("#rejectionModal").modal("hide");
+        
+        $.ajax({
+            url: `/supplier/orders/process/${req_id}/19`,
+            method: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr("content"),
+                id: req_id,
+                remarks: reason,
+            },
+            success: function (response) {
+                if (response.success) {
                     $("#LoadingScreen").fadeOut(200);
-                    reloadTable("purchaseOrderTable");
-                    Toast.fire({
-                        text: response.message,
-                        icon: "success",
-                    });
-                },
-                error: function (xhr) {
-                    $("#LoadingScreen").fadeOut(200);
-                    if (xhr.responseJSON?.errors) {
-                        let errorMessages = Object.values(
-                            xhr.responseJSON.errors
-                        )
-                            .flat()
-                            .join("\n");
-                        Toast.fire("Validation Error", errorMessages, "error");
-                    } else {
-                        Toast.fire(
-                            "Error",
-                            "An unexpected error occurred.",
-                            "error"
-                        );
-                    }
-                },
-            });
+                    reloadTable('purchaseOrderTable');
+                    Toast.fire("Rejected!", response.message, "success");
+                } else {
+                    Toast.fire("Error", response.message, "error");
+                }
+            },
+            error: function (xhr) {
+                Toast.fire(
+                    "Error",
+                    xhr.responseJSON?.message || "Something went wrong",
+                    "error"
+                );
+            },
         });
     });
 
