@@ -8,6 +8,7 @@
     <?php $__env->startSection('human_resources'); ?> d-block <?php $__env->stopSection(); ?>
     <?php $__env->startSection('finance'); ?> d-block <?php $__env->stopSection(); ?>
     <?php $__env->startSection('procurement'); ?> d-block <?php $__env->stopSection(); ?>
+    <?php $__env->startSection('supplierPage'); ?> d-none <?php $__env->stopSection(); ?>
    
     <?php $__env->startSection('human_resources-admin'); ?>
         <i class="bi bi-person-lines-fill"></i>
@@ -24,4 +25,5 @@
 <?php $__env->startSection('sidebar-title'); ?> Finance and Accounting Management <?php $__env->stopSection(); ?>
 <?php $__env->startSection('human_resources'); ?> d-none <?php $__env->stopSection(); ?>
 <?php $__env->startSection('finance'); ?> d-block <?php $__env->stopSection(); ?>
-<?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/partials/finance-accounting-heading.blade.php ENDPATH**/ ?>
+<?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?>
+<?php $__env->startSection('supplierPage'); ?> d-none <?php $__env->stopSection(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/partials/finance-accounting-heading.blade.php ENDPATH**/ ?>

@@ -1,4 +1,3 @@
-
 <?php echo $__env->make('partials.supplier-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->startSection('supplierApprove'); ?> active <?php $__env->stopSection(); ?>
 <?php $__env->startSection('headings'); ?> Purchase Orders <?php $__env->stopSection(); ?>
@@ -38,6 +37,8 @@
             </div>
         </div>
     </section>
+
+    <?php echo $__env->make('layouts.modals.supplier-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
     <script src="<?php echo e(asset('js/supplier.js')); ?>   "></script>

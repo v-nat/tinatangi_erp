@@ -18,6 +18,9 @@ use App\Models\PurchaseOrderDetail;
 class FinanceController extends Controller
 {
     //
+    public function finance(){
+        return view("pages.admin.finance.index");
+    }
     public function budgetsIndex()
     {
         return view("pages.admin.finance.budget-releasing");

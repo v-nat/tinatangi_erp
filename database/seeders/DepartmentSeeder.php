@@ -16,9 +16,10 @@ class DepartmentSeeder extends Seeder
         //
         $departments = [
             'Administrator',
-            'Human Resources Management',
-            'Finance Risk Management',
+            'Human Resources',
+            'Finance and Accounting',
             'Procurement',
+            'Inventory',
             'Customer Service',
             'Service Operations',
             'Barista Department',

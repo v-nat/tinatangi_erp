@@ -14,7 +14,7 @@
             <div class="modal-body">
                 <h6>You are about to Reject this Purchase Order</h6>
                 <form id="rejectionForm">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <input type="hidden" name="req_id" id="rejectionReqId">
                     <div class="form-group">
                         <label for="rejectionNotes">Rejection Notes (Required)</label>
@@ -34,4 +34,4 @@
             </div>
         </div>
     </div>
-</div>
+</div><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modals/supplier-modal.blade.php ENDPATH**/ ?>
