@@ -48,6 +48,7 @@ class EmployeeMiddleware
                 2 => 'humanresources',
                 3 => 'finance',
                 4 => 'procurement',
+                5 => 'inventory',
                 default => null,
             };
 

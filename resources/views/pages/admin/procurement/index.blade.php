@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@include('partials.procurement-headings')
+@include('partials.procurement-heading')
 @section('procurementIndex') active @endsection
 @section('headings') Index @endsection
 @section('content')

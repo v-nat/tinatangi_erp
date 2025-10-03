@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@include('partials.procurement-headings')
+@include('partials.procurement-heading')
 @section('purchaseOrders') active @endsection
 @section('headings') Purchase Orders @endsection
 @section('content')

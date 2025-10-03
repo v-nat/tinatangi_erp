@@ -118,6 +118,16 @@
                     </li>
                 </div>
 
+                <li class="sidebar-title">@yield('inventory-admin')</li>
+
+                <div class="@yield('inventory')">
+                    <li class="sidebar-item @yield('inventoryIndex') ">
+                        <a href="{{route('inventory')}}" class='sidebar-link'>
+                            @yield('inventory-dashboard')
+                        </a>
+                    </li>
+                </div>
+
                 <div class="@yield('supplierPage')">
                     <li class="sidebar-item @yield('supplierApprove') ">
                         <a href="{{route('supplier.approve')}}" class='sidebar-link'>
