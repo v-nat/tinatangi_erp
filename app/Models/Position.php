@@ -12,7 +12,7 @@ class Position extends Model
 {
     //
     use SoftDeletes;
-    protected $fillable = ['name', 'level', 'department_id'];
+    protected $fillable = ['id', 'name', 'level', 'department_id'];
 
     public function employees(): HasMany
     {

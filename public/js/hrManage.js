@@ -132,7 +132,6 @@ $(document).ready(function () {
     }
     function updateSalary() {
         const position = $("#position option:selected").val();
-        // console.log(typeof(position));
         switch (position) {
             case "1":
                 $("#base_salary").val(baseSalary[0]);
@@ -153,30 +152,36 @@ $(document).ready(function () {
                 $("#base_salary").val(baseSalary[0]);
                 return;
             case "7":
-                $("#base_salary").val(baseSalary[1]);
+                $("#base_salary").val(baseSalary[4]);
                 return;
             case "8":
                 $("#base_salary").val(baseSalary[0]);
                 return;
             case "9":
-                $("#base_salary").val(baseSalary[2]);
-                return;
-            case "10":
-                $("#base_salary").val(baseSalary[4]);
-                return;
-            case "11":
-                $("#base_salary").val(baseSalary[0]);
-                return;
-            case "12":
                 $("#base_salary").val(baseSalary[1]);
                 return;
-            case "13":
+            case "10":
+                $("#base_salary").val(baseSalary[0]);
+                return;
+            case "11":
+                $("#base_salary").val(baseSalary[2]);
+                return;
+            case "12":
                 $("#base_salary").val(baseSalary[4]);
                 return;
+            case "13":
+                $("#base_salary").val(baseSalary[0]);
+                return;
             case "14":
-                $("#base_salary").val(baseSalary[3]);
+                $("#base_salary").val(baseSalary[1]);
                 return;
             case "15":
+                $("#base_salary").val(baseSalary[4]);
+                return;
+            case "16":
+                $("#base_salary").val(baseSalary[3]);
+                return;
+            case "17":
                 $("#base_salary").val(baseSalary[4]);
                 return;
         }
@@ -186,11 +191,14 @@ $(document).ready(function () {
 $("#reset").click(function (e) {
     e.preventDefault();
     const $form = $("#employeeForm");
-    $form.find("select").val("").trigger("change"); // for Select2
-    $form.find('input[type="date"]').val(""); // for date inputs
+    $form.find("select").val("").trigger("change");
+    $form.find('input[type="date"]').val(""); 
     $form.find('input, select').val('');
     $form.find(".is-invalid").removeClass("is-invalid");
     $form.find(".invalid-feedback").remove();
+    $("#sss").val(600.00);
+    $("#philhealth").val(450.00);
+    $("#pagibig").val(100.00);
 });
 $("#cancel").click(function (e) {
     e.preventDefault();
@@ -235,7 +243,6 @@ $("#insert-btn-employee").click(function (e) {
                 }).then(() => location.reload());
             },
             error: function (xhr) {
-                // console.error('Error response:', xhr);
                 $("#LoadingScreen").fadeOut(200);
                 if (xhr.responseJSON?.errors) {
                     let errorMessages = Object.values(xhr.responseJSON.errors)
@@ -252,19 +259,16 @@ $("#insert-btn-employee").click(function (e) {
             },
         });
     }
-    // console.log('Submit button clicked');
 });
 
 $("#edit-btn-employee").click(function (e) {
     e.preventDefault();
 
-    // console.log('Submit button clicked');
     let form = document.getElementById("employeeForm");
     let employee_id = $("#email").data("value");
-    // console.log("Employee ID:", employee_id);
     let formData = new FormData($("#employeeForm")[0]);
     formData.append("_method", "PUT");
-    // let updateUrl = "{{ route('humanresources/update-employee') }}/" + employee_id;
+
     let url = `/humanresources/update-employee/${employee_id}`;
     Swal.fire({
         title: "Are you sure?",
@@ -283,7 +287,6 @@ $("#edit-btn-employee").click(function (e) {
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
             },
-            // url: "humanresources/update-employee/" + employee_id,
             url: url,
             type: "POST",
             data: formData,
@@ -297,7 +300,6 @@ $("#edit-btn-employee").click(function (e) {
                 }).then(() => location.reload());
             },
             error: function (xhr) {
-                // console.error('Error response:', xhr);
                 $("#LoadingScreen").fadeOut(200);
                 if (xhr.responseJSON?.errors) {
                     let errorMessages = Object.values(xhr.responseJSON.errors)

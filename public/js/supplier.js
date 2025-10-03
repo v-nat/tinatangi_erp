@@ -101,7 +101,7 @@ $(document).ready(function () {
                                 title="Approve">
                                     <i class="fa-solid fa-truck"></i>
                             </a>
-                            <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 reject-btn"
+                            <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
                                 data-id="${data}" 
                                 title="Reject">
                                     <i class="fa-solid fa-x"></i>
@@ -121,7 +121,7 @@ $(document).ready(function () {
                     }
                 },
                 className: "text-center",
-                width: "150px",
+                width: "170px",
             },
         ],
     });
@@ -183,8 +183,7 @@ $(document).ready(function () {
 
     $(document).on("click", ".reject-btn", function () {
         const req_id = $(this).data("id");
-        e.preventDefault();
-        $("#rejectionOvertimeId").val(req_id);
+        $("#rejectionReqId").val(req_id);
         $("#RejectionConfirmation").modal("show");
     });
 
@@ -192,34 +191,42 @@ $(document).ready(function () {
         e.preventDefault();
         let req_id = $("#rejectionReqId").val();
         let reason = $("#rejectionNotes").val();
-        $("#LoadingScreen").fadeIn(200);
-        $("#rejectionModal").modal("hide");
         
-        $.ajax({
-            url: `/supplier/orders/process/${req_id}/19`,
-            method: "POST",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr("content"),
-                id: req_id,
-                remarks: reason,
-            },
-            success: function (response) {
-                if (response.success) {
-                    $("#LoadingScreen").fadeOut(200);
-                    reloadTable('purchaseOrderTable');
-                    Toast.fire("Rejected!", response.message, "success");
-                } else {
-                    Toast.fire("Error", response.message, "error");
-                }
-            },
-            error: function (xhr) {
-                Toast.fire(
-                    "Error",
-                    xhr.responseJSON?.message || "Something went wrong",
-                    "error"
-                );
-            },
-        });
+        if (reason) {
+            $("#LoadingScreen").fadeIn(200);
+            $("#rejectionModal").modal("hide");
+            $.ajax({
+                url: `/supplier/orders/process/${req_id}/19`,
+                method: "PUT",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr("content"),
+                    remarks: reason,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $("#LoadingScreen").fadeOut(200);
+                        reloadTable("purchaseOrderTable");
+                        Toast.fire("Rejected!", response.message, "success");
+                    } else {
+                        Toast.fire("Error", response.message, "error");
+                    }
+                },
+                error: function (xhr) {
+                    Toast.fire(
+                        "Error",
+                        xhr.responseJSON?.message || "Something went wrong",
+                        "error"
+                    );
+                },
+            });
+        } else {
+            Toast.fire({
+                icon: "error",
+                title: "Error",
+                text: "Please provide a remarks",
+                timer: 1500,
+            });
+        }
     });
 
     function reloadTable(tableId) {

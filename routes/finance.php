@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\HR\PayrollController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 
 Route::middleware(['auth' , 'isEmployee'])->group(function () {
+    Route::get('/finance', [FinanceController::class, 'finance'])->name('finance');
     Route::get('/finance/payroll', [PayrollController::class, 'indexOnFinance'])->name('finance.payroll');
     Route::get('/finance/payroll/list', [PayrollController::class, 'getPayrollList']);
     Route::get('/finance/payroll/view/{id}', [PayrollController::class, 'getPayrollview']);

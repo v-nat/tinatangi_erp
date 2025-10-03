@@ -63,6 +63,12 @@
                 <li class="sidebar-title"><?php echo $__env->yieldContent('finance-admin'); ?></li>
 
                 <div class="<?php echo $__env->yieldContent('finance'); ?>">
+                    <li class="sidebar-item <?php echo $__env->yieldContent('financeIndex'); ?> ">
+                        <a href="<?php echo e(route('finance')); ?>" class='sidebar-link'>
+                            <i class="bi bi-bar-chart-line-fill"></i>
+                            <span>Index</span>
+                        </a>
+                    </li>
                     <li class="sidebar-item <?php echo $__env->yieldContent('financePayroll'); ?> ">
                         <a href="<?php echo e(route('finance.payroll')); ?>" class='sidebar-link'>
                             <i class="bi bi-credit-card-2-front-fill"></i>
