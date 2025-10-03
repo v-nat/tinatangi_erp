@@ -87,16 +87,14 @@ class FinanceController extends Controller
             $purchaseRequests = PurchaseRequest::with([
                 'purchaseOrders',
                 'purchaseOrders.purchaseOrderDetail',
-                'purchaseOrders.supplierRS', // Load supplier on the PO
-                'purchaseOrders.purchaseOrderDetail.itemss', // Load items on the detail
+                'purchaseOrders.supplierRS',
+                'purchaseOrders.purchaseOrderDetail.itemss',
                 'statusRS',
                 'employeeRS',
                 'deptRS',
             ])->where('id', $id)->get(); // Use find($id) if you only expect one, or keep get()
 
             return response()->json([
-                // Since you queried by ID, you likely expect only one request, 
-                // but the final array mapping is cleaner with ->map()
                 'data' => $purchaseRequests->map(function ($request_data) {
 
                     // --- 1. Map the Purchase Orders (Collection) ---

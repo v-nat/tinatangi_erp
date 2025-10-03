@@ -181,7 +181,7 @@ class PurchaseOrderController extends Controller
         }
     }
 
-    public function processPurchaseOrders($id, $status)
+    public function processPurchaseOrders(Request $request, $id, $status)
     {
         try {
             DB::beginTransaction();
@@ -247,8 +247,8 @@ class PurchaseOrderController extends Controller
                 }
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Received!'], 200);
-            } else if ($status == 16) {
-                $pr->remarks = 'order rejected';
+            } else if ($status == 19) {
+                $pr->remarks = $request->remarks;
                 $pr->status = $status;
                 $pr->save();
 
@@ -257,7 +257,7 @@ class PurchaseOrderController extends Controller
                 foreach ($orderInstances as $orderInstance) {
                     $prpo = PurchaseOrder::where('id', $orderInstance)->first();
                     $prpo->delivery_date = now();
-                    $prpo->remarks = 'order rejected';
+                    $prpo->remarks = $request->remarks;
                     $prpo->status = $status;
                     $prpo->save();
 

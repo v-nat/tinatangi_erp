@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Procurement\ProcurementController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 use App\Http\Controllers\Admin\Procurement\SupplierController;
+use App\Http\Controllers\Admin\Finance\FinanceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth' , 'isEmployee'])->group(function () {
@@ -11,7 +12,6 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/procurement/create-purchase-request', [ProcurementController::class, 'createPR'])->name('procurement.createPR');
     Route::get('/procurement/purchase-orders', [ProcurementController::class, 'purchaseOrders'])->name('procurement.purchaseOrders');
     Route::get('/procurement/supplier', [ProcurementController::class, 'supplier'])->name('procurement.supplier');
-
 
     /////////////////////////////////////////// SUPPLIER //////////////////////////////////////////
     Route::post('/procurement/supplier/add-supplier', [SupplierController::class,'storeSupplier']);
@@ -26,6 +26,7 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
 
     ///////////////////////////////////////// PURCHASE ORDER //////////////////////////////////////////////////
     Route::get('/procurement/purchases/get-list', [ProcurementController::class, 'purchaseOrdersList']);
+    Route::get('/procurement/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
     Route::put('/procurement/purchases/order/{id}/{status}', [PurchaseOrderController::class, 'processPurchaseOrders']);
 
 });

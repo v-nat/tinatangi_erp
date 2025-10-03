@@ -23,13 +23,11 @@ $(document).ready(function () {
                 width: "45px",
             },
             {
-                data: "purchase_orders", // Use the array itself as data source
+                data: "purchase_orders",
                 title: "Order No.",
                 className: "dt-left",
                 render: function (data) {
-                    // Check if data is an array and has at least one element
                     if (data && data.length > 0) {
-                        // Access the specific named key from the first element
                         return data[0].purchase_order_id;
                     }
                     return "N/A";
@@ -57,21 +55,12 @@ $(document).ready(function () {
                 className: "dt-left",
                 render: function (data) {
                     if (data && data.length > 0) {
-                        // Access the supplier_name key from the first element
                         return data[0].supplier_name;
                     }
                     return "N/A";
                 },
                 className: "dt-left",
             },
-            // {
-            //     data: "expected_delivery_date",
-            //     render: function (data) {
-            //         return data ? formatDate(data) : "N/A";
-            //     },
-            //     type: "date",
-            //     className: "dt-left",
-            // },
             {
                 data: "purchase_orders",
                 title: "Delivery Date",
@@ -85,7 +74,6 @@ $(document).ready(function () {
                 type: "date",
                 className: "dt-left",
             },
-            // { data: "delivery_name", className: "dt-left", width: "150px" },
             { data: "requested_by_id", className: "dt-left" },
             { data: "remarks", className: "dt-left" },
             {
@@ -96,12 +84,6 @@ $(document).ready(function () {
             {
                 data: "id",
                 render: function (data, type, row) {
-                    // Use the business ID for viewing details (often for display/retrieval)
-                    // const viewId = row.purchase_request_id;
-
-                    // Use the internal primary key ID for transactional actions (Approve/Reject)
-                    // const actionId = row.id;
-
                     if (
                         row.status ==
                         '<span class="badge bg-warning">Pending</span>'
@@ -288,7 +270,7 @@ $(document).ready(function () {
         const id = $(this).data("id");
         $("#LoadingScreen").fadeIn(200);
 
-        $.get(`/finance/purchases/get-details/${id}`, function (response) {
+        $.get(`/procurement/purchases/get-details/${id}`, function (response) {
             if (response.data && response.data.length > 0) {
                 const requestData = response.data[0];
                 buildPOmodal(requestData);
@@ -377,7 +359,6 @@ $(document).ready(function () {
         
         <hr class="mt-0">
         
-        <!-- SINGLE COMBINED ITEMS TABLE -->
         <div class="px-3">
             <h5 class="mb-3 text-primary">All Associated Line Items</h5>
             <div class="table-responsive">
