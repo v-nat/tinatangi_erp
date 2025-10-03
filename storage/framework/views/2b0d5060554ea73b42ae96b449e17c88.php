@@ -1,4 +1,4 @@
-<?php echo $__env->make('partials.procurement-headings', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php echo $__env->make('partials.procurement-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->startSection('supplier'); ?> active <?php $__env->stopSection(); ?>
 <?php $__env->startSection('headings'); ?> Supplier List <?php $__env->stopSection(); ?>
 <?php $__env->startSection('content'); ?>

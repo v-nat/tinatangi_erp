@@ -118,6 +118,16 @@
                     </li>
                 </div>
 
+                <li class="sidebar-title"><?php echo $__env->yieldContent('inventory-admin'); ?></li>
+
+                <div class="<?php echo $__env->yieldContent('inventory'); ?>">
+                    <li class="sidebar-item <?php echo $__env->yieldContent('inventoryIndex'); ?> ">
+                        <a href="<?php echo e(route('inventory')); ?>" class='sidebar-link'>
+                            <?php echo $__env->yieldContent('inventory-dashboard'); ?>
+                        </a>
+                    </li>
+                </div>
+
                 <div class="<?php echo $__env->yieldContent('supplierPage'); ?>">
                     <li class="sidebar-item <?php echo $__env->yieldContent('supplierApprove'); ?> ">
                         <a href="<?php echo e(route('supplier.approve')); ?>" class='sidebar-link'>

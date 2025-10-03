@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@include('partials.procurement-headings')
+@include('partials.procurement-heading')
 @section('createPR') active @endsection
 @section('headings') Create Purchase Request @endsection
 @section('content')
