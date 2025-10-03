@@ -247,6 +247,26 @@ class PurchaseOrderController extends Controller
                 }
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Received!'], 200);
+            } else if ($status == 16) {
+                $pr->remarks = 'order rejected';
+                $pr->status = $status;
+                $pr->save();
+
+                $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
+
+                foreach ($orderInstances as $orderInstance) {
+                    $prpo = PurchaseOrder::where('id', $orderInstance)->first();
+                    $prpo->delivery_date = now();
+                    $prpo->remarks = 'order rejected';
+                    $prpo->status = $status;
+                    $prpo->save();
+
+                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
+                    $prpod->status = $status;
+                    $prpod->save();
+                }
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Purchase Order Rejected!'], 200);
             }
         } catch (\Exception $e) {
             DB::rollBack();

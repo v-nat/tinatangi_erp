@@ -101,6 +101,11 @@ $(document).ready(function () {
                                 title="Approve">
                                     <i class="fa-solid fa-truck"></i>
                             </a>
+                            <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 reject-btn"
+                                data-id="${data}" 
+                                title="Reject">
+                                    <i class="fa-solid fa-x"></i>
+                            </a>
                         </div>
                         `;
                     } else {
@@ -143,6 +148,61 @@ $(document).ready(function () {
                     ),
                 },
                 url: `/supplier/orders/process/${req_id}/20`,
+                type: "PUT",
+                data: null,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#LoadingScreen").fadeOut(200);
+                    reloadTable("purchaseOrderTable");
+                    Toast.fire({
+                        text: response.message,
+                        icon: "success",
+                    });
+                },
+                error: function (xhr) {
+                    $("#LoadingScreen").fadeOut(200);
+                    if (xhr.responseJSON?.errors) {
+                        let errorMessages = Object.values(
+                            xhr.responseJSON.errors
+                        )
+                            .flat()
+                            .join("\n");
+                        Toast.fire("Validation Error", errorMessages, "error");
+                    } else {
+                        Toast.fire(
+                            "Error",
+                            "An unexpected error occurred.",
+                            "error"
+                        );
+                    }
+                },
+            });
+        });
+    });
+
+    $(document).on("click", ".reject-btn", function () {
+        const req_id = $(this).data("id");
+        Swal.fire({
+            title: "Decline Purchase Order?",
+            text: "You are about reject this order from Tinatangi Cafe.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirm!",
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+            $("#LoadingScreen").fadeIn(200);
+            $.ajax({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
+                },
+                url: `/supplier/orders/process/${req_id}/19`,
                 type: "PUT",
                 data: null,
                 processData: false,
