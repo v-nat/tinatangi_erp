@@ -13,9 +13,19 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('order_id')->nullable();
+            $table->foreign('order_id')->references('id')->on('purchase_requests')->onDelete('cascade');
+            $table->decimal('total_amount', 10, 2)->default(0);
+            $table->unsignedBigInteger('delivery_no')->nullable();
+            $table->timestamp('date_recieved')->nullable();
+            $table->timestamp('date_approved')->nullable();
+            $table->unsignedBigInteger('supplier_id')->nullable();
+            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+            $table->unsignedBigInteger('approved_by_id')->nullable();
+            $table->foreign('approved_by_id')->references('id')->on('employees')->onDelete('cascade');
+
             $table->timestamps();
             $table->softDeletes();
-
         });
     }
 

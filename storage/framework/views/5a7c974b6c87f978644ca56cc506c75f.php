@@ -1,4 +1,3 @@
-
 <?php echo $__env->make('partials.finance-accounting-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->startSection('financeIndex'); ?> active <?php $__env->stopSection(); ?>
 <?php $__env->startSection('headings'); ?> Finance and Accounting <?php $__env->stopSection(); ?>

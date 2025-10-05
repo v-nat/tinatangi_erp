@@ -228,20 +228,6 @@ class PayrollController extends Controller
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // VARIABLES 
     const SSS = 600;
     const PHILHEALTH = 450;
