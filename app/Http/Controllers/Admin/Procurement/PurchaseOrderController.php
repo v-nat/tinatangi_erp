@@ -21,11 +21,10 @@ class PurchaseOrderController extends Controller
     public function getCategories()
     {
         try {
-            $categories = Category::all('id', 'name');
-
+            $categories = Category::all();
             return response()->json($categories);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' =>  $e->getMessage()], 500);
         }
     }
 
@@ -231,19 +230,21 @@ class PurchaseOrderController extends Controller
                         $firstIteration = false;
                         $supplier_id = $prpo->supplier_id;
                     }
-                }
 
-                Invoice::create([
-                    'id' => ProcurementController::generateID('invoice'),
-                    'order_id' => $id,
-                    'delivery_no' => ProcurementController::generateID('delivery_no'),
-                    'total_amount' => $pr->amount,
-                    'date_recieved' => null,
-                    'date_approved' => now(),
-                    'supplier_id' => $supplier_id,
-                    'approved_by_id' => auth('')->user()->id,,
-                    'status' => 13,
-                ]);
+                    $invoice = Invoice::create([
+                        'id' => ProcurementController::generateID('invoice'),
+                        'order_id' => $id,
+                        'delivery_no' => null,
+                        'total_amount' => $pr->amount,
+                        'date_recieved' => null,
+                        'date_approved' => now(),
+                        'supplier_id' => $supplier_id,
+                        'approved_by_id' => auth('')->user()->id,
+                        'status' => 13,
+                    ]);
+
+                    $invoice->save();
+                }
 
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Accepted!'], 200);
