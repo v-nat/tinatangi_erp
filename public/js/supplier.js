@@ -79,7 +79,7 @@ $(document).ready(function () {
                         return `
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}" 
+                            data-id="${data}"
                             title="View">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
@@ -92,17 +92,17 @@ $(document).ready(function () {
                         return `
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}" 
+                            data-id="${data}"
                             title="View">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 approve-btn"
-                                data-id="${data}" 
+                                data-id="${data}"
                                 title="Approve">
                                     <i class="fa-solid fa-truck"></i>
                             </a>
                             <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
-                                data-id="${data}" 
+                                data-id="${data}"
                                 title="Reject">
                                     <i class="fa-solid fa-x"></i>
                             </a>
@@ -181,6 +181,30 @@ $(document).ready(function () {
         });
     });
 
+    $(document).on("click", ".btn-view", function () {
+        const id = $(this).data("id");
+        $("#LoadingScreen").fadeIn(200);
+
+        $.get(`/supplier/purchases/get-details/${id}`, function (response) {
+            if (response.data && response.data.length > 0) {
+                const requestData = response.data[0];
+                buildPOmodal(requestData);
+            } else {
+                alert("Error: Purchase Request not found.");
+            }
+        })
+            .fail(function (xhr) {
+                const errorMsg = xhr.responseJSON
+                    ? xhr.responseJSON.error
+                    : "Failed to load purchase request details.";
+                alert(errorMsg);
+            })
+            .always(function () {
+                $("#LoadingScreen").fadeOut(200);
+            });
+    });
+
+
     $(document).on("click", ".reject-btn", function () {
         const req_id = $(this).data("id");
         $("#rejectionReqId").val(req_id);
@@ -191,7 +215,7 @@ $(document).ready(function () {
         e.preventDefault();
         let req_id = $("#rejectionReqId").val();
         let reason = $("#rejectionNotes").val();
-        
+
         if (reason) {
             $("#LoadingScreen").fadeIn(200);
             $("#rejectionModal").modal("hide");
@@ -229,9 +253,115 @@ $(document).ready(function () {
         }
     });
 
+    function buildPOmodal(data) {
+        const uniqueSuppliers = new Set();
+        let allDetailRowsHtml = "";
+        let itemIndex = 0;
+
+        if (data.purchase_orders && data.purchase_orders.length > 0) {
+            data.purchase_orders.forEach((order) => {
+                uniqueSuppliers.add(order.supplier_name || "N/A");
+
+                const details = order.details || [];
+
+                if (details.length > 0) {
+                    details.forEach((item) => {
+                        itemIndex++;
+                        allDetailRowsHtml += `
+                        <tr>
+                            <td>${itemIndex}</td>
+                            <td>${item.item_name || "N/A"}</td>
+                            <td>${item.item_unit || "N/A"}</td>
+                            <td class="text-end">₱${parseFloat(
+                                item.unit_price || 0
+                            ).toFixed(2)}</td>
+                            <td class="text-end">${item.quantity || 0} ${
+                            item.item_unit || "N/A"
+                        }</td>
+                            <td class="text-end">₱${parseFloat(
+                                item.total_amount || 0
+                            ).toFixed(2)}</td>
+                        </tr>
+                    `;
+                    });
+                }
+            });
+        }
+
+        const supplierList = Array.from(uniqueSuppliers).join(", ");
+
+        if (allDetailRowsHtml === "") {
+            allDetailRowsHtml = `<tr><td colspan="8" class="text-center">No item details were found across all Purchase Orders.</td></tr>`;
+        }
+
+        const html = `
+        <div class="row mb-4 p-3">
+            ${data.status}
+            <!-- Purchase Request Header -->
+            <div class="col-md-6">
+                <h6 class="mb-1">Requested By: <strong>${
+                    data.requested_by_id || "N/A"
+                }</strong></h6>
+                <p class="mb-0">Department: ${data.department || "N/A"}</p>
+                <p class="mb-0">Suppliers: <strong class="text-success">${supplierList}</strong></p> <!-- SUPPLIER MOVED HERE -->
+            </div>
+            <div class="col-md-6 text-md-end">
+                <h6 class="mb-1">Purchase Request ID: <strong>${
+                    data.id || "N/A"
+                }</strong></h6>
+                <p class="mb-0">Requested Date: ${
+                    data.requested_date || "N/A"
+                }</p>
+                <p class="mb-0">Total PR Amount: <strong class="text-primary">₱${parseFloat(
+                    data.total_amount || 0
+                ).toFixed(2)}</strong></p>
+            </div>
+            <div class="col-md-12 mt-3">
+                <p class="mb-0">Remarks: <em>${data.remarks || "None"}</em></p>
+            </div>
+        </div>
+
+        <hr class="mt-0">
+
+        <div class="px-3">
+            <h5 class="mb-3 text-primary">All Associated Line Items</h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover dataTable no-footer">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Item Name</th>
+                            <th>Unit</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end">Quantity</th>
+                            <th class="text-end">Total Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${allDetailRowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <style>
+        .table-sm td,
+        .table-sm th {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.875rem;
+        }
+        </style>
+    `;
+
+        $("#LoadingScreen").fadeOut(200);
+        $("#viewPO .modal-body").html(html);
+        $("#viewPO").modal("show");
+    }
+
     function reloadTable(tableId) {
         $("#" + tableId)
             .DataTable()
             .ajax.reload(null, false);
     }
+
 });

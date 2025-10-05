@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Admin\Procurement;
 
-use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Models\Item;
-use App\Models\BudgetRelease;
-use App\Models\PurchaseRequest;
-use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderDetail;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\Item;
+use App\Models\Invoice;
+use App\Models\Category;
+use Illuminate\Http\Request;
+use App\Models\BudgetRelease;
+use App\Models\PurchaseOrder;
+use App\Models\PurchaseRequest;
+use Illuminate\Support\Facades\DB;
+use App\Models\PurchaseOrderDetail;
+use App\Http\Controllers\Controller;
 
 class PurchaseOrderController extends Controller
 {
@@ -214,7 +215,8 @@ class PurchaseOrderController extends Controller
                 $pr->save();
 
                 $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
-
+                $supplier_id = null;
+                $firstIteration = true;
                 foreach ($orderInstances as $orderInstance) {
                     $prpo = PurchaseOrder::where('id', $orderInstance)->first();
                     $prpo->remarks = 'order accepted';
@@ -224,7 +226,25 @@ class PurchaseOrderController extends Controller
                     $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
                     $prpod->status = $status;
                     $prpod->save();
+
+                    if ($firstIteration) {
+                        $firstIteration = false;
+                        $supplier_id = $prpo->supplier_id;
+                    }
                 }
+
+                Invoice::create([
+                    'id' => ProcurementController::generateID('invoice'),
+                    'order_id' => $id,
+                    'delivery_no' => ProcurementController::generateID('delivery_no'),
+                    'total_amount' => $pr->amount,
+                    'date_recieved' => null,
+                    'date_approved' => now(),
+                    'supplier_id' => $supplier_id,
+                    'approved_by_id' => auth('')->user()->id,,
+                    'status' => 13,
+                ]);
+
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Accepted!'], 200);
             } else if ($status == 16) {

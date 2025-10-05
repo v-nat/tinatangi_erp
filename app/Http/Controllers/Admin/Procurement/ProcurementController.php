@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Procurement;
 
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use App\Models\Status;
+use App\Models\Invoice;
+use Illuminate\Http\Request;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
-use App\Models\Status;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ProcurementController extends Controller
 {
@@ -35,7 +36,7 @@ class ProcurementController extends Controller
         try {
             $purchaseRequests = PurchaseRequest::with([
                 'purchaseOrders',
-                'purchaseOrders.supplierRS', 
+                'purchaseOrders.supplierRS',
                 'statusRS',
                 'employeeRS',
                 'deptRS',
@@ -49,9 +50,9 @@ class ProcurementController extends Controller
 
                         // Return the individual Purchase Order object
                         return [
-                            'purchase_order_id' => $order->purchase_orderId, 
-                            'order_date' => $order->order_date, 
-                            'delivery_date' => $order->delivery_date, 
+                            'purchase_order_id' => $order->purchase_orderId,
+                            'order_date' => $order->order_date,
+                            'delivery_date' => $order->delivery_date,
                             'supplier_name'     => optional($order->supplierRS)->supplier_name,
                         ];
                     });
@@ -86,5 +87,24 @@ class ProcurementController extends Controller
         return response()->json([
             'order_id' => $order_id,
         ]);
+    }
+    public static function generateID($type): string
+    {
+        $order_id = "";
+        $year = Carbon::now()->format('Y');
+
+        if ($type == 'invoice') {
+            do {
+                $random = rand(10000, 99999);
+                $order_id = $year . $random;
+            } while (PurchaseRequest::pluck('id')->contains($order_id));
+        } else if ($type == 'delivery_no'){
+            do {
+                $random = rand(10000, 99999);
+                $order_id = $year . $random;
+            } while (Invoice::pluck('delivery_no')->contains($order_id));
+        }
+
+        return $order_id;
     }
 }
