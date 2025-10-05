@@ -79,7 +79,6 @@ $(document).ready(function () {
         ],
     });
 
-    const categorySelect = document.getElementById("category");
 
     $("#item").change(function () {
         const selectedOption = $("#item").find("option:selected");
@@ -88,6 +87,9 @@ $(document).ready(function () {
         $("#unit").val(unit);
         $("#unit_price").val(unitPrice);
     });
+
+    const categorySelect = document.getElementById("category");
+
     $("#category").change(function () {
         $("#unit").val("");
         $("#unit_price").val("");
@@ -115,6 +117,7 @@ $(document).ready(function () {
                 });
         }
     });
+
     function getSuppliers() {
         const supplierSelect = document.getElementById("supplier");
 
@@ -156,7 +159,7 @@ $(document).ready(function () {
         }
     });
 
-    function getCategories() {
+    $(document).ready( function () {
         fetch(`/procurement/create-purchase-request/get-categories`)
             .then((response) => response.json())
             .then((data) => {
@@ -169,10 +172,9 @@ $(document).ready(function () {
                     categorySelect.appendChild(option);
                 });
             });
-    }
+    });
 
     $(document).ready(function () {
-        const categorySelect = document.getElementById("category");
         const nameInput = document.getElementById("order_id");
         categorySelect.addEventListener("change", clearInvalids);
         nameInput.addEventListener("change", clearInvalids);
@@ -187,7 +189,6 @@ $(document).ready(function () {
     }
 
     getSuppliers();
-    getCategories();
 
     $("#addItem").on("click", function (e) {
         e.preventDefault();

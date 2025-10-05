@@ -22,7 +22,9 @@ return new class extends Migration
             $table->unsignedBigInteger('supplier_id')->nullable();
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
             $table->unsignedBigInteger('approved_by_id')->nullable();
-            $table->foreign('approved_by_id')->references('id')->on('employees')->onDelete('cascade');
+            $table->foreign('approved_by_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('status')->default(11);
+            $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 
             $table->timestamps();
             $table->softDeletes();

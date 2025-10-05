@@ -104,7 +104,6 @@ class ProcurementController extends Controller
                 $order_id = $year . $random;
             } while (Invoice::pluck('delivery_no')->contains($order_id));
         }
-
         return $order_id;
     }
 }
