@@ -4236,6 +4236,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property mixed $status
+     * @property mixed $supplier_id
      * @property mixed $invoice_id
      * @property string|null $remarks
      * @property mixed $requested_by_id
@@ -4258,6 +4259,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<PurchaseRequest>|PurchaseRequest whereRequestedById($value)
      * @method static \Illuminate\Database\Eloquent\Builder<PurchaseRequest>|PurchaseRequest whereRemarks($value)
      * @method static \Illuminate\Database\Eloquent\Builder<PurchaseRequest>|PurchaseRequest whereInvoiceId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<PurchaseRequest>|PurchaseRequest whereSupplierId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<PurchaseRequest>|PurchaseRequest whereStatus($value)
      * @method static \Illuminate\Database\Eloquent\Builder<PurchaseRequest>|PurchaseRequest whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<PurchaseRequest>|PurchaseRequest whereUpdatedAt($value)
@@ -4862,6 +4864,28 @@ namespace App\Models {
     /**
      * App\Models\Stock
      *
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property mixed $status
+     * @property mixed $user_id
+     * @property mixed $reference_id
+     * @property string|null $reference_type
+     * @property string $transaction_date
+     * @property float $quantity
+     * @property mixed $transaction_type
+     * @property int $id
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereTransactionType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereQuantity($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereTransactionDate($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereReferenceType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereReferenceId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereUserId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock whereDeletedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Stock>|Stock query()
