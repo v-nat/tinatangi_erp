@@ -18,13 +18,13 @@
                     <div class="card-body px-3 py-4-5">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="stats-icon blue">
-                                    <i class="iconly-boldProfile"></i>
+                                <div class="stats-icon green">
+                                    <i class="fa-solid fa-truck"></i>
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <h6 class="text-muted font-semibold">Total Employees</h6>
-                                <h6 class="font-extrabold mb-0"></h6>
+                                <h6 class="text-muted font-semibold">To Receive </h6>
+                                <h6 class="font-extrabold mb-0">{{ $purchaseOrders }}</h6>
                             </div>
                         </div>
                     </div>
@@ -36,12 +36,12 @@
                     <div class="card-body px-3 py-4-5">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="stats-icon green">
-                                    <i class="iconly-boldAdd-User"></i>
+                                <div class="stats-icon blue">
+                                    <i class="fa-solid fa-warehouse"></i>
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <h6 class="text-muted font-semibold">New Hires</h6>
+                                <h6 class="text-muted font-semibold">Total Stocks</h6>
                                 <h6 class="font-extrabold mb-0"></h6>
                             </div>
                         </div>

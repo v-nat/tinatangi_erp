@@ -42,7 +42,7 @@
             </div>
         </div>
     </section>
-    
+
     <?php echo $__env->make('layouts.modals.hr-employees-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <style>
         .action-btns {
@@ -54,4 +54,5 @@
 <?php $__env->startSection('scripts'); ?>
     <script src="<?php echo e(asset('js/hrEmployees.js')); ?>"></script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/human_resources/employees.blade.php ENDPATH**/ ?>

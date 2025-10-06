@@ -16,6 +16,7 @@ class SupplierSeeder extends Seeder
         //
         $suppliers = [
             [
+                'id' => 23,
                 'user_id' => 23,
                 'supplier_name' => 'Premium Coffee Roasters Inc.',
                 'email' => 'sales@premiumroasters.com',
@@ -25,6 +26,7 @@ class SupplierSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'id' => 24,
                 'user_id' => 24,
                 'supplier_name' => 'Cup & Lid Supplies Co.',
                 'email' => 'orders@cuplids.net',
@@ -34,6 +36,7 @@ class SupplierSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'id' => 25,
                 'user_id' => 25,
                 'supplier_name' => 'Equipment & Tools Trading',
                 'email' => 'support@toolstrade.com',

@@ -493,14 +493,12 @@ $(document).ready(function () {
     });
 
     function buildInvoiceModal(data) {
-        const uniqueSuppliers = new Set();
         const employee = new Set();
         let allDetailRowsHtml = "";
         let itemIndex = 0;
 
         if (data.purchase_orders && data.purchase_orders.length > 0) {
             data.purchase_orders.forEach((order) => {
-                uniqueSuppliers.add(order.supplier_name || "N/A");
                 employee.add(order.created_by_id || "N/A");
 
                 const details = order.details || [];
@@ -529,7 +527,6 @@ $(document).ready(function () {
             });
         }
 
-        const supplierList = Array.from(uniqueSuppliers).join(", ");
         const employeeName = Array.from(employee).join(", ");
 
         if (allDetailRowsHtml === "") {
@@ -541,7 +538,7 @@ $(document).ready(function () {
         <!-- Invoice Header -->
         <div class="col-md-6">
             <p class="mb-1">Requested by: ${employeeName || "N/A"}</p>
-            <p class="mb-0">Supplier: ${supplierList}</p>
+            <p class="mb-0">Supplier: ${data.supplier_name}</p>
             <p class="mb-0">Delivery #: ${data.delivery_no || "N/A"}</p>
         </div>
         <div class="col-md-6 text-md-end">
@@ -594,14 +591,11 @@ $(document).ready(function () {
     }
 
     function buildPOmodal(data) {
-        const uniqueSuppliers = new Set();
         let allDetailRowsHtml = "";
         let itemIndex = 0;
 
         if (data.purchase_orders && data.purchase_orders.length > 0) {
             data.purchase_orders.forEach((order) => {
-                uniqueSuppliers.add(order.supplier_name || "N/A");
-
                 const details = order.details || [];
 
                 if (details.length > 0) {
@@ -628,8 +622,6 @@ $(document).ready(function () {
             });
         }
 
-        const supplierList = Array.from(uniqueSuppliers).join(", ");
-
         if (allDetailRowsHtml === "") {
             allDetailRowsHtml = `<tr><td colspan="8" class="text-center">No item details were found across all Purchase Orders.</td></tr>`;
         }
@@ -643,7 +635,7 @@ $(document).ready(function () {
                     data.requested_by_id || "N/A"
                 }</strong></h6>
                 <p class="mb-0">Department: ${data.department || "N/A"}</p>
-                <p class="mb-0">Suppliers: <strong class="text-success">${supplierList}</strong></p> <!-- SUPPLIER MOVED HERE -->
+                <p class="mb-0">Supplier: <strong class="text-success">${data.supplier_name}</strong></p> <!-- SUPPLIER MOVED HERE -->
             </div>
             <div class="col-md-6 text-md-end">
                 <h6 class="mb-1">Purchase Request ID: <strong>${

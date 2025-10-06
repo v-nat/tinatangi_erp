@@ -52,9 +52,10 @@ class PurchaseOrderController extends Controller
         try {
             $orderItemsJson = $request->input('order_items_payload');
             $items = json_decode($orderItemsJson, true);
-            $total_amount = 0;
+            $total_amount = 0; $supplier_id = null;
             foreach ($items as $item) {
                 $total_amount += (float)$item['total'];
+                $supplier_id = $item['supplier_id'];
             }
             $id = $request->order_id;
             DB::beginTransaction();
@@ -66,6 +67,7 @@ class PurchaseOrderController extends Controller
                 'requested_by_id' => auth('')->user()->id,
                 'requested_date' => now(),
                 'remarks' => '',
+                'supplier_id' => $supplier_id,
                 'status' => 11,
             ]);
             $purchase_req->save();
@@ -268,7 +270,7 @@ class PurchaseOrderController extends Controller
                     $prpod->status = $status;
                     $prpod->save();
                 }
-                
+
                 $invoice = Invoice::findOrFail($request->invoice_id);
                 $invoice->date_received = now();
                 $invoice->delivery_no = ProcurementController::generateID('delivery_no');

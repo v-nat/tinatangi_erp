@@ -22,12 +22,18 @@ class PurchaseRequest extends Model
         'requested_date',
         'remarks',
         'invoice_id',
+        'supplier_id',
         'status',
     ] ;
 
     public function statusRS(): BelongsTo
     {
         return $this->belongsTo(Status::class, 'status');
+    }
+
+    public function supplierRS(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
     public function deptRS(): BelongsTo

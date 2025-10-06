@@ -46,7 +46,6 @@ class InvoiceController extends Controller
                     $purchaseOrdersData->push([
                         'purchase_order_id' => $order->purchase_orderId,
                         'created_by_id'     => optional(optional($order->employeeRS)->userRS)->full_name,
-                        'supplier_name'     => optional($order->supplierRS)->supplier_name,
                         'details'           => $mappedDetails,
                     ]);
                 });

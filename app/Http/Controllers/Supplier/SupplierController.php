@@ -22,8 +22,10 @@ class SupplierController extends Controller
                 'purchaseOrders.supplierRS',
                 'statusRS',
                 'employeeRS',
+                'supplierRS',
                 'deptRS',
-            ])->orderBy('updated_at', 'desc')->get();
+            ])->where('supplier_id', auth('')->user()->id)
+            ->orderBy('updated_at', 'desc')->get();
 
             return response()->json([
                 'data' => $purchaseRequests->map(function ($request_data) {
@@ -34,7 +36,7 @@ class SupplierController extends Controller
                             'purchase_order_id' => $order->purchase_orderId,
                             'order_date' => $order->order_date,
                             'delivery_date' => $order->delivery_date,
-                            'supplier_name'     => optional($order->supplierRS)->supplier_name,
+
                         ];
                     });
 
@@ -47,13 +49,13 @@ class SupplierController extends Controller
                         'status'         => Status::getStatusText($request_data->status),
                         'total_amount'   => (float)$request_data->amount,
                         'invoice_id'     => $request_data->invoice_id,
-
+                        'supplier_name'     => optional($request_data->supplierRS)->supplier_name,
                         'purchase_orders' => $mappedOrders,
                     ];
                 })
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

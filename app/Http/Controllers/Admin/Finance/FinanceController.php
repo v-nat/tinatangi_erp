@@ -95,6 +95,7 @@ class FinanceController extends Controller
                 'purchaseOrders.purchaseOrderDetail.itemss',
                 'statusRS',
                 'employeeRS',
+                'supplierRS',
                 'deptRS',
             ])->where('id', $id)->get();
 
@@ -115,7 +116,6 @@ class FinanceController extends Controller
 
                         return [
                             'purchase_order_id' => $order->purchase_orderId,
-                            'supplier_name'     => optional($order->supplierRS)->supplier_name,
 
                             'details'           => $mappedDetails,
                         ];
@@ -130,7 +130,7 @@ class FinanceController extends Controller
                         'status'         => Status::statusAlert($request_data->status),
                         'total_amount'   => (float)$request_data->amount,
                         'invoice_id'     => $request_data->invoice_id,
-
+                        'supplier_name'     => optional($request_data->supplierRS)->supplier_name,
                         'purchase_orders' => $mappedOrders,
                     ];
                 })

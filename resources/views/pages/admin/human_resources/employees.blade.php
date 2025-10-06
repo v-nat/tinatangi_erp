@@ -43,7 +43,7 @@
             </div>
         </div>
     </section>
-    
+
     @include('layouts.modals.hr-employees-modal')
     <style>
         .action-btns {
