@@ -514,12 +514,12 @@ $(document).ready(function () {
     <div class="row mb-4 p-3">
         <!-- Invoice Header -->
         <div class="col-md-6">
-            <p class="mb-1">Requested By: ${employeeName || "N/A"}</p>
+            <p class="mb-1">Requested Bby: ${employeeName || "N/A"}</p>
             <p class="mb-0">Supplier: ${supplierList}</p>
             <p class="mb-0">Delivery #: ${data.delivery_no || "N/A"}</p>
         </div>
         <div class="col-md-6 text-md-end">
-            <p class="mb-1">Invoice ID: ${data.id || "N/A"}</p>
+            <p class="mb-1">Invoice #: ${data.id || "N/A"}</p>
             <p class="mb-0">Date Approved: ${data.date_approved || "N/A"}</p>
             <p class="mb-0">Approved By: ${data.approved_by_id || "N/A"}</p>
         </div>
