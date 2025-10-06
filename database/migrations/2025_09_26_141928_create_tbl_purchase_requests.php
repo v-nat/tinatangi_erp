@@ -28,6 +28,10 @@ return new class extends Migration
             $table->string('remarks')->nullable();
             $table->unsignedBigInteger('invoice_id')->nullable();
 
+            $table->unsignedBigInteger('supplier_id')->nullable();
+            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+
+
             $table->unsignedBigInteger('status')->default(11);
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 

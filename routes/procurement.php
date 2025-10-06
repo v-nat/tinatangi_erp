@@ -19,7 +19,7 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/procurement/supplier/get-supplier', [SupplierController::class,'getSupplier']);
 
     /////////////////////////////////////////////// CREATE PR /////////////////////////////////////////////////////
-    Route::get('/procurement/generateOrderID', [ProcurementController::class,'generatePurchaseOrderID']);
+    Route::get('/procurement/generateOrderID/{type}', [ProcurementController::class,'generateID']);
     Route::get('/procurement/create-purchase-request/get-active-supplier', [SupplierController::class,'getActiveSupplier']);
     Route::get('/procurement/create-purchase-request/get-categories', [PurchaseOrderController::class,'getCategories']);
     Route::get('/procurement/create-purchase-request/get-items', [PurchaseOrderController::class,'getItems']);

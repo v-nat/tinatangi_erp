@@ -59,53 +59,41 @@ if (auth()->user()->user_type == 'supplier') {
         </style>
         <script>
             function toggleLogosByTheme() {
-                // Read the current theme from the html element
                 const currentTheme = document.documentElement.getAttribute('data-bs-theme');
 
                 const $lightLogo = $('#light-logo');
                 const $darkLogo = $('#dark-logo');
-                const $loadingScreen = $('#LoadingScreen'); // Get the loading screen element
-                const $untilLoadedScreen = $('#untilLoaded'); // Get the loading screen element
+                const $loadingScreen = $('#LoadingScreen');
+                const $untilLoadedScreen = $('#untilLoaded');
 
-                // Define colors for the loading screen overlay
-                const lightModeBg = 'rgba(255, 255, 255, 0.7)'; // White, slightly transparent
-                const darkModeBg = 'rgba(0, 0, 0, 0.7)';       // Black, slightly transparent
+                const lightModeBg = 'rgba(255, 255, 255, 0.7)';
+                const darkModeBg = 'rgba(0, 0, 0, 0.7)';
 
-                // Define the color for the spinner text inside the loading screen
                 const spinnerLightText = 'text-primary';
                 const spinnerDarkText = 'text-primary';
 
                 if (currentTheme === 'dark') {
-                    // Dark Mode is ON:
-                    // 1. Show Dark Logo, Hide Light Logo
                     $darkLogo.removeClass('d-none');
                     $lightLogo.addClass('d-none');
 
-                    // 2. Set loading screen background to dark mode color
                     $loadingScreen.css('background', darkModeBg);
                     $untilLoadedScreen.css('background', darkModeBg);
 
-                    // 3. Update spinner color (optional, assumes you want a bright color in dark mode)
                     $loadingScreen.find('.spinner-border').removeClass(spinnerLightText).addClass(spinnerDarkText);
                     $untilLoadedScreen.find('.spinner-border').removeClass(spinnerLightText).addClass(spinnerDarkText);
 
                 } else {
-                    // Light Mode is ON (or theme is unset/default):
-                    // 1. Show Light Logo, Hide Dark Logo
                     $lightLogo.removeClass('d-none');
                     $darkLogo.addClass('d-none');
 
-                    // 2. Set loading screen background to light mode color
                     $loadingScreen.css('background', lightModeBg);
                     $untilLoadedScreen.css('background', lightModeBg);
 
-                    // 3. Update spinner color (optional)
                     $loadingScreen.find('.spinner-border').removeClass(spinnerDarkText).addClass(spinnerLightText);
                     $untilLoadedScreen.find('.spinner-border').removeClass(spinnerDarkText).addClass(spinnerLightText);
                 }
             }
 
-            // 1. Run on page load to set the correct initial logo state.
             $(document).ready(function () {
                 toggleLogosByTheme();
             });
@@ -129,28 +117,22 @@ if (auth()->user()->user_type == 'supplier') {
                 "click",
                 'a[href]:not([target="_blank"]):not([href^="#"]):not([href^=" "])',
                 function (e) {
-                    // console.log('loading');
-                    // Optional: check if it's a same-page anchor or already loading
                     var href = $(this).attr("href");
                     if (!href || href === "#" || href.startsWith("javascript:")) return;
 
-                    // Show loader
                     $("#LoadingScreen").fadeIn(200);
 
-                    // Optional: delay navigation for a moment so loader shows clearly
-                    // Comment out if you want instant navigation
                     setTimeout(() => {
                         window.location.href = href;
                     }, 200);
 
-                    // Prevent default to delay navigation (only if using setTimeout)
                     e.preventDefault();
                 }
             );
             window.addEventListener('load', function () {
                 const loader = document.getElementById('untilLoaded');
                 loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500);
+                setTimeout(() => loader.style.display = 'none', 700);
             });
 
         </script>

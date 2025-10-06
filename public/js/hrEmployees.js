@@ -42,7 +42,7 @@ $(document).ready(function () {
                            title="Edit">
                             <i class="fa-solid fa-pen"></i>
                         </a>
-                        <a href="#" class="btn icon btn-info generate-payroll bs-tooltip"
+                        <a href="#" class="btn icon btn-info generate-payroll bs-tooltip me-2"
                            title="Generate Payroll"
                            data-id="${data}"
                            data-name="${row.name}">

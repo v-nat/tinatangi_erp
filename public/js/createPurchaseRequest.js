@@ -1,7 +1,7 @@
 $(document).ready(function () {
     generateOrderId();
     function generateOrderId() {
-        fetch(`/procurement/generateOrderID`)
+        fetch(`/procurement/generateOrderID/${'purchase_order'}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
