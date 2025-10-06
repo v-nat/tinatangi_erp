@@ -25,3 +25,4 @@
         </div>
     </div>
 </div>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modals/invoice-modal.blade.php ENDPATH**/ ?>

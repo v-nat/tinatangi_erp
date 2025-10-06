@@ -66,6 +66,7 @@ class ProcurementController extends Controller
                         'remarks'        => $request_data->remarks,
                         'status'         => Status::getStatusText($request_data->status),
                         'total_amount'   => (float)$request_data->amount,
+                        'invoice_id'     => $request_data->invoice_id,
 
                         'purchase_orders' => $mappedOrders,
                     ];
@@ -98,7 +99,7 @@ class ProcurementController extends Controller
                 $random = rand(10000, 99999);
                 $order_id = $year . $random;
             } while (PurchaseRequest::pluck('id')->contains($order_id));
-        } else if ($type == 'delivery_no'){
+        } else if ($type == 'delivery_no') {
             do {
                 $random = rand(10000, 99999);
                 $order_id = $year . $random;

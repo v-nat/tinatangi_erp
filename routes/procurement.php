@@ -1,10 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\Finance\FinanceController;
+use App\Http\Controllers\Admin\Finance\InvoiceController;
+use App\Http\Controllers\Admin\Procurement\SupplierController;
 use App\Http\Controllers\Admin\Procurement\ProcurementController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
-use App\Http\Controllers\Admin\Procurement\SupplierController;
-use App\Http\Controllers\Admin\Finance\FinanceController;
-use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth' , 'isEmployee'])->group(function () {
     //////////////////////////////////////////  to views /////////////////////////////////////
@@ -27,6 +28,7 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     ///////////////////////////////////////// PURCHASE ORDER //////////////////////////////////////////////////
     Route::get('/procurement/purchases/get-list', [ProcurementController::class, 'purchaseOrdersList']);
     Route::get('/procurement/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
+    Route::get('/procurement/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
     Route::put('/procurement/purchases/order/{id}/{status}', [PurchaseOrderController::class, 'processPurchaseOrders']);
 
 });

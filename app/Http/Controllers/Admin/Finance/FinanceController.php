@@ -76,6 +76,7 @@ class FinanceController extends Controller
                         'requested_date'    => optional(Carbon::parse($r->requested_date))->format('M d, Y'),
                         'remarks'           => $r->remarks,
                         'status'            => Status::getStatusText($r->status),
+                        'invoice_id'        => $r->invoice_id,
                     ];
                 })
             ]);
@@ -95,15 +96,13 @@ class FinanceController extends Controller
                 'statusRS',
                 'employeeRS',
                 'deptRS',
-            ])->where('id', $id)->get(); // Use find($id) if you only expect one, or keep get()
+            ])->where('id', $id)->get();
 
             return response()->json([
                 'data' => $purchaseRequests->map(function ($request_data) {
 
-                    // --- 1. Map the Purchase Orders (Collection) ---
                     $mappedOrders = $request_data->purchaseOrders->map(function ($order) {
 
-                        // --- 2. Map the Purchase Order Details (Collection) ---
                         $mappedDetails = $order->purchaseOrderDetail->map(function ($detail) {
                             return [
                                 'item_name'   => optional($detail->itemss)->name,
@@ -114,17 +113,14 @@ class FinanceController extends Controller
                             ];
                         });
 
-                        // Return the individual Purchase Order object
                         return [
-                            'purchase_order_id' => $order->purchase_orderId, 
+                            'purchase_order_id' => $order->purchase_orderId,
                             'supplier_name'     => optional($order->supplierRS)->supplier_name,
 
-                            // EMBED THE DETAILS ARRAY HERE
                             'details'           => $mappedDetails,
                         ];
                     });
 
-                    // --- 3. Return the main Purchase Request object ---
                     return [
                         'id'             => $request_data->id,
                         'requested_date' => $request_data->requested_date,
@@ -133,6 +129,7 @@ class FinanceController extends Controller
                         'remarks'        => $request_data->remarks,
                         'status'         => Status::statusAlert($request_data->status),
                         'total_amount'   => (float)$request_data->amount,
+                        'invoice_id'     => $request_data->invoice_id,
 
                         'purchase_orders' => $mappedOrders,
                     ];
@@ -144,7 +141,7 @@ class FinanceController extends Controller
         }
     }
 
-    
+
 
     public function getRequestsHistory()
     {

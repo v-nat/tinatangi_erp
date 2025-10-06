@@ -209,10 +209,6 @@ class PurchaseOrderController extends Controller
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Sent!'], 200);
             } else if ($status == 20) {
-                $pr->remarks = 'order accepted';
-                $pr->status = $status;
-                $pr->save();
-
                 $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
                 $supplier_id = null;
                 $firstIteration = true;
@@ -230,21 +226,27 @@ class PurchaseOrderController extends Controller
                         $firstIteration = false;
                         $supplier_id = $prpo->supplier_id;
                     }
-
-                    $invoice = Invoice::create([
-                        'id' => ProcurementController::generateID('invoice'),
-                        'order_id' => $id,
-                        'delivery_no' => null,
-                        'total_amount' => $pr->amount,
-                        'date_recieved' => null,
-                        'date_approved' => now(),
-                        'supplier_id' => $supplier_id,
-                        'approved_by_id' => auth('')->user()->id,
-                        'status' => 13,
-                    ]);
-
-                    $invoice->save();
                 }
+
+                $invoice = Invoice::create([
+                    'id' => ProcurementController::generateID('invoice'),
+                    'order_id' => $id,
+                    'delivery_no' => null,
+                    'total_amount' => $pr->amount,
+                    'date_received' => null,
+                    'date_approved' => now(),
+                    'supplier_id' => $supplier_id,
+                    'approved_by_id' => auth('')->user()->id,
+                    'status' => 13,
+                ]);
+
+                $invoice->save();
+
+                $pr->remarks = 'order accepted';
+                $pr->invoice_id = $invoice->id;
+                $pr->status = $status;
+                $pr->save();
+
 
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Accepted!'], 200);
@@ -266,6 +268,12 @@ class PurchaseOrderController extends Controller
                     $prpod->status = $status;
                     $prpod->save();
                 }
+                
+                $invoice = Invoice::findOrFail($request->invoice_id);
+                $invoice->date_received = now();
+                $invoice->delivery_no = ProcurementController::generateID('delivery_no');
+                $invoice->save();
+
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Received!'], 200);
             } else if ($status == 19) {

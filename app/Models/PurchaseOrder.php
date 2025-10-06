@@ -42,11 +42,12 @@ class PurchaseOrder extends Model
     {
         return $this->belongsTo(PurchaseRequest::class, 'purchase_request_id');
     }
-
     public function purchaseOrderDetail(): HasMany
     {
-        // The relationship MUST be hasMany() for detail line items
-        // Assuming the foreign key in the details table is 'purchase_order_id' (the string ID)
         return $this->hasMany(PurchaseOrderDetail::class, 'purchase_order_id', 'id');
+    }
+    public function purchaseOrderDetailRS(): HasMany
+    {
+        return $this->hasMany(PurchaseOrderDetail::class, 'purchase_order_id', 'order_id');
     }
 }

@@ -28,10 +28,8 @@ class SupplierController extends Controller
             return response()->json([
                 'data' => $purchaseRequests->map(function ($request_data) {
 
-                    // --- 1. Map the Purchase Orders (Collection) ---
                     $mappedOrders = $request_data->purchaseOrders->map(function ($order) {
 
-                        // Return the individual Purchase Order object
                         return [
                             'purchase_order_id' => $order->purchase_orderId,
                             'order_date' => $order->order_date,
@@ -40,7 +38,6 @@ class SupplierController extends Controller
                         ];
                     });
 
-                    // --- 2. Return the main Purchase Request object ---
                     return [
                         'id'             => $request_data->id,
                         'type'           => $request_data->type,
@@ -49,6 +46,7 @@ class SupplierController extends Controller
                         'remarks'        => $request_data->remarks,
                         'status'         => Status::getStatusText($request_data->status),
                         'total_amount'   => (float)$request_data->amount,
+                        'invoice_id'     => $request_data->invoice_id,
 
                         'purchase_orders' => $mappedOrders,
                     ];
