@@ -1,33 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 
 <head>
     <?php echo $__env->make('partials.app-head', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 </head>
 
-<body>
-    <?php if(session('success')): ?>
-        <script>
-            Toast.fire({
-                icon: "success",
-                title: "<?php echo e(session('success')); ?>"
-            });
-        </script>
-    <?php endif; ?>
-    <?php if(session('failed')): ?>
-        <script>
-            Toast.fire({
-                icon: "error",
-                title: "<?php echo e(session('failed')); ?>"
-            });
-        </script>
-    <?php endif; ?>
-
+<body class="dark light">
+    <script src="<?php echo e(asset('assets/js/initTheme.js')); ?>"></script>
     <div id="app">
         <?php
 $userId = auth()->user()->id;
-if (auth()->user()->user_type == 'supplier') {} 
-else if (auth()->user()->user_type == 'employee') {$position = App\Models\Employee::where('id', $userId)->first()->position;}
+if (auth()->user()->user_type == 'supplier') {
+} else if (auth()->user()->user_type == 'employee') {
+    $position = App\Models\Employee::where('id', $userId)->first()->position;
+}
         ?>
         <?php echo $__env->make('layouts.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
         <div id="main" class="layout-navbar">
@@ -50,25 +36,82 @@ else if (auth()->user()->user_type == 'employee') {$position = App\Models\Employ
                 </footer>
             </div>
         </div>
+
         <div id="LoadingScreen"
-            style="display: none; position: fixed; z-index: 9999; background: rgba(255,255,255,0.7); top: 0; left: 0; width: 100%; height: 100%;">
+            style="display: none; position: fixed; z-index: 9999; background: rgba(0,0,0,0.5); top: 0; left: 0; width: 100%; height: 100%;">
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                 <div class="spinner-border text-primary" style="width: 3rem; height: 3rem" role="status"></div>
             </div>
         </div>
 
         <div id="untilLoaded"
-            style="display:block; position: fixed; z-index: 9999; background: rgba(255,255,255,0.7); top: 0; left: 0; width: 100%; height: 100%;">
+            style="display:block; position: fixed; z-index: 9999; background: rgba(0,0,0,0.5); top: 0; left: 0; width: 100%; height: 100%;">
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                 <div class="spinner-border text-primary" style="width: 3rem; height: 3rem" role="status"></div>
             </div>
         </div>
+
 
         <style>
             #untilLoaded {
                 transition: opacity 0.5s ease;
             }
         </style>
+        <script>
+            function toggleLogosByTheme() {
+                // Read the current theme from the html element
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+
+                const $lightLogo = $('#light-logo');
+                const $darkLogo = $('#dark-logo');
+                const $loadingScreen = $('#LoadingScreen'); // Get the loading screen element
+                const $untilLoadedScreen = $('#untilLoaded'); // Get the loading screen element
+
+                // Define colors for the loading screen overlay
+                const lightModeBg = 'rgba(255, 255, 255, 0.7)'; // White, slightly transparent
+                const darkModeBg = 'rgba(0, 0, 0, 0.7)';       // Black, slightly transparent
+
+                // Define the color for the spinner text inside the loading screen
+                const spinnerLightText = 'text-primary';
+                const spinnerDarkText = 'text-primary';
+
+                if (currentTheme === 'dark') {
+                    // Dark Mode is ON:
+                    // 1. Show Dark Logo, Hide Light Logo
+                    $darkLogo.removeClass('d-none');
+                    $lightLogo.addClass('d-none');
+
+                    // 2. Set loading screen background to dark mode color
+                    $loadingScreen.css('background', darkModeBg);
+                    $untilLoadedScreen.css('background', darkModeBg);
+
+                    // 3. Update spinner color (optional, assumes you want a bright color in dark mode)
+                    $loadingScreen.find('.spinner-border').removeClass(spinnerLightText).addClass(spinnerDarkText);
+                    $untilLoadedScreen.find('.spinner-border').removeClass(spinnerLightText).addClass(spinnerDarkText);
+
+                } else {
+                    // Light Mode is ON (or theme is unset/default):
+                    // 1. Show Light Logo, Hide Dark Logo
+                    $lightLogo.removeClass('d-none');
+                    $darkLogo.addClass('d-none');
+
+                    // 2. Set loading screen background to light mode color
+                    $loadingScreen.css('background', lightModeBg);
+                    $untilLoadedScreen.css('background', lightModeBg);
+
+                    // 3. Update spinner color (optional)
+                    $loadingScreen.find('.spinner-border').removeClass(spinnerDarkText).addClass(spinnerLightText);
+                    $untilLoadedScreen.find('.spinner-border').removeClass(spinnerDarkText).addClass(spinnerLightText);
+                }
+            }
+
+            // 1. Run on page load to set the correct initial logo state.
+            $(document).ready(function () {
+                toggleLogosByTheme();
+            });
+        </script>
+        <script src="<?php echo e(asset('assets/js/main2.js')); ?>"></script>
+        <script src=" <?php echo e(asset('assets/js/dark.js')); ?>"></script>
         <script>
             const Toast = Swal.mixin({
                 toast: true,
@@ -114,9 +157,9 @@ else if (auth()->user()->user_type == 'employee') {$position = App\Models\Employ
         <script src="<?php echo e(asset('source/jquery/datatables.js')); ?>"></script>
         <script src="<?php echo e(asset('source/jquery/datatables.min.js')); ?>"></script>
         <script src="<?php echo e(asset('assets/js/bootstrap.bundle.min.js')); ?>"></script>
-        <script src="<?php echo e(asset('assets/js/main2.js')); ?>"></script>
         <script src="<?php echo e(asset('js/logout.js')); ?>"></script>
         <?php echo $__env->yieldContent('scripts'); ?>
 </body>
 
-</html><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+</html>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/app.blade.php ENDPATH**/ ?>

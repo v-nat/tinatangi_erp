@@ -1,0 +1,27 @@
+<li class="sidebar-title"><?php echo $__env->yieldContent('finance-admin'); ?></li>
+
+<li class="sidebar-item <?php echo $__env->yieldContent('financeIndex'); ?> ">
+    <a href="<?php echo e(route('finance')); ?>" class='sidebar-link'>
+        <i class="bi bi-bar-chart-line-fill"></i>
+        <span>Index</span>
+    </a>
+</li>
+<li class="sidebar-item <?php echo $__env->yieldContent('financePayroll'); ?> ">
+    <a href="<?php echo e(route('finance.payroll')); ?>" class='sidebar-link'>
+        <i class="bi bi-credit-card-2-front-fill"></i>
+        <span>Payroll Approvals</span>
+    </a>
+</li>
+<li class="sidebar-item <?php echo $__env->yieldContent('financePurchases'); ?> ">
+    <a href="<?php echo e(route('finance.purchases')); ?>" class='sidebar-link'>
+        <i class="bi bi-bag-fill"></i>
+        <span>Purchase Order Approvals</span>
+    </a>
+</li>
+<li class="sidebar-item <?php echo $__env->yieldContent('financeBudgets'); ?> ">
+    <a href="<?php echo e(route('finance.budgets')); ?>" class='sidebar-link'>
+        <i class="bi bi-cash"></i>
+        <span>Budget Releasing</span>
+    </a>
+</li>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modules-sidebar/finance-sidebar.blade.php ENDPATH**/ ?>

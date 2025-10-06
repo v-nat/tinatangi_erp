@@ -19,6 +19,9 @@
 {{--
 <script src="assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script> --}}
 
+<link rel="stylesheet" crossorigin href=" {{ asset('assets/css/app-light.css') }}" />
+<link rel="stylesheet" crossorigin href=" {{ asset('assets/css/app-dark.css') }}" />
+
 <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
 <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
 
