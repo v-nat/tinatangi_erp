@@ -17,6 +17,9 @@
 <link rel="stylesheet" href="<?php echo e(asset('assets/css/app.css')); ?>  ">
 
 
+<link rel="stylesheet" crossorigin href=" <?php echo e(asset('assets/css/app-light.css')); ?>" />
+<link rel="stylesheet" crossorigin href=" <?php echo e(asset('assets/css/app-dark.css')); ?>" />
+
 <script src="<?php echo e(asset('source/jquery/jquery-3.6.0.min.js')); ?>"></script>
 <script src="<?php echo e(asset('assets/js/swal/dist/sweetalert2.all.min.js')); ?>"></script>
 
@@ -34,4 +37,5 @@
         color: #6c757d !important;
         font-weight: 700 !important;
     }
-</style><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/partials/app-head.blade.php ENDPATH**/ ?>
+</style>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/partials/app-head.blade.php ENDPATH**/ ?>

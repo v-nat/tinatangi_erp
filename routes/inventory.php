@@ -5,4 +5,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
+    Route::get('/inventory/all-items', [InventoryController::class, 'all'])->name('inventory.all-items');
+
 });
