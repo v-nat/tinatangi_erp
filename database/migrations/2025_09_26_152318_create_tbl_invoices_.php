@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('order_id')->references('id')->on('purchase_requests')->onDelete('cascade');
             $table->decimal('total_amount', 10, 2)->default(0);
             $table->unsignedBigInteger('delivery_no')->nullable();
-            $table->timestamp('date_recieved')->nullable();
+            $table->timestamp('date_received')->nullable();
             $table->timestamp('date_approved')->nullable();
             $table->unsignedBigInteger('supplier_id')->nullable();
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');

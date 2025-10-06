@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\Admin\Finance\FinanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HR\PayrollController;
+use App\Http\Controllers\Admin\Finance\FinanceController;
+use App\Http\Controllers\Admin\Finance\InvoiceController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 
 Route::middleware(['auth' , 'isEmployee'])->group(function () {
@@ -20,6 +21,7 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
 
     Route::get('/finance/purchases', [FinanceController::class, 'purchasesIndex'])->name('finance.purchases');
     Route::get('/finance/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
+    Route::get('/finance/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
     Route::get('/finance/purchases/get-requests', [FinanceController::class, 'purchaseRequests']);
     Route::put('/finance/purchases/process/{id}/{status}', [PurchaseOrderController::class, 'putOnProcess']);
 });

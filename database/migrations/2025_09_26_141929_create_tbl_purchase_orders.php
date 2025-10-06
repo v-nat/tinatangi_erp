@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->string('delivery_name')->nullable();
             $table->string('remarks')->nullable();
-            
+
             $table->unsignedBigInteger('purchase_request_id')->nullable();
             $table->foreign('purchase_request_id')->references('id')->on('purchase_requests')->onDelete('cascade');
 
@@ -31,6 +31,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('supplier_id')->nullable();
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+
 
             $table->unsignedBigInteger('status')->default(11);
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');

@@ -42,7 +42,7 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel20">View Purchase Request</h4>
+                <h4 class="modal-title" id="myModalLabel20">View Order</h4>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <i data-feather="x"></i>
                 </button>

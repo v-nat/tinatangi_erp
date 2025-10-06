@@ -21,6 +21,7 @@ class PurchaseRequest extends Model
         'requested_by_id',
         'requested_date',
         'remarks',
+        'invoice_id',
         'status',
     ] ;
 

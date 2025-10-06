@@ -44,6 +44,7 @@
     </section>
 
     @include('layouts.modals.procurement-purchase-orders-modal')
+    @include('layouts.modals.invoice-modal')
 @endsection
 @section('scripts')
     <script src="{{ asset('js/purchaseOrders.js') }}   "></script>
