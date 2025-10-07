@@ -125,10 +125,13 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Order No.</th>
-                                <th>Order Ddate</th>
-                                <th>Delivery Date</th>
-                                <th>Remarks</th>
+                                <th>SKU</th>
+                                <th>Item Name</th>
+                                <th>Unit</th>
+                                <th>Category</th>
+                                <th>Stocks</th>
+                                <th>Cost Price</th>
+                                <th>Selling Price</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
