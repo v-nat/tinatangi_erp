@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('inventory_locations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('unit');
-            $table->decimal('unit_price', 10,2)->default(0);
-
-            $table->foreignId('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->unsignedBigInteger('status')->default(11);
+            $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 
             $table->timestamps();
             $table->softDeletes();
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('inventory_locations');
     }
 };

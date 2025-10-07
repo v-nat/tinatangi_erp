@@ -39,12 +39,20 @@ class PurchaseOrderController extends Controller
         // $items = $items->map(function ($position) {
         //     return ['id'=> $position->id,'name'=> $position->name];
         // });
-        $items = Item::where('category_id', $category)
-            ->select('id', 'name', 'unit', 'unit_price')
+        $items = Item::with(['unit'])->where('category_id', $category)
             ->get();
-        // dd ($items);
 
-        return response()->json($items);
+        return response()->json(
+            $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    // Get the unit abbreviation (e.g., 'KG', 'PCS')
+                    'unit_id' => optional($item->unit)->abbreviation,
+                    'unit_price' => (float)$item->unit_price,
+                ];
+            })
+        );
     }
 
     public function store(Request $request)
@@ -52,7 +60,8 @@ class PurchaseOrderController extends Controller
         try {
             $orderItemsJson = $request->input('order_items_payload');
             $items = json_decode($orderItemsJson, true);
-            $total_amount = 0; $supplier_id = null;
+            $total_amount = 0;
+            $supplier_id = null;
             foreach ($items as $item) {
                 $total_amount += (float)$item['total'];
                 $supplier_id = $item['supplier_id'];

@@ -484,7 +484,7 @@ $(document).ready(function () {
                     <tr>
                         <td>${itemIndex}</td>
                         <td>${item.item_name || "N/A"}</td>
-                        <td>${item.item_unit || "N/A"}</td>
+                        <td>${item.item_unit_name || "N/A"}</td>
                         <td class="text-end">₱${parseFloat(
                             item.unit_price || 0
                         ).toFixed(2)}</td>
@@ -581,7 +581,7 @@ $(document).ready(function () {
                         <tr>
                             <td>${itemIndex}</td>
                             <td>${item.item_name || "N/A"}</td>
-                            <td>${item.item_unit || "N/A"}</td>
+                            <td>${item.item_unit_name || "N/A"}</td>
                             <td class="text-end">₱${parseFloat(
                                 item.unit_price || 0
                             ).toFixed(2)}</td>
