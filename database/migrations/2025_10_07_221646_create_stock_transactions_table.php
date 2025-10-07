@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stocks_transactions', function (Blueprint $table) {
+        Schema::create('stock_transactions', function (Blueprint $table) {
             $table->id();
             // Transaction details
             $table->enum('transaction_type', ['IN', 'OUT', 'ADJ', 'TRANSFER']);
@@ -38,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stocks');
+        Schema::dropIfExists('stock_transactions');
     }
 };

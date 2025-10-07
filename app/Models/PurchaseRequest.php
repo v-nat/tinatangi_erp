@@ -11,8 +11,8 @@ class PurchaseRequest extends Model
 {
     //
     use SoftDeletes;
-    protected $primaryKey = 'id';
     protected $table = 'purchase_requests';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'id',
         'department',

@@ -11,6 +11,8 @@ class Overtime extends Model
     //
     use SoftDeletes;
     protected $table = 'overtimes';
+    protected $primaryKey = 'id';
+
 
     protected $fillable = [
         'employee_id',

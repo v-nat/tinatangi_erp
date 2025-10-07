@@ -10,6 +10,7 @@ class Attendance extends Model
     //
     use SoftDeletes;
     protected $table = 'attendances';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'employee_id',
         'date',

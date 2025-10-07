@@ -12,6 +12,8 @@ class Position extends Model
 {
     //
     use SoftDeletes;
+    protected $table = 'positions';
+    protected $primaryKey = 'id';
     protected $fillable = ['id', 'name', 'level', 'department_id'];
 
     /*

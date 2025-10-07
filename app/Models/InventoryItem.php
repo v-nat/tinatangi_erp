@@ -13,6 +13,8 @@ class InventoryItem extends Model
 {
     //
     use SoftDeletes;
+    protected $table = 'inventory_items';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'name',
         'sku',

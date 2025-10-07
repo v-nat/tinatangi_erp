@@ -11,6 +11,9 @@ class Supplier extends Model
     //
     use SoftDeletes;
 
+    protected $table = 'suppliers';
+    protected $primaryKey = 'id';
+
     protected $fillable = [
         'id',
         'user_id',
