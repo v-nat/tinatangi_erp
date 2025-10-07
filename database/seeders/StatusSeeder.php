@@ -37,6 +37,7 @@ class StatusSeeder extends Seeder
             'Accepted - Supplier',
             'Pending - Supplier',
             'Return',
+            'Completed',
         ];
 
         foreach ($statuses as $status) {

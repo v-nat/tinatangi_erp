@@ -92,28 +92,8 @@
                 <div class="card-header">
                     <h4 class="card-title">To Receive Items</h4>
                 </div>
-                <div class="card-body">
-                    <div class="alert alert-light-success alert-dismissible fade show" role="alert">
-                        <div class="row">
-                            <div class="col-6 col-lg-6 col-md-6 justify-content-start d-flex ml-3">
-                                <div class="d-block">
-                                    <h5>ORDER 1243</h5>
-                                    <p>23627869</p>
-                                </div>
+                <div id="invClaims" class="card-body">
 
-                            </div>
-                            <div class="col-6 col-lg-6 col-md-6 p-0 justify-content-end align-items-center d-flex">
-                                <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2" data-id="${data}"
-                                    title="View">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
-                                <a href="#" class="btn icon btn-sm btn-success btn-view bs-tooltip me-2" data-id="${data}"
-                                    title="Claim">
-                                    <i class="fa-solid fa-check"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -124,27 +104,8 @@
                 <div class="card-header">
                     <h4 class="card-title">Need for Restock</h4>
                 </div>
-                <div id="invClaims" class="card-body">
-                    <div class="alert alert-light-warning alert-dismissible fade show" role="alert">
-                        <div class="row">
-                            <div class="col-6 col-lg-6 col-md-6 justify-content-start d-flex ml-3">
-                                <div class="d-block">
-                                    <h5>ORDER 1243</h5>
-                                    <p>23627869</p>
-                                </div>
-                            </div>
-                            <div class="col-6 col-lg-6 col-md-6 p-0 justify-content-end align-items-center d-flex">
-                                <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2" data-id="${id}"
-                                    title="View">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
-                                <a href="#" class="btn icon btn-sm btn-success btn-view bs-tooltip me-2" data-id="${id}"
-                                    title="Claim">
-                                    <i class="fa-solid fa-receipt"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                <div id="invRestock" class="card-body">
+                    <div class="alert alert-light-warning">No purchase requests are currently low in stocks.</div>
                 </div>
             </div>
 
@@ -180,8 +141,11 @@
             </div>
         </div>
     </section>
+
+    <?php echo $__env->make('layouts.modals.invoice-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
+    <script src="<?php echo e(asset('js/inventoryDashboard.js')); ?>   "></script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/inventory/index.blade.php ENDPATH**/ ?>
