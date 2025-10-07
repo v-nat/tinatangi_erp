@@ -9,6 +9,8 @@ class ItemUnit extends Model
 {
     //
     use SoftDeletes;
+    protected $table = 'item_units';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'id',

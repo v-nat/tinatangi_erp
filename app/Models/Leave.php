@@ -10,6 +10,7 @@ class Leave extends Model
     //
     use SoftDeletes;
     protected $table = "leaves";
+    protected $primaryKey = "id";
     protected $fillable = [
         'employee_id',
         'leave_type',

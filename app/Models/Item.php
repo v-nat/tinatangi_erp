@@ -10,6 +10,8 @@ class Item extends Model
 {
     //
     use SoftDeletes;
+    protected $table = 'items';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'id',
         'name',

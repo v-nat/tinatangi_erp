@@ -9,6 +9,8 @@ class InventoryLocation extends Model
 {
     //
     use SoftDeletes;
+    protected $table = 'inventory_locations';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'id',
         'name',

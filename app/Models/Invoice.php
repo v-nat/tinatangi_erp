@@ -11,6 +11,8 @@ class Invoice extends Model
 {
     //
     use SoftDeletes;
+    protected $table = 'invoices';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'id',
@@ -29,7 +31,7 @@ class Invoice extends Model
     | Relationships
     |--------------------------------------------------------------------------
     */
-    
+
     public function purchaseOrders(): HasMany {
         return $this->hasMany(PurchaseOrder::class,'id', 'order_id');
     }

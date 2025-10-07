@@ -10,6 +10,8 @@ class PurchaseOrderDetail extends Model
 {
     //
     use SoftDeletes;
+    protected $table = 'purchase_order_details';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'purchase_order_id',

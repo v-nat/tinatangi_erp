@@ -11,8 +11,8 @@ class BudgetRelease extends Model
 {
     //
     use SoftDeletes;
-
     protected $table = "budget_releases";
+    protected $primaryKey = "id";
 
     protected $fillable = [
         'release_id',
