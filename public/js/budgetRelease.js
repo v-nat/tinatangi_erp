@@ -1,3 +1,5 @@
+import { reloadTable } from "./utils/reloadTable.js";
+
 $(document).ready(function () {
     $("#approvalTable").DataTable({
         autoWidth: false,
@@ -17,9 +19,10 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "45px",
             },
-            { data: "type", className: "dt-left"  },
+            { data: "type", className: "dt-left" },
             {
-                data: "amount", className: "dt-left" ,
+                data: "amount",
+                className: "dt-left",
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -30,13 +33,14 @@ $(document).ready(function () {
                     );
                 },
             },
-            { data: "requested_by_id", className: "dt-left"  },
-            { data: "requested_at", className: "dt-left"  },
-            { data: "department", className: "dt-left"  },
-            { data: "notes", className: "dt-left"  },
+            { data: "requested_by_id", className: "dt-left" },
+            { data: "requested_at", className: "dt-left" },
+            { data: "department", className: "dt-left" },
+            { data: "notes", className: "dt-left" },
             {
                 data: "status",
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
             {
                 data: "id",
@@ -65,7 +69,8 @@ $(document).ready(function () {
                         `;
                     }
                 },
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
         ],
     });
@@ -202,10 +207,11 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "45px",
             },
-            { data: "release_id", className: "dt-left"  },
-            { data: "type", className: "dt-left"  },
+            { data: "release_id", className: "dt-left" },
+            { data: "type", className: "dt-left" },
             {
-                data: "amount", className: "dt-left" ,
+                data: "amount",
+                className: "dt-left",
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -216,20 +222,16 @@ $(document).ready(function () {
                     );
                 },
             },
-            { data: "requested_by_id", className: "dt-left"  },
-            { data: "requested_at", className: "dt-left"  },
-            { data: "department", className: "dt-left"  },
-            { data: "released_by_id", className: "dt-left"  },
-            { data: "released_at", className: "dt-left"  },
+            { data: "requested_by_id", className: "dt-left" },
+            { data: "requested_at", className: "dt-left" },
+            { data: "department", className: "dt-left" },
+            { data: "released_by_id", className: "dt-left" },
+            { data: "released_at", className: "dt-left" },
             {
                 data: "status",
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
         ],
     });
-    function reloadTable(tableId) {
-        $("#" + tableId)
-            .DataTable()
-            .ajax.reload(null, false);
-    }
 });

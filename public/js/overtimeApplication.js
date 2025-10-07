@@ -1,19 +1,12 @@
+import { reloadTable } from "./utils/reloadTable.js";
+import {
+    formatDate,
+    formatTime,
+    formatMinutesToHours,
+} from "./utils/formatDateAndTime.js";
+
 $(document).ready(function () {
     const id = $("#employee_id").val();
-    function formatDate(dateString) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        return new Date(dateString).toLocaleDateString("en-US", options);
-    }
-    function formatTime(timeString) {
-        if (!timeString) return "--:--";
-        const [h, m, s] = timeString.split(":");
-        return `${h.padStart(2, "0")}:${m}`;
-    }
-    function formatMinutesToHours(minutes) {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hours}h ${mins}m`;
-    }
     $("#otRequests").DataTable({
         processing: true,
         serverSide: false,
@@ -166,9 +159,4 @@ $(document).ready(function () {
             });
         }
     });
-    function reloadTable(tableId) {
-        $("#" + tableId)
-            .DataTable()
-            .ajax.reload(null, false);
-    }
 });

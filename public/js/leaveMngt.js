@@ -1,9 +1,7 @@
-$(document).ready(function () {
-    function formatDate(dateString) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        return new Date(dateString).toLocaleDateString("en-US", options);
-    }
+import { reloadTable } from "./utils/reloadTable.js";
+import { formatDate } from "./utils/formatDateAndTime.js";
 
+$(document).ready(function () {
     $("#leaves_table").DataTable({
         processing: true,
         serverSide: false,
@@ -21,18 +19,20 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "45px",
             },
-            { data: "employee", className: "dt-left"  },
-            { data: "department", className: "dt-left"  },
-            { data: "position", className: "dt-left"  },
+            { data: "employee", className: "dt-left" },
+            { data: "department", className: "dt-left" },
+            { data: "position", className: "dt-left" },
             {
-                data: "start_date", className: "dt-left" ,
+                data: "start_date",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
             {
-                data: "end_date", className: "dt-left" ,
+                data: "end_date",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
@@ -40,11 +40,13 @@ $(document).ready(function () {
             },
 
             {
-                data: "reason", className: "dt-left" 
+                data: "reason",
+                className: "dt-left",
             },
             {
                 data: "status",
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
             {
                 data: "leave_id",
@@ -72,14 +74,11 @@ $(document).ready(function () {
                             </div>
                         `;
                     }
-                }, width: "150px",
+                },
+                width: "150px",
             },
         ],
     });
-
-    function reloadTable(tableId) {
-        $("#" + tableId).DataTable().ajax.reload(null, false);
-    }
 
     $(".modal").on("hidden.bs.modal", function () {
         $(this).find("form").trigger("reset");
@@ -114,7 +113,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     $("#LoadingScreen").fadeOut(200);
-                    reloadTable('leaves_table');
+                    reloadTable("leaves_table");
                     Toast.fire("Approved!", response.message, "success");
                 } else {
                     Toast.fire("Error", response.message, "error");
@@ -147,7 +146,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     $("#LoadingScreen").fadeOut(200);
-                    reloadTable('leaves_table');
+                    reloadTable("leaves_table");
                     Toast.fire("Rejected!", response.message, "success");
                 } else {
                     Toast.fire("Error", response.message, "error");

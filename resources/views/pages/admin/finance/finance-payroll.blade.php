@@ -52,5 +52,5 @@
     </style>
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/financePayroll.js') }}   "></script>
+    <script type="module" src="{{ asset('js/financePayroll.js') }}   "></script>
 @endsection

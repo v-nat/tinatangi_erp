@@ -1,9 +1,8 @@
+import { reloadTable } from "./utils/reloadTable.js";
+import { formatDate } from "./utils/formatDateAndTime.js";
+
 $(document).ready(function () {
     const id = $("#employee_id").val();
-    function formatDate(dateString) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        return new Date(dateString).toLocaleDateString("en-US", options);
-    }
     $("#leaveRequests").DataTable({
         processing: true,
         serverSide: false,
@@ -181,9 +180,4 @@ $(document).ready(function () {
             }
         }
     });
-    function reloadTable(tableId) {
-        $("#" + tableId)
-            .DataTable()
-            .ajax.reload(null, false);
-    }
 });

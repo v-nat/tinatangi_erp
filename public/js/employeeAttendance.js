@@ -1,26 +1,15 @@
+import {
+    formatDate,
+    formatTime,
+    formatMinutesToHours,
+} from "./utils/formatDateAndTime.js";
+
 $(document).ready(function () {
     $.ajaxSetup({
         headers: {
             "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
         },
     });
-
-    function formatDate(dateString) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        return new Date(dateString).toLocaleDateString("en-US", options);
-    }
-
-    function formatTime(timeString) {
-        if (!timeString) return "--:--";
-        const [h, m, s] = timeString.split(":");
-        return `${h.padStart(2, "0")}:${m}`;
-    }
-
-    function formatMinutesToHours(minutes) {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hours}h ${mins}m`;
-    }
 
     function showError(message) {
         Toast.fire({
@@ -147,8 +136,7 @@ $(document).ready(function () {
 
     // Initial check
     hasAttendanceToday();
-    
-    
+
     $("#timeInBtn").click(function (e) {
         e.preventDefault();
         isOnLeaveToday().then(function (isLeave) {
@@ -245,40 +233,49 @@ $(document).ready(function () {
                 width: "45px",
             },
             {
-                data: "name", className: "dt-left"
+                data: "name",
+                className: "dt-left",
             },
             {
-                data: "date", className: "dt-left",
+                data: "date",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date", // Ensure proper date sorting
             },
             {
-                data: "time_in", className: "dt-left" ,
+                data: "time_in",
+                className: "dt-left",
                 type: "date", // Ensure proper time sorting
             },
             {
-                data: "time_out", className: "dt-left"
+                data: "time_out",
+                className: "dt-left",
             },
             {
-                data: "total_minutes", className: "dt-left" ,
+                data: "total_minutes",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatMinutesToHours(data) : "N/A";
                 },
             },
             {
-                data: "overtime", className: "dt-left"
+                data: "overtime",
+                className: "dt-left",
             },
             {
-                data: "tardiness", className: "dt-left"
+                data: "tardiness",
+                className: "dt-left",
             },
             {
-                data: "leave_info", className: "dt-left"
+                data: "leave_info",
+                className: "dt-left",
             },
             {
                 data: "status",
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
         ],
     });

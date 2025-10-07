@@ -99,5 +99,5 @@
 
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/leaveApplication.js') }}"></script>
+    <script type="module" src="{{ asset('js/leaveApplication.js') }}"></script>
 @endsection

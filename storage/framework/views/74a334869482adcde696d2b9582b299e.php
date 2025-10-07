@@ -42,8 +42,8 @@
     <?php echo $__env->make('layouts.modals.finance-po-mngmnt-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <?php echo $__env->make('layouts.modals.invoice-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->stopSection(); ?>
-<?php $__env->startSection('scripts'); ?>
-    <script src="<?php echo e(asset('js/purchaseRequest.js')); ?>   "></script>
+<?php $__env->startSection('scripts'); ?>]
+    <script type="module" src="<?php echo e(asset('js/purchaseRequest.js')); ?>   "></script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/finance/purchase-order-approvals.blade.php ENDPATH**/ ?>
