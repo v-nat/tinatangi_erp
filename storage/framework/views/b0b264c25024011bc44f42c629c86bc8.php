@@ -11,4 +11,6 @@
 <?php $__env->startSection('finance'); ?> d-none <?php $__env->stopSection(); ?>
 <?php $__env->startSection('procurement'); ?> d-block <?php $__env->stopSection(); ?>
 <?php $__env->startSection('inventory'); ?> d-none <?php $__env->stopSection(); ?>
-<?php $__env->startSection('supplierPage'); ?> d-none <?php $__env->stopSection(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/partials/procurement-heading.blade.php ENDPATH**/ ?>
+<?php $__env->startSection('supplierPage'); ?> d-none <?php $__env->stopSection(); ?>
+<?php $__env->startSection('general_employee'); ?> d-none <?php $__env->stopSection(); ?>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/partials/procurement-heading.blade.php ENDPATH**/ ?>

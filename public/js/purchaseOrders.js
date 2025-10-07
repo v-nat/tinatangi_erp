@@ -130,7 +130,7 @@ $(document).ready(function () {
                             title="Invoice">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
-                            <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 accept-btn"
+                            <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 accept-btn me-2"
                                 data-id="${data}"
                                 data-invoice-id="${invoice_id}"
                                 title="Mark as Delivered">
