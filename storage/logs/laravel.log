@@ -62898,3 +62898,107 @@ Did you mean one of these?
 #11 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
 #12 {main}
 "} 
+[2025-10-07 09:53:32] local.ERROR: The C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\bootstrap\cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\bootstrap\\cache directory must be present and writable. at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php:179)
+[stacktrace]
+#0 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(132): Illuminate\\Foundation\\PackageManifest->write(Array)
+#1 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(108): Illuminate\\Foundation\\PackageManifest->build()
+#2 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(91): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(80): Illuminate\\Foundation\\PackageManifest->config('aliases')
+#4 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap(Object(Illuminate\\Foundation\\Application))
+#6 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(187): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#7 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(171): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#8 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#9 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#10 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\public\\index.php(17): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
+#11 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\Users\\\\Nathan...')
+#12 {main}
+"} 
+[2025-10-07 09:53:34] local.ERROR: The C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\bootstrap\cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\bootstrap\\cache directory must be present and writable. at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php:179)
+[stacktrace]
+#0 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(132): Illuminate\\Foundation\\PackageManifest->write(Array)
+#1 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(108): Illuminate\\Foundation\\PackageManifest->build()
+#2 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(91): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(80): Illuminate\\Foundation\\PackageManifest->config('aliases')
+#4 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap(Object(Illuminate\\Foundation\\Application))
+#6 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(187): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#7 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(171): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#8 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#9 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#10 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\public\\index.php(17): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
+#11 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\Users\\\\Nathan...')
+#12 {main}
+"} 
+[2025-10-07 09:53:55] local.ERROR: The C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\bootstrap\cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\bootstrap\\cache directory must be present and writable. at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php:179)
+[stacktrace]
+#0 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(132): Illuminate\\Foundation\\PackageManifest->write(Array)
+#1 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(108): Illuminate\\Foundation\\PackageManifest->build()
+#2 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(91): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(80): Illuminate\\Foundation\\PackageManifest->config('aliases')
+#4 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap(Object(Illuminate\\Foundation\\Application))
+#6 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(187): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#7 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(171): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#8 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#9 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#10 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\public\\index.php(17): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
+#11 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\Users\\\\Nathan...')
+#12 {main}
+"} 
+[2025-10-07 09:54:04] local.ERROR: The C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\bootstrap\cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\bootstrap\\cache directory must be present and writable. at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php:179)
+[stacktrace]
+#0 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(132): Illuminate\\Foundation\\PackageManifest->write(Array)
+#1 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(108): Illuminate\\Foundation\\PackageManifest->build()
+#2 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(91): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(80): Illuminate\\Foundation\\PackageManifest->config('aliases')
+#4 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap(Object(Illuminate\\Foundation\\Application))
+#6 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(474): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#7 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#8 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#9 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#10 {main}
+"} 
+[2025-10-07 09:54:19] local.ERROR: The C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\bootstrap\cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\bootstrap\\cache directory must be present and writable. at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php:179)
+[stacktrace]
+#0 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(132): Illuminate\\Foundation\\PackageManifest->write(Array)
+#1 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(108): Illuminate\\Foundation\\PackageManifest->build()
+#2 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(91): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(80): Illuminate\\Foundation\\PackageManifest->config('aliases')
+#4 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap(Object(Illuminate\\Foundation\\Application))
+#6 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(474): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#7 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#8 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#9 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#10 {main}
+"} 
+[2025-10-07 09:54:37] local.ERROR: The C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\bootstrap\cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\bootstrap\\cache directory must be present and writable. at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php:179)
+[stacktrace]
+#0 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(132): Illuminate\\Foundation\\PackageManifest->write(Array)
+#1 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(108): Illuminate\\Foundation\\PackageManifest->build()
+#2 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(91): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(80): Illuminate\\Foundation\\PackageManifest->config('aliases')
+#4 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap(Object(Illuminate\\Foundation\\Application))
+#6 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(474): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#7 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#8 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#9 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#10 {main}
+"} 
+[2025-10-07 09:54:45] local.ERROR: The C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\bootstrap\cache directory must be present and writable. {"exception":"[object] (Exception(code: 0): The C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\bootstrap\\cache directory must be present and writable. at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php:179)
+[stacktrace]
+#0 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(132): Illuminate\\Foundation\\PackageManifest->write(Array)
+#1 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(108): Illuminate\\Foundation\\PackageManifest->build()
+#2 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(91): Illuminate\\Foundation\\PackageManifest->getManifest()
+#3 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(80): Illuminate\\Foundation\\PackageManifest->config('aliases')
+#4 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#5 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap(Object(Illuminate\\Foundation\\Application))
+#6 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(474): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#7 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#8 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#9 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#10 {main}
+"} 
