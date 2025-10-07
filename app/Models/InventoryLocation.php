@@ -9,4 +9,15 @@ class InventoryLocation extends Model
 {
     //
     use SoftDeletes;
+    protected $fillable = [
+        'id',
+        'name',
+        'status',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
 }

@@ -57,6 +57,12 @@ class User extends Authenticatable
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function getFullNameAttribute(){
         return trim($this->first_name . ' ' . $this->last_name);
     }
@@ -69,5 +75,5 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Status::class, 'status');
     }
-    
+
 }

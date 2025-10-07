@@ -23,6 +23,12 @@ class Overtime extends Model
         'approval_date',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function employeeRS()
     {
         return $this->belongsTo(Employee::class, 'employee_id');
@@ -42,7 +48,7 @@ class Overtime extends Model
     {
         return $this->belongsTo(Attendance::class);
     }
-    
+
     public function departmentRS(): BelongsTo{
         return $this->belongsTo(Department::class,'name');
     }

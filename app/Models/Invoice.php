@@ -24,6 +24,12 @@ class Invoice extends Model
         'status',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+    
     public function purchaseOrders(): HasMany {
         return $this->hasMany(PurchaseOrder::class,'id', 'order_id');
     }

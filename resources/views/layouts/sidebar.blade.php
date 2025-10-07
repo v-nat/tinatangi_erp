@@ -48,6 +48,15 @@
 
                 <li class="sidebar-title">@yield('sidebar-title')</li>
 
+                <div class="@yield('general_employee')">
+                    <li class="sidebar-item  active">
+                        <a href="{{route('hr.dashboard')}}" class='sidebar-link'>
+                            <i class="bi bi-box-arrow-left"></i>
+                            <span>Back</span>
+                        </a>
+                    </li>
+                </div>
+
                 <div class="@yield('human_resources')">
                     @include('layouts.modules-sidebar.hr-sidebar')
                 </div>

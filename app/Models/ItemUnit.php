@@ -9,4 +9,17 @@ class ItemUnit extends Model
 {
     //
     use SoftDeletes;
+
+    protected $fillable = [
+        'id',
+        'name',
+        'abbreviation',
+        'status',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
 }

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Helpers\Sanitizer;
 use App\Helpers\MailSender;
+use App\Http\Controllers\GenerateIdController;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 
@@ -109,12 +110,8 @@ class EmployeeController extends Controller
             $levelInput = strtolower(trim($validated['level']));
             $levelEnum = Level::tryFrom($levelInput);
 
-            $year = Carbon::now()->format('Y');
-            do {
-                $random = rand(10000, 99999);
-                $employee_Id = $year . $random;
-            } while (User::pluck('id')->contains($employee_Id));
-
+            $employee_Id = GenerateIdController::generateID('employee');
+            
             // Create accounts
             $user = User::create([
                 'id' => $employee_Id,

@@ -28,6 +28,12 @@ class BudgetRelease extends Model
         'status',
     ] ;
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function employeeRS(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'requested_by_id');

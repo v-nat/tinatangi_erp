@@ -6,4 +6,5 @@
 <?php $__env->startSection('procurement'); ?> d-none <?php $__env->stopSection(); ?>
 <?php $__env->startSection('inventory'); ?> d-none <?php $__env->stopSection(); ?>
 <?php $__env->startSection('topnavEmp'); ?> d-none <?php $__env->stopSection(); ?>
+<?php $__env->startSection('general_employee'); ?> d-none <?php $__env->stopSection(); ?>
 <?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/partials/supplier-heading.blade.php ENDPATH**/ ?>

@@ -21,6 +21,12 @@ class Leave extends Model
         'approval_date',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function employeeRS()
     {
         return $this->belongsTo(Employee::class, 'employee_id');

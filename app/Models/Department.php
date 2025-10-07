@@ -12,6 +12,13 @@ class Department extends Model
     //
     use SoftDeletes;
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function getNameAttribute(): string
     {
         return trim($this->attributes['name']);

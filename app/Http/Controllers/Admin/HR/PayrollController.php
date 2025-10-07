@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\HR;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GenerateIdController;
 use App\Http\Requests\StorePayrollRequest;
 use App\Models\Employee;
 use App\Models\Payroll;
@@ -85,7 +86,7 @@ class PayrollController extends Controller
             } else if ($payroll->remarks) {
                 $remarks = '<div class="alert alert-danger"> Rejected: ' . $payroll->remarks . '</div>';
             }
-           
+
             $result = [
                 'id' => $payroll->id,
                 'employee_id' => $payroll->employee_id ?? 'N/A',
@@ -143,10 +144,7 @@ class PayrollController extends Controller
 
             if ($status == 14) {
                 $year = Carbon::now()->format('Y');
-                do {
-                    $random = rand(10000, 99999);
-                    $release_id = $year . $random;
-                } while (BudgetRelease::pluck('id')->contains($release_id));
+                $release_id = GenerateIdController::generateID('release_id');
 
                 $release = BudgetRelease::create([
                     'release_id'        => $release_id,
@@ -228,7 +226,7 @@ class PayrollController extends Controller
     }
 
 
-    // VARIABLES 
+    // VARIABLES
     const SSS = 600;
     const PHILHEALTH = 450;
     const PAGIBIG = 100;

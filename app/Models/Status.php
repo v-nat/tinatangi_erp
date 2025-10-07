@@ -14,6 +14,12 @@ class Status extends Model
     protected $table = 'status';
     protected $fillable = ['status'];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Functions
+    |--------------------------------------------------------------------------
+    */
+
     public static function getStatusText($statusCode)
     {
         $statuses = [

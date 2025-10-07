@@ -9,6 +9,17 @@ class Category extends Model
 {
     //
     use SoftDeletes;
+    protected $fillable = [
+        'id',
+        'name',
+        'status',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
 
     public function items() {
         return $this->hasMany(Item::class);

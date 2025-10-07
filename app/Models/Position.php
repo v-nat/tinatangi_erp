@@ -14,6 +14,12 @@ class Position extends Model
     use SoftDeletes;
     protected $fillable = ['id', 'name', 'level', 'department_id'];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
