@@ -1,12 +1,11 @@
-@extends('layouts.app')
-@include('partials.inventory-heading')
-@section('inventoryIndex') active
-@endsection
-@section('headings') Inventory @endsection
-@section('content')
+<?php echo $__env->make('partials.inventory-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php $__env->startSection('inventoryIndex'); ?> active
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('headings'); ?> Inventory <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{route('inventory')}}">Inventory</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo e(route('inventory')); ?>">Inventory</a></li>
             <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
         </ol>
     </nav>
@@ -24,7 +23,7 @@
                         </div>
                         <div class="col-md-8">
                             <h6 class="text-muted font-semibold">To Receive </h6>
-                            <h6 class="font-extrabold mb-0">{{ $purchaseOrders }}</h6>
+                            <h6 class="font-extrabold mb-0"><?php echo e($purchaseOrders); ?></h6>
                         </div>
                     </div>
                 </div>
@@ -181,6 +180,8 @@
             </div>
         </div>
     </section>
-@endsection
-@section('scripts')
-@endsection
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('scripts'); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/inventory/index.blade.php ENDPATH**/ ?>

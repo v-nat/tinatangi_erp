@@ -28,6 +28,7 @@ $(document).ready(function () {
             {
                 data: "item",
                 className: "dt-left",
+                width: "300px",
             },
             {
                 data: "unit",
@@ -109,7 +110,7 @@ $(document).ready(function () {
                     data.forEach((p) => {
                         const option = document.createElement("option");
                         option.value = p.id;
-                        option.dataset.unit = p.unit;
+                        option.dataset.unit = p.unit_id;
                         option.dataset.unit_price = p.unit_price;
                         option.textContent = p.name;
                         itemSelect.appendChild(option);

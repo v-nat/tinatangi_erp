@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stocks', function (Blueprint $table) {
+        Schema::create('stocks_transactions', function (Blueprint $table) {
             $table->id();
             // Transaction details
             $table->enum('transaction_type', ['IN', 'OUT', 'ADJ', 'TRANSFER']);
