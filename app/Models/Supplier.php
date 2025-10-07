@@ -20,6 +20,12 @@ class Supplier extends Model
         'status',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function statusRS(): BelongsTo
     {
         return $this->belongsTo(Status::class, 'status');

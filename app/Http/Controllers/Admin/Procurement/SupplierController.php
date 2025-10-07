@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Admin\Procurement;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreSupplierRequest;
-use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use App\Models\Supplier;
 use App\Helpers\Sanitizer;
 use App\Helpers\MailSender;
-use App\Models\Supplier;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreSupplierRequest;
+use App\Http\Controllers\GenerateIdController;
+use Illuminate\Validation\ValidationException;
 
 class SupplierController extends Controller
 {
@@ -51,12 +52,7 @@ class SupplierController extends Controller
 
             $validated = $request->validated();
 
-            $year = Carbon::now()->format('Y');
-            do {
-                $random = rand(10000, 99999);
-                $supplier_id = $year . $random;
-            } while (User::pluck('id')->contains($supplier_id));
-
+            $supplier_id = GenerateIdController::generateID('supplier');
             // Create accounts
             $user = User::create([
                 'id' => $supplier_id,
@@ -68,7 +64,7 @@ class SupplierController extends Controller
                 'phone_number' => $validated['phone_number'],
                 'user_type' => 'supplier',
             ]);
-            
+
             $user->save();
 
             Supplier::create([
@@ -100,6 +96,6 @@ class SupplierController extends Controller
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
         $validated = $request->validated();
-        
+
     }
 }

@@ -10,6 +10,20 @@ class Item extends Model
 {
     //
     use SoftDeletes;
+    protected $fillable = [
+        'id',
+        'name',
+        'category_id',
+        'unit_id',
+        'unit_price',
+        'status',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
 
     public function categories(): BelongsTo{
         return $this->belongsTo(Category::class);

@@ -1,8 +1,7 @@
-@extends('layouts.app')
-@include('partials.general-employee-heading')
-@section('headings') Overtime Application @endsection
+<?php echo $__env->make('partials.general-employee-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php $__env->startSection('headings'); ?> Overtime Application <?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#" onclick="history.back()">Employee</a></li>
@@ -17,8 +16,8 @@
                     <div class="card-content">
                         <div class="card-body">
                             <form class="form" id="otApplication" enctype="multipart/form-data">
-                                @csrf
-                                <input type="hidden" id="employee_id" name="employee_id" value="{{$id}}">
+                                <?php echo csrf_field(); ?>
+                                <input type="hidden" id="employee_id" name="employee_id" value="<?php echo e($id); ?>">
                                 <div class="row">
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
@@ -99,7 +98,9 @@
         </div>
     </section>
 
-@endsection
-@section('scripts')
-    <script src="{{ asset('js/overtimeApplication.js') }}"></script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('scripts'); ?>
+    <script src="<?php echo e(asset('js/overtimeApplication.js')); ?>"></script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/human_resources/ot-application.blade.php ENDPATH**/ ?>

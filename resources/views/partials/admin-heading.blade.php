@@ -11,7 +11,8 @@
     @section('procurement') d-block @endsection
     @section('inventory') d-block @endsection
     @section('supplierPage') d-none @endsection
-   
+    @section('general_employee') d-none @endsection
+
     @section('human_resources-admin')
         <i class="bi bi-person-lines-fill"></i>
         <span>Human Resources Dashboard</span>

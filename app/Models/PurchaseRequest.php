@@ -26,6 +26,12 @@ class PurchaseRequest extends Model
         'status',
     ] ;
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function statusRS(): BelongsTo
     {
         return $this->belongsTo(Status::class, 'status');

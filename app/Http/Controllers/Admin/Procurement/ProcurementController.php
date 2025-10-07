@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
 use App\Http\Controllers\Controller;
+use App\Models\InventoryItem;
 
 class ProcurementController extends Controller
 {
@@ -77,32 +78,5 @@ class ProcurementController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Server error'], 500);
         }
-    }
-
-    public static function generateID($type)
-    {
-        $_id = "";
-        $year = Carbon::now()->format('Y');
-
-        if ($type == 'invoice') {
-            do {
-                $random = rand(10000, 99999);
-                $_id = $year . $random;
-            } while (PurchaseRequest::pluck('invoice_id')->contains($_id));
-        } else if ($type == 'delivery_no') {
-            do {
-                $random = rand(10000, 99999);
-                $_id = $year . $random;
-            } while (Invoice::pluck('delivery_no')->contains($_id));
-        } else if ($type == 'purchase_order') {
-            do {
-                $random = rand(10000, 99999);
-                $_id = $year . $random;
-            } while (PurchaseRequest::pluck('id')->contains($_id));
-            return response()->json([
-                'order_id' => $_id,
-            ]);
-        }
-        return $_id;
     }
 }

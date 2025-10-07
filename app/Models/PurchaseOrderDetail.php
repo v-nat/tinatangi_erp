@@ -23,6 +23,12 @@ class PurchaseOrderDetail extends Model
         'status',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function itemss(): BelongsTo{
         return $this->belongsTo(Item::class, 'item_id');
     }

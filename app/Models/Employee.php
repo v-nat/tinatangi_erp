@@ -43,6 +43,12 @@ class Employee extends Model
         'pagibig' => 'decimal:2',
         'philhealth' => 'decimal:2',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

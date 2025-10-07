@@ -13,6 +13,7 @@ use App\Models\PurchaseRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseOrderDetail;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GenerateIdController;
 
 class PurchaseOrderController extends Controller
 {
@@ -160,11 +161,7 @@ class PurchaseOrderController extends Controller
             }
 
             if ($status == 14) {
-                $year = Carbon::now()->format('Y');
-                do {
-                    $random = rand(10000, 99999);
-                    $release_id = $year . $random;
-                } while (BudgetRelease::pluck('id')->contains($release_id));
+                $release_id = GenerateIdController::generateID('release_id');
 
                 $release = BudgetRelease::create([
                     'release_id'        => $release_id,
@@ -240,7 +237,7 @@ class PurchaseOrderController extends Controller
                 }
 
                 $invoice = Invoice::create([
-                    'id' => ProcurementController::generateID('invoice'),
+                    'id' => GenerateIdController::generateID('invoice'),
                     'order_id' => $id,
                     'delivery_no' => null,
                     'total_amount' => $pr->amount,
@@ -282,7 +279,7 @@ class PurchaseOrderController extends Controller
 
                 $invoice = Invoice::findOrFail($request->invoice_id);
                 $invoice->date_received = now();
-                $invoice->delivery_no = ProcurementController::generateID('delivery_no');
+                $invoice->delivery_no = GenerateIdController::generateID('delivery_no');
                 $invoice->save();
 
                 DB::commit();

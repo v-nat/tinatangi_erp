@@ -35,6 +35,12 @@ class Attendance extends Model
         'overtime_minutes' => 'integer',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function atEmployeeRS()
     {
         return $this->belongsTo(Employee::class, 'employee_id');

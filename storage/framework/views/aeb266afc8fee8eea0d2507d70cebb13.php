@@ -48,6 +48,15 @@
 
                 <li class="sidebar-title"><?php echo $__env->yieldContent('sidebar-title'); ?></li>
 
+                <div class="<?php echo $__env->yieldContent('general_employee'); ?>">
+                    <li class="sidebar-item  active">
+                        <a href="<?php echo e(route('hr.dashboard')); ?>" class='sidebar-link'>
+                            <i class="bi bi-box-arrow-left"></i>
+                            <span>Back</span>
+                        </a>
+                    </li>
+                </div>
+
                 <div class="<?php echo $__env->yieldContent('human_resources'); ?>">
                     <?php echo $__env->make('layouts.modules-sidebar.hr-sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
                 </div>

@@ -11,7 +11,8 @@
     <?php $__env->startSection('procurement'); ?> d-block <?php $__env->stopSection(); ?>
     <?php $__env->startSection('inventory'); ?> d-block <?php $__env->stopSection(); ?>
     <?php $__env->startSection('supplierPage'); ?> d-none <?php $__env->stopSection(); ?>
-   
+    <?php $__env->startSection('general_employee'); ?> d-none <?php $__env->stopSection(); ?>
+
     <?php $__env->startSection('human_resources-admin'); ?>
         <i class="bi bi-person-lines-fill"></i>
         <span>Human Resources Dashboard</span>
@@ -26,4 +27,5 @@
         <i class="bi bi-ui-checks"></i>
         <span>Inventory Dashboard</span>
     <?php $__env->stopSection(); ?>
-<?php endif; ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/partials/admin-heading.blade.php ENDPATH**/ ?>
+<?php endif; ?>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/partials/admin-heading.blade.php ENDPATH**/ ?>

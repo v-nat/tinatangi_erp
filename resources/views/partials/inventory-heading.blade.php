@@ -12,3 +12,4 @@
 @section('procurement') d-none @endsection
 @section('inventory') d-block @endsection
 @section('supplierPage') d-none @endsection
+@section('general_employee') d-none @endsection
