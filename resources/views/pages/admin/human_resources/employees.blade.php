@@ -53,5 +53,5 @@
     </style>
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/hrEmployees.js') }}"></script>
+    <script type="module" src="{{ asset('js/hrEmployees.js') }}"></script>
 @endsection

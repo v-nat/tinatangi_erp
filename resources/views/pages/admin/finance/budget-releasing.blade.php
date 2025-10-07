@@ -74,5 +74,5 @@
     @include('layouts.modals.finance-budgets-modal')
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/budgetRelease.js') }}   "></script>
+    <script type="module" src="{{ asset('js/budgetRelease.js') }}   "></script>
 @endsection

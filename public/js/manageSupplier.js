@@ -1,3 +1,5 @@
+import { reloadTable } from "./utils/reloadTable.js";
+
 $(document).ready(function () {
     $("#add_supplier").on("click", function (e) {
         e.preventDefault();
@@ -87,7 +89,7 @@ $(document).ready(function () {
             });
         }
     });
-    
+
     $("#supplier_table").DataTable({
         scrollX: false,
         processing: true,
@@ -106,8 +108,8 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "45px",
             },
-            { data: "name", className: "dt-left"  },
-            { data: "email", className: "dt-left"  },
+            { data: "name", className: "dt-left" },
+            { data: "email", className: "dt-left" },
             { data: "phone_number", className: "dt-left" },
             {
                 data: "status",
@@ -116,7 +118,8 @@ $(document).ready(function () {
                         data === "active" ? "success" : "danger"
                     }">${data}</span>`;
                 },
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
             {
                 data: "supplier_id",
@@ -131,14 +134,10 @@ $(document).ready(function () {
                         </a>
                     </div>
                         `;
-                }, width: "150px", className: "text-center"
+                },
+                width: "150px",
+                className: "text-center",
             },
         ],
     });
-
-    function reloadTable(tableId) {
-        $("#" + tableId)
-            .DataTable()
-            .ajax.reload(null, false);
-    }
 });

@@ -155,15 +155,11 @@ $(document).ready(function () {
         const $modalContent = $viewInvoiceModal.find(".modal-content");
         const $printContent = $modalContent.clone();
 
-        // 1. Temporarily hide the original modal window and its backdrop
         $viewInvoiceModal.css("display", "none").removeClass("show");
 
-        // 2. Insert the cloned content directly into the body for printing
-        // This allows the content to escape the width constraints of the Bootstrap modal.
         $printContent.attr("id", "temp-print-content");
         $("body").append($printContent);
 
-        // 3. Define the print-specific CSS rules as a single string
         const printStyles = `
         @media print {
             /* Hide everything on the page by default, then make only the print content visible */
@@ -297,7 +293,6 @@ $(document).ready(function () {
         }
     `;
 
-        // 4. Inject the temporary CSS into the document head
         const $printStyleElement = $(
             '<style type="text/css" id="print-temp-style">'
         ).text(printStyles);
@@ -308,39 +303,25 @@ $(document).ready(function () {
             // Prevent running if cleanup already occurred
             // if ($printContent.parent().length === 0) return;
 
-            // Remove event listeners first to prevent repeat execution
             window.removeEventListener("focus", cleanupAndRestore);
-            // Note: mql.removeListener(cleanupAndRestore) is the correct way for media queries,
-            // but we'll rely on the focus listener and the parent check for simplicity/compatibility.
-
-            // Remove the temporary style block
             $printStyleElement.remove();
 
-            // Remove the temporary content from the body
             $printContent.remove();
 
-            // Restore the modal: Rely solely on Bootstrap's function to handle class/display state
             $viewInvoiceModal.css("display", "block");
             $viewInvoiceModal.modal("show");
         };
-
-        // 6. Monitor for print completion/cancellation
-        // The print dialog pauses execution. When it closes, the window regains focus.
         window.addEventListener("focus", cleanupAndRestore);
 
-        // Alternative: Use media query listener for better compatibility (also handles cancellation)
         const mediaQueryList = window.matchMedia("print");
         mediaQueryList.addListener((mql) => {
             if (!mql.matches) {
-                // This runs after printing is complete or cancelled
                 cleanupAndRestore();
             }
         });
 
-        // 7. Trigger the print dialog
         window.print();
 
-        // Fallback cleanup (in case event listeners fail or are unsupported)
         setTimeout(() => {
             cleanupAndRestore();
         }, 300);
@@ -391,12 +372,12 @@ $(document).ready(function () {
     <div class="row mb-4 p-3">
         <!-- Invoice Header -->
         <div class="col-md-6">
-            <p class="mb-1">Requested by: ${employeeName || "N/A"}</p>
+            <p class="mb-0">Requested by: ${employeeName || "N/A"}</p>
             <p class="mb-0">Supplier: ${data.supplier_name}</p>
             <p class="mb-0">Delivery #: ${data.delivery_no || "N/A"}</p>
         </div>
         <div class="col-md-6 text-md-end">
-            <p class="mb-1">Invoice #: ${data.id || "N/A"}</p>
+            <p class="mb-0">Invoice #: ${data.id || "N/A"}</p>
             <p class="mb-0">Date Approved: ${data.date_approved || "N/A"}</p>
             <p class="mb-0">Approved By: ${data.approved_by_id || "N/A"}</p>
         </div>

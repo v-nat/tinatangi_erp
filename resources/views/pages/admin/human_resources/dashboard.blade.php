@@ -201,5 +201,5 @@
     </style>
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/employeeAttendance.js') }}"></script>
+    <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
 @endsection

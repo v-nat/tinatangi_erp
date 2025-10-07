@@ -1,14 +1,7 @@
-$(document).ready(function () {
-    function formatDate(dateString) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        return new Date(dateString).toLocaleDateString("en-US", options);
-    }
-    function formatTime(timeString) {
-        if (!timeString) return "--:--";
-        const [h, m, s] = timeString.split(":");
-        return `${h.padStart(2, "0")}:${m}`;
-    }
+import { reloadTable } from "./utils/reloadTable.js";
+import { formatDate, formatTime } from "./utils/formatDateAndTime.js";
 
+$(document).ready(function () {
     $("#overtime_table").DataTable({
         processing: true,
         serverSide: false,
@@ -26,42 +19,50 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "45px",
             },
-            { data: "employee", className: "dt-left"  },
-            { data: "department", className: "dt-left"  },
-            { data: "position", className: "dt-left"  },
+            { data: "employee", className: "dt-left" },
+            { data: "department", className: "dt-left" },
+            { data: "position", className: "dt-left" },
             {
-                data: "date", className: "dt-left" ,
+                data: "date",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
                 type: "date",
             },
             {
-                data: "time_start", className: "dt-left" ,
+                data: "time_start",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatTime(data) : "N/A";
                 },
                 type: "time",
             },
             {
-                data: "time_end", className: "dt-left" ,
+                data: "time_end",
+                className: "dt-left",
                 render: function (data) {
                     return data ? formatTime(data) : "N/A";
                 },
                 type: "time",
             },
             {
-                data: "reason", className: "dt-left" ,
+                data: "reason",
+                className: "dt-left",
             },
             {
                 data: "status",
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
             {
                 data: "overtime_id",
                 render: function (data, type, row) {
-                    if (row.status !== '<span class="badge bg-warning">Pending</span>') {
-                        return ""; 
+                    if (
+                        row.status !==
+                        '<span class="badge bg-warning">Pending</span>'
+                    ) {
+                        return "";
                     } else {
                         return `
                             <div>
@@ -80,7 +81,8 @@ $(document).ready(function () {
                             </div>
                         `;
                     }
-                }, width: "150px",
+                },
+                width: "150px",
             },
         ],
     });
@@ -118,7 +120,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     $("#LoadingScreen").fadeOut(200);
-                    reloadTable('overtime_table');
+                    reloadTable("overtime_table");
                     Toast.fire("Approved!", response.message, "success");
                 } else {
                     Toast.fire("Error", response.message, "error");
@@ -140,7 +142,7 @@ $(document).ready(function () {
         let reason = $("#rejectionNotes").val();
         $("#LoadingScreen").fadeIn(200);
         $("#rejectionModal").modal("hide");
-        
+
         $.ajax({
             url: `/humanresources/overtime/reject/${overtimeId}`,
             method: "POST",
@@ -152,7 +154,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     $("#LoadingScreen").fadeOut(200);
-                    reloadTable('overtime_table');
+                    reloadTable("overtime_table");
                     Toast.fire("Rejected!", response.message, "success");
                 } else {
                     Toast.fire("Error", response.message, "error");
@@ -167,8 +169,4 @@ $(document).ready(function () {
             },
         });
     });
-
-    function reloadTable(tableId) {
-        $("#" + tableId).DataTable().ajax.reload(null, false);
-    }
 });

@@ -1,3 +1,5 @@
+import { formatDate2, formatDateString } from "./utils/formatDateAndTime.js";
+
 $(document).ready(function () {
     $("#employee_table").DataTable({
         processing: true,
@@ -16,11 +18,11 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "45px",
             },
-            { data: "name", className: "dt-left"  },
-            { data: "position", className: "dt-left"  },
-            { data: "department", className: "dt-left"  },
-            { data: "email", className: "dt-left"  },
-            { data: "direct_supervisor", className: "dt-left"  },
+            { data: "name", className: "dt-left" },
+            { data: "position", className: "dt-left" },
+            { data: "department", className: "dt-left" },
+            { data: "email", className: "dt-left" },
+            { data: "direct_supervisor", className: "dt-left" },
             {
                 data: "status",
                 render: function (data) {
@@ -28,7 +30,8 @@ $(document).ready(function () {
                         data === "active" ? "success" : "danger"
                     }">${data}</span>`;
                 },
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
             {
                 data: "employee_id",
@@ -50,26 +53,12 @@ $(document).ready(function () {
                         </a>
                     </div>
                         `;
-                },width: "150px", className: "text-center"
+                },
+                width: "150px",
+                className: "text-center",
             },
         ],
     });
-    function formatDate(date) {
-        const d = new Date(date);
-        let month = "" + (d.getMonth() + 1);
-        let day = "" + d.getDate();
-        const year = d.getFullYear();
-
-        if (month.length < 2) month = "0" + month;
-        if (day.length < 2) day = "0" + day;
-
-        return [year, month, day].join("-");
-    }
-
-    function formatDateString(dateString) {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        return new Date(dateString).toLocaleDateString("en-US", options);
-    }
 
     $(document).on("click", ".btn-edit", function (e) {
         e.preventDefault();
@@ -87,8 +76,8 @@ $(document).ready(function () {
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
         const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        $("#start_date").val(formatDate(firstDay));
-        $("#end_date").val(formatDate(lastDay));
+        $("#start_date").val(formatDate2(firstDay));
+        $("#end_date").val(formatDate2(lastDay));
 
         $("#generatePayroll").modal("show");
     });

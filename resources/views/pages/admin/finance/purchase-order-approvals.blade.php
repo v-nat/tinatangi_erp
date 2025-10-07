@@ -43,6 +43,6 @@
     @include('layouts.modals.finance-po-mngmnt-modal')
     @include('layouts.modals.invoice-modal')
 @endsection
-@section('scripts')
-    <script src="{{ asset('js/purchaseRequest.js') }}   "></script>
+@section('scripts')]
+    <script type="module" src="{{ asset('js/purchaseRequest.js') }}   "></script>
 @endsection

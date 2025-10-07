@@ -1,3 +1,5 @@
+import { reloadTable } from "./utils/reloadTable.js";
+
 $(document).ready(function () {
     $("#payrollsTable").DataTable({
         autoWidth: false,
@@ -17,12 +19,13 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "45px",
             },
-            { data: "name", className: "dt-left"  },
-            { data: "department", className: "dt-left"  },
-            { data: "position", className: "dt-left"  },
-            { data: "period", className: "dt-left"  },
+            { data: "name", className: "dt-left" },
+            { data: "department", className: "dt-left" },
+            { data: "position", className: "dt-left" },
+            { data: "period", className: "dt-left" },
             {
-                data: "gross_pay", className: "dt-left" ,
+                data: "gross_pay",
+                className: "dt-left",
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -34,7 +37,8 @@ $(document).ready(function () {
                 },
             },
             {
-                data: "gross_deduction", className: "dt-left" ,
+                data: "gross_deduction",
+                className: "dt-left",
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -46,7 +50,8 @@ $(document).ready(function () {
                 },
             },
             {
-                data: "net_pay", className: "dt-left" ,
+                data: "net_pay",
+                className: "dt-left",
                 render: function (data, type, row) {
                     return (
                         "₱ " +
@@ -59,7 +64,8 @@ $(document).ready(function () {
             },
             {
                 data: "status",
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
             {
                 data: "id",
@@ -103,7 +109,8 @@ $(document).ready(function () {
                         `;
                     }
                 },
-                className: "text-center", width: "150px",
+                className: "text-center",
+                width: "150px",
             },
         ],
     });
@@ -111,12 +118,9 @@ $(document).ready(function () {
         const payroll_id = $(this).data("id");
         $("#LoadingScreen").fadeIn(200);
 
-        $.get(
-            `/finance/payroll/view/${payroll_id}`,
-            function (response) {
-                buildPayslipModal(response.data);
-            }
-        ).fail(function () {
+        $.get(`/finance/payroll/view/${payroll_id}`, function (response) {
+            buildPayslipModal(response.data);
+        }).fail(function () {
             alert("Failed to load payslip.");
         });
     });
@@ -150,7 +154,7 @@ $(document).ready(function () {
                 contentType: false,
                 success: function (response) {
                     $("#LoadingScreen").fadeOut(200);
-                    reloadTable('payrollsTable');
+                    reloadTable("payrollsTable");
                     Toast.fire({
                         text: response.message,
                         icon: "success",
@@ -203,12 +207,8 @@ $(document).ready(function () {
                 success: function (response) {
                     if (response.success) {
                         $("#LoadingScreen").fadeOut(200);
-                        reloadTable('payrollsTable');
-                        Toast.fire(
-                            "Rejected!",
-                            response.message,
-                            "success"
-                        );
+                        reloadTable("payrollsTable");
+                        Toast.fire("Rejected!", response.message, "success");
                     } else {
                         Toast.fire("Error", response.message, "error");
                     }
@@ -230,10 +230,6 @@ $(document).ready(function () {
             });
         }
     });
-
-    function reloadTable(tableId) {
-        $("#" + tableId).DataTable().ajax.reload(null, false);
-    }
 
     function buildPayslipModal(data) {
         const html = `
