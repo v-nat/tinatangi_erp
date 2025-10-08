@@ -81,19 +81,127 @@ $(document).ready(function () {
     });
 
 
-    $("#item").change(function () {
-        const selectedOption = $("#item").find("option:selected");
-        const unit = selectedOption.data("unit");
-        const unitPrice = selectedOption.data("unit_price");
-        $("#unit").val(unit);
-        $("#unit_price").val(unitPrice);
+    // --- Searchable Item Dropdown Logic ---
+    const itemSearchInput = document.getElementById("item_search_input");
+    const itemHiddenInput = document.getElementById("item"); // The hidden field that stores the ID
+    const itemResultsContainer = document.getElementById("item_results_container");
+    const itemSearchList = document.getElementById("item_search_list");
+    let availableItems = []; // Stores the items fetched from the API
+
+    /**
+     * Handles item selection from the dropdown list.
+     * @param {Object} item - The selected item object {id, name, unit_id, unit_price}.
+     */
+    function handleItemSelection(item) {
+        // Set the display text and the actual value
+        itemSearchInput.value = item.name;
+        itemHiddenInput.value = item.id;
+
+        // Populate related fields
+        $("#unit").val(item.unit_id);
+        $("#unit_price").val(item.unit_price);
+
+        // Hide the search results
+        itemResultsContainer.classList.add("d-none");
+
+        // Clear any previous validation errors
+        $(itemSearchInput).removeClass("is-invalid");
+    }
+
+    /**
+     * Renders the filtered list of items in the dropdown.
+     * @param {Array<Object>} filteredItems - The items to display.
+     */
+    function renderItems(filteredItems) {
+        itemSearchList.innerHTML = '';
+        if (filteredItems.length === 0) {
+            const noResult = document.createElement('a');
+            noResult.className = 'list-group-item list-group-item-light small text-muted';
+            noResult.textContent = 'No items found.';
+            itemSearchList.appendChild(noResult);
+        } else {
+            filteredItems.forEach(item => {
+                const itemLink = document.createElement('a');
+                itemLink.className = 'list-group-item list-group-item-action py-2 small';
+                itemLink.href = '#';
+                itemLink.textContent = item.name;
+                itemLink.dataset.itemId = item.id;
+
+                // Add click listener to select the item
+                itemLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleItemSelection(item);
+                });
+                itemSearchList.appendChild(itemLink);
+            });
+        }
+        itemResultsContainer.classList.remove("d-none");
+    }
+
+    // Listener for input typing to filter results
+    $(itemSearchInput).on('input', function() {
+        const query = $(this).val().toLowerCase();
+
+        // Clear the hidden ID and other dependent fields when user types
+        itemHiddenInput.value = '';
+        $("#unit").val("");
+        $("#unit_price").val("");
+
+        if (query.length === 0) {
+            // If input is empty, show all items
+            renderItems(availableItems);
+            return;
+        }
+
+        // Filter items
+        const filtered = availableItems.filter(item =>
+            item.name.toLowerCase().includes(query)
+        );
+        renderItems(filtered);
     });
+
+    // Listener for focus to show dropdown
+    $(itemSearchInput).on('focus', function() {
+        if (availableItems.length > 0) {
+            const query = $(this).val().toLowerCase();
+            const filtered = availableItems.filter(item => item.name.toLowerCase().includes(query));
+            renderItems(filtered);
+        }
+    });
+
+    // Hide results when clicking outside the component
+    $(document).on('click', function(e) {
+        const parentGroup = itemSearchInput.closest('.form-group');
+        if (parentGroup && !parentGroup.contains(e.target)) {
+            itemResultsContainer.classList.add("d-none");
+
+            // If input value is not a valid item name, clear it
+            const currentName = itemSearchInput.value.trim();
+            const matchedItem = availableItems.find(item => item.name === currentName);
+
+            if (currentName !== '' && !matchedItem) {
+                itemSearchInput.value = '';
+                itemHiddenInput.value = '';
+            }
+        }
+    });
+
+    // --- End of Searchable Item Dropdown Logic ---
+
+
 
     const categorySelect = document.getElementById("category");
 
     $("#category").change(function () {
         $("#unit").val("");
         $("#unit_price").val("");
+        // Clear item fields when category changes
+        itemSearchInput.value = '';
+        itemHiddenInput.value = '';
+        availableItems = []; // Clear current list of available items
+        itemResultsContainer.classList.add("d-none");
+
+
         const category = categorySelect.value;
         if (category) {
             fetch(
@@ -103,18 +211,21 @@ $(document).ready(function () {
             )
                 .then((res) => res.json())
                 .then((data) => {
-                    const itemSelect = document.getElementById("item");
-                    itemSelect.innerHTML =
-                        '<option value="" disabled selected>Choose Item</option>';
+                    // Store fetched items globally
+                    availableItems = data.map(p => ({
+                        id: p.id,
+                        name: p.name,
+                        unit_id: p.unit_id,
+                        unit_price: p.unit_price
+                    }));
 
-                    data.forEach((p) => {
-                        const option = document.createElement("option");
-                        option.value = p.id;
-                        option.dataset.unit = p.unit_id;
-                        option.dataset.unit_price = p.unit_price;
-                        option.textContent = p.name;
-                        itemSelect.appendChild(option);
-                    });
+                    // Automatically show the full list when items are loaded
+                    renderItems(availableItems);
+                })
+                .catch((error) => {
+                    console.error("Error fetching items:", error);
+                    Toast.fire("Error", "Could not load items for the selected category.", "error");
+                    availableItems = [];
                 });
         }
     });
@@ -151,7 +262,12 @@ $(document).ready(function () {
                     return;
                 }
                 $("#category").val("");
-                $("#item").val("");
+                // Clear item fields after confirmation
+                itemSearchInput.value = '';
+                itemHiddenInput.value = '';
+                availableItems = [];
+                itemResultsContainer.classList.add("d-none");
+
                 $("#unit").val("");
                 $("#unit_price").val("");
                 $("#qnty").val("");
@@ -179,11 +295,12 @@ $(document).ready(function () {
         const nameInput = document.getElementById("order_id");
         categorySelect.addEventListener("change", clearInvalids);
         nameInput.addEventListener("change", clearInvalids);
+        itemSearchInput.addEventListener("change", clearInvalids);
     });
 
     function clearInvalids() {
         const $form = $("#submitPORequest");
-        $form.find("input, select, option").each(function () {
+        $form.find("input, select").each(function () {
             const $field = $(this);
             $field.removeClass("is-invalid");
         });
@@ -197,14 +314,26 @@ $(document).ready(function () {
         let isValid = true;
         const $form = $("#submitPORequest");
 
-        $form.find("input, select, option").each(function () {
+        // The validation logic must now check the hidden 'item' field for its value,
+        // but mark the VISIBLE 'item_search_input' with the invalid class.
+        $form.find("input[required], select[required]").each(function () {
             const $field = $(this);
             const value = $field.val();
-            if ($field.prop("required") && (!value || !value.trim())) {
-                $field.addClass("is-invalid");
+
+            if (!value || String(value).trim() === "") {
+                if ($field.attr('id') === 'item') {
+                    // Apply invalid class to the visible search input
+                    $("#item_search_input").addClass("is-invalid");
+                } else {
+                    $field.addClass("is-invalid");
+                }
                 isValid = false;
             } else {
-                $field.removeClass("is-invalid");
+                if ($field.attr('id') === 'item') {
+                    $("#item_search_input").removeClass("is-invalid");
+                } else {
+                    $field.removeClass("is-invalid");
+                }
             }
         });
 
@@ -217,19 +346,20 @@ $(document).ready(function () {
         const categoryText = categorySelectedOption.text().trim();
         const category_id = categorySelectedOption.val();
 
-        const itemSelectedOption = $("#item").find("option:selected");
-        const itemText = itemSelectedOption.text().trim();
-        const unit = itemSelectedOption.data("unit");
-        const item_id = itemSelectedOption.val();
-        const unitPrice = parseFloat(itemSelectedOption.data("unit_price"));
+        // Get data directly from the hidden input and other fields
+        const item_id = itemHiddenInput.value;
+        const itemText = itemSearchInput.value.trim();
+        const unit = $("#unit").val(); // unit is now taken from the input field
+        const unitPrice = parseFloat($("#unit_price").val()); // price is taken from the input field
 
         const qnty = parseInt($("#qnty").val());
 
         if (isValid) {
-            if (!itemText || qnty < 1 || unitPrice <= 0) {
-                Toast.fire(
-                    "Please select an item and enter valid quantity/unit price."
-                );
+            if (!itemText || qnty < 1 || unitPrice <= 0 || isNaN(unitPrice)) {
+                Toast.fire({
+                    title: "Please select an item and enter valid quantity/unit price.",
+                    icon: "warning"
+                });
                 return;
             }
 
@@ -289,8 +419,12 @@ $(document).ready(function () {
                 orderTable.row.add(newRowData).draw();
             }
 
+            // Clear input fields after successful addition
             $("#category").val("");
-            $("#item").val("");
+            itemSearchInput.value = '';
+            itemHiddenInput.value = '';
+            availableItems = [];
+            itemResultsContainer.classList.add("d-none");
             $("#unit").val("");
             $("#unit_price").val("");
             $("#qnty").val("");
@@ -314,8 +448,12 @@ $(document).ready(function () {
             $("#LoadingScreen").fadeIn(200);
             row.remove();
             orderTable.draw();
+            // Clear input fields after deletion
             $("#category").val("");
-            $("#item").val("");
+            itemSearchInput.value = '';
+            itemHiddenInput.value = '';
+            availableItems = [];
+            itemResultsContainer.classList.add("d-none");
             $("#unit").val("");
             $("#unit_price").val("");
             $("#qnty").val("");
@@ -379,7 +517,12 @@ $(document).ready(function () {
                     $("#order_id").val("");
                     $("#supplier").val("");
                     $("#category").val("");
-                    $("#item").val("");
+                    // Clear item fields after submission
+                    itemSearchInput.value = '';
+                    itemHiddenInput.value = '';
+                    availableItems = [];
+                    itemResultsContainer.classList.add("d-none");
+
                     $("#unit").val("");
                     $("#unit_price").val("");
                     $("#qnty").val("");

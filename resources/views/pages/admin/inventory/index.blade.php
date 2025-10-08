@@ -94,7 +94,7 @@
                     <h4 class="card-title">To Receive Items</h4>
                 </div>
                 <div id="invClaims" class="card-body">
-                    {{-- POPULATED BY JS --}}
+                    `<div class="alert alert-light-success">No purchase requests are currently ready for receiving.</div>`
                 </div>
             </div>
 
@@ -149,5 +149,5 @@
     @include('layouts.modals.invoice-modal')
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/inventoryDashboard.js') }}   "></script>
+    <script type="module" src="{{ asset('js/inventoryDashboard.js') }}"></script>
 @endsection

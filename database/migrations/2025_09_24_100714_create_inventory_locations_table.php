@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('inventory_locations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('status')->default(11);
+            $table->unsignedBigInteger('status')->default(1);
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
 
             $table->timestamps();

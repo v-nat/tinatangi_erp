@@ -48,16 +48,28 @@
                                             <div class="invalid-feedback">Category is required.</div>
                                         </div>
                                     </div>
+                                    
                                     <div class="col-md-4.5 col-4">
-                                        <div class="form-group">
-                                            <label for="item">Item</label>
-                                            <select class="form-select py-3" id="item" name="item" required>
-                                                <option value="" disabled selected class="form-control py-3">Choose Item
-                                                </option>
-                                            </select>
+                                        <div class="form-group position-relative">
+                                            <label for="item_search_input">Item</label>
+                                            
+                                            <input type="text" id="item_search_input" class="form-control py-3" placeholder="Search Item" autocomplete="off">
+                                            
+                                            <input type="hidden" id="item" name="item" required>
+
+                                            
+                                            
+                                            <div id="item_results_container" class="list-group position-absolute w-100 border shadow-lg d-none" style="max-height: 250px; overflow-y: auto; z-index: 999; background-color: white;">
+                                                <div id="item_search_list">
+                                                    
+                                                </div>
+                                            </div>
+
                                             <div class="invalid-feedback">Item is required.</div>
                                         </div>
                                     </div>
+                                    
+
                                     <div class="col-md-1 col-4">
                                         <div class="form-group">
                                             <label for="unit">Unit</label>
@@ -127,4 +139,5 @@
 <?php $__env->startSection('scripts'); ?>
     <script src="<?php echo e(asset('js/createPurchaseRequest.js')); ?>   "></script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/procurement/create-purchase-request.blade.php ENDPATH**/ ?>

@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum transaction_type: string
 {
-    case in = 'IN';
-    case out ='OUT';
-    case adj ='ADJ';
-    case transfer ='TRANSFER';
+    case In = 'IN';
+    case Out ='OUT';
+    case Adj ='ADJ';
+    case Transfer ='TRANSFER';
 }

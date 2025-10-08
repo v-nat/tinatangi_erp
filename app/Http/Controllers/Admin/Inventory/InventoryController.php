@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\Admin\Inventory;
 
 use App\Models\Item;
+use App\Models\Stock;
 use App\Models\Status;
 use Illuminate\Http\Request;
+use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
+use App\Enums\transaction_type;
 use App\Models\PurchaseRequest;
+use App\Models\StockTransaction;
+use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseOrderDetail;
 use App\Http\Controllers\Controller;
 
@@ -76,6 +81,51 @@ class InventoryController extends Controller
                 })
             ]);
         } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function receiveInventory($id, $qnty)
+    {
+        try {
+            DB::beginTransaction();
+            $purchaseRequest = PurchaseRequest::findOrFail($id);
+            dd($purchaseRequest);
+            $purchaseRequest->status = 23;
+            $purchaseRequest->save();
+
+            $type = strtolower(trim('In'));
+            $transaction_type = transaction_type::tryFrom($type);
+
+            $stockTransaction = StockTransaction::create([
+                'transaction_type' => $transaction_type,
+                'quantity' => $qnty,
+                'transaction_date' => now(),
+                'reference_type' => 'PO',
+                'reference_id' => $id,
+                'user_id' => auth('')->user()->id,
+                'status' => 23,
+            ]);
+
+            $stockTransaction->save();
+
+            foreach ($purchaseRequest->purchaseOrders as $order) {
+                foreach ($order->purchaseOrderDetail as $detail) {
+                    $item = Item::find($detail->item_id);
+                    if ($item) {
+                        $inventoryItem =InventoryItem::create([
+                            'item_id' => $item->id,
+                            'quantity' => $detail->quantity,
+                            'stock_transaction_id' => $stockTransaction->id,
+                            'status' => 23,
+                        ]);
+                    }
+                }
+            }
+            DB::commit();
+            return response()->json(['message' => 'Inventory received and stock updated successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
