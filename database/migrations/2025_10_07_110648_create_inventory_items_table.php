@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('inventory_items', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->string('sku')->unique();
+            $table->foreignId('item_id')->references('id')->on('items')->onDelete('cascade');
             $table->foreignId('inventory_location_id')->references('id')->on('inventory_locations')->onDelete('cascade');
             $table->unsignedBigInteger('unit_id')->nullable();
             $table->foreign('unit_id')->references('id')->on('item_units')->onDelete('cascade');

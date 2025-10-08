@@ -16,8 +16,9 @@ class InventoryItem extends Model
     protected $table = 'inventory_items';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'name',
         'sku',
+        'item_id',
+        'inventory_location_id',
         'unit_id',
         'category_id',
         'cost_price',
@@ -45,6 +46,10 @@ class InventoryItem extends Model
     |--------------------------------------------------------------------------
     */
 
+    public function itemss(): BelongsTo{
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+
     public function unit(): BelongsTo
     {
         return $this->belongsTo(ItemUnit::class, 'unit_id');
@@ -58,6 +63,10 @@ class InventoryItem extends Model
     public function itemStatus(): BelongsTo
     {
         return $this->belongsTo(Status::class, 'status');
+    }
+
+    public function inventoryLocation(): BelongsTo {
+        return $this->belongsTo(InventoryLocation::class, 'inventory_location_id');
     }
 }
 

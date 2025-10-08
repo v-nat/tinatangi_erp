@@ -24,7 +24,7 @@
                         </div>
                         <div class="col-md-8">
                             <h6 class="text-muted font-semibold">To Receive </h6>
-                            <h6 class="font-extrabold mb-0">{{ $purchaseOrders }}</h6>
+                            <h6 class="font-extrabold mb-0" id="toRecieveCount"></h6>
                         </div>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="col-md-8">
                             <h6 class="text-muted font-semibold">Total Stocks</h6>
-                            <h6 class="font-extrabold mb-0"></h6>
+                            <h6 class="font-extrabold mb-0" id="totalStocksCount"></h6>
                         </div>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                         </div>
                         <div class="col-md-8">
                             <h6 class="text-muted font-semibold">Low Stocks</h6>
-                            <h6 class="font-extrabold mb-0"></h6>
+                            <h6 class="font-extrabold mb-0" id="lowStocksCount"></h6>
                         </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                         </div>
                         <div class="col-md-8">
                             <h6 class="text-muted font-semibold">Out of Stock</h6>
-                            <h6 class="font-extrabold mb-0"></h6>
+                            <h6 class="font-extrabold mb-0" id="outOfStockCount"></h6>
                         </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@
                     <h4 class="card-title">Need for Restock</h4>
                 </div>
                 <div id="invRestock" class="card-body">
-                    <div class="alert alert-light-warning">No purchase requests are currently low in stocks.</div>
+                    <div class="alert alert-light-warning">No items are currently low in stocks.</div>
                 </div>
             </div>
 
@@ -117,11 +117,11 @@
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Items Table</h4>
+                <h4 class="card-title">Recent Items</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="purchaseOrderTable" class="table table-hover dataTable no-footer"
+                    <table id="recentItems" class="table table-hover dataTable no-footer"
                         style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
@@ -132,9 +132,7 @@
                                 <th>Category</th>
                                 <th>Stocks</th>
                                 <th>Cost Price</th>
-                                <th>Selling Price</th>
                                 <th>Status</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -146,7 +144,7 @@
         </div>
     </section>
 
-    @include('layouts.modals.invoice-modal')
+    @include('layouts.modals.inventory-modal')
 @endsection
 @section('scripts')
     <script type="module" src="{{ asset('js/inventoryDashboard.js') }}"></script>
