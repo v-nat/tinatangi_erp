@@ -12,7 +12,7 @@ $(document).ready(function () {
     });
 
     // Show Attendance Modal
-    $("#showAttendanceModal").click(function (e) {
+    $(".showAttendanceModal").click(function (e) {
         e.preventDefault();
         $("#employeeAttendance").modal("show");
     });

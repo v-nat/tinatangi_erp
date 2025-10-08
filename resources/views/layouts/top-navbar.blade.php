@@ -21,17 +21,13 @@
                         <li><a class="dropdown-item" href="#">No new mail</a></li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown me-3">
-                    <a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                        <li>
-                            <h6 class="dropdown-header">Notifications</h6>
-                        </li>
-                        <li><a class="dropdown-item">No notification available</a></li>
-                    </ul>
-                </li>
+                <div class="@yield('topnavEmp')">
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link active showAttendanceModal" href="#">
+                            <i class='bi bi-clock bi-sub fs-4 text-gray-600'></i>
+                        </a>
+                    </li>
+                </div>
             </ul>
             <div class="dropdown">
                 <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -57,7 +53,7 @@
                         <h6 class="dropdown-header">Hello, {{ auth()->user()->first_name }}!</h6>
                     </li>
                     <div class="@yield('topnavEmp')">
-                        <li><a class="dropdown-item" href="#" id="showAttendanceModal"><i class="fa-solid fa-clock"></i>
+                        <li><a class="dropdown-item showAttendanceModal" href="#"><i class="fa-solid fa-clock"></i>
                                 Attendance</a></li>
                         <li><a class="dropdown-item"
                                 href="{{route('hr.ot-application', ['id' => Auth::user()->id])}}"><i
