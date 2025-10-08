@@ -14,18 +14,25 @@ class UnitSeeder extends Seeder
     {
         $units = [
             // Full Name => Abbreviation
-            'Kilogram'    => 'KG',
-            'Liter'       => 'LITER',
-            'Bottle'      => 'BOTTLE',
-            'Box'         => 'BOX',
-            'Piece(s)'    => 'PCS',
-            'Sleeve'      => 'SLEEVE',
-            'Bundle'      => 'BUNDLE',
-            'Case'        => 'CASE',
-            'Jar'         => 'JAR',
-            'Tub'         => 'TUB',
-            'Set'         => 'SET',
-            'Unit'        => 'UNIT',
+            'Kilogram'      => 'KG',
+            'Liter'         => 'LITER',
+            'Bottle'        => 'BOTTLE',
+            'Box'           => 'BOX',
+            'Piece(s)'      => 'PCS',
+            'Sleeve'        => 'SLEEVE',
+            'Bundle'        => 'BUNDLE',
+            'Case'          => 'CASE',
+            'Jar'           => 'JAR',
+            'Tub'           => 'TUB',
+            'Set'           => 'SET',
+            'Unit'          => 'UNIT',
+            // Adding more common units from previous request for completeness
+            'Gram'          => 'G',
+            'Milliliter'    => 'ML',
+            'Bag'           => 'BAG',
+            'Sachet'        => 'SACHET',
+            'Roll'          => 'ROLL',
+            'Pack'          => 'PACK',
         ];
 
         $dataToSeed = [];
@@ -33,16 +40,14 @@ class UnitSeeder extends Seeder
 
         foreach ($units as $fullName => $abbreviation) {
             $dataToSeed[] = [
-                'id' => $idCounter++,           // Explicitly define the ID
-                'name' => $fullName,            // Complete unit name
-                'abbreviation' => $abbreviation, // Abbreviated unit name
+                'id' => $idCounter++,
+                'name' => $fullName,
+                'abbreviation' => $abbreviation,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
 
-        // Use upsert to insert or update existing records based on the unique 'id' column,
-        // ensuring the sequential IDs are preserved if the seeder is re-run.
         ItemUnit::upsert($dataToSeed, ['id'], ['name', 'abbreviation', 'updated_at']);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\InventoryLocation;
 use App\Models\Status;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -24,6 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(EmployeeSeeder::class);
         $this->call(SupplierSeeder::class);
+        $this->call(InventoryLocationSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(UnitSeeder::class);
         $this->call(ItemSeeder::class);

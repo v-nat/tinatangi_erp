@@ -93,7 +93,7 @@
                     <h4 class="card-title">To Receive Items</h4>
                 </div>
                 <div id="invClaims" class="card-body">
-                    
+                    `<div class="alert alert-light-success">No purchase requests are currently ready for receiving.</div>`
                 </div>
             </div>
 
@@ -148,7 +148,7 @@
     <?php echo $__env->make('layouts.modals.invoice-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
-    <script src="<?php echo e(asset('js/inventoryDashboard.js')); ?>   "></script>
+    <script type="module" src="<?php echo e(asset('js/inventoryDashboard.js')); ?>"></script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/inventory/index.blade.php ENDPATH**/ ?>
