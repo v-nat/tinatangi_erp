@@ -98,7 +98,7 @@
 
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
-    <script src="<?php echo e(asset('js/leaveApplication.js')); ?>"></script>
+    <script type="module" src="<?php echo e(asset('js/leaveApplication.js')); ?>"></script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/human_resources/leave-application.blade.php ENDPATH**/ ?>

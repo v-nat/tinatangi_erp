@@ -11,14 +11,13 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    //
     public function adminLogin(Request $request)
     {
         Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
         ])->validate();
-        
+
         if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed')
@@ -33,7 +32,7 @@ class AuthController extends Controller
             'message' => 'Login successful!',
             'user'=> $user_type,
         ], 200);
-        
+
     }
     public function logout(Request $request)
     {
@@ -41,7 +40,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Return a redirect response instead of JSON
         return redirect('/login');
     }
 }

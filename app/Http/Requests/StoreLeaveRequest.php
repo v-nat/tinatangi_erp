@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreOvertimeRequest extends FormRequest
+class StoreLeaveRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,9 @@ class StoreOvertimeRequest extends FormRequest
     {
         return [
             'employee_id' => 'required|integer|exists:employees,id',
-            'date' => 'required|unique:overtimes,employee_id,date',
-            'time_start' => 'required|date_format:H:i',
-            'time_end' => 'required|date_format:H:i|after:time_start',
-            'reason' => 'nullable|string',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'reason' => 'required|string',
         ];
     }
 }

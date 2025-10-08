@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Models\Status;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Payroll;
 use App\Models\PurchaseRequest;
@@ -17,7 +16,6 @@ use App\Models\PurchaseOrderDetail;
 
 class FinanceController extends Controller
 {
-    //
     public function finance(){
         return view("pages.admin.finance.index");
     }
@@ -54,8 +52,7 @@ class FinanceController extends Controller
                 })
             ]);
         } catch (\Exception $e) {
-            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -81,10 +78,10 @@ class FinanceController extends Controller
                 })
             ]);
         } catch (\Exception $e) {
-            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
     public function getDetailsForViewing($id)
     {
         try {
@@ -138,7 +135,6 @@ class FinanceController extends Controller
                 })
             ]);
         } catch (\Exception $e) {
-            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -151,7 +147,7 @@ class FinanceController extends Controller
             $requests = BudgetRelease::with(['employeeRS', 'statusRS', 'departmentRS'])
                 ->where('status', 15)
                 ->orderBy('released_at', 'desc')->get();
-            // dd($requests);
+
             return response()->json([
                 'data' => $requests->map(function ($r) {
                     return [
@@ -170,8 +166,7 @@ class FinanceController extends Controller
                 })
             ]);
         } catch (\Exception $e) {
-            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -213,8 +208,6 @@ class FinanceController extends Controller
             DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Request is Released!'], 200);
-        } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
@@ -223,7 +216,6 @@ class FinanceController extends Controller
 
     public function rejectRequest(Request $request, $id)
     {
-
         try {
             DB::beginTransaction();
 
@@ -272,8 +264,6 @@ class FinanceController extends Controller
             DB::commit();
 
             return response()->json(['success' => true, 'message' => 'Request is Rejected!'], 200);
-        } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);

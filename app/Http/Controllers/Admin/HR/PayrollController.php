@@ -9,25 +9,22 @@ use App\Models\Employee;
 use App\Models\Payroll;
 use App\Models\Attendance;
 use App\Models\BudgetRelease;
-use App\Models\Overtime;
 use App\Models\Status;
 use App\Services\CompensationCalculator;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
-use Ramsey\Uuid\Type\Integer;
 
 class PayrollController extends Controller
 {
-
     public function __construct(
         protected CompensationCalculator $calculator
     ) {}
+
     // for views
 
     public function indexOnHr()
@@ -38,7 +35,6 @@ class PayrollController extends Controller
     {
         return view("pages.admin.finance.finance-payroll");
     }
-
 
     public function getPayrollList()
     {
@@ -64,11 +60,10 @@ class PayrollController extends Controller
                     'status' => Status::getStatusText($payroll->status),
                 ];
             });
-            // dd($result);
+
             return response()->json(["data" => $result]);
         } catch (\Exception $e) {
-            Log::error('Payroll list error: ' . $e->getMessage());
-            return response()->json(["data" => []]);
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }
     public function getPayrollView($id)
@@ -116,11 +111,10 @@ class PayrollController extends Controller
                 'remarks' => $remarks ?? '',
                 'status' => Status::getStatusText($payroll->status),
             ];
-            // dd($result);
+
             return response()->json(["data" => $result]);
         } catch (\Exception $e) {
-            Log::error('Payroll View error: ' . $e->getMessage());
-            return response()->json(["data" => []]);
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }
 
@@ -140,7 +134,6 @@ class PayrollController extends Controller
                 $payroll->status = $status;
                 $payroll->save();
             }
-
 
             if ($status == 14) {
                 $year = Carbon::now()->format('Y');
@@ -225,7 +218,6 @@ class PayrollController extends Controller
         }
     }
 
-
     // VARIABLES
     const SSS = 600;
     const PHILHEALTH = 450;
@@ -235,29 +227,17 @@ class PayrollController extends Controller
     const WORKING_HOURS_PER_DAY = 8;
     const OVERTIME_RATE_MULTIPLIER = 1.25;
 
-
     // FUNCTIONS
     public function generatePayroll(StorePayrollRequest $request)
     {
         try {
             DB::beginTransaction();
 
-            $validator = Validator::make($request->all(), [
-                'employee_id' => 'required|integer|exists:employees,id',
-                'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date'
-            ]);
+            $validated = $request->validated();
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'error' => 'Validation failed',
-                    'messages' => $validator->errors()->all()
-                ], 422);
-            }
-
-            $employee = Employee::findOrFail($request->employee_id);
-            $payroll_start_date = Carbon::parse($request->start_date);
-            $payroll_end_date = Carbon::parse($request->end_date);
+            $employee = Employee::findOrFail($validated['employee_id']);
+            $payroll_start_date = Carbon::parse($validated['start_date']);
+            $payroll_end_date = Carbon::parse($validated['end_date']);
 
             $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date);
             $breakdown = $this->calculator->fromPayrollAttributes($data);
@@ -326,11 +306,11 @@ class PayrollController extends Controller
         ];
     }
 
-
     protected function ratePerHour($base_salary)
     {
         return $base_salary / (self::WORKING_DAYS_PER_MONTH * self::WORKING_HOURS_PER_DAY);
     }
+
     protected function getTotalPresentDays($employeeID, $start_date, $end_date)
     {
         return Attendance::where('employee_id', $employeeID)
@@ -365,7 +345,6 @@ class PayrollController extends Controller
 
     protected function getTotalWorkingDays($startDate, $endDate): int
     {
-        // Ensure Carbon instances
         $start = $startDate instanceof Carbon
             ? $startDate
             : Carbon::parse($startDate);
@@ -374,16 +353,12 @@ class PayrollController extends Controller
             ? $endDate
             : Carbon::parse($endDate);
 
-        // Full days in period
         $daysInPeriod = $start->diffInDays($end) + 1;
 
-        // Days in that month
         $daysInMonth = $start->daysInMonth;
 
-        // Configurable working days
         $standardDays = Config::get('payroll.working_days_per_month', 26);
 
-        // Prorate and round
         return (int) round($daysInPeriod / $daysInMonth * $standardDays);
     }
 
@@ -404,7 +379,6 @@ class PayrollController extends Controller
 
     protected function absencesTotal($employeeID, $start_date, $end_date, $working_days)
     {
-        // 1) Fetch all the dates this employee was present (Y-m-d strings)
         $presentDays = Attendance::where('employee_id', $employeeID)
             ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
             ->where('is_leave', false)
@@ -415,19 +389,15 @@ class PayrollController extends Controller
             ->unique()
             ->toArray();
 
-        // 2) Determine how many working days to expect
         if (empty($working_days) || $working_days < 1) {
-            // Count actual weekdays in the range if no override provided
             $period = CarbonPeriod::create($start_date, '1 day', $end_date);
             $working_days = collect($period)
                 ->filter(fn(Carbon $date) => $date->isWeekday())
                 ->count();
         }
 
-        // 3) Number of days actually present (but never more than $working_days)
         $presentCount = min(count($presentDays), $working_days);
 
-        // 4) Absent days = expected working days minus days present
         return max($working_days - $presentCount, 0);
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin\Procurement;
 
-use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Supplier;
 use App\Helpers\Sanitizer;
@@ -15,12 +14,11 @@ use Illuminate\Validation\ValidationException;
 
 class SupplierController extends Controller
 {
-    //
     public function getSupplier()
     {
         try {
             $suppliers = Supplier::with(['statusRS'])->orderBy('created_at', 'desc')->get();
-            // dd($suppliers);
+
             return response()->json([
                 'data' => $suppliers->map(function ($e) {
                     return [
@@ -33,7 +31,7 @@ class SupplierController extends Controller
                 })
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -53,6 +51,7 @@ class SupplierController extends Controller
             $validated = $request->validated();
 
             $supplier_id = GenerateIdController::generateID('supplier');
+
             // Create accounts
             $user = User::create([
                 'id' => $supplier_id,
@@ -95,7 +94,5 @@ class SupplierController extends Controller
             DB::rollBack();
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
-        $validated = $request->validated();
-
     }
 }

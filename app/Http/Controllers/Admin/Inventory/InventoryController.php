@@ -12,7 +12,6 @@ use App\Http\Controllers\Controller;
 
 class InventoryController extends Controller
 {
-    //
     public function index()
     {
         $purchaseOrders = PurchaseRequest::all()->where('status', 16)->count();
@@ -77,7 +76,6 @@ class InventoryController extends Controller
                 })
             ]);
         } catch (\Exception $e) {
-            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

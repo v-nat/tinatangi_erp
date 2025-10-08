@@ -8,25 +8,20 @@ use App\Models\Overtime;
 use App\Models\Attendance;
 use App\Models\Status;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 
 
 class OvertimeController extends Controller
 {
-    //
     public function index()
     {
         try {
             $query = Overtime::with(['statusRS', 'employeeRS', 'employeeRS.deptRS'])->orderBy('updated_at', 'desc');
-            // dd($query);
+
             $overtimes = $query->get();
             $result = $overtimes->map(function ($ot) {
                 return [
-                    // 'dept'=> $ot->employeeRS->department,
                     'overtime_id'       => $ot->id,
                     'employee'          => optional(optional($ot->employeeRS)->userRS)->full_name,
                     'department'        => optional(optional($ot->employeeRS)->deptRS)->name,
@@ -38,11 +33,10 @@ class OvertimeController extends Controller
                     'status'            => Status::getStatusText($ot->status),
                 ];
             });
-            // dd($result);
+
             return response()->json(['data' => $result]);
         } catch (\Exception $e) {
-            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -50,7 +44,6 @@ class OvertimeController extends Controller
     {
         try {
             $overtime = Overtime::findOrFail($overtime_id);
-            // $employee = Auth::user()->id;
 
             $attendance = Attendance::where('date', $overtime->date)
                 ->where('employee_id', $overtime->employee_id)->first();
@@ -81,7 +74,6 @@ class OvertimeController extends Controller
     {
         try {
             $overtime = Overtime::findOrFail($overtime_id);
-            // $employee = Auth::user()->id;
 
             $overtime->status = 12;
             $overtime->reason = request()->input('reason', '');
@@ -106,7 +98,7 @@ class OvertimeController extends Controller
             $query = Overtime::where('employee_id', $id);
 
             $overtimes = $query->get();
-            // dd($query);
+
             $result = $overtimes->map(function ($ot) {
                 return [
                     'date'              => $ot->date ?? 'N/A',
@@ -117,50 +109,36 @@ class OvertimeController extends Controller
                     'status'            => Status::getStatusText($ot->status),
                 ];
             });
-            // dd($result);
+
             return response()->json(['data' => $result]);
         } catch (\Exception $e) {
-            Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    public function submitReq(Request $request)
+    public function submitReq(StoreOvertimeRequest $request)
     {
         try {
             DB::beginTransaction();
 
-            $validator = Validator::make($request->all(), [
-                'employee_id' => 'required|integer|exists:employees,id',
-                'date'=> 'required|unique:overtimes,employee_id,date',
-                'time_start' => 'required|date_format:H:i',
-                'time_end' => 'required|date_format:H:i|after:time_start',
-                'reason'=> 'nullable|string',
-            ]);
+            $validated = $request->validated();
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'error' => 'Validation failed',
-                    'messages' => $validator->errors()->all()
-                ], 422);
-            }
-
-
-            $start = Carbon::parse($request->time_start);
-            $end = Carbon::parse($request->time_end);
+            $start = Carbon::parse($validated['time_start']);
+            $end = Carbon::parse($validated['time_end']);
 
             $total_minutes = $start->diffInMinutes($end);
-            // dd($request);
+
             Overtime::create([
-                'employee_id' => $request->employee_id,
-                'date' => $request->date,
-                'time_start' => $request->time_start,
-                'time_end' => $request->time_end,
+                'employee_id' => $validated['employee_id'],
+                'date' => $validated['date'],
+                'time_start' => $validated['time_start'],
+                'time_end' => $validated['time_end'],
                 'total_minutes' => $total_minutes,
-                'reason' => $request->reason ?? '',
+                'reason' => $validated['reason'] ?? '',
                 'status' => 11,
             ]);
             DB::commit();
+
             return response()->json(['message' => 'Overtime submitted successfully!'], 201);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);

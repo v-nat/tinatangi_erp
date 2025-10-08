@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers\Admin\HR;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreAttendanceRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use App\Models\Attendance;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Models\Status;
+use App\Models\Attendance;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
-    //
     public function thisDay()
     {
         try {
@@ -37,10 +34,9 @@ class AttendanceController extends Controller
                 ] : null
             ]);
         } catch (\Exception $e) {
-            Log::error("Today attendance error: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch today\'s attendance' . $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }
     }
@@ -60,7 +56,7 @@ class AttendanceController extends Controller
                 ->whereDate('date', now())
                 ->where('is_leave', 1)
                 ->first();
-                
+
             return response()->json([
                 'success' => true,
                 'data' => $attendance ? [
@@ -68,10 +64,9 @@ class AttendanceController extends Controller
                 ] : false
             ]);
         } catch (\Exception $e) {
-            Log::error("Today attendance error: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch today\'s attendance'
+                'message' => $e->getMessage()
             ], 500);
         }
     }
@@ -115,6 +110,7 @@ class AttendanceController extends Controller
 
         return back()->with('success', 'Time in recorded');
     }
+
     public function timeOut()
     {
         $employee = Auth::user()->id;
@@ -136,20 +132,6 @@ class AttendanceController extends Controller
         return back()->with('success', 'Time out recorded');
     }
 
-    private function getStatusText($statusCode)
-    {
-        $statuses = [
-            6 => '<span class="badge bg-light-success">Present</span>',
-            7 => '<span class="badge bg-light-primary">On Time</span>',
-            8 => '<span class="badge bg-light-primary">On Leave</span>',
-            9 => '<span class="badge bg-light-warning">Late</span>',
-            10 => '<span class="badge bg-light-danger">Absent</span>',
-            13 => '<span class="badge bg-light-success">Approved</span>',
-            null => '<span class="badge bg-light-secondary">Unknown</span>'
-        ];
-        return $statuses[$statusCode];
-    }
-
     public function attendanceList()
     {
         try {
@@ -160,7 +142,7 @@ class AttendanceController extends Controller
             ])->orderBy('date', 'desc')
                 ->orderBy('time_in', 'desc')
                 ->get();
-            // dd($attendances->count());
+
             $result = $attendances->map(function ($attendance) {
                 return [
                     'id' => $attendance->id,
@@ -170,20 +152,22 @@ class AttendanceController extends Controller
                     'time_in' => $attendance->time_in ? Carbon::parse($attendance->time_in)->format('h:i A') : 'N/A',
                     'time_out' => $attendance->time_out ? Carbon::parse($attendance->time_out)->format('h:i A') : 'N/A',
                     'total_minutes' => $attendance->hours_worked,
-                    'status' => $this->getStatusText($attendance->status),
+                    'status' => Status::getStatusText($attendance->status),
                     'tardiness' => $attendance->tardiness_minutes ? $this->formatMinutes($attendance->tardiness_minutes) : 'None',
                     'overtime' => $attendance->overtime_minutes ? $this->formatHours($attendance->overtime_minutes) : 'None',
                     'leave_info' => $attendance->status == 8
-                        ? $this->getStatusText(optional($attendance->leaveRS)->status)
+                        ? Status::getStatusText(optional($attendance->leaveRS)->status)
                         : 'N/A',
 
                 ];
             });
-            // dd($result);
+
             return response()->json(["data" => $result]);
         } catch (\Exception $e) {
-            Log::error('Attendance list error: ' . $e->getMessage());
-            return response()->json(["data" => []]);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }

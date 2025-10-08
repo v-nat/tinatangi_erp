@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Validation\ValidationException;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Helpers\Sanitizer;
@@ -53,7 +52,6 @@ class EmployeeController extends Controller
                     ->whereIn('level', $higherLevels);
             })->pluck('id');
 
-            // Fallbacks
             if ($supervisorIds->isEmpty()) {
                 $supervisorIds = Employee::where('level', 'manager')->where('department', 2)->pluck('id');
             }
@@ -62,10 +60,10 @@ class EmployeeController extends Controller
                 $supervisorIds = Employee::where('level', 'ceo')->pluck('id');
             }
         }
-        // $department = Department::findOrFail(Employee::findOrFail($supervisorIds)->pluck('department'))->pluck('name');
+
         $supervisors = User::whereIn('id', $supervisorIds)
             ->get(['id', 'first_name', 'last_name']);
-        // $nameWithDept = $supervisors . '( ' . $department . ' )';
+
         return response()->json($supervisors);
     }
 
@@ -73,18 +71,15 @@ class EmployeeController extends Controller
     public function getPositions(Request $request)
     {
         $department = $request->input('department');
-        // dd  ($department);
+
         if (!$department) {
             return response()->json(['error' => 'Missing department'], 400);
         }
         $positions = Position::inDepartment($department)->get();
-        // $positions = $positions->map(function ($position) {
-        //     return ['id'=> $position->id,'name'=> $position->name];
-        // });
+
         $positions = Position::where('department_id', $department)
             ->select('id', 'name', 'level')
             ->get();
-        // dd ($positions);
 
         return response()->json($positions);
     }
@@ -111,7 +106,7 @@ class EmployeeController extends Controller
             $levelEnum = Level::tryFrom($levelInput);
 
             $employee_Id = GenerateIdController::generateID('employee');
-            
+
             // Create accounts
             $user = User::create([
                 'id' => $employee_Id,
@@ -172,9 +167,8 @@ class EmployeeController extends Controller
         $user = User::findOrFail($id);
         $departments = Department::all();
 
-
         $positionName = $employee->position->name;
-        // dd($positionName);
+
         $mode = 'edit';
         $direct_supervisor = User::find($employee->supervisor_id);
         $direct_supervisor_name = $direct_supervisor->first_name . ' ' . $direct_supervisor->last_name;
@@ -201,7 +195,7 @@ class EmployeeController extends Controller
             'philhealth' => $employee->philhealth,
             'base_salary' => $employee->base_salary,
         ];
-        // dd  ($employee);
+
         return view("pages.admin.human_resources.manage-employee", compact("data", "departments", "mode", "title", "id"));
     }
 

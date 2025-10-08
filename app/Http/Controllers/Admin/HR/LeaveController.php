@@ -3,25 +3,20 @@
 namespace App\Http\Controllers\Admin\HR;
 
 use App\Http\Controllers\Controller;
-
+use App\Http\Requests\StoreLeaveRequest;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use App\Models\Leave;
-use App\Models\Attendance;
 use App\Models\Status;
 
 class LeaveController extends Controller
 {
-    //
     public function index()
     {
         try {
             $query = Leave::with(['statusRS', 'employeeRS', 'employeeRS.deptRS'])->orderBy('start_date', 'desc');
-            // dd($query);
+
             $leaves = $query->get();
             $result = $leaves->map(function ($leave) {
                 return [
@@ -36,11 +31,10 @@ class LeaveController extends Controller
                     'status'            => Status::getStatusText($leave->status),
                 ];
             });
-            // dd($result);
+
             return response()->json(['data' => $result]);
         } catch (\Exception $e) {
-            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -48,16 +42,18 @@ class LeaveController extends Controller
     {
         try {
             $leave = Leave::findOrFail($leave_id);
-            // $employee = Auth::user()->id;
+            $reason = request()->input('reason', '');
 
             $leave->status = 13;
-            $leave->reason = request()->input('reason', '');
+            if ($reason) {
+                $leave->reason = $reason;
+            }
             $leave->approved_by = auth('')->user()->id;
             $leave->approval_date = now();
             $leave->save();
 
             $startDate = Carbon::create($leave->start_date);
-            $endDate = Carbon::create($leave->end_date );
+            $endDate = Carbon::create($leave->end_date);
 
             $records = [];
 
@@ -100,7 +96,6 @@ class LeaveController extends Controller
     {
         try {
             $leave = Leave::findOrFail($leave_id);
-            // $employee = Auth::user()->id;
 
             $leave->status = 12;
             $leave->reason = request()->input('reason', '');
@@ -125,7 +120,6 @@ class LeaveController extends Controller
             $query = Leave::where('employee_id', $id);
 
             $leaves = $query->get();
-            // dd($query);
             $result = $leaves->map(function ($leave) {
                 return [
                     'start_date'        => $leave->start_date ?? 'N/A',
@@ -134,41 +128,29 @@ class LeaveController extends Controller
                     'status'            => Status::getStatusText($leave->status),
                 ];
             });
-            // dd($result);
+
             return response()->json(['data' => $result]);
         } catch (\Exception $e) {
-            Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    public function submitReq(Request $request)
+    public function submitReq(StoreLeaveRequest $request)
     {
         try {
             DB::beginTransaction();
 
-            $validator = Validator::make($request->all(), [
-                'employee_id' => 'required|integer|exists:employees,id',
-                'start_date' => 'required',
-                'end_date' => 'required',
-                'reason' => 'required|string',
-            ]);
+            $validated = $request->validated();
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'error' => 'Validation failed',
-                    'messages' => $validator->errors()->all()
-                ], 422);
-            }
-            // dd($request);
             Leave::create([
-                'employee_id' => $request->employee_id,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'reason' => $request->reason ?? '',
+                'employee_id' => $validated['employee_id'],
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+                'reason' => $validated['reason'] ?? '',
                 'status' => 11,
             ]);
             DB::commit();
+
             return response()->json(['message' => 'Leave submitted successfully!'], 201);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
