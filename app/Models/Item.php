@@ -36,7 +36,10 @@ class Item extends Model
         return $query->where('category_id', $catId);
     }
 
-    public function unit(): BelongsTo{
+    public function unitRS(): BelongsTo{
         return $this->belongsTo(ItemUnit::class, 'unit_id');
+    }
+    public function inventoryLocation(): BelongsTo {
+        return $this->belongsTo(InventoryLocation::class, 'inventory_location_id');
     }
 }

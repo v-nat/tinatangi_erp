@@ -34,7 +34,7 @@ class PurchaseOrderController extends Controller
             return response()->json(['error' => 'Missing Category'], 400);
         }
         $items = Item::incategory($category)->get();
-        $items = Item::with(['unit'])->where('category_id', $category)
+        $items = Item::with(['unitRS'])->where('category_id', $category)
             ->get();
 
         return response()->json(
@@ -42,7 +42,7 @@ class PurchaseOrderController extends Controller
                 return [
                     'id' => $item->id,
                     'name' => $item->name,
-                    'unit_id' => optional($item->unit)->abbreviation,
+                    'unit_id' => optional($item->unitRS)->abbreviation,
                     'unit_price' => (float)$item->unit_price,
                 ];
             })

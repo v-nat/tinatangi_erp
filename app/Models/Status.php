@@ -12,7 +12,7 @@ class Status extends Model
     //
     use HasFactory, SoftDeletes;
     protected $table = 'status';
-    protected $fillable = ['status'];
+    protected $fillable = ['id', 'status'];
 
     /*
     |--------------------------------------------------------------------------
@@ -46,6 +46,9 @@ class Status extends Model
             21 => '<span class="badge bg-warning">Pending<br>Supplier</span>',
             22 => '<span class="badge bg-danger">Return</span>',
             23 => '<span class="badge bg-success">Completed</span>',
+            24 => '<span class="badge bg-success">On Stock</span>',
+            25 => '<span class="badge bg-warning">Low Stock</span>',
+            26 => '<span class="badge bg-danger">Out of Stock</span>',
             null => '<span class="badge bg-secondary">Unknown</span>'
         ];
         return $statuses[$statusCode];
@@ -75,6 +78,9 @@ class Status extends Model
             21 => '<div class="alert alert-warning">Pending - Supplier</div>',
             22 => '<div class="alert alert-danger">Return</div>',
             23 => '<div class="alert alert-success">Completed</div>',
+            24 => '<div class="alert alert-success">On Stock</div>',
+            25 => '<div class="alert alert-warning">Low Stock</div>',
+            266 => '<div class="alert alert-danger">Out of Stock</div>',
             null => '<span class="badge bg-secondary">Unknown</div>'
         ];
         return $statuses[$statusCode];

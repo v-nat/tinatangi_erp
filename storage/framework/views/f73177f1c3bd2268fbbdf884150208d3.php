@@ -17,7 +17,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="purchaseOrderTable" class="table table-hover dataTable no-footer"
+                    <table id="allInventoryItems" class="table table-hover dataTable no-footer"
                         style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
@@ -25,12 +25,11 @@
                                 <th>SKU</th>
                                 <th>Item Name</th>
                                 <th>Unit</th>
+                                <th>Location</th>
                                 <th>Category</th>
                                 <th>Stocks</th>
                                 <th>Cost Price</th>
-                                <th>Selling Price</th>
                                 <th>Status</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,6 +42,7 @@
     </section>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
+    <script type="module" src="<?php echo e(asset('js/inventoryAllItems.js')); ?>"></script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/inventory/all-items.blade.php ENDPATH**/ ?>

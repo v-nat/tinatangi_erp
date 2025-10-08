@@ -30,7 +30,7 @@ class StockTransaction extends Model
      */
     protected $casts = [
         // 'transaction_date' is a timestamp in the DB, but can be managed by Laravel
-        'transaction_type' => \App\Enums\transaction_type::class,
+        'transaction_type' => \App\Enums\TransactionType::class,
         'transaction_date' => 'datetime',
         'quantity' => 'decimal:3', // Ensures quantity is cast as a float/decimal with 3 places
     ];

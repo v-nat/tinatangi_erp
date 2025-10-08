@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('unit_price', 10,2)->default(0);
 
             $table->foreignId('category_id')->references('id')->on('categories')->onDelete('cascade');
-
+            $table->foreignId('inventory_location_id')->references('id')->on('inventory_locations')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

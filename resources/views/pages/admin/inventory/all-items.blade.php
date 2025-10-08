@@ -18,7 +18,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="purchaseOrderTable" class="table table-hover dataTable no-footer"
+                    <table id="allInventoryItems" class="table table-hover dataTable no-footer"
                         style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
@@ -26,12 +26,11 @@
                                 <th>SKU</th>
                                 <th>Item Name</th>
                                 <th>Unit</th>
+                                <th>Location</th>
                                 <th>Category</th>
                                 <th>Stocks</th>
                                 <th>Cost Price</th>
-                                <th>Selling Price</th>
                                 <th>Status</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,4 +43,5 @@
     </section>
 @endsection
 @section('scripts')
+    <script type="module" src="{{ asset('js/inventoryAllItems.js') }}"></script>
 @endsection
