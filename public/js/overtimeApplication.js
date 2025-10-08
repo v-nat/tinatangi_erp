@@ -3,6 +3,7 @@ import {
     formatDate,
     formatTime,
     formatMinutesToHours,
+    getTodayDateString,
 } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {
@@ -74,7 +75,7 @@ $(document).ready(function () {
                 text: "Time End should not be earlier than Time Start",
                 icon: "warning",
             });
-            $("#time_end").val(""); // optional: clear invalid input
+            $("#time_end").val(""); 
         }
         if (start > end) {
             $("#reqOt").prop("disabled", true);
@@ -82,6 +83,8 @@ $(document).ready(function () {
             $("#reqOt").prop("disabled", false);
         }
     });
+
+    $("#date").attr("max", getTodayDateString());
 
     $("#reqOt").click(function (e) {
         e.preventDefault();

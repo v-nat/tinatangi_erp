@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin\Procurement;
 
-use Carbon\Carbon;
 use App\Models\Item;
 use App\Models\Invoice;
 use App\Models\Category;
@@ -17,8 +16,6 @@ use App\Http\Controllers\GenerateIdController;
 
 class PurchaseOrderController extends Controller
 {
-    //
-
     public function getCategories()
     {
         try {
@@ -37,9 +34,6 @@ class PurchaseOrderController extends Controller
             return response()->json(['error' => 'Missing Category'], 400);
         }
         $items = Item::incategory($category)->get();
-        // $items = $items->map(function ($position) {
-        //     return ['id'=> $position->id,'name'=> $position->name];
-        // });
         $items = Item::with(['unit'])->where('category_id', $category)
             ->get();
 
@@ -48,7 +42,6 @@ class PurchaseOrderController extends Controller
                 return [
                     'id' => $item->id,
                     'name' => $item->name,
-                    // Get the unit abbreviation (e.g., 'KG', 'PCS')
                     'unit_id' => optional($item->unit)->abbreviation,
                     'unit_price' => (float)$item->unit_price,
                 ];

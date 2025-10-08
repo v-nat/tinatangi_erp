@@ -8,7 +8,6 @@ use Carbon\Carbon;
 
 class HR_Controller extends Controller
 {
-    //
     public function index()
     {
         $employees = Employee::with(['position'])->get();
@@ -27,7 +26,7 @@ class HR_Controller extends Controller
     {
         try {
             $employees = Employee::with(['user', 'user.statusRS', 'supervisor.user', 'position'])->orderBy('created_at', 'desc')->get();
-            // dd($employees);
+
             return response()->json([
                 'data' => $employees->map(function ($e) {
                     return [
@@ -42,12 +41,11 @@ class HR_Controller extends Controller
                 })
             ]);
         } catch (\Exception $e) {
-            // \Log::error('Opening case fetch failed', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    public function otApp()
+    public function otMngmnt()
     {
         return view('pages.admin.human_resources.ot-mngmnt');
     }
@@ -60,7 +58,7 @@ class HR_Controller extends Controller
     {
         return view('pages.admin.human_resources.leave-application', compact('id'));
     }
-    public function leaveApp()
+    public function leaveMngmnt()
     {
         return view('pages.admin.human_resources.leave-mngmnt');
     }

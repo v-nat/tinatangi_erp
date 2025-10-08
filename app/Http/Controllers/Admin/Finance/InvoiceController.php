@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Finance;
 
-use App\Models\Status;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 
 class InvoiceController extends Controller
 {
-    //
     public function getInvoiceForViewing($id)
     {
         try {

@@ -33,7 +33,7 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/ceo', [EmployeeController::class, 'getCEO']);
 
     //////////////////////////////// OVERTIME ///////////////////////////////////////////
-    Route::get('/humanresources/overtimes', [HR_Controller::class, 'otApp'])->name('hr.ot-app');
+    Route::get('/humanresources/overtimes', [HR_Controller::class, 'otMngmnt'])->name('hr.ot-app');
     Route::get('/employee/overtimes/{id}', [HR_Controller::class, 'otApplication'])->name('hr.ot-application');
     Route::get('/employee/overtimes/requests/list/{id}', [OvertimeController::class, 'getUserReq']);
     Route::post('/employee/overtimes/request/submit', [OvertimeController::class, 'submitReq']);
@@ -42,7 +42,7 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::post('/humanresources/overtime/reject/{overtime_id}', [OvertimeController::class, 'reject']);
 
     ///////////////////////////////// LEAVE ////////////////////////////////////////////
-    Route::get('/humanresources/leaves', [HR_Controller::class, 'leaveApp'])->name('hr.leave-app');
+    Route::get('/humanresources/leaves', [HR_Controller::class, 'leaveMngmnt'])->name('hr.leave-app');
     Route::get('/employee/leaves/{id}', [HR_Controller::class, 'leaveApplication'])->name('hr.leave-application');
     Route::get('/employee/leaves/requests/list/{id}', [LeaveController::class, 'getUserReq']);
     Route::post('/employee/leaves/request/submit', [LeaveController::class, 'submitReq']);

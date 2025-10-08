@@ -2,18 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Procurement;
 
-use Carbon\Carbon;
 use App\Models\Status;
-use App\Models\Invoice;
-use Illuminate\Http\Request;
-use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
 use App\Http\Controllers\Controller;
-use App\Models\InventoryItem;
 
 class ProcurementController extends Controller
 {
-    //
     public function index()
     {
         return view("pages.admin.procurement.index");
@@ -47,10 +41,8 @@ class ProcurementController extends Controller
             return response()->json([
                 'data' => $purchaseRequests->map(function ($request_data) {
 
-                    // --- 1. Map the Purchase Orders (Collection) ---
                     $mappedOrders = $request_data->purchaseOrders->map(function ($order) {
 
-                        // Return the individual Purchase Order object
                         return [
                             'purchase_order_id' => $order->purchase_orderId,
                             'order_date' => $order->order_date,
@@ -59,7 +51,6 @@ class ProcurementController extends Controller
                         ];
                     });
 
-                    // --- 2. Return the main Purchase Request object ---
                     return [
                         'id'             => $request_data->id,
                         'type'           => $request_data->type,
@@ -76,7 +67,7 @@ class ProcurementController extends Controller
                 })
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }
