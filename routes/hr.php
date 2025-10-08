@@ -13,6 +13,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/isOnLeave', [AttendanceController::class, 'isOnLeave']);
     Route::post('/attendance/time-in', [AttendanceController::class, 'timeIn']);
     Route::post('/attendance/time-out', [AttendanceController::class, 'timeOut']);
+    Route::get('/attendance/employee-attendance-list/{id}', [AttendanceController::class, 'employeeAttendanceList'])->name('employee.attendance.list');
+    Route::get('/attendance/get-employee-attendance-list/{id}', [AttendanceController::class, 'getEmployeeAttendanceList']);
 });
 
 Route::middleware(['auth' , 'isEmployee'])->group(function () {

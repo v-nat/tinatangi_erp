@@ -56,7 +56,7 @@
                         <h6 class="dropdown-header">Hello, <?php echo e(auth()->user()->first_name); ?>!</h6>
                     </li>
                     <div class="<?php echo $__env->yieldContent('topnavEmp'); ?>">
-                        <li><a class="dropdown-item" href="#"><i class="fa-solid fa-clock"></i>
+                        <li><a class="dropdown-item" href="#" id="showAttendanceModal"><i class="fa-solid fa-clock"></i>
                                 Attendance</a></li>
                         <li><a class="dropdown-item"
                                 href="<?php echo e(route('hr.ot-application', ['id' => Auth::user()->id])); ?>"><i
@@ -80,4 +80,5 @@
             </div>
         </div>
     </div>
-</nav><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/top-navbar.blade.php ENDPATH**/ ?>
+</nav>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/top-navbar.blade.php ENDPATH**/ ?>

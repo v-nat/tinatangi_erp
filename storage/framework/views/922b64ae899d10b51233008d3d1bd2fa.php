@@ -51,6 +51,7 @@ if (auth()->user()->user_type == 'supplier') {
             </div>
         </div>
 
+        <?php echo $__env->make('layouts.modals.attendance-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         <style>
             #untilLoaded {
@@ -140,6 +141,7 @@ if (auth()->user()->user_type == 'supplier') {
         <script src="<?php echo e(asset('source/jquery/datatables.min.js')); ?>"></script>
         <script src="<?php echo e(asset('assets/js/bootstrap.bundle.min.js')); ?>"></script>
         <script src="<?php echo e(asset('js/logout.js')); ?>"></script>
+        <script type="module" src="<?php echo e(asset('js/employeeAttendance.js')); ?>"></script>
         <?php echo $__env->yieldContent('scripts'); ?>
 </body>
 
