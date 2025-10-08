@@ -11,6 +11,12 @@ $(document).ready(function () {
         },
     });
 
+    // Show Attendance Modal
+    $("#showAttendanceModal").click(function (e) {
+        e.preventDefault();
+        $("#employeeAttendance").modal("show");
+    });
+
     function showError(message) {
         Toast.fire({
             icon: "error",
@@ -25,11 +31,9 @@ $(document).ready(function () {
             icon: "success",
             title: "Success",
             text: message,
-            timer: 500,
+            timer: 1500,
         });
     }
-    let isOnLeave;
-    let timeIn = null;
 
     function getCurrentManilaTime() {
         const options = {
@@ -157,14 +161,13 @@ $(document).ready(function () {
                     cancelButtonText: "Cancel",
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        $("#LoadingScreen").fadeIn(200);
                         $.post("/attendance/time-in")
                             .done(function (response) {
                                 hasAttendanceToday();
+                                $("#employeeAttendance").modal("hide");
                                 timeIn = $("#timeInDisplay").text;
-                                isTimeIn = true;
-                                $("#attendanceTable")
-                                    .DataTable()
-                                    .ajax.reload(null, false);
+                                $("#LoadingScreen").fadeOut(200);
                                 showSuccess("Time in recorded successfully!");
                             })
                             .fail(function (xhr) {
@@ -192,13 +195,12 @@ $(document).ready(function () {
             cancelButtonText: "Cancel",
         }).then((result) => {
             if (result.isConfirmed) {
+                $("#LoadingScreen").fadeIn(200);
                 $.post("/attendance/time-out")
                     .done(function (response) {
-                        hasAttendanceToday(); // Refresh the display
-                        isTimeIn = false;
-                        $("#attendanceTable")
-                            .DataTable()
-                            .ajax.reload(null, false); // Preserve current page
+                        hasAttendanceToday();
+                        $("#employeeAttendance").modal("hide");
+                        $("#LoadingScreen").fadeOut(200);
                         showSuccess("Time out recorded successfully!");
                     })
                     .fail(function (xhr) {
@@ -211,11 +213,13 @@ $(document).ready(function () {
         });
     });
 
-    $("#attendanceTable").DataTable({
+    const id = $("#employee_id").text().trim();
+
+    $("#employeeAttendanceTable").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
-            url: "/humanresources/attendance/list",
+            url: "/attendance/get-employee-attendance-list/" + id,
             type: "GET",
             dataSrc: "data",
             error: function (xhr) {

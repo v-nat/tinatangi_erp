@@ -51,6 +51,7 @@ if (auth()->user()->user_type == 'supplier') {
             </div>
         </div>
 
+        @include('layouts.modals.attendance-modal')
 
         <style>
             #untilLoaded {
@@ -140,6 +141,7 @@ if (auth()->user()->user_type == 'supplier') {
         <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
         <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('js/logout.js') }}"></script>
+        <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
         @yield('scripts')
 </body>
 

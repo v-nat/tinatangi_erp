@@ -57,7 +57,7 @@
                         <h6 class="dropdown-header">Hello, {{ auth()->user()->first_name }}!</h6>
                     </li>
                     <div class="@yield('topnavEmp')">
-                        <li><a class="dropdown-item" href="#"><i class="fa-solid fa-clock"></i>
+                        <li><a class="dropdown-item" href="#" id="showAttendanceModal"><i class="fa-solid fa-clock"></i>
                                 Attendance</a></li>
                         <li><a class="dropdown-item"
                                 href="{{route('hr.ot-application', ['id' => Auth::user()->id])}}"><i

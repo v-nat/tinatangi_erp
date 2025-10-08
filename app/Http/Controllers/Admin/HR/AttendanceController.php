@@ -170,4 +170,49 @@ class AttendanceController extends Controller
             ], 500);
         }
     }
+
+    public function employeeAttendanceList($id)
+    {
+        return view('pages.admin.human_resources.employee-attendance', compact('id'));
+    }
+
+    public function getEmployeeAttendanceList($id)
+    {
+        try {
+            $attendances = Attendance::with([
+                'atEmployeeRS',
+                'leaveRS',
+                'overtimeRS'
+            ])->where('employee_id', $id)
+                ->orderBy('date', 'desc')
+                ->orderBy('time_in', 'desc')
+                ->get();
+
+            $result = $attendances->map(function ($attendance) {
+                return [
+                    'id' => $attendance->id,
+                    'employee_id' => $attendance->employee_id ?? 'N/A',
+                    'name' => optional(optional($attendance->atEmployeeRS)->userRS)->full_name,
+                    'date' => $attendance->date->format('Y-m-d'),
+                    'time_in' => $attendance->time_in ? Carbon::parse($attendance->time_in)->format('h:i A') : 'N/A',
+                    'time_out' => $attendance->time_out ? Carbon::parse($attendance->time_out)->format('h:i A') : 'N/A',
+                    'total_minutes' => $attendance->hours_worked,
+                    'status' => Status::getStatusText($attendance->status),
+                    'tardiness' => $attendance->tardiness_minutes ? $this->formatMinutes($attendance->tardiness_minutes) : 'None',
+                    'overtime' => $attendance->overtime_minutes ? $this->formatHours($attendance->overtime_minutes) : 'None',
+                    'leave_info' => $attendance->status == 8
+                        ? Status::getStatusText(optional($attendance->leaveRS)->status)
+                        : 'N/A',
+
+                ];
+            });
+
+            return response()->json(["data" => $result]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
