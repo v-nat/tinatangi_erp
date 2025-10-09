@@ -98,10 +98,38 @@ class PurchaseOrderController extends Controller
                     'total_amount' => $itemData['total'],
                     'backorder_qnty' => null,
                     'delivered_qnty' => null,
+                    'sku' => null,
                     'status' => 11,
                 ]);
             }
 
+            DB::commit();
+
+            return response()->json(['message' => 'Purchase Request submitted successfully!'], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Controller Error: ' . $e->getMessage()], 500);
+        }
+    }
+    public function sendReq(Request $request)
+    {
+        try {
+            $id = $request->order_id;
+            $supplier = $request->supplier;
+            DB::beginTransaction();
+            $purchase_req = PurchaseRequest::where('id', $id)->first();
+            $purchase_req->type = 'Purchase Order Request';
+            $purchase_req->supplier_id = $supplier;
+            $purchase_req->status = 11;
+            $purchase_req->save();
+            $purchase_order = PurchaseOrder::where('purchase_request_id', $id)->first();
+            $purchase_order->supplier_id = $supplier;
+            $purchase_order->remarks = 'pending request';
+            $purchase_order->status = 11;
+            $purchase_order->save();
+            $purchase_order_detail = PurchaseOrderDetail::where('purchase_order_id', $purchase_order->id)->first();
+            $purchase_order_detail->status = 11;
+            $purchase_order_detail->save();
             DB::commit();
 
             return response()->json(['message' => 'Purchase Request submitted successfully!'], 201);

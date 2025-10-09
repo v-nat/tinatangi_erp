@@ -16,6 +16,7 @@ return new class extends Migration
             // Transaction details
             $table->enum('transaction_type', ['IN', 'OUT', 'ADJ', 'TRANSFER']);
             $table->decimal('quantity', 10, 3);
+            $table->decimal('old_qnt', 10, 3)->default(0);
             $table->timestamp('transaction_date')->useCurrent();
 
             // Reference for tracing
@@ -24,6 +25,7 @@ return new class extends Migration
 
             // User tracking
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('set null');
 
             $table->unsignedBigInteger('status')->default(11);
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');

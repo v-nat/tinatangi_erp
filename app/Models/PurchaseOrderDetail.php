@@ -22,6 +22,7 @@ class PurchaseOrderDetail extends Model
         'total_amount',
         'backorder_qnty',
         'delivered_qnty',
+        'sku',
         'status',
     ];
 

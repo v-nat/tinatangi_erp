@@ -144,7 +144,9 @@ $(document).ready(function () {
                         `;
                     } else if (
                         row.status ==
-                        '<span class="badge bg-success">Delivered</span>'
+                        '<span class="badge bg-success">Delivered</span>' ||
+                        row.status ==
+                        '<span class="badge bg-success">Completed</span>'
                     ) {
                         return `
                         <div class="action-btns">

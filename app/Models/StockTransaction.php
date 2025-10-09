@@ -17,6 +17,7 @@ class StockTransaction extends Model
     protected $fillable = [
         'transaction_type',
         'quantity',
+        'old_qnty',
         'reference_type',
         'reference_id',
         'user_id',

@@ -60,6 +60,7 @@ class FinanceController extends Controller
     {
         try {
             $requests = PurchaseRequest::with(['employeeRS', 'deptRS', 'statusRS'])
+                ->whereNot('status', 27)
                 ->orderBy('requested_date', 'desc')->get();
             // dd($employees);
             return response()->json([
