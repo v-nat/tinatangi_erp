@@ -18,7 +18,7 @@ class Attendance extends Seeder
         $employeeId = 4;
 
         // Start date: September 1, 2025
-        $startDate = Carbon::create(2025, 9, 1);
+        $startDate = Carbon::create(2025, 10, 1);
 
         $records = [];
 

@@ -24,7 +24,7 @@
                         </div>
                         <div class="col-md-8">
                             <h6 class="text-muted font-semibold">To Receive </h6>
-                            <h6 class="font-extrabold mb-0" id="toRecieveCount"></h6>
+                            <h5 class="font-extrabold mb-0" id="toRecieveCount"></h5>
                         </div>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="col-md-8">
                             <h6 class="text-muted font-semibold">Total Stocks</h6>
-                            <h6 class="font-extrabold mb-0" id="totalStocksCount"></h6>
+                            <h5 class="font-extrabold mb-0" id="totalStocksCount"></h5>
                         </div>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                         </div>
                         <div class="col-md-8">
                             <h6 class="text-muted font-semibold">Low Stocks</h6>
-                            <h6 class="font-extrabold mb-0" id="lowStocksCount"></h6>
+                            <h5 class="font-extrabold mb-0" id="lowStocksCount"></h5>
                         </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                         </div>
                         <div class="col-md-8">
                             <h6 class="text-muted font-semibold">Out of Stock</h6>
-                            <h6 class="font-extrabold mb-0" id="outOfStockCount"></h6>
+                            <h5 class="font-extrabold mb-0" id="outOfStockCount"></h5>
                         </div>
                     </div>
                 </div>

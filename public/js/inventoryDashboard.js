@@ -153,7 +153,7 @@ $(document).ready(function () {
 
         if (!Array.isArray(requests) || requests.length === 0) {
             $(ALERT_TO_CLAIM_ID).html(
-                `<div class="alert alert-light-success">No purchase requests are currently ready for receiving.</div>`
+                `<div class="alert alert-light-success">No purchase orders are currently ready for receiving.</div>`
             );
             return;
         }
@@ -220,7 +220,7 @@ $(document).ready(function () {
 
         if (!Array.isArray(requests) || requests.length === 0) {
             $(ALERT_TO_RESTOCK_ID).html(
-                `<div class="alert alert-light-warning"No items are currently low in stocks.</div>`
+                `<div class="alert alert-light-warning">No items are currently low in stocks.</div>`
             );
             return;
         }
@@ -229,10 +229,12 @@ $(document).ready(function () {
         const hasMore = requests.length > limit;
 
         requestsToDisplay.forEach((request) => {
-            const id = request.id;
+            const item_id = request.item_id;
             const sku = request.sku;
             const category = request.category || "N/A";
             const item_name = request.item_name || "N/A";
+            const unit_price = request.unit_price;
+            const unit = request.unit;
             let head = `<div class="alert alert-light-warning alert-dismissible fade show" role="alert">`;
             let counts = `<p class="mb-0 ">Current Stock(s): ${request.stock_level}</p>`;
             if (request.stock_level === 0) {
@@ -252,7 +254,10 @@ $(document).ready(function () {
                             </div>
                         </div>
                         <div class="col-4 col-lg-4 col-md-4 p-0 justify-content-end align-items-center d-flex">
-                            <a href="#" class="btn icon btn-sm btn-success btn-receive bs-tooltip me-2" data-id="${id}" title="Restock Inventory">
+                            <a href="#" class="btn icon btn-sm btn-success btn-restock bs-tooltip me-2"
+                            data-id="${sku}" data-item-id="${item_id}"
+                            data-item-name="${item_name}" data-unit-price="${unit_price}"
+                            data-unit="${unit}" title="Restock Inventory">
                                 <i class="fa-solid fa-receipt"></i>
                             </a>
                         </div>
@@ -261,7 +266,6 @@ $(document).ready(function () {
             `;
 
             $(ALERT_TO_RESTOCK_ID).append(alertHtml);
-
         });
 
         if (hasMore) {
@@ -304,6 +308,147 @@ $(document).ready(function () {
             });
     });
 
+    $(document).on("click", ".btn-restock", function () {
+        const id = $(this).data("id");
+        const item_id = $(this).data("item-id");
+        const item_name = $(this).data("item-name");
+        const unit_price = $(this).data("unit-price");
+        const unit = $(this).data("unit");
+
+        $("#req_item_id").val(item_id);
+        $("#req_sku").val(id);
+        $("#req_item_name").text("Item Name: " + item_name);
+        $("#req_unit_price").text("Unit Pirce: ₱" + unit_price);
+        $("#req_unit").text("Unit: " + unit);
+        $("#req_unit_price").attr("data-price", unit_price);
+        $("#stockRequest").modal("show");
+    });
+
+    function updateTotalPrice() {
+        const $unitPriceElement = $("#req_unit_price");
+        const unitPrice = parseFloat($unitPriceElement.data("price")) || 0;
+        const $quantityInput = $("#qnty");
+        const quantity = parseInt($quantityInput.val()) || 0;
+        const $totalPriceElement = $("#total_price");
+
+        if (unitPrice <= 0) {
+            $totalPriceElement.text("");
+            return;
+        }
+
+        const totalPriceValue = unitPrice * quantity;
+
+        const formattedPrice = totalPriceValue.toLocaleString("en-PH", {
+            style: "currency",
+            currency: "PHP",
+            minimumFractionDigits: 2,
+        });
+
+        $totalPriceElement.text("Total Price: " + formattedPrice);
+    }
+
+    $("#cancelStockReq").click(function (e) {
+        e.preventDefault();
+        clearRestockFields();
+    });
+
+    $("#qnty").on("input", updateTotalPrice);
+
+    updateTotalPrice();
+
+    $("#submit-req-btn").click(function (e) {
+        e.preventDefault();
+        let isValid = true;
+        const $form = $("#restockReqForm");
+
+        $form.find("input, number").each(function () {
+            const $field = $(this);
+            const value = $field.val();
+            if ($field.prop("required") && (!value || !value.trim())) {
+                $field.addClass("is-invalid");
+                isValid = false;
+            } else {
+                $field.removeClass("is-invalid");
+            }
+        });
+
+        if (isValid) {
+            let formData = new FormData($("#restockReqForm")[0]);
+            Swal.fire({
+                title: "Confirm Request",
+                text: "You are about to request a restock for this item.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Submit",
+                cancelButtonText: "Cancel",
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#dc3545",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#LoadingScreen").fadeIn(200);
+                    $.ajax({
+                        headers: {
+                            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                                "content"
+                            ),
+                        },
+                        url: "/inventory/send-restock-request/",
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            $("#LoadingScreen").fadeOut(200);
+                            $("#restockReqForm").trigger("reset");
+                            Toast.fire({
+                                title: "Success!",
+                                text: response.message,
+                                icon: "success",
+                            });
+                            fetchAndUpdateCounts();
+                            getToReceiveRequests();
+                            getToRestockItems();
+                            clearRestockFields();
+                            $("#stockRequest").modal("hide");
+                        },
+                        error: function (xhr) {
+                            // console.error('Error response:', xhr);
+                            $("#LoadingScreen").fadeOut(200);
+                            if (xhr.responseJSON?.errors) {
+                                let errorMessages = Object.values(
+                                    xhr.responseJSON.errors
+                                )
+                                    .flat()
+                                    .join("\n");
+                                Toast.fire(
+                                    "Validation Error",
+                                    errorMessages,
+                                    "error"
+                                );
+                            } else {
+                                Toast.fire(
+                                    "Error",
+                                    "An unexpected error occurred.",
+                                    "error"
+                                );
+                            }
+                        },
+                    });
+                }
+            });
+        }
+    });
+
+    function clearRestockFields() {
+        $("#req_item_id").val("");
+        $("#req_sku").val("");
+        $("#qnty").val("");
+        $("#req_item_name").text("");
+        $("#req_unit_price").text("");
+        $("#total_price").text("");
+        $("#req_unit_price").removeAttr("data-price");
+    }
+
     $(document).on("click", "#receiveItem", function () {
         const req_id = $(this).data("id");
         Swal.fire({
@@ -313,7 +458,6 @@ $(document).ready(function () {
             showCancelButton: true,
             confirmButtonText: "Yes, Receive",
             cancelButtonText: "Cancel",
-            reverseButtons: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#dc3545",
         }).then((result) => {

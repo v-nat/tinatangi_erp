@@ -39,7 +39,8 @@ class StatusSeeder extends Seeder
             23 => 'Completed',
             24 => 'On Stock',
             25 => 'Low Stock',
-            26 => 'Out of Stock'
+            26 => 'Out of Stock',
+            27 => 'Pending Restock',
         ];
 
         foreach ($statusesWithId as $id => $status) {

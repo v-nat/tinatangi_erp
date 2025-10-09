@@ -41,6 +41,13 @@ class GenerateIdController extends Controller
 
                 return response()->json(['order_id' => $_id]);
 
+            case 'purchase_request':
+                do {
+                    $random = rand(10000, 99999);
+                    $_id = $year . $random;
+                } while (PurchaseRequest::pluck('id')->contains($_id));
+                break;
+
             case 'sku':
                 do {
                     $random = rand(10000, 99999);

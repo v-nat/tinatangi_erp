@@ -30,6 +30,9 @@ class Item extends Model
     public function categories(): BelongsTo{
         return $this->belongsTo(Category::class);
     }
+    public function categoryRS(): BelongsTo{
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 
     public function scopeInCategory($query, $catId)
     {

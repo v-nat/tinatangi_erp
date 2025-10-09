@@ -25,9 +25,12 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/procurement/create-purchase-request/get-categories', [PurchaseOrderController::class,'getCategories']);
     Route::get('/procurement/create-purchase-request/get-items', [PurchaseOrderController::class,'getItems']);
     Route::post('/procurement/create-purchase-request/submit-request', [PurchaseOrderController::class,'store']);
+    Route::post('/procurement/complete-purchase-request/submit-request', [PurchaseOrderController::class,'sendReq']);
 
     ///////////////////////////////////////// PURCHASE ORDER //////////////////////////////////////////////////
     Route::get('/procurement/purchases/get-list', [ProcurementController::class, 'purchaseOrdersList']);
+    Route::get('/procurement/purchases/get-requests-list', [ProcurementController::class, 'purchaseRequestsList']);
+    Route::get('/procurement/purchases/get-restock-data/{id}', [ProcurementController::class, 'getRestockData']);
     Route::get('/procurement/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
     Route::get('/procurement/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
     Route::put('/procurement/purchases/order/{id}/{status}', [PurchaseOrderController::class, 'processPurchaseOrders']);

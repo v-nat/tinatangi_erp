@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Admin\Inventory;
 
-use App\Http\Controllers\GenerateIdController;
 use App\Models\Item;
 use App\Models\Stock;
 use App\Models\Status;
+use Illuminate\Http\Request;
 use App\Models\InventoryItem;
 use App\Models\PurchaseOrder;
-use App\Enums\transaction_type;
 use App\Enums\TransactionType;
+use App\Enums\transaction_type;
 use App\Models\PurchaseRequest;
 use App\Models\StockTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseOrderDetail;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GenerateIdController;
 
 class InventoryController extends Controller
 {
@@ -47,12 +48,11 @@ class InventoryController extends Controller
             $stockMargin = $totalStocks * 0.30;
 
             if ($item->stock_level <= 0) {
-                if ($item->status != 26) {
+                if ($item->status != 26 && $item->status != 27) {
                     $outOfStockIds[] = $item->id;
                 }
-            }
-            elseif ($item->stock_level <= $stockMargin) {
-                if ($item->status != 25) {
+            } elseif ($item->stock_level <= $stockMargin) {
+                if ($item->status != 25 && $item->status != 27) {
                     $lowStockIds[] = $item->id;
                 }
                 $lowStockCount++;
@@ -106,7 +106,7 @@ class InventoryController extends Controller
     public function getAllItems()
     {
         try {
-            $items = InventoryItem::with(['itemss', 'category', 'unit', 'itemss.inventoryLocation','itemStatus'])->get();
+            $items = InventoryItem::with(['itemss', 'category', 'unit', 'itemss.inventoryLocation', 'itemStatus'])->get();
 
             return response()->json([
                 'data' => $items->map(function ($item) {
@@ -114,7 +114,7 @@ class InventoryController extends Controller
                         'id'                => $item->id,
                         'sku'               => $item->sku,
                         'item_name'         => optional($item->itemss)->name,
-                        'inventory_location'=> optional(optional($item->itemss)->inventoryLocation)->name,
+                        'inventory_location' => optional(optional($item->itemss)->inventoryLocation)->name,
                         'category'          => optional($item->category)->name,
                         'unit'              => optional($item->unit)->abbreviation,
                         'stock_level'       => (int)$item->stock_level,
@@ -202,11 +202,14 @@ class InventoryController extends Controller
                         'id'                => $item->id,
                         'sku'               => $item->sku,
                         'item_name'         => optional($item->itemss)->name,
+                        'item_id'           => $item->item_id,
                         'category'          => optional($item->category)->name,
-                        'unit'              => optional($item->unit)->abbreviation,
+                        'unit'              => optional($item->unit)->name,
                         'stock_level'       => (int)$item->stock_level,
                         'cost_price'        => (float)$item->cost_price,
                         'status'            => Status::getStatusText($item->status),
+
+                        'unit_price'        => optional($item->itemss)->unit_price,
                     ];
                 })
             ]);
@@ -260,6 +263,73 @@ class InventoryController extends Controller
             }
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Inventory received and stock updated successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function restockRequest(Request $request)
+    {
+        try {
+            $sku = $request->sku;
+            $item_id = $request->item_id;
+            $quantity = $request->qnty;
+
+            DB::beginTransaction();
+
+            $inventoryItem = InventoryItem::where('sku', $sku)->first();
+            $inventoryItem->status = 27;
+            $inventoryItem->save();
+
+            $id = GenerateIdController::generateID('purchase_request');
+            $item = Item::findOrFail($item_id)->first();
+            $total_amount = $item->unit_price * $quantity;
+
+            $purchase_req = PurchaseRequest::create([
+                'id' => (int)$id,
+                'type' => 'Restock Request',
+                'department' => 5,
+                'amount' => $total_amount,
+                'requested_by_id' => auth('')->user()->id,
+                'requested_date' => now(),
+                'remarks' => '',
+                'supplier_id' => null,
+                'status' => 27,
+            ]);
+            $purchase_req->save();
+            $purchase_order = PurchaseOrder::create([
+                'type' => 'Restock Request',
+                'purchase_orderId' => (int)$id,
+                'purchase_request_id' => $purchase_req->id,
+                'order_date' => null,
+                'expected_delivery_date' => null,
+                'delivery_date' => null,
+                'delivery_name' => null,
+                'remarks' => 'pending to generate purchase request',
+                'created_by_id' => auth('')->user()->id,
+                'supplier_id' => null,
+                'status' => 27,
+            ]);
+            $purchase_order->save();
+            PurchaseOrderDetail::create([
+                'purchase_order_id' => $purchase_order->id,
+                'item_id' => $item_id,
+                'category_id' => $item->category_id,
+                'quantity' => $quantity,
+                'unit_price' => $item->unit_price,
+                'total_amount' => $total_amount,
+                'backorder_qnty' => null,
+                'delivered_qnty' => null,
+                'sku' => $sku,
+                'status' => 27,
+            ]);
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Restock Request Submitted Successfully.'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);

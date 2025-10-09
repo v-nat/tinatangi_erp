@@ -28,6 +28,7 @@ return new class extends Migration
 
             $table->integer('backorder_qnty')->unsigned()->nullable();
             $table->integer('delivered_qnty')->unsigned()->nullable();
+            $table->string('sku')->nullable();
 
             $table->unsignedBigInteger('status')->default(11);
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
