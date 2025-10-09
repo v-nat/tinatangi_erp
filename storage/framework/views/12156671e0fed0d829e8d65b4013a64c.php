@@ -11,4 +11,10 @@
         <span>All Items</span>
     </a>
 </li>
+<li class="sidebar-item <?php echo $__env->yieldContent('inventoryTransactions'); ?> ">
+    <a href="<?php echo e(route('inventory.transactions')); ?>" class='sidebar-link'>
+        <i class="bi bi-receipt"></i>
+        <span>Stock Transactions</span>
+    </a>
+</li>
 <?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modules-sidebar/inventory-sidebar.blade.php ENDPATH**/ ?>

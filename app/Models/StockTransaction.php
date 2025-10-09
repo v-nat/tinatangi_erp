@@ -18,6 +18,7 @@ class StockTransaction extends Model
         'transaction_type',
         'quantity',
         'old_qnty',
+        'batch',
         'reference_type',
         'reference_id',
         'user_id',
@@ -43,6 +44,9 @@ class StockTransaction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    public function itemss(): BelongsTo{
+        return $this->belongsTo(Item::class, 'reference_id');
     }
 
     public function status(): BelongsTo

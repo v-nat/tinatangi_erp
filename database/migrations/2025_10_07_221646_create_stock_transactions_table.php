@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('transaction_type', ['IN', 'OUT', 'ADJ', 'TRANSFER']);
             $table->decimal('quantity', 10, 3);
             $table->decimal('old_qnt', 10, 3)->default(0);
+            $table->integer('batch')->default(1);
             $table->timestamp('transaction_date')->useCurrent();
 
             // Reference for tracing
