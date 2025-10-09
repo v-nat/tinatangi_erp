@@ -15,6 +15,20 @@ export function formatDate2(date) {
     return [year, month, day].join("-");
 }
 
+export function formatDate3(dateString) {
+    const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",        // Add hour
+        minute: "2-digit",      // Add minute
+        hour12: false           // Set to false for 24-hour format
+    };
+
+    // Use toLocaleString() instead of toLocaleDateString() to include time
+    return new Date(dateString).toLocaleString("en-US", options);
+}
+
 export function formatDateString(dateString) {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("en-US", options);

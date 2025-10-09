@@ -23,8 +23,10 @@ class SupplierController extends Controller
                 'employeeRS',
                 'supplierRS',
                 'deptRS',
-            ])->where('supplier_id', auth('')->user()->id)
-            ->orderBy('updated_at', 'desc')->get();
+            ])->where('supplier_id', auth('')->id())
+                ->whereIn('status', [20, 21, 16, 19, 23])
+                ->orderBy('updated_at', 'desc')
+                ->get();
 
             return response()->json([
                 'data' => $purchaseRequests->map(function ($request_data) {

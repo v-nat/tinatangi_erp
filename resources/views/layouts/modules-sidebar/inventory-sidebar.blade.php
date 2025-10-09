@@ -11,3 +11,9 @@
         <span>All Items</span>
     </a>
 </li>
+<li class="sidebar-item @yield('inventoryTransactions') ">
+    <a href="{{route('inventory.transactions')}}" class='sidebar-link'>
+        <i class="bi bi-receipt"></i>
+        <span>Stock Transactions</span>
+    </a>
+</li>
