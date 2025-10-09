@@ -392,7 +392,7 @@ $(document).ready(function () {
                                 "content"
                             ),
                         },
-                        url: "/inventory/send-restock-request/",
+                        url: "/inventory/send-restock-request",
                         type: "POST",
                         data: formData,
                         processData: false,

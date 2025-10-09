@@ -135,7 +135,8 @@ class InventoryController extends Controller
     public function stockTransactions()
     {
         try {
-            $transaction = StockTransaction::with(['itemss', 'user'])->get();
+            $transaction = StockTransaction::with(['itemss', 'user'])
+            ->orderBy('transaction_date', 'desc')->get();
 
             return response()->json([
                 'data' => $transaction->map(function ($data) {

@@ -20,12 +20,11 @@ export function formatDate3(dateString) {
         year: "numeric",
         month: "long",
         day: "numeric",
-        hour: "2-digit",        // Add hour
-        minute: "2-digit",      // Add minute
-        hour12: false           // Set to false for 24-hour format
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Manila"
     };
-
-    // Use toLocaleString() instead of toLocaleDateString() to include time
     return new Date(dateString).toLocaleString("en-US", options);
 }
 
