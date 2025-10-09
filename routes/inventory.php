@@ -15,7 +15,7 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/inventory/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
     Route::get('/inventory/recent-items', [InventoryController::class, 'getRecentItems']);
     Route::get('/inventory/get-all-items', [InventoryController::class, 'getAllItems']);
-    Route::post('/inventory/send-restock-request', [InventoryController::class, 'restockRequest']);
+    Route::post('/inventory/send-restock-request/', [InventoryController::class, 'restockRequest']);
 
     ///////////////////////////////////// ALL ITEMS ///////////////////////////////////
     Route::get('/inventory/all-items', [InventoryController::class, 'all'])->name('inventory.all-items');
