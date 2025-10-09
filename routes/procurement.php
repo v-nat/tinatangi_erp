@@ -16,7 +16,7 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/procurement/supplier', [ProcurementController::class, 'supplier'])->name('procurement.supplier');
 
     /////////////////////////////////////////// SUPPLIER //////////////////////////////////////////
-    Route::post('/procurement/supplier/add-supplier/', [SupplierController::class,'storeSupplier']);
+    Route::post('/procurement/supplier/add-supplier', [SupplierController::class,'storeSupplier']);
     Route::get('/procurement/supplier/get-supplier', [SupplierController::class,'getSupplier']);
 
     /////////////////////////////////////////////// CREATE PR /////////////////////////////////////////////////////
@@ -24,8 +24,8 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/procurement/create-purchase-request/get-active-supplier', [SupplierController::class,'getActiveSupplier']);
     Route::get('/procurement/create-purchase-request/get-categories', [PurchaseOrderController::class,'getCategories']);
     Route::get('/procurement/create-purchase-request/get-items', [PurchaseOrderController::class,'getItems']);
-    Route::post('/procurement/create-purchase-request/submit-request/', [PurchaseOrderController::class,'store']);
-    Route::post('/procurement/complete-purchase-request/submit-request/', [PurchaseOrderController::class,'sendReq']);
+    Route::post('/procurement/create-purchase-request/submit-request', [PurchaseOrderController::class,'store']);
+    Route::post('/procurement/complete-purchase-request/submit-request', [PurchaseOrderController::class,'sendReq']);
 
     ///////////////////////////////////////// PURCHASE ORDER //////////////////////////////////////////////////
     Route::get('/procurement/purchases/get-list', [ProcurementController::class, 'purchaseOrdersList']);
