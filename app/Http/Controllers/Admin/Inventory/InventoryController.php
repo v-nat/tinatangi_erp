@@ -135,7 +135,7 @@ class InventoryController extends Controller
     public function stockTransactions()
     {
         try {
-            $transaction = StockTransaction::with(['inventoryItem.itemss', 'user'])
+            $transaction = StockTransaction::with(['inventoryItemRS.itemss', 'user'])
             ->orderBy('transaction_date', 'desc')->get();
 
             return response()->json([
@@ -147,7 +147,7 @@ class InventoryController extends Controller
                         'date'              => $data->transaction_date,
                         'reference'         => $data->reference_type,
                         'quantity'          => $data->quantity,
-                        'item'              => optional($data->inventoryItem)->itemss,
+                        'item'              => optional(optional($data->inventoryItemRS)->itemss)->name,
                         'receive'           => optional($data->user)->full_name,
                         // 'selling_price'     => (float)$item->selling_price, --- IGNORE ---
                         'status'            => Status::getStatusText($data->status),
