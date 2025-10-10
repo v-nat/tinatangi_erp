@@ -349,7 +349,7 @@ class InventoryController extends Controller
                                 $previousBatch = StockTransaction::where('reference_id', $inventoryItem->id)
                                     ->orderByDesc('batch')
                                     ->first();
-$previousBatchNumber = $previousBatchModel ? $previousBatchModel->batch : 0;
+$previousBatchNumber = $previousBatch ? $previousBatch->batch : 0;
                                 $stockTransaction = StockTransaction::create([
                                     'transaction_type' => $transaction_type,
                                     'quantity' => $receive_qnty,
