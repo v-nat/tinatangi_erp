@@ -275,4 +275,5 @@ $(document).ready(function () {
     $(document).on("click", "#print", function () {
         printInvoice();
     });
+    
 });
