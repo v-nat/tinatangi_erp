@@ -49,7 +49,7 @@ class StockTransaction extends Model
         return $this->belongsTo(Item::class, 'reference_id');
     }
     public function inventoryItemRS(): BelongsTo{
-        return $this->belongsTo(inventoryItem::class, 'reference_id');
+        return $this->belongsTo(InventoryItem::class, 'reference_id');
     }
     public function status(): BelongsTo
     {
