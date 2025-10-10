@@ -56,11 +56,11 @@ $(document).ready(function () {
                     }
                     if (
                         row.status ==
+                            '<span class="badge bg-success">Completed</span>' ||
+                        row.status ==
                             '<span class="badge bg-success">Delivered</span>' ||
                         row.status ==
-                            '<span class="badge bg-success">Accepted<br>Supplier</span>' ||
-                        row.status ==
-                            '<span class="badge bg-success">Completed</span>'
+                            '<span class="badge bg-success">Accepted<br>Supplier</span>'
                     ) {
                         return `
                         <div class="action-btns">
