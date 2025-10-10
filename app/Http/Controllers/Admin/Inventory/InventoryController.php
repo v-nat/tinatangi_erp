@@ -147,7 +147,7 @@ class InventoryController extends Controller
                         'date'              => $data->transaction_date,
                         'reference'         => $data->reference_type,
                         'quantity'          => $data->quantity,
-                        'item'              => optional(optional($data->inventoryItem)->itemss)->name,
+                        'item'              => optional(optional($data->inventoryItem)->itemss)->id,
                         'receive'           => optional($data->user)->full_name,
                         // 'selling_price'     => (float)$item->selling_price, --- IGNORE ---
                         'status'            => Status::getStatusText($data->status),
