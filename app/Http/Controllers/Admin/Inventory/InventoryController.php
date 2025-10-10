@@ -135,7 +135,7 @@ class InventoryController extends Controller
     public function stockTransactions()
     {
         try {
-            $transaction = StockTransaction::with(['itemss', 'user'])
+            $transaction = StockTransaction::with(['inventoryItem.itemss', 'user'])
             ->orderBy('transaction_date', 'desc')->get();
 
             return response()->json([
@@ -147,7 +147,7 @@ class InventoryController extends Controller
                         'date'              => $data->transaction_date,
                         'reference'         => $data->reference_type,
                         'quantity'          => $data->quantity,
-                        'item'              => optional($data->itemss)->name,
+                        'item'              => optional(optional($data->inventoryItem)->itemss)->name,
                         'receive'           => optional($data->user)->full_name,
                         // 'selling_price'     => (float)$item->selling_price, --- IGNORE ---
                         'status'            => Status::getStatusText($data->status),
@@ -349,7 +349,7 @@ class InventoryController extends Controller
                                 $previousBatch = StockTransaction::where('reference_id', $inventoryItem->id)
                                     ->orderByDesc('batch')
                                     ->first();
-$previousBatchNumber = $previousBatch ? $previousBatch->batch : 0;
+                                $previousBatchNumber = $previousBatch ? $previousBatch->batch : 0;
                                 $stockTransaction = StockTransaction::create([
                                     'transaction_type' => $transaction_type,
                                     'quantity' => $receive_qnty,
