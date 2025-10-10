@@ -58,7 +58,9 @@ $(document).ready(function () {
                         row.status ==
                             '<span class="badge bg-success">Delivered</span>' ||
                         row.status ==
-                            '<span class="badge bg-success">Accepted<br>Supplier</span>'
+                            '<span class="badge bg-success">Accepted<br>Supplier</span>' ||
+                        row.status ==
+                            '<span class="badge bg-success">Completed</span>'
                     ) {
                         return `
                         <div class="action-btns">
