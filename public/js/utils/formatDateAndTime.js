@@ -17,13 +17,13 @@ export function formatDate2(date) {
 
 export function formatDate3(dateString) {
     const options = {
+        timeZone: "Asia/Manila",
         year: "numeric",
         month: "long",
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
-        timeZone: "Asia/Manila"
     };
     return new Date(dateString).toLocaleString("en-US", options);
 }
