@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @include('partials.finance-accounting-heading')
-@section('financePayroll') active
-@endsection
+@section('financePayroll') active @endsection
 @section('headings') Payroll List @endsection
 @section('content')
     <nav aria-label="breadcrumb">

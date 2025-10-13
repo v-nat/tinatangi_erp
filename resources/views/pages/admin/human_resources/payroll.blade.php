@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @include('partials.human-resources-heading')
-@section('payroll') active
-@endsection
+@section('payroll') active @endsection
 @section('headings') Payroll List @endsection
 
 @section('content')

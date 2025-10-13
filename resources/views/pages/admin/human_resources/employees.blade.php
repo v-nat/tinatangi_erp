@@ -1,11 +1,8 @@
 @extends('layouts.app')
 @include('partials.human-resources-heading')
-@section('emplMngt')active
-@endsection
-@section('emplMngt2')active
-@endsection
-@section('sbi1')active
-@endsection
+@section('emplMngt')active @endsection
+@section('emplMngt2')active @endsection
+@section('sbi1')active @endsection
 @section('headings') Employee List @endsection
 @section('content')
     <nav aria-label="breadcrumb">

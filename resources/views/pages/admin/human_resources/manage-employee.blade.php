@@ -1,11 +1,8 @@
 @extends('layouts.app')
 @include('partials.human-resources-heading')
-@section('emplMngt')active
-@endsection
-@section('emplMngt2')active
-@endsection
-@section('sbi2')active
-@endsection
+@section('emplMngt')active @endsection
+@section('emplMngt2')active @endsection
+@section('sbi2')active @endsection
 @section('headings') {{$title}} Employee @endsection
 
 @section('content')
@@ -73,7 +70,7 @@
                                                 <div class="text-danger mt-1">{{ $message }}</div>
                                             @enderror
                                             <div class="invalid-feedback">Last Name is required.</div>
-                                        </div> 
+                                        </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
@@ -225,7 +222,7 @@
                                             <label for="position">Position *</label>
                                             <select class="form-select" id="position" name="position_id" data-value="{{$data['position']}}|{{$data['position_id']}}|{{$data['level']}}" required>
                                                 <option value="" disabled selected>Choose Position</option>
-                                                
+
                                             </select>
                                             @error('position_id')
                                                 <div class="text-danger mt-1">{{ $message }}</div>

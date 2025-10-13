@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @include('partials.operations-heading')
-@section('operationsIndex') active
-@endsection
+@section('operationsIndex') active @endsection
 @section('headings') Operations @endsection
 @section('content')
     <nav aria-label="breadcrumb">
@@ -12,5 +11,5 @@
     </nav>
 @endsection
 @section('scripts')
-    
+
 @endsection

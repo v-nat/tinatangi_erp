@@ -1,12 +1,9 @@
 @extends('layouts.app')
 @include('partials.human-resources-heading')
 @section('emplMngt2')@endsection
-@section('appMngt')active
-@endsection
-@section('appMngt2')active
-@endsection
-@section('sbi4')active
-@endsection
+@section('appMngt')active @endsection
+@section('appMngt2')active @endsection
+@section('sbi4')active @endsection
 @section('headings') Leave Approval @endsection
 
 @section('content')

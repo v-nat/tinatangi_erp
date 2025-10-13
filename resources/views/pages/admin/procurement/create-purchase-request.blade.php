@@ -3,8 +3,6 @@
 @section('createPR') active @endsection
 @section('headings') Purchase Request @endsection
 @section('content')
-
-
     <div class="page-title mb-4">
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-first pt-3">

@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @include('partials.finance-accounting-heading')
-@section('financeBudgets') active
-@endsection
+@section('financeBudgets') active @endsection
 @section('headings') Budget Releasing @endsection
 @section('content')
     <nav aria-label="breadcrumb">

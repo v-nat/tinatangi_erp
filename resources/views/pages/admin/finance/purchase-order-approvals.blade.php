@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @include('partials.finance-accounting-heading')
-@section('financePurchases') active
-@endsection
+@section('financePurchases') active @endsection
 @section('headings') Purchase Request List @endsection
 @section('content')
     <nav aria-label="breadcrumb">

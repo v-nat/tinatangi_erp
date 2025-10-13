@@ -1,11 +1,8 @@
 @extends('layouts.app')
 @include('partials.human-resources-heading')
-@section('appMngt')active
-@endsection
-@section('appMngt2')active
-@endsection
-@section('sbi3')active
-@endsection
+@section('appMngt')active @endsection
+@section('appMngt2')active @endsection
+@section('sbi3')active @endsection
 @section('headings') Overtime Approval @endsection
 
 @section('content')

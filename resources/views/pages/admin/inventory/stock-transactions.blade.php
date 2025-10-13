@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @include('partials.inventory-heading')
-@section('inventoryTransactions') active
-@endsection
+@section('inventoryTransactions') active @endsection
 @section('headings') Transaction Records @endsection
 @section('content')
     <nav aria-label="breadcrumb">
