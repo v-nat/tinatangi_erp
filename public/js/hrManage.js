@@ -82,7 +82,7 @@ $(document).ready(function () {
         const department = departmentSelect.value;
         if (department) {
             fetch(
-                `/humanresources/positions-by-department?department=${encodeURIComponent(
+                `/human-resources/positions-by-department?department=${encodeURIComponent(
                     department
                 )}`
             )
@@ -110,7 +110,7 @@ $(document).ready(function () {
         updateSalary();
         if (position && department) {
             fetch(
-                `/humanresources/supervisors-by-department-and-position?department=${encodeURIComponent(
+                `/human-resources/supervisors-by-department-and-position?department=${encodeURIComponent(
                     department
                 )}&position=${encodeURIComponent(position)}`
             )
@@ -192,7 +192,7 @@ $("#reset").click(function (e) {
     e.preventDefault();
     const $form = $("#employeeForm");
     $form.find("select").val("").trigger("change");
-    $form.find('input[type="date"]').val(""); 
+    $form.find('input[type="date"]').val("");
     $form.find('input, select').val('');
     $form.find(".is-invalid").removeClass("is-invalid");
     $form.find(".invalid-feedback").remove();
@@ -227,7 +227,7 @@ $("#insert-btn-employee").click(function (e) {
         $("#LoadingScreen").fadeIn(200);
 
         $.ajax({
-            url: "/humanresources/store-employee",
+            url: "/human-resources/store-employee",
             type: "POST",
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
@@ -269,7 +269,7 @@ $("#edit-btn-employee").click(function (e) {
     let formData = new FormData($("#employeeForm")[0]);
     formData.append("_method", "PUT");
 
-    let url = `/humanresources/update-employee/${employee_id}`;
+    let url = `/human-resources/update-employee/${employee_id}`;
     Swal.fire({
         title: "Are you sure?",
         text: "You are about to update this employee's information.",

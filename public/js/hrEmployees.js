@@ -5,7 +5,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: false,
         ajax: {
-            url: "/humanresources/employees/get",
+            url: "/human-resources/employees/get",
             type: "GET",
             dataSrc: "data",
         },
@@ -63,7 +63,7 @@ $(document).ready(function () {
     $(document).on("click", ".btn-edit", function (e) {
         e.preventDefault();
         const id = $(this).data("id");
-        window.location.href = "/humanresources/edit-employee/" + id;
+        window.location.href = "/human-resources/edit-employee/" + id;
     });
     $(document).on("click", ".generate-payroll", function (e) {
         e.preventDefault();
@@ -133,7 +133,7 @@ $(document).ready(function () {
                             }).then(
                                 () =>
                                     (window.location.href =
-                                        "/humanresources/payroll")
+                                        "/human-resources/payroll")
                             );
                         }
                     },

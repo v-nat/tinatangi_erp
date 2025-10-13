@@ -6,7 +6,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: false,
         ajax: {
-            url: "/humanresources/leaves/get",
+            url: "/human-resources/leaves/get",
             type: "GET",
             dataSrc: "data",
         },
@@ -103,7 +103,7 @@ $(document).ready(function () {
         $("#LoadingScreen").fadeIn(200);
         $("#approvalModal").modal("hide");
         $.ajax({
-            url: `/humanresources/leave/approve/${leaveId}`,
+            url: `/human-resources/leave/approve/${leaveId}`,
             method: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr("content"),
@@ -136,7 +136,7 @@ $(document).ready(function () {
         $("#LoadingScreen").fadeIn(200);
         $("#rejectionModal").modal("hide");
         $.ajax({
-            url: `/humanresources/leave/reject/${leaveId}`,
+            url: `/human-resources/leave/reject/${leaveId}`,
             method: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr("content"),

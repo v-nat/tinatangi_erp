@@ -21,8 +21,6 @@ class SupplierMiddleware
             'dashboard',
             'profile',
             'settings',
-            'attendance',
-            'employee',
         ];
         if (Auth::check()) {
             /** @var \App\Models\User */

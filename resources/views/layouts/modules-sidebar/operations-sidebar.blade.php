@@ -5,3 +5,10 @@
         @yield('operations-dashboard')
     </a>
 </li>
+
+<li class="sidebar-item @yield('operationsPOS') ">
+    <a href="{{route('op.pos')}}" class='sidebar-link'>
+        <i class="bi bi-archive-fill"></i>
+        <span>All Items</span>
+    </a>
+</li>

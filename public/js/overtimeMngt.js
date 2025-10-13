@@ -6,7 +6,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: false,
         ajax: {
-            url: "/humanresources/overtimes/get",
+            url: "/human-resources/overtimes/get",
             type: "GET",
             dataSrc: "data",
         },
@@ -110,7 +110,7 @@ $(document).ready(function () {
         $("#LoadingScreen").fadeIn(200);
         $("#approvalModal").modal("hide");
         $.ajax({
-            url: `/humanresources/overtime/approve/${overtimeId}`,
+            url: `/human-resources/overtime/approve/${overtimeId}`,
             method: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr("content"),
@@ -144,7 +144,7 @@ $(document).ready(function () {
         $("#rejectionModal").modal("hide");
 
         $.ajax({
-            url: `/humanresources/overtime/reject/${overtimeId}`,
+            url: `/human-resources/overtime/reject/${overtimeId}`,
             method: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr("content"),

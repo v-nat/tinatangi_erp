@@ -5,7 +5,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: false,
         ajax: {
-            url: "/humanresources/payroll/list",
+            url: "/human-resources/payroll/list",
             type: "GET",
             dataSrc: "data",
         },
@@ -132,7 +132,7 @@ $(document).ready(function () {
         $("#LoadingScreen").fadeIn(200);
 
         $.get(
-            `/humanresources/payroll/view/${payroll_id}`,
+            `/human-resources/payroll/view/${payroll_id}`,
             function (response) {
                 buildPayslipModal(response.data);
             }
@@ -164,7 +164,7 @@ $(document).ready(function () {
                         "content"
                     ),
                 },
-                url: `/humanresources/payroll/release/${id}`,
+                url: `/human-resources/payroll/release/${id}`,
                 type: "PUT",
                 data: null,
                 processData: false,

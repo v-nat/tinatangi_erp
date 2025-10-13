@@ -8,7 +8,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: false,
         ajax: {
-            url: "/humanresources/attendance/list",
+            url: "/human-resources/attendance/list",
             type: "GET",
             dataSrc: "data",
             error: function (xhr) {
