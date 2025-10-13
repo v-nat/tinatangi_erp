@@ -23,8 +23,8 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('@Swizzle-1989'),
                 'phone_number' => '09123456789',
                 'user_type' => 'employee',
-                'created_at' => now(), 
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
             [
                 'id' => 2,
@@ -34,8 +34,8 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('@Swizzle-1989'),
                 'phone_number' => '09123456789',
                 'user_type' => 'employee',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
             [
                 'id' => 3,
@@ -45,8 +45,8 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('@Swizzle-1989'),
                 'phone_number' => '09123456789',
                 'user_type' => 'employee',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
             [
                 'id' => 4,
@@ -56,8 +56,8 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('@Swizzle-1989'),
                 'phone_number' => '09123456789',
                 'user_type' => 'employee',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
             [
                 'id' => 5,
@@ -67,8 +67,8 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('@Swizzle-1989'),
                 'phone_number' => '09123456789',
                 'user_type' => 'employee',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
             [
                 'id' => 23,
@@ -78,8 +78,8 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('@Swizzle-1989'),
                 'phone_number' => '09171234567',
                 'user_type' => 'supplier',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
             [
                 'id' => 24,
@@ -89,8 +89,8 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('@Swizzle-1989'),
                 'phone_number' => '09199876543',
                 'user_type' => 'supplier',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
             [
                 'id' => 25,
@@ -100,10 +100,10 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('@Swizzle-1989'),
                 'phone_number' => '09205551234',
                 'user_type' => 'supplier',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
-            
+
         ];
 
         DB::table('users')->insert($users);

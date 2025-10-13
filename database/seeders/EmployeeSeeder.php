@@ -38,8 +38,8 @@ class EmployeeSeeder extends Seeder
                 'base_salary'   => 20800.00,
 
                 'status'        => 1,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at'    => '2025-09-08 12:00:00',
+                'updated_at'    => '2025-09-08 12:00:00',
             ],
         ]);
         DB::table('employees')->insert([
@@ -65,8 +65,8 @@ class EmployeeSeeder extends Seeder
                 'base_salary'   => 20800.00,
 
                 'status'        => 1,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at'    => '2025-09-08 12:00:00',
+                'updated_at'    => '2025-09-08 12:00:00',
             ],
         ]);
         DB::table('employees')->insert([
@@ -92,8 +92,8 @@ class EmployeeSeeder extends Seeder
                 'base_salary'   => 20800.00,
 
                 'status'        => 1,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at'    => '2025-09-08 12:00:00',
+                'updated_at'    => '2025-09-08 12:00:00',
             ],
         ]);
         DB::table('employees')->insert([
@@ -119,8 +119,8 @@ class EmployeeSeeder extends Seeder
                 'base_salary'   => 20800.00,
 
                 'status'        => 1,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at'    => '2025-09-08 12:00:00',
+                'updated_at'    => '2025-09-08 12:00:00',
             ],
         ]);
         DB::table('employees')->insert([
@@ -146,8 +146,8 @@ class EmployeeSeeder extends Seeder
                 'base_salary'   => 20800.00,
 
                 'status'        => 1,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at'    => '2025-09-08 12:00:00',
+                'updated_at'    => '2025-09-08 12:00:00',
             ],
         ]);
     }
