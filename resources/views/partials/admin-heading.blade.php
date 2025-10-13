@@ -20,6 +20,11 @@
         <span>Human Resources Dashboard</span>
     @endsection
 
+    @section('finance-dashboard')
+        <i class="bi bi-bar-chart-line-fill"></i>
+        <span>Finance Dashboard</span>
+    @endsection
+
     @section('procurement-dashboard')
         <i class="bi bi-shop"></i>
         <span>Procurement Dashboard</span>
@@ -32,11 +37,7 @@
 
     @section('operations-dashboard')
         <i class="bi bi-grid-1x2-fill"></i>
-        <span>Dashboard</span>
+        <span>Operations Dashboard</span>
     @endsection
-    
-    @section('finance-dashboard')
-        <i class="bi bi-bar-chart-line-fill"></i>
-        <span>Dashboard</span>
-    @endsection
+
 @endif
