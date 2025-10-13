@@ -64,6 +64,7 @@ class ItemSeeder extends Seeder
 
             // Coffee Ingredients (Location ID: 2)
             'Almond Milk' => [3, 120.00, 2],
+            'Caramel Sauce Drizzle' => [3, 185.00, 2],
             'Caramel Syrup' => [3, 450.00, 2],
             'Chocolate Sauce' => [3, 400.00, 2],
             'Coffee Beans (Arabica)' => [1, 750.00, 2],
@@ -75,6 +76,7 @@ class ItemSeeder extends Seeder
             'Hazelnut Syrup' => [3, 480.00, 2],
             'Mocha Syrup' => [3, 450.00, 2],
             'Muscovado Sugar' => [1, 80.00, 2],
+            'Neutral Frappe Base Powder' => [1, 310.00, 2],
             'Oat Milk' => [3, 150.00, 2],
             'Soy Milk' => [3, 90.00, 2],
             'Vanilla Syrup' => [3, 450.00, 2],
