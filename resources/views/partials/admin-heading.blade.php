@@ -10,6 +10,7 @@
     @section('finance') d-block @endsection
     @section('procurement') d-block @endsection
     @section('inventory') d-block @endsection
+    @section('operations') d-block @endsection
     @section('supplierPage') d-none @endsection
     @section('general_employee') d-none @endsection
 
@@ -26,5 +27,10 @@
     @section('inventory-dashboard')
         <i class="bi bi-ui-checks"></i>
         <span>Inventory Dashboard</span>
+    @endsection
+
+    @section('operations-dashboard')
+    <i class="bi bi-grid-1x2-fill"></i>
+    <span>Dashboard</span>
     @endsection
 @endif

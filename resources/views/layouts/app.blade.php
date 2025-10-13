@@ -57,9 +57,6 @@ if (auth()->user()->user_type == 'supplier') {
             #untilLoaded {
                 transition: opacity 0.5s ease;
             }
-            a {
-                text-decoration: none; /* This is the key line */
-            }
         </style>
         <script>
             function toggleLogosByTheme() {

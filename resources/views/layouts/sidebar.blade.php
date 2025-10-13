@@ -73,6 +73,10 @@
                     @include('layouts.modules-sidebar.inventory-sidebar')
                 </div>
 
+                <div class="@yield('operations')">
+                    @include('layouts.modules-sidebar.operations-sidebar')
+                </div>
+
                 <div class="@yield('supplierPage')">
                     @include('layouts.modules-sidebar.supplier-sidebar')
                 </div>

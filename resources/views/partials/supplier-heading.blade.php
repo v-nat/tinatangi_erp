@@ -5,5 +5,6 @@
 @section('finance') d-none @endsection
 @section('procurement') d-none @endsection
 @section('inventory') d-none @endsection
+@section('operations') d-none @endsection
 @section('topnavEmp') d-none @endsection
 @section('general_employee') d-none @endsection
