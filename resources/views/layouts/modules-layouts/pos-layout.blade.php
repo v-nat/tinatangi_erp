@@ -38,10 +38,9 @@
 
                                                     if ($employee) {
                                                         $position = $employee->position->name;
-                                                                                                                            ?>
-                                                                                {{ \Illuminate\Support\Str::upper($position) }}
-                                                                                <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
-                                                                                <?php
+                                                    ?>
+                                                        {{ \Illuminate\Support\Str::upper($position) }}
+                                                    <?php
                                                     }
                                                     break;
 
