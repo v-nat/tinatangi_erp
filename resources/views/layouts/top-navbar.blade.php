@@ -38,10 +38,9 @@
                             </h6>
                             <p class="mb-0 text-sm text-gray-600">
                                 @if(auth()->user()->user_type == 'employee')
-                                    $user = auth()->user();
-                                    $positionName = $user->employee?->position?->name;
-
-                                    \Illuminate\Support\Str::upper($positionName)
+                                    {{ $user = auth()->user() }}
+                                    {{ $positionName = $user->employee?->position?->name }}
+                                    {{ \Illuminate\Support\Str::upper($positionName) }}
                                 @endif
                             </p>
                         </div>
