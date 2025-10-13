@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Finance\FinanceController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
 use App\Http\Controllers\Admin\Inventory\InventoryController;
+use App\Http\Controllers\Admin\Inventory\StockManagementController;
 
 Route::middleware(['auth' , 'isEmployee'])->group(function () {
     ////////////////////////////////// DASHBOARD ////////////////////////////////////////////////
@@ -11,11 +12,11 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/inventory/get-to-receive', [InventoryController::class, 'getToReceive']);
     Route::get('/inventory/get-to-restock', [InventoryController::class, 'getToRestock']);
     Route::get('/inventory/items-to-receive/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
-    Route::post('/inventory/items-to-receive/receive-inventory/{id}', [InventoryController::class, 'receiveInventory']);
+    Route::post('/inventory/items-to-receive/receive-inventory/{id}', [StockManagementController::class, 'receiveInventory']);
     Route::get('/inventory/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
     Route::get('/inventory/recent-items', [InventoryController::class, 'getRecentItems']);
     Route::get('/inventory/get-all-items', [InventoryController::class, 'getAllItems']);
-    Route::post('/inventory/send-restock-request', [InventoryController::class, 'restockRequest']);
+    Route::post('/inventory/send-restock-request', [StockManagementController::class, 'restockRequest']);
 
     ///////////////////////////////////// ALL ITEMS ///////////////////////////////////
     Route::get('/inventory/all-items', [InventoryController::class, 'all'])->name('inventory.all-items');
@@ -23,5 +24,5 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
 
     //////////////////////////////////////// TRANSACTIONS ////////////////////////////////////////////
     Route::get('/inventory/stock-transactions', [InventoryController::class, 'transactionsView'])->name('inventory.transactions');
-    Route::get('/inventory/stock-transactions/list', [InventoryController::class, 'stockTransactions']);
+    Route::get('/inventory/stock-transactions/list', [StockManagementController::class, 'stockTransactions']);
 });
