@@ -6,8 +6,8 @@
 </head>
 
 <body class="dark light">
-    <div class="layout-navbar text-end justify-content-end">
-        <nav class="navbar navbar-expand navbar-light">
+    <div class="layout-navbar">
+        <nav class="navbar navbar-expand navbar-light text-end justify-content-end">
             <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -15,7 +15,6 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
                     <div class="dropdown">
                         <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="user-menu d-flex">
