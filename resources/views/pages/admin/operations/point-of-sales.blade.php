@@ -15,5 +15,5 @@
 @endsection
 
 @section('scripts')
-
+    <script type="module" src="{{ asset('js/pointOfSale.js') }}   "></script>
 @endsection
