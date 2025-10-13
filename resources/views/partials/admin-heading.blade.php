@@ -6,7 +6,7 @@
     @section('finance-admin') Finance and Accounting Management @endsection
     @section('procurement-admin') Procurement Management @endsection
     @section('inventory-admin') Inventory Management @endsection
-    @section('operations-admin') Operations Management @endsection
+    @section('operations-admin') Service Operations @endsection
     @section('human_resources') d-block @endsection
     @section('finance') d-block @endsection
     @section('procurement') d-block @endsection

@@ -6,7 +6,7 @@
 @endsection
 
 @section('title') Service Operations @endsection
-@section('sidebar-title') Operations Management @endsection
+@section('sidebar-title') Service Operations @endsection
 @section('human_resources') d-none @endsection
 @section('finance') d-none @endsection
 @section('procurement') d-none @endsection
