@@ -8,12 +8,13 @@
 <body class="dark light">
     <script src="{{ asset('assets/js/initTheme.js')}}"></script>
 
-    <div class="container">
+    <div class="container layout-navbar">
+        @include('layouts.top-navbar')
         @yield('content')
     </div>
 
     @include('layouts.loading-state')
-    
+
     <script src="{{ asset('assets/js/main2.js') }}"></script>
     <script src=" {{ asset('assets/js/dark.js') }}"></script>
 
