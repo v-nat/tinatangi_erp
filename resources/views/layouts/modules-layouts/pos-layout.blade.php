@@ -6,8 +6,8 @@
 </head>
 
 <body class="dark light">
-    <div class="layout-navbar">
-        <nav class="navbar navbar-expand navbar-light ">
+    <div class="layout-navbar text-end justify-content-end">
+        <nav class="navbar navbar-expand navbar-light">
             <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
