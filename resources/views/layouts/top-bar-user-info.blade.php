@@ -9,18 +9,16 @@ switch ($userType) {
         break;
 
     case 'employee':
-        $employee = App\Models\Employee::where('id', $userId)->first();
+        $employee = App\Models\Employee::where('user_id', $userId)->first();
 
         if ($employee) {
             $position = $employee->position;
+            ?>
+            <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
+            <?php
         }
         break;
 
     default:
         break;
 }
-?>
-
-@if($employee)
-    <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
-@endif

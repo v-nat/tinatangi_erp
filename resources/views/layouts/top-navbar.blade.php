@@ -32,6 +32,7 @@
             <div class="dropdown">
                 <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="user-menu d-flex">
+                        @include('layouts.top-bar-user-info')
                         <div class="user-name text-end me-3">
                             <h6 class="mb-0 text-gray-600">
                                 {{auth()->user()->full_name}}
