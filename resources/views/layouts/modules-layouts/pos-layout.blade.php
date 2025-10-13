@@ -7,7 +7,7 @@
 
 <body class="dark light">
     <div class="layout-navbar">
-        <nav class="navbar navbar-expand navbar-light text-end justify-content-end">
+        <nav class="navbar navbar-expand navbar-light">
             <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -18,7 +18,7 @@
                     <div class="dropdown">
                         <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="user-menu d-flex">
-                                <div class="user-name text-end me-3">
+                                <div class="user-name text-start me-3">
                                     <h6 class="mb-0 text-gray-600">
                                         {{auth()->user()->full_name}}
                                     </h6>
@@ -58,7 +58,7 @@
                                 </div>
                             </div>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                        <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton">
                             <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" href="{{ route('op.dashboard') }}">
