@@ -21,7 +21,7 @@
                 <div class="text-center">
                     <h1 class="error-title">Forbidden</h1>
                     <p class="fs-5 text-gray-600">You are forbbiden to see this page.</p>
-                    <a href="{{ route('home') }}" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
+                    <a href="{{ route('hr.dashboard') }}" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
                 </div>
             </div>
         </div>

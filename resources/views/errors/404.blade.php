@@ -21,7 +21,7 @@
                 <div class="text-center">
                      <h1 class="error-title">NOT FOUND</h1>
                     <p class='fs-5 text-gray-600'>The page you are looking not found.</p>
-                    <a href="{{ route('home') }}" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
+                    <a href="{{ route('hr.dashboard') }}" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
                 </div>
             </div>
         </div>
