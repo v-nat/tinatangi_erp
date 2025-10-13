@@ -58,7 +58,6 @@
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton">
-                            <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" href="{{ route('op.dashboard') }}">
                                     <i class="fa-solid fa-right-from-bracket"></i> End POS Session</a></li>
