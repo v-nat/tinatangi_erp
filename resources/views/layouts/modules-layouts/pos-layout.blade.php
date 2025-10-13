@@ -6,18 +6,14 @@
 </head>
 
 <body class="dark light">
-    <script src="{{ asset('assets/js/initTheme.js')}}"></script>
-
-    <div class="container layout-navbar">
-        @include('layouts.top-navbar')
+    <div class="">
+        <a href="{{ route('op.dashboard') }}">End POS Session</a>
+    </div>
+    <div class="container">
         @yield('content')
     </div>
 
     @include('layouts.loading-state')
-
-    <script src="{{ asset('assets/js/main2.js') }}"></script>
-    <script src=" {{ asset('assets/js/dark.js') }}"></script>
-
     @include('layouts.toast-swal')
 
     <script src="{{ asset('source/jquery/datatables.js') }}"></script>
