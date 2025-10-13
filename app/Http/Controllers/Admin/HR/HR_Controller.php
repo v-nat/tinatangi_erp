@@ -13,7 +13,7 @@ class HR_Controller extends Controller
         $employees = Employee::with(['position'])->get();
         $totalActive = Employee::whereNull('deleted_at')->count();
         $newHires = Employee::whereNull('deleted_at')
-            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->where('created_at', '<=', Carbon::now()->subDays(30))
             ->count();
         return view('pages.admin.human_resources.dashboard', compact('totalActive', 'newHires'));
     }

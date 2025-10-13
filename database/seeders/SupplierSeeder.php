@@ -22,8 +22,8 @@ class SupplierSeeder extends Seeder
                 'email' => 'sales@premiumroasters.com',
                 'phone_number' => '09171234567',
                 'status' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
             [
                 'id' => 24,
@@ -32,8 +32,8 @@ class SupplierSeeder extends Seeder
                 'email' => 'orders@cuplids.net',
                 'phone_number' => '09199876543',
                 'status' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
             [
                 'id' => 25,
@@ -42,8 +42,8 @@ class SupplierSeeder extends Seeder
                 'email' => 'support@toolstrade.com',
                 'phone_number' => '09205551234',
                 'status' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
             ],
         ];
 
