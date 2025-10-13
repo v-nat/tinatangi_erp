@@ -38,7 +38,7 @@
                             </h6>
                             <p class="mb-0 text-sm text-gray-600">
                                 @if(auth()->user()->user_type == 'employee')
-                                <?php
+                                                                <?php
                                     $userId = auth()->user()->id;
                                     $position = null;
                                     $userType = auth()->user()->user_type;
@@ -52,10 +52,10 @@
 
                                             if ($employee) {
                                                 $position = $employee->position;
-                                            ?>
-                                            {{ \Illuminate\Support\Str::upper($positionName) }}
-                                            <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
-                                            <?php
+                                                ?>
+                                                {{ \Illuminate\Support\Str::upper($position) }}
+                                                <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
+                                                <?php
                                             }
                                             break;
 
