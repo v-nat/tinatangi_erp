@@ -51,7 +51,7 @@
                                             $employee = App\Models\Employee::where('user_id', $userId)->first();
 
                                             if ($employee) {
-                                                $position = $employee->position;
+                                                $position = $employee->position->name;
                                                 ?>
                                                 {{ \Illuminate\Support\Str::upper($position) }}
                                                 <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
