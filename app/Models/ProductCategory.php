@@ -9,6 +9,13 @@ class ProductCategory extends Model
 {
     use SoftDeletes;
 
+    protected $table = "product_categories";
+    protected $primaryKey = "id";
+
+    protected $fillable = [
+        'name',
+        'status',
+    ];
 
     /*
     |--------------------------------------------------------------------------

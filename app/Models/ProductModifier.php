@@ -10,6 +10,13 @@ class ProductModifier extends Model
 {
     use SoftDeletes;
 
+    protected $table = "product_modifiers";
+    protected $primaryKey = "id";
+
+    protected $fillable = [
+        'name',
+        'product_modifier_type',
+    ];
 
     /*
     |--------------------------------------------------------------------------

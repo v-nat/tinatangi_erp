@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->unsignedBigInteger('product_id');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->integer('quantityl');
+            $table->integer('quantity');
             $table->decimal('unit_price', 8, 2);
             $table->decimal('subtotal', 10, 2);
             $table->string('notes')->nullable();

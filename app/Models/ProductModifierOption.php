@@ -10,6 +10,16 @@ class ProductModifierOption extends Model
 {
     use SoftDeletes;
 
+    protected $table = "product_modifier_options";
+    protected $primaryKey = "id";
+
+    protected $fillable = [
+        'product_modifier_id',
+        'name',
+        'price_impact',
+        
+    ];
+
     /*
     |--------------------------------------------------------------------------
     | Relationships
