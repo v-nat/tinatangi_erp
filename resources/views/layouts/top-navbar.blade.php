@@ -32,14 +32,13 @@
             <div class="dropdown">
                 <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="user-menu d-flex">
-                        @include('layouts.top-bar-user-info')
                         <div class="user-name text-end me-3">
                             <h6 class="mb-0 text-gray-600">
                                 {{auth()->user()->full_name}}
                             </h6>
                             <p class="mb-0 text-sm text-gray-600">
                                 @if(auth()->user()->user_type == 'employee')
-                                {{\Illuminate\Support\Str::upper($position->name)}} @endif
+                                {{\Illuminate\Support\Str::upper(auth()->user()->employeeRS()->position()->name)}} @endif
                             </p>
                         </div>
                         <div class="user-img d-flex align-items-center">
