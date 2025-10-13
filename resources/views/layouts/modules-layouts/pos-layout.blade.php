@@ -59,7 +59,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton">
                             </li>
-                            <li id="exit-pos-btn"><a class="dropdown-item" href="">
+                            <li id="exit-pos-btn"><a class="dropdown-item" href="#">
                                     <i class="fa-solid fa-right-from-bracket"></i> End POS Session</a></li>
                         </ul>
                     </div>
@@ -72,6 +72,7 @@
         </div>
     </div>
     @include('layouts.loading-state')
+
     @include('layouts.toast-swal')
 
     <script src="{{ asset('source/jquery/datatables.js') }}"></script>
