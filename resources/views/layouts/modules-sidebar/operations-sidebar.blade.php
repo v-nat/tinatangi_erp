@@ -8,7 +8,7 @@
 
 <li class="sidebar-item @yield('operationsPOS') ">
     <a href="{{route('op.pos')}}" class='sidebar-link'>
-        <i class="bi bi-archive-fill"></i>
-        <span>All Items</span>
+        <i class="fa-solid fa-desktop"></i>
+        <span>Point of Sales</span>
     </a>
 </li>
