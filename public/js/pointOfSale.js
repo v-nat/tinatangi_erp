@@ -1,3 +1,3 @@
 $(document).ready(function () {
-    $('#sidebar').removeClass('active');
+    // $('#sidebar').removeClass('active');
 });
