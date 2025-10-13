@@ -31,7 +31,12 @@
     @endsection
 
     @section('operations-dashboard')
-    <i class="bi bi-grid-1x2-fill"></i>
-    <span>Dashboard</span>
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>Dashboard</span>
+    @endsection
+    
+    @section('finance-dashboard')
+        <i class="bi bi-bar-chart-line-fill"></i>
+        <span>Dashboard</span>
     @endsection
 @endif

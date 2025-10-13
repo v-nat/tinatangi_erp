@@ -2,8 +2,7 @@
 
 <li class="sidebar-item @yield('financeIndex') ">
     <a href="{{route('finance')}}" class='sidebar-link'>
-        <i class="bi bi-bar-chart-line-fill"></i>
-        <span>Index</span>
+        @yield('finance-dashboard')
     </a>
 </li>
 <li class="sidebar-item @yield('financePayroll') ">

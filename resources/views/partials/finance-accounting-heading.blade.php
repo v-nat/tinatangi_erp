@@ -1,5 +1,10 @@
 @include('partials.admin-heading')
 
+@section('finance-dashboard')
+    <i class="bi bi-bar-chart-line-fill"></i>
+    <span>Dashboard</span>
+@endsection
+
 @section('title') Finance and Accounting Management @endsection
 @section('sidebar-title') Finance and Accounting Management @endsection
 @section('human_resources') d-none @endsection
