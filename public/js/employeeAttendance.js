@@ -166,7 +166,6 @@ $(document).ready(function () {
                             .done(function (response) {
                                 hasAttendanceToday();
                                 $("#employeeAttendance").modal("hide");
-                                timeIn = $("#timeInDisplay").text;
                                 $("#LoadingScreen").fadeOut(200);
                                 showSuccess("Time in recorded successfully!");
                             })
