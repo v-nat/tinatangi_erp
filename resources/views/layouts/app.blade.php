@@ -8,7 +8,6 @@
 <body class="dark light">
     <script src="{{ asset('assets/js/initTheme.js')}}"></script>
     <div id="app">
-        @include('layouts.top-bar-user-info')
         @include('layouts.sidebar')
         <div id="main" class="layout-navbar">
             @include('layouts.top-navbar')

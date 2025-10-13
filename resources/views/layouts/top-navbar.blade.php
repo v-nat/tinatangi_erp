@@ -38,9 +38,30 @@
                             </h6>
                             <p class="mb-0 text-sm text-gray-600">
                                 @if(auth()->user()->user_type == 'employee')
-                                    <?php $user = auth()->user();
-                                        $positionName = $user->employee?->position?->name; ?>
-                                    {{ \Illuminate\Support\Str::upper($positionName) }}
+                                <?php
+                                    $userId = auth()->user()->id;
+                                    $position = null;
+                                    $userType = auth()->user()->user_type;
+
+                                    switch ($userType) {
+                                        case 'supplier':
+                                            break;
+
+                                        case 'employee':
+                                            $employee = App\Models\Employee::where('user_id', $userId)->first();
+
+                                            if ($employee) {
+                                                $position = $employee->position;
+                                            ?>
+                                            {{ \Illuminate\Support\Str::upper($positionName) }}
+                                            <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
+                                            <?php
+                                            }
+                                            break;
+
+                                        default:
+                                            break;
+                                    } ?>
                                 @endif
                             </p>
                         </div>
