@@ -50,6 +50,12 @@ class Status extends Model
             25 => '<span class="badge bg-warning">Low Stock</span>',
             26 => '<span class="badge bg-danger">Out of Stock</span>',
             27 => '<span class="badge bg-warning">Pending<br>Restock</span>',
+            28 => '<span class="badge bg-warning">In Queue</span>',
+            29 => '<span class="badge bg-info">In Prep</span>',
+            30 => '<span class="badge bg-sucess">Ready</span>',
+            31 => '<span class="badge bg-danger">Voided</span>',
+            32 => '<span class="badge bg-danger">Loss</span>',
+            33 => '<span class="badge bg-sucess">Growth</span>',
             null => '<span class="badge bg-secondary">Unknown</span>'
         ];
         return $statuses[$statusCode];
@@ -83,6 +89,12 @@ class Status extends Model
             25 => '<div class="alert alert-warning">Low Stock</div>',
             26 => '<div class="alert alert-danger">Out of Stock</div>',
             27 => '<div class="alert alert-warning">Pending Restock</div>',
+            28 => '<div class="alert alert-warning">In Queue</div>',
+            29 => '<div class="alert alert-info">In Preparation</div>',
+            30 => '<div class="alert alert-success">Ready</div>',
+            31 => '<div class="alert alert-danger">Voided</div>',
+            32 => '<div class="alert alert-danger">Loss</div>',
+            33 => '<div class="alert alert-success">Growth</div>',
             null => '<span class="badge bg-secondary">Unknown</div>'
         ];
         return $statuses[$statusCode];

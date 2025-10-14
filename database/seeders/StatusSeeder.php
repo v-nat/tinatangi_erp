@@ -41,6 +41,13 @@ class StatusSeeder extends Seeder
             25 => 'Low Stock',
             26 => 'Out of Stock',
             27 => 'Pending Restock',
+            28 => 'In Queue',
+            29 => 'In Prep',
+            30 => 'Ready',
+            31 => 'Voided',
+            32 => 'Loss',
+            33 => 'Growth',
+
         ];
 
         foreach ($statusesWithId as $id => $status) {

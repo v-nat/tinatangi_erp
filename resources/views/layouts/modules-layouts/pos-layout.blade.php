@@ -18,6 +18,13 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown me-3">
+                            <a class="nav-link active showTransactionsModal" href="#">
+                                <i class="fa-solid fa-receipt fs-4 text-gray-600"></i>
+                            </a>
+                        </li>
+                    </ul>
                     <div class="dropdown">
                         <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="user-menu d-flex">
@@ -41,9 +48,9 @@
 
                                                     if ($employee) {
                                                         $position = $employee->position->name;
-                                                    ?>
-                                                        {{ \Illuminate\Support\Str::upper($position) }}
-                                                    <?php
+                                                                                                                                    ?>
+                                                                                {{ \Illuminate\Support\Str::upper($position) }}
+                                                                                <?php
                                                     }
                                                     break;
 

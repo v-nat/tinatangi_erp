@@ -14,159 +14,161 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Fetch Category IDs by name
-        $categoryMap = ProductCategory::whereIn('name', ['Meals', 'Pastries', 'Beverages'])
+        $categoryMap = ProductCategory::whereIn('name', ['Meals', 'Pastries', 'Beverages', 'Snacks & Sides'])
             ->pluck('id', 'name')
             ->toArray();
 
-        // 2. Define Category IDs for mapping
         $mealId = $categoryMap['Meals'] ?? 2;
         $pastryId = $categoryMap['Pastries'] ?? 3;
         $beverageId = $categoryMap['Beverages'] ?? 4;
-        $snackId = $categoryMap['Snacks & Sides'] ?? $pastryId;
+        $snackId = $categoryMap['Snacks & Sides'] ?? 5;
 
         $products = [];
         $timestamp = now();
 
         // --- 1. Breakfast & Rice Meals (Category: Meals) ---
         $riceMeals = [
-            'Garlic Fried Rice'             => 35.00,
-            'Ham & Egg Rice Meal'           => 95.00,
-            'Sausage Rice Meal'             => 110.00,
-            'Corned Beef Silog'             => 135.00,
-            'Tuna Silog'                    => 125.00,
-            'Scrambled Eggs with Rice'      => 80.00,
-            'Sunny-side Up Eggs with Rice'  => 80.00,
+            'Garlic Fried Rice'             => ['price' => 35.00, 'image' => 'img/products/garlic_fried_rice.jpg'],
+            'Ham & Egg Rice Meal'           => ['price' => 95.00, 'image' => 'img/products/ham_and_egg_rice_meal.jpg'],
+            'Sausage Rice Meal'             => ['price' => 110.00, 'image' => 'img/products/sausage_rice_meal.jpg'],
+            'Corned Beef Silog'             => ['price' => 135.00, 'image' => 'img/products/cornedbeef_silog.jfif'],
+            'Tuna Silog'                    => ['price' => 125.00, 'image' => 'img/products/tuna_silog.jpg'],
+            'Scrambled Eggs with Rice'      => ['price' => 80.00, 'image' => 'img/products/scrambled_egg.jpg'],
+            'Sunny-side Up Eggs with Rice'  => ['price' => 80.00, 'image' => 'img/products/sunnysideup_eggrice.jpg'],
         ];
-        foreach ($riceMeals as $name => $price) {
+        foreach ($riceMeals as $name => $data) {
             $products[] = [
                 'product_category_id' => $mealId,
                 'name' => $name,
-                'base_price' => $price,
+                'base_price' => $data['price'],
                 'description' => 'Breakfast & Rice Meals',
-                'image' => null,
+                'image' => $data['image'],
                 'status' => 1,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
         }
 
-        // --- 2. Sandwiches & Toasts (Category: Pastries/Snacks) ---
-        $sandwiches = [
-            'Ham & Cheese Sandwich'     => 70.00,
-            'Tuna Sandwich'             => 85.00,
-            'Grilled Cheese Sandwich'   => 65.00,
-            'BLT Sandwich'              => 95.00,
-            'Egg Sandwich'              => 75.00,
-            'Tomato & Cheese Toast'     => 80.00,
-        ];
-        foreach ($sandwiches as $name => $price) {
-            $products[] = [
-                'product_category_id' => $snackId,
-                'name' => $name,
-                'base_price' => $price,
-                'description' => 'Sandwiches & Toasts',
-                'image' => null,
-                'status' => 1,
-                'created_at' => $timestamp,
-                'updated_at' => $timestamp,
-            ];
-        }
-
-        // --- 3. Pasta Dishes (Category: Meals) ---
+        // --- 2. Pasta Dishes (Category: Meals) ---
         $pastaDishes = [
-            'Tuna Garlic Pasta'         => 150.00,
-            'Cheesy Garlic Pasta'       => 140.00,
-            'Filipino-style Spaghetti'  => 160.00,
-            'Aglio e Olio'              => 130.00,
+            'Tuna Garlic Pasta'         => ['price' => 150.00, 'image' => 'img/products/spanish_tuna_garlic_Pasta.jfif'],
+            'Cheesy Garlic Pasta'       => ['price' => 140.00, 'image' => 'img/products/cheesy_garlic_pasta.jfif'],
+            'Filipino-style Spaghetti'  => ['price' => 160.00, 'image' => 'img/products/filipino_spaghetti.jfif'],
+            'Aglio e Olio'              => ['price' => 130.00, 'image' => 'img/products/agolio_e_olio.jfif'],
         ];
-        foreach ($pastaDishes as $name => $price) {
+        foreach ($pastaDishes as $name => $data) {
             $products[] = [
                 'product_category_id' => $mealId,
                 'name' => $name,
-                'base_price' => $price,
+                'base_price' => $data['price'],
                 'description' => 'Pasta Dishes',
-                'image' => null,
+                'image' => $data['image'],
                 'status' => 1,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
         }
 
-        // --- 4. Salads & Light Meals (Category: Meals) ---
+        // --- 3. Salads & Light Meals (Category: Meals) ---
         $salads = [
-            'Ham & Cheese Salad'            => 150.00,
-            'Tuna Salad'                    => 145.00,
-            'Garden Salad with Vinaigrette' => 120.00,
-            'Lettuce Wraps with Tuna or Ham' => 160.00,
+            'Ham & Cheese Salad'            => ['price' => 150.00, 'image' => 'img/products/hamNcheese_salad.jfif'],
+            'Tuna Salad'                    => ['price' => 145.00, 'image' => 'img/products/TunaSalad.jfif'],
+            'Garden Salad with Vinaigrette' => ['price' => 120.00, 'image' => 'img/products/gardensalad_vinaigrette.jfif'],
+            'Lettuce Wraps with Tuna or Ham' => ['price' => 160.00, 'image' => 'img/products/LettuceWrapWithTunaCheese.jfif'],
         ];
-        foreach ($salads as $name => $price) {
+        foreach ($salads as $name => $data) {
             $products[] = [
                 'product_category_id' => $mealId,
                 'name' => $name,
-                'base_price' => $price,
+                'base_price' => $data['price'],
                 'description' => 'Salads & Light Meals',
-                'image' => null,
+                'image' => $data['image'],
                 'status' => 1,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
         }
 
-        // --- 5. Filipino Comfort Food (Category: Meals) ---
+        // --- 4. Filipino Comfort Food (Category: Meals) ---
         $comfortFood = [
-            'Adobo-style Rice Bowl'         => 145.00,
-            'Tuna Sisig Rice Bowl'          => 165.00,
-            'Garlic Rice with Fried Canned Meat' => 100.00,
+            'Adobo-style Rice Bowl'              => ['price' => 145.00, 'image' => 'img/products/AdoboStyleRIceBowl.jfif'],
+            'Tuna Sisig Rice Bowl'               => ['price' => 165.00, 'image' => 'img/products/TunaSisigRiceBowl.jfif'],
+            'Garlic Rice with Fried Canned Meat' => ['price' => 100.00, 'image' => 'img/products/GarlicRIceCannedMeat.jfif'],
         ];
-        foreach ($comfortFood as $name => $price) {
+        foreach ($comfortFood as $name => $data) {
             $products[] = [
                 'product_category_id' => $mealId,
                 'name' => $name,
-                'base_price' => $price,
+                'base_price' => $data['price'],
                 'description' => 'Filipino Comfort Food',
-                'image' => null,
+                'image' => $data['image'],
                 'status' => 1,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
         }
 
-        // --- 6. Snacks & Sides (Category: Pastries/Snacks) ---
-        $sides = [
-            'Cheese Sticks'                 => 80.00,
-            'Garlic Bread'                  => 60.00,
-            'Toasted Bread with Butter & Sugar' => 45.00,
-            'Pan-fried Tuna Patties'        => 90.00,
+        // ----------------------------------------------------------------------------------------------------------------------------------------
+        // START PASTRIES/SNACKS CATEGORY
+        // --- 5. Sandwiches & Toasts (Category: Snacks & Sides / Pastries) ---
+        $sandwiches = [
+            'Ham & Cheese Sandwich'     => ['price' => 70.00, 'image' => 'img/products/hamNchees_sandwich_.jfif'],
+            'Tuna Sandwich'             => ['price' => 85.00, 'image' => 'img/products/tuna_sandwich.jfif'],
+            'Grilled Cheese Sandwich'   => ['price' => 65.00, 'image' => 'img/products/grilled_sandwich.jfif'],
+            'BLT Sandwich'              => ['price' => 95.00, 'image' => 'img/products/bit_sandwich.jfif'],
+            'Egg Sandwich'              => ['price' => 75.00, 'image' => 'img/products/egg_sandwich.jfif'],
+            'Tomato & Cheese Toast'     => ['price' => 80.00, 'image' => 'img/products/tomatoNcheese_Sandwich.jfif'],
         ];
-        foreach ($sides as $name => $price) {
+        foreach ($sandwiches as $name => $data) {
+            $products[] = [
+                'product_category_id' => $pastryId,
+                'name' => $name,
+                'base_price' => $data['price'],
+                'description' => 'Sandwiches & Toasts',
+                'image' => $data['image'],
+                'status' => 1,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ];
+        }
+
+        // --- 6. Snacks & Sides (Category: Snacks & Sides / Pastries) ---
+        $sides = [
+            'Cheese Sticks'                     => ['price' => 80.00, 'image' => 'img/products/Cheese_stick.jfif'],
+            'Garlic Bread'                      => ['price' => 60.00, 'image' => 'img/products/Garlic_bread.jfif'],
+            'Toasted Bread with Butter & Sugar' => ['price' => 45.00, 'image' => 'img/products/ToastedBreadButterSugar.jfif'],
+            'Pan-fried Tuna Patties'            => ['price' => 90.00, 'image' => 'img/products/PanfriedTunaPatties.jfif'],
+        ];
+        foreach ($sides as $name => $data) {
             $products[] = [
                 'product_category_id' => $snackId,
                 'name' => $name,
-                'base_price' => $price,
+                'base_price' => $data['price'],
                 'description' => 'Snacks & Sides',
-                'image' => null,
+                'image' => $data['image'],
                 'status' => 1,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
         }
+        // END PASTRIES/SNACKS CATEGORY
+        // ----------------------------------------------------------------------------------------------------------------------------------------
 
         // --- 7. HOT EPSPRESSO (Category: Beverages) ---
         $hotEspresso = [
-            'Espresso Shot'                 => 70.00,
-            'Americano (Hot)'               => 90.00,
-            'Cappucino (Hot)'               => 120.00,
-            'Latte (Hot)'                   => 115.00,
-            'Caramel Latte (Hot)'           => 130.00,
+            'Espresso Shot'       => ['price' => 70.00, 'image' => 'img/products/EspressoShot.jfif'],
+            'Americano (Hot)'     => ['price' => 90.00, 'image' => 'img/products/americano.jfif'],
+            'Cappucino (Hot)'     => ['price' => 120.00, 'image' => 'img/products/Cappucino.jfif'],
+            'Latte (Hot)'         => ['price' => 115.00, 'image' => 'img/products/Latte.jfif'],
+            'Caramel Latte (Hot)' => ['price' => 130.00, 'image' => 'img/products/CaramelLatte.jfif'],
         ];
-        foreach ($hotEspresso as $name => $price) {
+        foreach ($hotEspresso as $name => $data) {
             $products[] = [
                 'product_category_id' => $beverageId,
                 'name' => $name,
-                'base_price' => $price,
+                'base_price' => $data['price'],
                 'description' => 'Hot Espresso Drinks',
-                'image' => null,
+                'image' => $data['image'],
                 'status' => 1,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
@@ -175,19 +177,19 @@ class ProductSeeder extends Seeder
 
         // --- 8. ICED COFFEE (Category: Beverages) ---
         $icedCoffee = [
-            'Iced Americano'                => 100.00,
-            'Iced Latte'                    => 130.00,
-            'Iced Caramel Macchiato'        => 145.00,
-            'Spanish Latte'                 => 140.00,
-            'Iced Kape Pina'                => 150.00,
+            'Iced Americano'          => ['price' => 100.00, 'image' => 'img/products/IcedAmericano.jfif'],
+            'Iced Latte'              => ['price' => 130.00, 'image' => 'img/products/IcedLatte.jfif'],
+            'Iced Caramel Macchiato'  => ['price' => 145.00, 'image' => 'img/products/IcedCaramelMacchiato.jfif'],
+            'Spanish Latte'           => ['price' => 140.00, 'image' => 'img/products/SpanishLatte.jfif'],
+            'Iced Kape Pina'          => ['price' => 150.00, 'image' => 'img/products/IcedKapePina.jfif'],
         ];
-        foreach ($icedCoffee as $name => $price) {
+        foreach ($icedCoffee as $name => $data) {
             $products[] = [
                 'product_category_id' => $beverageId,
                 'name' => $name,
-                'base_price' => $price,
+                'base_price' => $data['price'],
                 'description' => 'Iced Coffee Drinks',
-                'image' => null,
+                'image' => $data['image'],
                 'status' => 1,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
@@ -196,24 +198,23 @@ class ProductSeeder extends Seeder
 
         // --- 9. FRAPPE DRINKS (Category: Beverages) ---
         $frappes = [
-            'Mocha Frappe'                  => 160.00,
-            'Caramel Frappe'                => 165.00,
-            'Cookies & Cream Frappe'        => 170.00,
-            'Coffee Frappe'                 => 155.00,
+            'Mocha Frappe'          => ['price' => 160.00, 'image' => 'img/products/MochaFrappe.jfif'],
+            'Caramel Frappe'        => ['price' => 165.00, 'image' => 'img/products/CaramelFrappe.jfif'],
+            'Cookies & Cream Frappe'=> ['price' => 170.00, 'image' => 'img/products/CookiesAndCreamfrappe.jfif'],
+            'Coffee Frappe'         => ['price' => 155.00, 'image' => 'img/products/CoffeeFrappe.jfif'],
         ];
-        foreach ($frappes as $name => $price) {
+        foreach ($frappes as $name => $data) {
             $products[] = [
                 'product_category_id' => $beverageId,
                 'name' => $name,
-                'base_price' => $price,
+                'base_price' => $data['price'],
                 'description' => 'Frappe Drinks',
-                'image' => null,
+                'image' => $data['image'],
                 'status' => 1,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
         }
-
 
         // Insert all products into the database
         DB::table('products')->insert($products);

@@ -51,4 +51,55 @@
         </div>
     </div>
 </div>
+
+<!-- view modal-->
+<div class="modal fade text-left w-100" id="orderTransactions" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel20" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel20">Recent Orders</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <section class="section">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="posOrdersTransactions" class="table table-hover dataTable no-footer"
+                                    style="width:100% !important; table-layout:fixed">
+                                    <thead>
+                                        <tr>
+                                            <th>Order #</th>
+                                            <th>Items</th>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Type</th>
+                                            <th>Payment</th>
+                                            <th>Cashier</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be loaded via DataTables -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                    <i class="bx bx-x d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Close</span>
+                </button>
+                
+            </div>
+        </div>
+    </div>
+</div>
 <?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modals/operations-pos-modal.blade.php ENDPATH**/ ?>

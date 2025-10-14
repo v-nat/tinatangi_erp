@@ -16,4 +16,5 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/operations/pos/get-meals-products', [POSController::class, 'getMealsProducts']);
     Route::get('/operations/pos/get-snacks-sides-products', [POSController::class, 'getSnacksAndSidesProducts']);
     Route::post('/operations/pos/submit-order', [POSController::class, 'submitOrder']);
+    Route::get('/operations/pos/recent-orders', [POSController::class, 'recentOrders']);
 });

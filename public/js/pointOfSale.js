@@ -78,11 +78,17 @@ $(document).ready(function () {
     }
 
     function getPastriesProducts() {
-        getProducts(`/operations/pos/get-pastries-products`, "#pastriesProducts");
+        getProducts(
+            `/operations/pos/get-pastries-products`,
+            "#pastriesProducts"
+        );
     }
 
     function getBeveragesProducts() {
-        getProducts(`/operations/pos/get-beverages-products`, "#beveragesProducts");
+        getProducts(
+            `/operations/pos/get-beverages-products`,
+            "#beveragesProducts"
+        );
     }
 
     function getMealsProducts() {
@@ -90,7 +96,10 @@ $(document).ready(function () {
     }
 
     function getSnacksAndSidesProducts() {
-        getProducts(`/operations/pos/get-snacks-sides-products`, "#snakcsSidesProducts");
+        getProducts(
+            `/operations/pos/get-snacks-sides-products`,
+            "#snacksProducts"
+        );
     }
 
     getAllProducts();
@@ -107,7 +116,7 @@ $(document).ready(function () {
     $(document).on("shown.bs.tab", "#v-pills-meals-tab", function (e) {
         getMealsProducts();
     });
-    $(document).on("shown.bs.tab", "#v-pills-snacksSides-tab", function (e) {
+    $(document).on("shown.bs.tab", "#v-pills-snacks-tab", function (e) {
         getSnacksAndSidesProducts();
     });
 
@@ -196,7 +205,7 @@ $(document).ready(function () {
             const totalPriceText = $("#total_price").text().trim();
             const newTotalPrice =
                 parseFloat(
-                    totalPriceText.replace("Total Price: ₱", "").trim()
+                    totalPriceText.replace(/[^\d\.]/g, '').trim()
                 ) || 0;
 
             const $existingItem = $(
@@ -338,7 +347,6 @@ $(document).ready(function () {
 
     $(document).on("click", "#submit-order-btn", function (e) {
         e.preventDefault();
-        $("#LoadingScreen").fadeIn(200);
 
         const orderItems = [];
         let isValid = true;
@@ -382,6 +390,7 @@ $(document).ready(function () {
             parseFloat(totalElement.text().replace(/[^0-9.]/g, "")) || 0;
 
         if (isValid && orderItems.length > 0) {
+            $("#LoadingScreen").fadeIn(200);
             const orderData = {
                 order_items: orderItems,
                 grand_total: parseFloat(grandTotal).toFixed(2),
@@ -426,4 +435,89 @@ $(document).ready(function () {
             });
         }
     });
+
+    $(document).on("click", ".showTransactionsModal", function (e) {
+        $("#orderTransactions").modal("show");
+        loadTodayOrdersData();
+    });
+
+    function loadTodayOrdersData() {
+        const tableSelector = "#posOrdersTransactions";
+
+        if ($.fn.DataTable.isDataTable(tableSelector)) {
+            $(tableSelector).DataTable().destroy();
+        }
+
+        $(tableSelector).DataTable({
+            processing: true,
+            serverSide: false,
+            ajax: {
+                url: "/operations/pos/recent-orders",
+                type: "GET",
+                dataSrc: "data",
+                error: function (xhr, error, code) {
+                    console.error("DataTables AJAX Error:", xhr.responseText);
+                    $(tableSelector)
+                        .find("tbody")
+                        .html(
+                            '<tr><td colspan="10" class="text-center text-danger">Failed to load orders.</td></tr>'
+                        );
+                },
+            },
+            columns: [
+                { data: "order_id", title: "Order #" },
+                {
+                    data: "items",
+                    title: "Items",
+                    render: function (data, type, row) {
+                        if (type === "display") {
+                            let itemList = data
+                                .map(
+                                    (item) =>
+                                        `<li>${item.quantity}x ${item.product_name}</li>`
+                                )
+                                .join("");
+                            return `<ul class="list-unstyled p-0 m-0" style="font-size: 0.85rem">${itemList}</ul>`;
+                        }
+                        return data;
+                    },
+                },
+                { data: "created_at", title: "Date" },
+                {
+                    data: "total_amount",
+                    title: "Amount",
+                    render: $.fn.dataTable.render.number(",", ".", 2, "₱ "),
+                    className: "dt-left font-weight-bold",
+                },
+                { data: "order_type", title: "Type" },
+                { data: "payment_method", title: "Payment" },
+                {
+                    data: "cashier_name",
+                    title: "Cashier",
+                    defaultContent: "N/A",
+                },
+                {
+                    data: "status",
+                    title: "Status",
+                    className: "font-weight-bold",
+                },
+                {
+                    data: null,
+                    title: "Actions",
+                    defaultContent:
+                        '<button class="btn btn-sm btn-info view-order-details">View</button>',
+                    orderable: false,
+                    width: "8%",
+                },
+            ],
+
+            order: [[2, "desc"]],
+            language: {
+                emptyTable: "No orders placed today.",
+                zeroRecords: "No matching orders found.",
+            },
+            fixedColumns: true,
+            scrollX: true,
+        });
+    }
 });

@@ -3,7 +3,7 @@
 @section('content')
     <div class="container-fluid p-0">
 
-        <div class="row align-items-stretch min-vh-90 g-2">
+        <div class="row align-items-center min-vh-90 g-2 justify-content-center">
 
             <div class="col-12 col-md-9 d-flex">
                 <div class="card w-100">
@@ -26,8 +26,8 @@
                                         aria-selected="false">Beverages</a>
                                     <a class="nav-link" id="v-pills-meals-tab" data-bs-toggle="pill" href="#v-pills-meals"
                                         role="tab" aria-controls="v-pills-meals" aria-selected="false">Meals</a>
-                                    <a class="nav-link" id="v-pills-snacksSides-tab" data-bs-toggle="pill"
-                                        href="#v-pills-snacksSides" role="tab" aria-controls="v-pills-snacksSides"
+                                    <a class="nav-link" id="v-pills-snacks-tab" data-bs-toggle="pill"
+                                        href="#v-pills-snacks" role="tab" aria-controls="v-pills-snacks"
                                         aria-selected="false">Snacks & Sides</a>
                                 </div>
                             </div>
@@ -75,11 +75,10 @@
                                         </div>
                                     </div>
 
-                                    <div class="tab-pane fade py-4" id="v-pills-snakcsSides" role="tabpanel"
-                                        aria-labelledby="v-pills-snakcsSides-tab">
+                                    <div class="tab-pane fade py-4" id="v-pills-snacks" role="tabpanel"
+                                        aria-labelledby="v-pills-snacks-tab">
 
-                                        <div id="snakcsSidesProducts" class="row row-cols-auto g-3 justify-content-start">
-
+                                        <div id="snacksProducts" class="row row-cols-auto g-3 justify-content-start">
                                             {{-- WILL POPULATED BY JS --}}
 
                                         </div>
@@ -91,7 +90,7 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-3 d-flex overflow-y-auto vh-90">
+            <div class="col-12 col-md-2 d-flex overflow-y-auto vh-90">
                 <div class="card w-100">
                     <div class="card-header">
                         <h2 class="card-title">Order</h2>
@@ -121,6 +120,9 @@
     @include('layouts.modals.operations-pos-modal')
 
     <style>
+        .col-md-2 {
+            width: 20%;
+        }
         .min-vh-90 {
             min-height: 90vh;
         }
@@ -130,7 +132,7 @@
         }
 
         .vh-80 {
-            height: 75vh;
+            height: 77vh;
         }
 
         .product-card-fixed-size {

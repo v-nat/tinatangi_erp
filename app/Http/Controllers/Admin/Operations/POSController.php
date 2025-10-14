@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
+use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Status;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +17,9 @@ class POSController extends Controller
     public function getAllProducts()
     {
         try {
-            $allProducts = Product::all()->where('status', 1);
+            $allProducts = Product::where('status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
 
             return response()->json([
                 'data' => $allProducts->map(function ($p) {
@@ -45,6 +49,7 @@ class POSController extends Controller
 
             $pastriesProducts = Product::where('status', 1)
                 ->where('product_category_id', $pastriesId)
+                ->orderBy('name', 'asc')
                 ->get();
 
             return response()->json([
@@ -76,6 +81,7 @@ class POSController extends Controller
 
             $beveragesProducts = Product::where('status', 1)
                 ->where('product_category_id', $beveragesId)
+                ->orderBy('name', 'asc')
                 ->get();
 
             return response()->json([
@@ -107,6 +113,7 @@ class POSController extends Controller
 
             $mealsProducts = Product::where('status', 1)
                 ->where('product_category_id', $mealsId)
+                ->orderBy('name', 'asc')
                 ->get();
 
             return response()->json([
@@ -142,6 +149,7 @@ class POSController extends Controller
 
             $products = Product::where('status', 1)
                 ->where('product_category_id', $categoryId)
+                ->orderBy('name', 'asc')
                 ->get();
 
             return response()->json([
@@ -207,7 +215,7 @@ class POSController extends Controller
                 'order_id' => $customOrderId,
                 'user_id' => auth('')->id(),
                 'total_amount' => $calculatedGrandTotal,
-                'status' => 11,
+                'status' => 28,
                 'order_type' => 'dine-in',
                 'payment_status' => 'paid',
             ]);
@@ -226,6 +234,52 @@ class POSController extends Controller
                 'message' => 'Order submission failed.',
                 'error' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    public function recentOrders()
+    {
+        try {
+            $startOfDay = Carbon::today();
+            $endOfDay = Carbon::tomorrow();
+
+            $todayOrders = Order::with([
+                'items',
+                'items.productRS',
+                'userRS'
+            ])
+            ->whereBetween('created_at', [$startOfDay, $endOfDay])
+            ->whereNull('deleted_at')
+            ->get();
+
+            $formattedOrders = $todayOrders->map(function ($order) {
+                return [
+                    'id'              => $order->id,
+                    'cashier_name'    => optional($order->userRS)->full_name,
+                    'order_id'        => $order->order_id,
+                    'total_amount'    => number_format($order->total_amount, 2),
+                    'order_type'      => strtoupper($order->order_type),
+                    'payment_method'  => strtoupper($order->payment_method),
+                    'created_at'      => $order->created_at->format('M d, Y h:i A'),
+                    'status'          => Status::getStatusText($order->status),
+                    'items'           => $order->items->map(function ($item) {
+                        return [
+                            'product_name' => $item->productRS->name ?? 'N/A',
+                            'quantity'     => $item->quantity,
+                            'subtotal'     => number_format($item->subtotal, 2),
+                        ];
+                    }),
+                ];
+            });
+
+
+            return response()->json([
+                'success' => true,
+                'data' => $formattedOrders,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }
