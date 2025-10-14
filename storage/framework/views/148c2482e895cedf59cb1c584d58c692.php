@@ -6,7 +6,7 @@
 </head>
 
 <body class="dark light">
-    <div class="layout-navbar">
+    <div class="layout-navbar overflow-auto" style="max-height: 100vh; min-height: 90vh;">
         <nav class="navbar navbar-expand navbar-light">
             <div class="container-fluid">
                 <div class="collapse navbar-collapse justify-content-start m-0">
@@ -70,7 +70,7 @@
             </div>
         </nav>
 
-        <div class="d-flex p-2 col-12">
+        <div class="p-2 overflow-y-auto">
             <?php echo $__env->yieldContent('content'); ?>
         </div>
     </div>

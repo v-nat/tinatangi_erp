@@ -6,13 +6,13 @@
         <div class="row align-items-stretch min-vh-90 g-2">
 
             <div class="col-12 col-md-9 d-flex">
-                <div class="card w-100 h-100 d-flex flex-column">
+                <div class="card w-100">
                     <div class="card-header">
                         <h4 class="card-title"></h4>
                     </div>
-                    <div class="card-body flex-grow-1">
-                        <div class="row h-100">
-                            <div class="col-2 h-100">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-2">
                                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
                                     aria-orientation="vertical">
                                     <a class="nav-link active" id="v-pills-all-tab" data-bs-toggle="pill"
@@ -28,36 +28,34 @@
                                         role="tab" aria-controls="v-pills-meals" aria-selected="false">Meals</a>
                                 </div>
                             </div>
-                            <div class="col-10 h-100">
-                                <div class="tab-content h-100 overflow-auto" id="v-pills-tabContent">
+                            <div class="col-10 overflow-y-auto vh-80">
+                                <div class="tab-content" id="v-pills-tabContent">
                                     <div class="tab-pane fade show active" id="v-pills-all" role="tabpanel"
                                         aria-labelledby="v-pills-all-tab">
 
-                                        <div class="tab-pane fade show active" id="v-pills-all" role="tabpanel"
-                                            aria-labelledby="v-pills-all-tab">
+                                        <div class="tab-pane fade show active" id="v-pills-all"
+                                            role="tabpanel" aria-labelledby="v-pills-all-tab">
 
                                             <div class="row row-cols-auto g-3 justify-content-start">
+                                                @for ($i = 0; $i < 20; $i++)
+                                                    <div class="col">
+                                                        <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2">
 
-                                                <div class="col">
-                                                    <div
-                                                        class="card shadow product-card-fixed-size d-flex flex-column h-100 p-2 m-2">
+                                                            <img src="{{ asset('img/coffee-tinatangilatte.png') }}"
+                                                                class="card-img-top img-fluid prod-img" alt="Product Image">
 
-                                                        <img src="{{ asset('img/coffee-tinatangilatte.png') }}"
-                                                            class="card-img-top img-fluid prod-img" alt="Product Image">
+                                                            <div class="card-body p-2 flex-grow-1">
+                                                                <h6 class="card-title mb-1 prod-name">Espresso Delight</h6>
+                                                                <h6 class="text-success mb-0 prod-price">₱ 100.00</h6>
+                                                            </div>
 
-                                                        <div class="card-body p-2 flex-grow-1">
-                                                            <h6 class="card-title mb-1 prod-name">Espresso Delight Long
-                                                                Name</h6>
-                                                            <h6 class="text-success mb-0 prod-price">$3.50</h6>
+                                                            <div class="card-footer p-1">
+                                                                <button class="btn btn-sm btn-primary w-100">Add</button>
+                                                            </div>
+
                                                         </div>
-
-                                                        <div class="card-footer p-1">
-                                                            <button class="btn btn-sm btn-primary w-100">Add</button>
-                                                        </div>
-
                                                     </div>
-                                                </div>
-
+                                                @endfor
 
                                             </div>
                                         </div>
@@ -83,26 +81,36 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-3 d-flex">
-                <div class="card w-100 h-100 d-flex flex-column">
+            <div class="col-12 col-md-3 d-flex overflow-y-auto vh-90">
+                <div class="card w-100">
                     <div class="card-header">
                         <h2 class="card-title">Order</h2>
                     </div>
 
-                    <div class="card-body flex-grow-1 overflow-auto">
+                    <div class="card-body  overflow-y-auto">
+                        @for ($i = 0; $i < 20; $i++)
+                            <div class="d-flex align-items-center py-2 border-bottom">
+                                <div class="flex-grow-1 me-3">
+                                    <h6 class="mb-0 text-dark">Espresso Delight</h6>
+                                    <small class="text-secondary">₱ 100.00</small>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between" style="width: 110px;">
+                                    <a href="#" class="btn btn-sm btn-danger p-1">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </a>
+                                    <h6 class="mb-0 mx-2">1</h6>
+                                    <a href="#" class="btn btn-sm btn-primary p-1">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        @endfor
                     </div>
 
                     <div class="card-footer">
                         <div class="d-flex justify-content-between">
-
-                            <h6 class="card-title mb-3">
-                                Total Cost:
-                            </h6>
-
-                            <h6 class="mb-3">
-                                100.00
-                            </h6>
-
+                            <h6 class="card-title mb-3">Total Cost:</h6>
+                            <h6 class="mb-3" id="order-total-amount">₱ 100.00</h6>
                         </div>
 
                         <button class="btn btn-lg btn-primary w-100 -mt-2">
@@ -117,6 +125,12 @@
     <style>
         .min-vh-90 {
             min-height: 90vh;
+        }
+        .vh-90 {
+            height: 89vh;
+        }
+        .vh-80 {
+            height: 75vh;
         }
 
         .product-card-fixed-size {
