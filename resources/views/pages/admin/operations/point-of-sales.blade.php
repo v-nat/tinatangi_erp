@@ -26,6 +26,9 @@
                                         aria-selected="false">Beverages</a>
                                     <a class="nav-link" id="v-pills-meals-tab" data-bs-toggle="pill" href="#v-pills-meals"
                                         role="tab" aria-controls="v-pills-meals" aria-selected="false">Meals</a>
+                                    <a class="nav-link" id="v-pills-snacksSides-tab" data-bs-toggle="pill"
+                                        href="#v-pills-snacksSides" role="tab" aria-controls="v-pills-snacksSides"
+                                        aria-selected="false">Snacks & Sides</a>
                                 </div>
                             </div>
                             <div class="col-10 overflow-y-auto vh-80">
@@ -44,7 +47,7 @@
 
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="v-pills-pastries" role="tabpanel"
+                                    <div class="tab-pane fade py-4" id="v-pills-pastries" role="tabpanel"
                                         aria-labelledby="v-pills-pastries-tab">
 
                                         <div id="pastriesProducts" class="row row-cols-auto g-3 justify-content-start">
@@ -53,7 +56,7 @@
 
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="v-pills-beverages" role="tabpanel"
+                                    <div class="tab-pane fade py-4" id="v-pills-beverages" role="tabpanel"
                                         aria-labelledby="v-pills-beverages-tab">
 
                                         <div id="beveragesProducts" class="row row-cols-auto g-3 justify-content-start">
@@ -62,10 +65,20 @@
 
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="v-pills-meals" role="tabpanel"
+                                    <div class="tab-pane fade py-4" id="v-pills-meals" role="tabpanel"
                                         aria-labelledby="v-pills-meals-tab">
 
                                         <div id="mealsProducts" class="row row-cols-auto g-3 justify-content-start">
+
+                                            {{-- WILL POPULATED BY JS --}}
+
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade py-4" id="v-pills-snakcsSides" role="tabpanel"
+                                        aria-labelledby="v-pills-snakcsSides-tab">
+
+                                        <div id="snakcsSidesProducts" class="row row-cols-auto g-3 justify-content-start">
 
                                             {{-- WILL POPULATED BY JS --}}
 
@@ -96,7 +109,7 @@
                             <h6 class="mb-3" id="order-total-amount">₱ 0.00</h6>
                         </div>
 
-                        <button class="btn btn-lg btn-primary w-100 -mt-2">
+                        <button id="submit-order-btn" class="btn btn-lg btn-primary w-100 -mt-2">
                             Complete Order
                         </button>
                     </div>
@@ -128,6 +141,17 @@
         .product-card-fixed-size .card-img-top {
             height: 200px;
             object-fit: cover;
+        }
+
+        .product-card-fixed-size .prod-price {
+            margin-top: auto;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .product-card-fixed-size .prod-name {
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {

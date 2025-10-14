@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Invoice;
 use App\Models\BudgetRelease;
 use App\Models\InventoryItem;
@@ -24,6 +25,14 @@ class GenerateIdController extends Controller
                     $random = rand(10000, 99999);
                     $_id = $year . $random;
                 } while (PurchaseRequest::pluck('invoice_id')->contains($_id));
+                break;
+            case 'order':
+                $prefix = 'ORD_';
+                $key = 'order_id';
+
+                do {
+                    $_id = $prefix . rand(100000, 999999);
+                } while (Order::where($key, $_id)->exists());
                 break;
 
             case 'delivery_no':

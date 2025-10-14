@@ -18,56 +18,98 @@ $(document).ready(function () {
         });
     });
 
-    $.get(`/operations/pos/get-all-products`, function (response) {
-        if (response.data && Array.isArray(response.data)) {
-            const productsArray = response.data;
-            let productsHtml = [];
+    function getProducts(url, id) {
+        $.get(url, function (response) {
+            if (response.data && Array.isArray(response.data)) {
+                const productsArray = response.data;
+                let productsHtml = [];
 
-            productsArray.forEach((element) => {
-                const imagePath = element.image;
+                productsArray.forEach((element) => {
+                    const imagePath = element.image;
 
-                let imageUrl;
+                    let imageUrl;
 
-                if (imagePath && imagePath !== "N/A") {
-                    imageUrl = "/" + imagePath;
-                } else {
-                    imageUrl = DEFAULT_PRODUCT_IMAGE;
-                }
+                    if (imagePath && imagePath !== "N/A") {
+                        imageUrl = "/" + imagePath;
+                    } else {
+                        imageUrl = DEFAULT_PRODUCT_IMAGE;
+                    }
 
-                productsHtml.push(`
-                <div class="col"  data-id="${element.id}">
-                    <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2">
-                        <img src="${imageUrl}"
-                            class="card-img-top img-fluid prod-img" alt="Product Image">
-                        <div class="card-body p-2 flex-grow-1">
-                            <h6 class="card-title mb-1 prod-name">${
-                                element.name
-                            }</h6>
-                            <h6 class="text-success mb-0 prod-price">₱${parseFloat(
-                                element.base_price || 0
-                            ).toFixed(2)}</h6>
+                    productsHtml.push(`
+                        <div class="col"  data-id="${element.id}">
+                            <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2">
+                                <img src="${imageUrl}"
+                                    class="card-img-top img-fluid prod-img" alt="Product Image">
+                                <div class="card-body p-2 flex-grow-1">
+                                    <h6 class="card-title mb-1 prod-name">${
+                                        element.name
+                                    }</h6>
+                                    <h6 class="text-success mb-0 prod-price">₱${parseFloat(
+                                        element.base_price || 0
+                                    ).toFixed(2)}</h6>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            `);
-            });
+                    `);
+                });
 
-            $("#allProducts").html(productsHtml.join(""));
-        } else {
-            console.error("Error: products data not found or is not an array.");
-            alert("Error: products not found.");
-        }
-    })
-        .fail(function (xhr) {
-            const errorMsg = xhr.responseJSON
-                ? xhr.responseJSON.error
-                : "Failed to load products.";
-            console.error("AJAX Error:", errorMsg, xhr);
-            alert(errorMsg);
+                $(id).html(productsHtml.join(""));
+            } else {
+                console.error(
+                    "Error: products data not found or is not an array."
+                );
+                alert("Error: products not found.");
+            }
         })
-        .always(function () {
-            $("#LoadingScreen").fadeOut(200);
-        });
+            .fail(function (xhr) {
+                const errorMsg = xhr.responseJSON
+                    ? xhr.responseJSON.error
+                    : "Failed to load products.";
+                console.error("AJAX Error:", errorMsg, xhr);
+                alert(errorMsg);
+            })
+            .always(function () {
+                $("#LoadingScreen").fadeOut(200);
+            });
+    }
+
+    function getAllProducts() {
+        getProducts(`/operations/pos/get-all-products`, "#allProducts");
+    }
+
+    function getPastriesProducts() {
+        getProducts(`/operations/pos/get-pastries-products`, "#pastriesProducts");
+    }
+
+    function getBeveragesProducts() {
+        getProducts(`/operations/pos/get-beverages-products`, "#beveragesProducts");
+    }
+
+    function getMealsProducts() {
+        getProducts(`/operations/pos/get-meals-products`, "#mealsProducts");
+    }
+
+    function getSnacksAndSidesProducts() {
+        getProducts(`/operations/pos/get-snacks-sides-products`, "#snakcsSidesProducts");
+    }
+
+    getAllProducts();
+
+    $(document).on("shown.bs.tab", "#v-pills-all-tab", function (e) {
+        getAllProducts();
+    });
+    $(document).on("shown.bs.tab", "#v-pills-pastries-tab", function (e) {
+        getPastriesProducts();
+    });
+    $(document).on("shown.bs.tab", "#v-pills-beverages-tab", function (e) {
+        getBeveragesProducts();
+    });
+    $(document).on("shown.bs.tab", "#v-pills-meals-tab", function (e) {
+        getMealsProducts();
+    });
+    $(document).on("shown.bs.tab", "#v-pills-snacksSides-tab", function (e) {
+        getSnacksAndSidesProducts();
+    });
 
     $(document).on("click", ".col", function () {
         const clickedColumn = $(this);
@@ -91,7 +133,6 @@ $(document).ready(function () {
         const $quantityInput = $("#quantity");
         const quantity = parseInt($quantityInput.val()) || 0;
         const $totalPriceElement = $("#total_price");
-        console.log(price);
         if (price <= 0) {
             $totalPriceElement.text("");
             return;
@@ -292,6 +333,97 @@ $(document).ready(function () {
             );
 
             totalElement.text("₱ " + parseFloat(newGrandTotal).toFixed(2));
+        }
+    });
+
+    $(document).on("click", "#submit-order-btn", function (e) {
+        e.preventDefault();
+        $("#LoadingScreen").fadeIn(200);
+
+        const orderItems = [];
+        let isValid = true;
+
+        $("#orderList")
+            .find(".d-flex.align-items-center.py-2.border-bottom")
+            .each(function () {
+                const $itemRow = $(this);
+
+                const productId = $itemRow.find(".prod-name").data("id");
+                const productName = $itemRow.find(".prod-name").text().trim();
+
+                const quantityText = $itemRow.find(".qnty").text().trim();
+                const quantity = parseInt(quantityText) || 0;
+
+                const itemPriceText = $itemRow
+                    .find(".prod-price")
+                    .text()
+                    .trim();
+                const itemTotalPrice =
+                    parseFloat(itemPriceText.replace(/[^0-9.]/g, "")) || 0;
+
+                const unitPrice = quantity > 0 ? itemTotalPrice / quantity : 0;
+
+                if (quantity === 0 || productId === null) {
+                    isValid = false;
+                    return false;
+                }
+
+                orderItems.push({
+                    product_id: productId,
+                    name: productName,
+                    quantity: quantity,
+                    unit_price: parseFloat(unitPrice).toFixed(2),
+                    total_price: parseFloat(itemTotalPrice).toFixed(2),
+                });
+            });
+
+        const totalElement = $("#order-total-amount");
+        const grandTotal =
+            parseFloat(totalElement.text().replace(/[^0-9.]/g, "")) || 0;
+
+        if (isValid && orderItems.length > 0) {
+            const orderData = {
+                order_items: orderItems,
+                grand_total: parseFloat(grandTotal).toFixed(2),
+            };
+
+            $.ajax({
+                url: "/operations/pos/submit-order",
+                type: "POST",
+                data: orderData,
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
+                },
+                success: function (response) {
+                    Toast.fire({
+                        text:
+                            "Order completed successfully! Order ID: " +
+                            response.order_id,
+                        icon: "success",
+                        timer: 2000,
+                    });
+                    $("#orderList").empty();
+                    $("#order-total-amount").text("₱ 0.00");
+                },
+                error: function (xhr) {
+                    const errorMsg = xhr.responseJSON
+                        ? xhr.responseJSON.message
+                        : "Failed to submit order. Please try again.";
+                    alert("Error: " + errorMsg);
+                },
+                complete: function () {
+                    $("#LoadingScreen").fadeOut(200);
+                },
+            });
+        } else {
+            $("#LoadingScreen").fadeOut(200);
+            Toast.fire({
+                text: "The order is empty or contains invalid items. Please add products.",
+                icon: "warning",
+                timer: 2000,
+            });
         }
     });
 });

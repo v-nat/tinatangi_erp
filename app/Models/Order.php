@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Order extends Model
@@ -15,6 +16,7 @@ class Order extends Model
 
     protected $fillable = [
         'id',
+        'order_id',
         'user_id',
         'total_amount',
         'status',
@@ -29,7 +31,12 @@ class Order extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function userRS(): BelongsTo {
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class, 'order_id');
+    }
+    public function userRS(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 

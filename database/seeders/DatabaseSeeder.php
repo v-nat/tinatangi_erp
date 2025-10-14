@@ -2,13 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
-use App\Models\User;
-use App\Models\Department;
-use App\Models\Employee;
-use App\Models\InventoryLocation;
-use App\Models\Status;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 
@@ -29,5 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CategorySeeder::class);
         $this->call(UnitSeeder::class);
         $this->call(ItemSeeder::class);
+        $this->call(ProductCategorySeeder::class);
+        $this->call(ProductSeeder::class);
     }
 }

@@ -228,12 +228,9 @@ $(document).ready(function () {
 
         $.get(`/finance/purchases/get-details/${id}`, function (response) {
             if (response.data && response.data.length > 0) {
-                // Get the single Purchase Request object
                 const requestData = response.data[0];
                 buildPOmodal(requestData);
             } else {
-                // Handle case where no record was found for the ID
-                // Use a message box/custom modal instead of alert
                 alert("Error: Purchase Request not found.");
             }
         })
@@ -241,7 +238,6 @@ $(document).ready(function () {
                 const errorMsg = xhr.responseJSON
                     ? xhr.responseJSON.error
                     : "Failed to load purchase request details.";
-                // Use a message box/custom modal instead of alert
                 alert(errorMsg);
             })
             .always(function () {
@@ -275,5 +271,5 @@ $(document).ready(function () {
     $(document).on("click", "#print", function () {
         printInvoice();
     });
-    
+
 });
