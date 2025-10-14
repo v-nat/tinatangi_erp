@@ -33,46 +33,43 @@
                                     <div class="tab-pane fade show active" id="v-pills-all" role="tabpanel"
                                         aria-labelledby="v-pills-all-tab">
 
-                                        <div class="tab-pane fade show active" id="v-pills-all"
-                                            role="tabpanel" aria-labelledby="v-pills-all-tab">
+                                        <div class="tab-pane fade show active py-4" id="v-pills-all" role="tabpanel"
+                                            aria-labelledby="v-pills-all-tab">
 
-                                            <div class="row row-cols-auto g-3 justify-content-start">
-                                                @for ($i = 0; $i < 20; $i++)
-                                                    <div class="col">
-                                                        <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2">
+                                            <div id="allProducts" class="row row-cols-auto g-3 justify-content-start">
 
-                                                            <img src="{{ asset('img/coffee-tinatangilatte.png') }}"
-                                                                class="card-img-top img-fluid prod-img" alt="Product Image">
-
-                                                            <div class="card-body p-2 flex-grow-1">
-                                                                <h6 class="card-title mb-1 prod-name">Espresso Delight</h6>
-                                                                <h6 class="text-success mb-0 prod-price">₱ 100.00</h6>
-                                                            </div>
-
-                                                            <div class="card-footer p-1">
-                                                                <button class="btn btn-sm btn-primary w-100">Add</button>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                @endfor
+                                                {{-- WILL POPULATED BY JS --}}
 
                                             </div>
+
                                         </div>
-
-
                                     </div>
                                     <div class="tab-pane fade" id="v-pills-pastries" role="tabpanel"
                                         aria-labelledby="v-pills-pastries-tab">
-                                        Integer interdum diam eleifend metus lacinia, quis gravida eros
+
+                                        <div id="pastriesProducts" class="row row-cols-auto g-3 justify-content-start">
+
+                                            {{-- WILL POPULATED BY JS --}}
+
+                                        </div>
                                     </div>
                                     <div class="tab-pane fade" id="v-pills-beverages" role="tabpanel"
                                         aria-labelledby="v-pills-beverages-tab">
-                                        Integer pretium dolor at sapien laoreet ultricies. Fusce congue et
+
+                                        <div id="beveragesProducts" class="row row-cols-auto g-3 justify-content-start">
+
+                                            {{-- WILL POPULATED BY JS --}}
+
+                                        </div>
                                     </div>
                                     <div class="tab-pane fade" id="v-pills-meals" role="tabpanel"
                                         aria-labelledby="v-pills-meals-tab">
-                                        Sed lacus quam, convallis quis condimentum ut, accumsan congue
+
+                                        <div id="mealsProducts" class="row row-cols-auto g-3 justify-content-start">
+
+                                            {{-- WILL POPULATED BY JS --}}
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -87,30 +84,16 @@
                         <h2 class="card-title">Order</h2>
                     </div>
 
-                    <div class="card-body  overflow-y-auto">
-                        @for ($i = 0; $i < 20; $i++)
-                            <div class="d-flex align-items-center py-2 border-bottom">
-                                <div class="flex-grow-1 me-3">
-                                    <h6 class="mb-0 text-dark">Espresso Delight</h6>
-                                    <small class="text-secondary">₱ 100.00</small>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between" style="width: 110px;">
-                                    <a href="#" class="btn btn-sm btn-danger p-1">
-                                        <i class="fa-solid fa-minus"></i>
-                                    </a>
-                                    <h6 class="mb-0 mx-2">1</h6>
-                                    <a href="#" class="btn btn-sm btn-primary p-1">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        @endfor
+                    <div id="orderList" class="card-body overflow-y-auto">
+
+                        {{-- WILL POPULATED BY JS --}}
+
                     </div>
 
                     <div class="card-footer">
                         <div class="d-flex justify-content-between">
                             <h6 class="card-title mb-3">Total Cost:</h6>
-                            <h6 class="mb-3" id="order-total-amount">₱ 100.00</h6>
+                            <h6 class="mb-3" id="order-total-amount">₱ 0.00</h6>
                         </div>
 
                         <button class="btn btn-lg btn-primary w-100 -mt-2">
@@ -122,13 +105,17 @@
         </div>
     </div>
 
+    @include('layouts.modals.operations-pos-modal')
+
     <style>
         .min-vh-90 {
             min-height: 90vh;
         }
+
         .vh-90 {
             height: 89vh;
         }
+
         .vh-80 {
             height: 75vh;
         }
@@ -142,8 +129,43 @@
             height: 200px;
             object-fit: cover;
         }
+
+        @media (max-width: 768px) {
+
+            .product-card-fixed-size {
+                height: 220px;
+                width: 100%;
+            }
+
+            .product-card-fixed-size .card-img-top {
+                height: 150px;
+            }
+
+            .prod-name {
+                font-size: 12px
+            }
+        }
+
+        @media (max-width: 1080px) {
+
+            .product-card-fixed-size {
+                height: 170px;
+                width: 170px;
+            }
+
+            .product-card-fixed-size .card-img-top {
+                height: 120px;
+            }
+
+            .prod-name {
+                font-size: 14px
+            }
+        }
     </style>
 @endsection
 @section('scripts')
+    <script>
+        const DEFAULT_PRODUCT_IMAGE = "{{ asset('img/default-product.png') }}";
+    </script>
     <script type="module" src="{{ asset('js/pointOfSale.js') }}   "></script>
 @endsection

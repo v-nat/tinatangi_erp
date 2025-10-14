@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('base_price', 10, 2);
             $table->string('description')->nullable();
+            $table->string('image')->nullable();
 
             $table->unsignedBigInteger('status')->default(1);
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');

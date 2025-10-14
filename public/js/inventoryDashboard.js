@@ -318,7 +318,7 @@ $(document).ready(function () {
         $("#req_item_id").val(item_id);
         $("#req_sku").val(id);
         $("#req_item_name").text("Item Name: " + item_name);
-        $("#req_unit_price").text("Unit Pirce: ₱" + unit_price);
+        $("#req_unit_price").text("Unit Price: ₱" + unit_price);
         $("#req_unit").text("Unit: " + unit);
         $("#req_unit_price").attr("data-price", unit_price);
         $("#stockRequest").modal("show");
