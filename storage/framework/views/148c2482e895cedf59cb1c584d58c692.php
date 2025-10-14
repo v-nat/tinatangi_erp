@@ -2,7 +2,7 @@
 <html lang="en" data-bs-theme="light">
 
 <head>
-    @include('partials.app-head')
+    <?php echo $__env->make('partials.app-head', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 </head>
 
 <body class="dark light">
@@ -23,10 +23,11 @@
                             <div class="user-menu d-flex">
                                 <div class="user-name text-end me-3">
                                     <h6 class="mb-0 text-gray-600">
-                                        {{auth()->user()->full_name}}
+                                        <?php echo e(auth()->user()->full_name); ?>
+
                                     </h6>
                                     <p class="mb-0 text-sm text-gray-600">
-                                        @if(auth()->user()->user_type == 'employee')
+                                        <?php if(auth()->user()->user_type == 'employee'): ?>
                                                                                 <?php
                                             $userId = auth()->user()->id;
                                             $position = null;
@@ -42,7 +43,8 @@
                                                     if ($employee) {
                                                         $position = $employee->position->name;
                                                     ?>
-                                                        {{ \Illuminate\Support\Str::upper($position) }}
+                                                        <?php echo e(\Illuminate\Support\Str::upper($position)); ?>
+
                                                     <?php
                                                     }
                                                     break;
@@ -50,13 +52,11 @@
                                                 default:
                                                     break;
                                             } ?>
-                                        @endif
+                                        <?php endif; ?>
                                     </p>
                                 </div>
                                 <div class="user-img d-flex align-items-center">
-                                    {{-- <div class="avatar avatar-md">
-                                        <img src="assets/images/faces/1.jpg">
-                                    </div> --}}
+                                    
                                 </div>
                             </div>
                         </a>
@@ -71,18 +71,19 @@
         </nav>
 
         <div class="d-flex p-2 col-12">
-            @yield('content')
+            <?php echo $__env->yieldContent('content'); ?>
         </div>
     </div>
-    @include('layouts.loading-state')
+    <?php echo $__env->make('layouts.loading-state', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-    @include('layouts.toast-swal')
+    <?php echo $__env->make('layouts.toast-swal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-    <script src="{{ asset('source/jquery/datatables.js') }}"></script>
-    <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
-    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/logout.js') }}"></script>
-    @yield('scripts')
+    <script src="<?php echo e(asset('source/jquery/datatables.js')); ?>"></script>
+    <script src="<?php echo e(asset('source/jquery/datatables.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/bootstrap.bundle.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/logout.js')); ?>"></script>
+    <?php echo $__env->yieldContent('scripts'); ?>
 </body>
 
 </html>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modules-layouts/pos-layout.blade.php ENDPATH**/ ?>

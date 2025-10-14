@@ -1,6 +1,5 @@
-@extends('layouts.modules-layouts.pos-layout')
-@section('title') Point of Sale System | Tinatangi Cafe @endsection
-@section('content')
+<?php $__env->startSection('title'); ?> Point of Sale System | Tinatangi Cafe <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
     <div class="container-fluid p-0">
 
         <div class="row align-items-stretch min-vh-90 g-2">
@@ -42,7 +41,7 @@
                                                     <div
                                                         class="card shadow product-card-fixed-size d-flex flex-column h-100 p-2 m-2">
 
-                                                        <img src="{{ asset('img/coffee-tinatangilatte.png') }}"
+                                                        <img src="<?php echo e(asset('img/coffee-tinatangilatte.png')); ?>"
                                                             class="card-img-top img-fluid prod-img" alt="Product Image">
 
                                                         <div class="card-body p-2 flex-grow-1">
@@ -129,7 +128,9 @@
             object-fit: cover;
         }
     </style>
-@endsection
-@section('scripts')
-    <script type="module" src="{{ asset('js/pointOfSale.js') }}   "></script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('scripts'); ?>
+    <script type="module" src="<?php echo e(asset('js/pointOfSale.js')); ?>   "></script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.modules-layouts.pos-layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/operations/point-of-sales.blade.php ENDPATH**/ ?>
