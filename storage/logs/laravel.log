@@ -72607,3 +72607,22 @@ Did you mean one of these?
     ],
     "socket": null
 }  
+[2025-10-15 13:38:56] local.INFO: Broadcasting [order.created] on channels [pos-orders] with payload:
+{
+    "id": 10,
+    "order_id": "ORD_811424",
+    "total_amount": "290.00",
+    "order_type": "DINE-IN",
+    "payment_method": "",
+    "created_at": "Oct 15, 2025 01:38 PM",
+    "cashier_name": "Taylor Swift",
+    "status": "<span class=\"badge bg-warning\">In Queue<\/span>",
+    "items": [
+        {
+            "product_name": "Adobo-style Rice Bowl",
+            "quantity": 2,
+            "subtotal": "290.00"
+        }
+    ],
+    "socket": null
+}  

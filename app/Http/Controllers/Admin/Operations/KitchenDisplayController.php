@@ -3,25 +3,24 @@
 namespace App\Http\Controllers\Admin\Operations;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order; // Add this model
-use Illuminate\Http\JsonResponse; // Add this class
-use App\Models\Status; // Add this model
+use App\Models\Order;
+use Illuminate\Http\JsonResponse;
+use App\Models\Status;
 
 class KitchenDisplayController extends Controller
 {
     public function fetchTodayOrders(): JsonResponse
     {
-        // Status IDs that the kitchen should be working on (e.g., New, Pending, Cooking)
-        $pendingStatuses = [28, 29, 30]; // Using your provided IDs
+        $pendingStatuses = [28, 29, 30];
 
         $orders = Order::whereIn('status', $pendingStatuses)
-                       ->whereDate('created_at', today())
-                       ->with([
-                           'orderItemsRS.productRS',
-                           'userRS',
-                       ])
-                       ->orderBy('created_at', 'asc')
-                       ->get();
+            ->whereDate('created_at', today())
+            ->with([
+                'orderItemsRS.productRS',
+                'userRS',
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         $formattedOrders = $orders->map(function ($order) {
             return [
@@ -44,5 +43,17 @@ class KitchenDisplayController extends Controller
         });
 
         return response()->json($formattedOrders);
+    }
+
+    public function checkNewOrders(): JsonResponse
+    {
+        $pendingStatuses = [28, 29, 30];
+        $latestOrderId = Order::whereIn('status', $pendingStatuses)
+            ->whereDate('created_at', today())
+            ->max('id');
+
+        return response()->json([
+            'latest_id' => $latestOrderId ?? 0,
+        ]);
     }
 }

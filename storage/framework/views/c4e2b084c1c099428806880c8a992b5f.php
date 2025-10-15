@@ -4,7 +4,7 @@
 <?php $__env->startSection('posTopNav'); ?> d-none <?php $__env->stopSection(); ?>
 <?php $__env->startSection('content'); ?>
 
-    <section class="section">
+    <section class="section p-4">
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -19,17 +19,6 @@
 
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
-    <script src="<?php echo e(asset('source/laravel_echo/pusher.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('source/laravel_echo/echo.iife.js')); ?>"></script>
-    <script>
-        window.Pusher = Pusher;
-        window.Echo = new Echo({
-            broadcaster: 'pusher',
-            key: '<?php echo e(env('PUSHER_APP_KEY')); ?>',
-            cluster: '<?php echo e(env('PUSHER_APP_CLUSTER')); ?>',
-            forceTLS: true
-        });
-    </script>
     <script src="<?php echo e(asset('js/kitchenDisplay.js')); ?>"></script>
 <?php $__env->stopSection(); ?>
 

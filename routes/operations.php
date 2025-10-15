@@ -23,18 +23,7 @@ Route::middleware(['auth', 'isEmployee'])->group(function () {
     Route::get('/operations/pos/recent-orders', [POSController::class, 'recentOrders']);
 
     //////////////////////////////////////////// KDS ///////////////////////////////////////////
+    Route::get('/operations/kds/check-new-orders', [KitchenDisplayController::class, 'checkNewOrders']);
     Route::get('/operations/kds/get-today-orders', [KitchenDisplayController::class, 'fetchTodayOrders']);
 
-    // TEMPORARY TEST ROUTE - REMOVE AFTER DEBUG
-    Route::get('/operations/test-pusher/{orderId}', function ($orderId) {
-        try {
-            $order = App\Models\Order::findOrFail($orderId);
-            // Dispatch the event synchronously, bypassing the queue
-            \App\Events\NewOrderCreated::dispatch($order);
-            return "SUCCESS: Event dispatched for Order ID {$orderId} via sync connection.";
-        } catch (\Exception $e) {
-            // This will now catch any PHP or Pusher SDK exceptions immediately
-            return "FAILURE: " . $e->getMessage() . " on line " . $e->getLine();
-        }
-    });
 });
