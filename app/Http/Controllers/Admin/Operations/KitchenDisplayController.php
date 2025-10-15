@@ -60,18 +60,14 @@ class KitchenDisplayController extends Controller
 
     public function updateStatus(Request $request): JsonResponse
     {
-        // --- 1. DEFINE YOUR STATUS ID MAP ---
-        // *** CRITICAL: REPLACE THESE PLACEHOLDER IDs WITH YOUR ACTUAL DATABASE STATUS IDs ***
         $statusMap = [
-            'IN QUEUE'  => 28, // Example ID for 'In Queue'
-            'IN PREP'   => 29, // Example ID for 'In prep'
-            'READY'     => 30, // Example ID for 'Ready'
-            'COMPLETED' => 23, // Example ID for 'Completed'
+            'IN QUEUE'  => 28,
+            'IN PREP'   => 29,
+            'READY'     => 30,
+            'COMPLETED' => 23,
         ];
 
-        // 2. GET & VALIDATE INPUTS
         $orderId = $request->input('order_id');
-        // Convert status name to uppercase for case-insensitive lookup
         $newStatusName = strtoupper($request->input('new_status'));
         $newStatusId = $statusMap[$newStatusName] ?? null;
 
@@ -86,11 +82,9 @@ class KitchenDisplayController extends Controller
                 return response()->json(['success' => false, 'message' => 'Order not found.'], 404);
             }
 
-            // 3. UPDATE ORDER STATUS
             $order->status = $newStatusId;
             $order->save();
 
-            // 4. RETURN SUCCESS
             return response()->json([
                 'success' => true,
                 'message' => "Order status updated to {$newStatusName}",
