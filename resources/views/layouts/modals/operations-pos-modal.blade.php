@@ -105,3 +105,85 @@
         </div>
     </div>
 </div>
+
+<!--warning theme Modal -->
+<span id="cashierNameDisplay" class="d-none">{{ auth()->user()->full_name }}</span>
+<div class="modal fade text-left" id="orderFinalization" tabindex="-1" role="dialog" aria-labelledby="myModalLabel120"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title white" id="myModalLabel120">
+                    Complete Order
+                </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <form id="finalizeOrderForm" onsubmit="return false;">
+                @csrf
+                <div class="modal-body">
+                    <div id="orderSummaryList" class="mb-3"></div>
+                    <div class="d-flex justify-content-between">
+                        <h5 class="fw-bold">Total:</h5>
+                        <h5 class="fw-bold" id="modalGrandTotal">₱ 0.00</h5>
+                    </div>
+                    <hr>
+                    <h6 class="mb-2">Payment</h6>
+                    <div class="form-group">
+                        <label for="cashReceivedInput">Cash Received</label>
+                        <input type="number" class="form-control form-control-lg" id="cashReceivedInput"
+                            placeholder="Enter amount">
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <h5 class="fw-bold">Change:</h5>
+                        <h5 class="fw-bold text-success" id="modalChange">₱ 0.00</h5>
+                    </div>
+                    <hr>
+                    <h6 class="mb-3">Select Order Type</h6>
+                    <div class="btn-group w-100" role="group" aria-label="Order Type">
+                        <button type="button" class="btn btn-outline-primary active order-type-btn"
+                            data-type="dine-in">Dine-In</button>
+                        <button type="button" class="btn btn-outline-primary order-type-btn"
+                            data-type="take-out">Take-Out</button>
+                    </div>
+                    <input type="hidden" name="order_type" id="order_type_input" value="dine-in">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                        <span class="d-sm-block">Cancel</span>
+                    </button>
+                    <button id="printReceiptBtn" type="button" class="btn btn-primary ml-1 d-none">
+                        <span class="d-sm-block">Print Receipt</span>
+                    </button>
+                    <button id="confirmSubmitOrder" type="submit" class="btn btn-warning ml-1">
+                        <span class="d-sm-block">Submit Order</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="receipt-container" class="d-none"></div>
+
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #receipt-container,
+        #receipt-container * {
+            visibility: visible;
+        }
+
+        #receipt-container {
+            display: block !important;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+    }
+</style>

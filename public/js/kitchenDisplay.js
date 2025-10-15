@@ -1,10 +1,10 @@
 $(document).ready(function () {
-    const CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    const CSRF_TOKEN = $('meta[name="csrf-token"]').attr("content");
     if (CSRF_TOKEN) {
         $.ajaxSetup({
             headers: {
-                'X-CSRF-TOKEN': CSRF_TOKEN
-            }
+                "X-CSRF-TOKEN": CSRF_TOKEN,
+            },
         });
     }
 
@@ -96,7 +96,11 @@ $(document).ready(function () {
             },
             error: function (xhr, status, error) {
                 $("#LoadingScreen").fadeOut(200);
-                Swal.fire('Error', 'Failed to update order status. Please check the console.', 'error');
+                Swal.fire(
+                    "Error",
+                    "Failed to update order status. Please check the console.",
+                    "error"
+                );
             },
         });
     }
@@ -109,8 +113,7 @@ $(document).ready(function () {
             success: function (orders) {
                 lastOrderId = renderOrders(orders, 0);
             },
-            error: function (xhr, status, error) {
-            },
+            error: function (xhr, status, error) {},
         });
     }
 
@@ -134,46 +137,48 @@ $(document).ready(function () {
                         success: function (orders) {
                             lastOrderId = renderOrders(orders, previousMaxId);
                         },
-                        error: function (xhr, status, error) {
-                        },
+                        error: function (xhr, status, error) {},
                     });
                 } else {
                 }
             },
-            error: function (xhr, status, error) {
-            },
+            error: function (xhr, status, error) {},
         });
     }, POLLING_INTERVAL);
-
 
     ORDERS_CONTAINER.on("click", ".col", function () {
         const $clickedCol = $(this);
         const orderId = $clickedCol.data("id");
+        const customOrderId = $clickedCol.find(".ord-id").text().trim();
+        let currentStatus = $clickedCol
+            .find(".ord-status")
+            .text()
+            .toUpperCase()
+            .trim();
 
-        let currentStatus = $clickedCol.find('.ord-status').text().toUpperCase().trim();
-        console.log(orderId+ " " +currentStatus);
-        let nextStatus = '';
-        let text = '';
-        let confirmText = '';
+        let nextStatus = "";
+        let text = "";
+        let confirmText = "";
 
-        if (currentStatus.includes('IN QUEUE')) {
-            nextStatus = 'In prep';
+        if (currentStatus.includes("IN QUEUE")) {
+            nextStatus = "In prep";
             text = "You are about to move this order to preparation.";
-            confirmText = 'Start Prep';
-        } else if (currentStatus.includes('IN PREPARATION')) {
-            nextStatus = 'Ready';
+            confirmText = "Start Prep";
+        } else if (currentStatus.includes("IN PREPARATION")) {
+            nextStatus = "Ready";
             text = "You are about to declare this order to be ready.";
-            confirmText = 'Ready';
-        } else if (currentStatus.includes('READY')) {
-            nextStatus = 'Completed';
-            text = "You are about to mark this order as completed and remove it from the display.";
-            confirmText = 'Complete Order';
-        } else if (currentStatus.includes('COMPLETED')) {
+            confirmText = "Ready";
+        } else if (currentStatus.includes("READY")) {
+            nextStatus = "Completed";
+            text =
+                "You are about to mark this order as completed and remove it from the display.";
+            confirmText = "Complete Order";
+        } else if (currentStatus.includes("COMPLETED")) {
             return;
         } else {
-            nextStatus = 'In prep';
+            nextStatus = "In prep";
             text = "You are about to put this order in preparation.";
-            confirmText = 'Start Prep';
+            confirmText = "Start Prep";
         }
 
         Swal.fire({
@@ -193,9 +198,13 @@ $(document).ready(function () {
             updateOrderStatus(orderId, nextStatus);
 
             Toast.fire({
-                title: nextStatus === 'Completed' ? "Order Finished!" : "Status Updated!",
-                text: `Order ${orderId} is being updated to ${nextStatus}.`,
+                title:
+                    nextStatus === "Completed"
+                        ? "Order Finished!"
+                        : "Status Updated!",
+                text: `${customOrderId} is being updated to ${nextStatus}.`,
                 icon: "success",
+                timer: 2000,
             });
             $("#LoadingScreen").fadeOut(200);
         });

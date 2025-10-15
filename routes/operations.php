@@ -25,5 +25,6 @@ Route::middleware(['auth', 'isEmployee'])->group(function () {
     //////////////////////////////////////////// KDS ///////////////////////////////////////////
     Route::get('/operations/kds/check-new-orders', [KitchenDisplayController::class, 'checkNewOrders']);
     Route::get('/operations/kds/get-today-orders', [KitchenDisplayController::class, 'fetchTodayOrders']);
-    Route::post('/operations/kds/update-status', [KitchenDisplayController::class, 'updateStatus']); 
+    Route::post('/operations/kds/update-status', [KitchenDisplayController::class, 'updateStatus']);
+    Route::post('/operations/pos/void-order/{order}', [POSController::class, 'voidOrder'])->name('pos.voidOrder');
 });

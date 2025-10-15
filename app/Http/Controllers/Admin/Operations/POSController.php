@@ -170,8 +170,11 @@ class POSController extends Controller
 
     public function submitOrder(StoreOrderRequest $request)
     {
-        $orderItems = $request->validated('order_items');
-        $submittedGrandTotal = $request->validated('grand_total');
+        // You can now get order_type from the validated request data
+        $validatedData = $request->validated();
+        $orderItems = $validatedData['order_items'];
+        $submittedGrandTotal = $validatedData['grand_total'];
+        $orderType = $validatedData['order_type']; // Get the validated order type
 
         DB::beginTransaction();
 
@@ -185,7 +188,6 @@ class POSController extends Controller
             foreach ($orderItems as $item) {
                 $productId = $item['product_id'];
                 $quantity = $item['quantity'];
-
                 $dbUnitPrice = $products->get($productId);
 
                 if (is_null($dbUnitPrice)) {
@@ -206,17 +208,17 @@ class POSController extends Controller
             }
 
             if (abs($submittedGrandTotal - $calculatedGrandTotal) > 0.01) {
-                throw new \Exception("Grand total mismatch.");
+                throw new \Exception("Grand total mismatch. Client total: {$submittedGrandTotal}, Server total: {$calculatedGrandTotal}");
             }
 
             $customOrderId = GenerateIdController::generateID('order');
 
             $order = Order::create([
                 'order_id' => $customOrderId,
-                'user_id' => auth('')->id(),
+                'user_id' => auth('')->id(), // Standard way to get authenticated user ID
                 'total_amount' => $calculatedGrandTotal,
-                'status' => 28,
-                'order_type' => 'dine-in',
+                'status' => 28, // Consider using a status model or enum for readability
+                'order_type' => $orderType, // <-- THIS IS THE ONLY CHANGE NEEDED
                 'payment_status' => 'paid',
             ]);
 
@@ -248,9 +250,9 @@ class POSController extends Controller
                 'items.productRS',
                 'userRS'
             ])
-            ->whereBetween('created_at', [$startOfDay, $endOfDay])
-            ->whereNull('deleted_at')
-            ->get();
+                ->whereBetween('created_at', [$startOfDay, $endOfDay])
+                ->whereNull('deleted_at')
+                ->get();
 
             $formattedOrders = $todayOrders->map(function ($order) {
                 return [
@@ -277,9 +279,27 @@ class POSController extends Controller
                 'success' => true,
                 'data' => $formattedOrders,
             ]);
-
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function voidOrder(Order $order)
+    {
+        if (!in_array($order->status, [28, 29])) {
+            return response()->json(['message' => 'This order cannot be voided as it is already ' . $order->status . '.'], 422);
+        }
+
+        DB::transaction(function () use ($order) {
+            if ($order->status === 28) {
+                $order->status = 31;
+                $order->save();
+            } else if ($order->status === 29) {
+                $order->status = 31;
+                $order->save();
+            }
+        });
+
+        return response()->json(['message' => 'The order has been successfully voided.']);
     }
 }

@@ -17,3 +17,9 @@
         <span>Stock Transactions</span>
     </a>
 </li>
+<li class="sidebar-item @yield('inventoryProducts') ">
+    <a href="{{route('inventory.products')}}" class='sidebar-link'>
+        <i class="bi bi-egg-fried"></i>
+        <span>Recipe Management</span>
+    </a>
+</li>

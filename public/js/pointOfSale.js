@@ -30,7 +30,7 @@ $(document).ready(function () {
                     let imageUrl;
 
                     if (imagePath && imagePath !== "N/A") {
-                        imageUrl = "/" + imagePath;
+                        imageUrl = "/storage/" + imagePath;
                     } else {
                         imageUrl = DEFAULT_PRODUCT_IMAGE;
                     }
@@ -204,9 +204,7 @@ $(document).ready(function () {
 
             const totalPriceText = $("#total_price").text().trim();
             const newTotalPrice =
-                parseFloat(
-                    totalPriceText.replace(/[^\d\.]/g, '').trim()
-                ) || 0;
+                parseFloat(totalPriceText.replace(/[^\d\.]/g, "").trim()) || 0;
 
             const $existingItem = $(
                 `#orderList .prod-name[data-id="${_id}"]`
@@ -345,30 +343,197 @@ $(document).ready(function () {
         }
     });
 
+    $(function () {
+        // This handler opens the modal and triggers the data loading
+        $(document).on("click", ".showTransactionsModal", function (e) {
+            $("#orderTransactions").modal("show");
+            loadTodayOrdersData();
+        });
+
+        // This is the main function to initialize and load the DataTable
+        function loadTodayOrdersData() {
+            const tableSelector = "#posOrdersTransactions";
+
+            if ($.fn.DataTable.isDataTable(tableSelector)) {
+                $(tableSelector).DataTable().destroy();
+            }
+
+            $(tableSelector).DataTable({
+                processing: true,
+                serverSide: false,
+                ajax: {
+                    url: "/operations/pos/recent-orders",
+                    type: "GET",
+                    dataSrc: "data",
+                    error: function (xhr, error, code) {
+                        console.error(
+                            "DataTables AJAX Error:",
+                            xhr.responseText
+                        );
+                        $(tableSelector)
+                            .find("tbody")
+                            .html(
+                                '<tr><td colspan="10" class="text-center text-danger">Failed to load orders.</td></tr>'
+                            );
+                    },
+                },
+                columns: [
+                    { data: "order_id", title: "Order #" },
+                    {
+                        data: "items",
+                        title: "Items",
+                        render: function (data, type, row) {
+                            if (type === "display") {
+                                let itemList = data
+                                    .map(
+                                        (item) =>
+                                            `<li>${item.quantity}x ${item.product_name}</li>`
+                                    )
+                                    .join("");
+                                return `<ul class="list-unstyled p-0 m-0" style="font-size: 0.85rem">${itemList}</ul>`;
+                            }
+                            return data;
+                        },
+                    },
+                    { data: "created_at", title: "Date" },
+                    {
+                        data: "total_amount",
+                        title: "Amount",
+                        render: $.fn.dataTable.render.number(",", ".", 2, "₱ "),
+                        className: "dt-left font-weight-bold",
+                    },
+                    { data: "order_type", title: "Type" },
+                    { data: "payment_method", title: "Payment" },
+                    {
+                        data: "cashier_name",
+                        title: "Cashier",
+                        defaultContent: "N/A",
+                    },
+                    {
+                        data: "status",
+                        title: "Status",
+                        className: "font-weight-bold",
+                    },
+                    {
+                        data: null,
+                        title: "Actions",
+                        orderable: false,
+                        width: "8%",
+                        render: function (data, type, row) {
+                            let voidBtn = "";
+
+                            if (
+                                row.status ===
+                                    '<span class="badge bg-warning">In Queue</span>' ||
+                                row.status ===
+                                    '<span class="badge bg-info">In Prep</span>'
+                            ) {
+                                voidBtn = ` <button class="btn btn-sm btn-danger void-order-btn" title="Void Order" data-order="${row.order_id}" data-id="${row.id}" data-status='${row.status}'><i class="fas fa-trash-alt"></i></button>`;
+                            }
+                            return `<div class="btn-group">${voidBtn}</div>`;
+                        },
+                    },
+                ],
+                order: [[2, "desc"]],
+                language: {
+                    emptyTable: "No orders placed today.",
+                    zeroRecords: "No matching orders found.",
+                },
+                fixedColumns: true,
+                scrollX: true,
+            });
+        }
+
+        // This is the click handler for the void button
+        $("#posOrdersTransactions").on("click", ".void-order-btn", function () {
+            const orderId = $(this).data("id");
+            const order_id = $(this).data("order");
+            const orderStatus = $(this).data("status");
+            const table = $("#posOrdersTransactions").DataTable();
+
+            if (
+                orderStatus === '<span class="badge bg-warning">In Queue</span>'
+            ) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: `Do you want to void order #${order_id}? This action cannot be undone.`,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, void it!",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        voidOrderAjax(orderId, table);
+                    }
+                });
+            } else if (
+                orderStatus === '<span class="badge bg-info">In Prep</span>'
+            ) {
+                Swal.fire({
+                    title: "Order in Progress!",
+                    html: `Order #${order_id} is already being prepared.<br>Voiding it now will incur a charge and waste materials.<br><br><b>Do you want to proceed?</b>`,
+                    icon: "error",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, void with charges",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        voidOrderAjax(orderId, table);
+                    }
+                });
+            }
+        });
+
+        // This is the helper function that performs the AJAX call
+        function voidOrderAjax(orderId, table) {
+            $.ajax({
+                url: `/operations/pos/void-order/${orderId}`,
+                type: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
+                },
+                success: function (response) {
+                    Toast.fire("Voided!", response.message, "success");
+                    table.ajax.reload();
+                },
+                error: function (xhr) {
+                    const errorMsg = xhr.responseJSON
+                        ? xhr.responseJSON.message
+                        : "An error occurred.";
+                    Swal.fire("Error!", errorMsg, "error");
+                },
+            });
+        }
+    });
+});
+
+$(function () {
+    let orderItems = [];
+    let grandTotal = 0;
+
     $(document).on("click", "#submit-order-btn", function (e) {
         e.preventDefault();
-
-        const orderItems = [];
+        orderItems = [];
         let isValid = true;
 
         $("#orderList")
             .find(".d-flex.align-items-center.py-2.border-bottom")
             .each(function () {
                 const $itemRow = $(this);
-
                 const productId = $itemRow.find(".prod-name").data("id");
                 const productName = $itemRow.find(".prod-name").text().trim();
-
-                const quantityText = $itemRow.find(".qnty").text().trim();
-                const quantity = parseInt(quantityText) || 0;
-
+                const quantity =
+                    parseInt($itemRow.find(".qnty").text().trim()) || 0;
                 const itemPriceText = $itemRow
                     .find(".prod-price")
                     .text()
                     .trim();
                 const itemTotalPrice =
                     parseFloat(itemPriceText.replace(/[^0-9.]/g, "")) || 0;
-
                 const unitPrice = quantity > 0 ? itemTotalPrice / quantity : 0;
 
                 if (quantity === 0 || productId === null) {
@@ -385,49 +550,31 @@ $(document).ready(function () {
                 });
             });
 
-        const totalElement = $("#order-total-amount");
-        const grandTotal =
-            parseFloat(totalElement.text().replace(/[^0-9.]/g, "")) || 0;
+        grandTotal =
+            parseFloat(
+                $("#order-total-amount")
+                    .text()
+                    .replace(/[^0-9.]/g, "")
+            ) || 0;
 
         if (isValid && orderItems.length > 0) {
-            $("#LoadingScreen").fadeIn(200);
-            const orderData = {
-                order_items: orderItems,
-                grand_total: parseFloat(grandTotal).toFixed(2),
-            };
-
-            $.ajax({
-                url: "/operations/pos/submit-order",
-                type: "POST",
-                data: orderData,
-                headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                        "content"
-                    ),
-                },
-                success: function (response) {
-                    Toast.fire({
-                        text:
-                            "Order completed successfully! Order ID: " +
-                            response.order_id,
-                        icon: "success",
-                        timer: 2000,
-                    });
-                    $("#orderList").empty();
-                    $("#order-total-amount").text("₱ 0.00");
-                },
-                error: function (xhr) {
-                    const errorMsg = xhr.responseJSON
-                        ? xhr.responseJSON.message
-                        : "Failed to submit order. Please try again.";
-                    alert("Error: " + errorMsg);
-                },
-                complete: function () {
-                    $("#LoadingScreen").fadeOut(200);
-                },
+            const $summaryContainer = $("#orderSummaryList");
+            $summaryContainer.empty();
+            orderItems.forEach((item) => {
+                const itemHtml = `<div class="d-flex justify-content-between"><span>${item.quantity}x ${item.name}</span><span>₱ ${item.total_price}</span></div>`;
+                $summaryContainer.append(itemHtml);
             });
+
+            $("#modalGrandTotal").text("₱ " + grandTotal.toFixed(2));
+            $("#cashReceivedInput").val("");
+            $("#modalChange").text("₱ 0.00");
+            $("#confirmSubmitOrder")
+                .prop("disabled", true)
+                .removeClass("d-none");
+            $("#printReceiptBtn").addClass("d-none");
+
+            $("#orderFinalization").modal("show");
         } else {
-            $("#LoadingScreen").fadeOut(200);
             Toast.fire({
                 text: "The order is empty or contains invalid items. Please add products.",
                 icon: "warning",
@@ -436,88 +583,125 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on("click", ".showTransactionsModal", function (e) {
-        $("#orderTransactions").modal("show");
-        loadTodayOrdersData();
+    $("#cashReceivedInput").on("keyup input", function () {
+        const cashReceived = parseFloat($(this).val()) || 0;
+        const change = cashReceived - grandTotal;
+
+        if (cashReceived >= grandTotal) {
+            $("#modalChange").text("₱ " + change.toFixed(2));
+            $("#confirmSubmitOrder").prop("disabled", false);
+        } else {
+            $("#modalChange").text("₱ 0.00");
+            $("#confirmSubmitOrder").prop("disabled", true);
+        }
     });
 
-    function loadTodayOrdersData() {
-        const tableSelector = "#posOrdersTransactions";
+    $("#finalizeOrderForm").on("submit", function (e) {
+        e.preventDefault();
+        $("#LoadingScreen").fadeIn(200);
 
-        if ($.fn.DataTable.isDataTable(tableSelector)) {
-            $(tableSelector).DataTable().destroy();
-        }
+        const orderType = $("#order_type_input").val();
+        const cashReceived = parseFloat($("#cashReceivedInput").val()) || 0;
+        const changeDue = cashReceived - grandTotal;
 
-        $(tableSelector).DataTable({
-            processing: true,
-            serverSide: false,
-            ajax: {
-                url: "/operations/pos/recent-orders",
-                type: "GET",
-                dataSrc: "data",
-                error: function (xhr, error, code) {
-                    console.error("DataTables AJAX Error:", xhr.responseText);
-                    $(tableSelector)
-                        .find("tbody")
-                        .html(
-                            '<tr><td colspan="10" class="text-center text-danger">Failed to load orders.</td></tr>'
-                        );
-                },
+        const orderData = {
+            order_items: orderItems,
+            grand_total: parseFloat(grandTotal).toFixed(2),
+            order_type: orderType,
+            cash_received: cashReceived.toFixed(2),
+            change_due: changeDue.toFixed(2),
+        };
+
+        $.ajax({
+            url: "/operations/pos/submit-order",
+            type: "POST",
+            data: orderData,
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
             },
-            columns: [
-                { data: "order_id", title: "Order #" },
-                {
-                    data: "items",
-                    title: "Items",
-                    render: function (data, type, row) {
-                        if (type === "display") {
-                            let itemList = data
-                                .map(
-                                    (item) =>
-                                        `<li>${item.quantity}x ${item.product_name}</li>`
-                                )
-                                .join("");
-                            return `<ul class="list-unstyled p-0 m-0" style="font-size: 0.85rem">${itemList}</ul>`;
-                        }
-                        return data;
-                    },
-                },
-                { data: "created_at", title: "Date" },
-                {
-                    data: "total_amount",
-                    title: "Amount",
-                    render: $.fn.dataTable.render.number(",", ".", 2, "₱ "),
-                    className: "dt-left font-weight-bold",
-                },
-                { data: "order_type", title: "Type" },
-                { data: "payment_method", title: "Payment" },
-                {
-                    data: "cashier_name",
-                    title: "Cashier",
-                    defaultContent: "N/A",
-                },
-                {
-                    data: "status",
-                    title: "Status",
-                    className: "font-weight-bold",
-                },
-                {
-                    data: null,
-                    title: "Actions",
-                    defaultContent:
-                        '<button class="btn btn-sm btn-info view-order-details">View</button>',
-                    orderable: false,
-                    width: "8%",
-                },
-            ],
+            success: function (response) {
+                Toast.fire({
+                    text: "Order completed! ID: " + response.order_id,
+                    icon: "success",
+                });
 
-            order: [[2, "desc"]],
-            language: {
-                emptyTable: "No orders placed today.",
-                zeroRecords: "No matching orders found.",
+                const cashierName =
+                    $("#cashierNameDisplay").text().trim() || "N/A";
+                generateReceipt(
+                    response.order_id,
+                    cashReceived,
+                    changeDue,
+                    cashierName
+                );
+
+                $("#confirmSubmitOrder").addClass("d-none");
+                $("#printReceiptBtn").removeClass("d-none");
+                $("#orderList").empty();
+                $("#order-total-amount").text("₱ 0.00");
             },
-            fixedColumns: true,
-            scrollX: true,
+            error: function (xhr) {
+                alert("Error: " + xhr.responseJSON.message);
+            },
+            complete: function () {
+                $("#LoadingScreen").fadeOut(200);
+            },
         });
+    });
+
+    function generateReceipt(orderId, cash, change, cashierName) {
+        let itemsHtml = "";
+        orderItems.forEach((item) => {
+            itemsHtml += `
+                <tr>
+                    <td>${item.quantity}x ${item.name}</td>
+                    <td style="text-align: right;">${item.total_price}</td>
+                </tr>
+            `;
+        });
+
+        const receiptHtml = `
+            <div style="width: 300px; font-family: monospace; font-size: 14px; color: #000; margin: 0 auto;">
+                <h3 style="text-align: center;">Tinatangi Cafe</h3>
+                <p style="text-align: center;">Brgy 13 Jose Abad Santos Ave, Dasmariñas, 4114 Cavite<br>Official Receipt</p>
+                <hr>
+                <p>
+                    Order ID: ${orderId}<br>
+                    Date: ${new Date().toLocaleString()}<br>
+                    Cashier: ${cashierName}
+                </p>
+                <hr>
+                <table style="width: 100%;">
+                    <tbody>${itemsHtml}</tbody>
+                </table>
+                <hr>
+                <table style="width: 100%;">
+                    <tbody>
+                        <tr><td>Total:</td><td style="text-align: right;">₱ ${grandTotal.toFixed(
+                            2
+                        )}</td></tr>
+                        <tr><td>Cash:</td><td style="text-align: right;">₱ ${cash.toFixed(
+                            2
+                        )}</td></tr>
+                        <tr><td>Change:</td><td style="text-align: right;">₱ ${change.toFixed(
+                            2
+                        )}</td></tr>
+                    </tbody>
+                </table>
+                <hr>
+                <p style="text-align: center;">Thank you, come again!</p>
+            </div>
+        `;
+
+        $("#receipt-container").html(receiptHtml);
     }
+
+    $(document).on("click", "#printReceiptBtn", function () {
+        window.print();
+    });
+
+    $("#orderFinalization .order-type-btn").on("click", function () {
+        $(this).siblings().removeClass("active");
+        $(this).addClass("active");
+        $("#order_type_input").val($(this).data("type"));
+    });
 });

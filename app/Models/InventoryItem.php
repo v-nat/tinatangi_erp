@@ -8,6 +8,7 @@ use App\Models\ItemUnit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class InventoryItem extends Model
 {
@@ -67,6 +68,12 @@ class InventoryItem extends Model
 
     public function inventoryLocation(): BelongsTo {
         return $this->belongsTo(InventoryLocation::class, 'inventory_location_id');
+    }
+
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'recipe_items')
+                    ->withPivot('quantity_used');
     }
 }
 

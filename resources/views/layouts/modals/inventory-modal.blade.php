@@ -81,3 +81,52 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {{-- Add the enctype here --}}
+            <form id="addProductForm" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                        <div class="invalid-feedback" id="name_error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="base_price" class="form-label">Base Price</label>
+                        <input type="number" class="form-control" id="base_price" name="base_price" step="0.01"
+                            required>
+                        <div class="invalid-feedback" id="base_price_error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="product_category_id" class="form-label">Category</label>
+                        <select class="form-select" id="product_category_id" name="product_category_id" required>
+                            <option value="">Loading...</option>
+                        </select>
+                        <div class="invalid-feedback" id="product_category_id_error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        <div class="invalid-feedback" id="description_error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Product Image</label>
+                        <input class="form-control" type="file" id="image" name="image">
+                        <div class="invalid-feedback" id="image_error"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
