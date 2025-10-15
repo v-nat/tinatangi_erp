@@ -7,5 +7,7 @@
 
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/kitchenDisplay.js') }}   "></script>
+    <script src="{{ asset('source/laravel_echo/echo.iife.js') }}"></script>
+    <script src="{{ asset('source/laravel_echo/pusher.min.js') }}"></script>
+    <script src="{{ asset('js/kitchenDisplay.js') }}"></script>
 @endsection
