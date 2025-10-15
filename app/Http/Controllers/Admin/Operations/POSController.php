@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Status;
 use App\Models\Product;
+use App\Events\NewOrderCreated;
 use App\Models\ProductCategory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -222,6 +223,8 @@ class POSController extends Controller
 
             $order->items()->createMany($itemsToSave);
 
+            NewOrderCreated::dispatch($order);
+            
             DB::commit();
 
             return response()->json([

@@ -23,5 +23,5 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/operations/pos/recent-orders', [POSController::class, 'recentOrders']);
 
     //////////////////////////////////////////// KDS ///////////////////////////////////////////
-    Route::get('/operations/kds/get-today-ordes', [KitchenDisplayController::class, 'fetchTodayOrders']);
+    Route::get('/operations/kds/get-today-orders', [KitchenDisplayController::class, 'fetchTodayOrders']);
 });

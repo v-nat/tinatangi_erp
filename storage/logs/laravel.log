@@ -69896,3 +69896,41 @@ Did you mean one of these?
 #32 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\Users\\\\Nathan...')
 #33 {main}
 "} 
+[2025-10-15 12:22:15] local.INFO: Broadcasting [order.created] on channels [pos-orders] with payload:
+{
+    "id": 3,
+    "order_id": "ORD_462957",
+    "total_amount": "75.00",
+    "order_type": "DINE-IN",
+    "payment_method": "CASH",
+    "created_at": "Oct 15, 2025 12:22 PM",
+    "cashier_name": "Taylor Swift",
+    "status": "Pending",
+    "items": [
+        {
+            "product_name": "Egg Sandwich",
+            "quantity": 1,
+            "subtotal": "75.00"
+        }
+    ],
+    "socket": null
+}  
+[2025-10-15 12:22:30] local.INFO: Broadcasting [order.created] on channels [pos-orders] with payload:
+{
+    "id": 4,
+    "order_id": "ORD_513658",
+    "total_amount": "60.00",
+    "order_type": "DINE-IN",
+    "payment_method": "CASH",
+    "created_at": "Oct 15, 2025 12:22 PM",
+    "cashier_name": "Taylor Swift",
+    "status": "Pending",
+    "items": [
+        {
+            "product_name": "Garlic Bread",
+            "quantity": 1,
+            "subtotal": "60.00"
+        }
+    ],
+    "socket": null
+}  
