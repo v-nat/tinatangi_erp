@@ -8,9 +8,9 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
-class NewOrderCreated implements ShouldBroadcast
+class NewOrderCreated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -35,13 +35,11 @@ class NewOrderCreated implements ShouldBroadcast
 
     public function broadcastAs()
     {
-        // KDS listens for this event name
         return 'order.created';
     }
 
     public function broadcastWith(): array
     {
-        // This array structure MUST match the columns in kitchenDisplay.js
         $order = $this->order;
 
         return [
