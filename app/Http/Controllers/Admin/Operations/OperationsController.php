@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Operations;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class OperationsController extends Controller
 {
@@ -13,5 +12,8 @@ class OperationsController extends Controller
     }
     public function pos() {
         return view("pages.admin.operations.point-of-sales");
+    }
+    public function kds() {
+        return view('pages.admin.operations.kitchen-display');
     }
 }

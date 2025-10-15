@@ -9,7 +9,14 @@
 <li class="sidebar-item <?php echo $__env->yieldContent('operationsPOS'); ?> ">
     <a href="<?php echo e(route('op.pos')); ?>" class='sidebar-link'>
         <i class="fa-solid fa-desktop"></i>
-        <span>Point of Sales</span>
+        <span>Point of Sale</span>
+    </a>
+</li>
+
+<li class="sidebar-item <?php echo $__env->yieldContent('operationsKDS'); ?> ">
+    <a href="<?php echo e(route('op.kds')); ?>" class='sidebar-link'>
+        <i class="fa-solid fa-desktop"></i>
+        <span>Kitchen Display</span>
     </a>
 </li>
 <?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modules-sidebar/operations-sidebar.blade.php ENDPATH**/ ?>

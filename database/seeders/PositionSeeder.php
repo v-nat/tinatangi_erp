@@ -26,7 +26,7 @@ class PositionSeeder extends Seeder
             [ 'id' =>  9, 'name' => 'CS Staff',  'level' => 'staff', 'department_id' => 6],
             [ 'id' =>  10, 'name' => 'Kitchen Supervisor',  'level' => 'supervisor', 'department_id' => 9],
             [ 'id' =>  11, 'name' => 'Cook',  'level' => 'staff', 'department_id' => 9],
-            [ 'id' =>  12, 'name' => 'Kitchen Assistant',  'level' => 'staff', 'department_id' => 8],
+            [ 'id' =>  12, 'name' => 'Kitchen Assistant',  'level' => 'staff', 'department_id' => 9],
             [ 'id' =>  13, 'name' => 'Barista Supervisor',  'level' => 'supervisor', 'department_id' => 8],
             [ 'id' =>  14, 'name' => 'Senior Barista',  'level' => 'staff', 'department_id' => 8],
             [ 'id' =>  15, 'name' => 'Junior Barista',  'level' => 'staff', 'department_id' => 8],

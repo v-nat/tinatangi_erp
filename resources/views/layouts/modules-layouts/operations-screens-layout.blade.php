@@ -10,7 +10,7 @@
         <nav class="navbar navbar-expand navbar-light">
             <div class="container-fluid">
                 <div class="collapse navbar-collapse justify-content-start m-0">
-                    <h2 class="card-title">Tinatangi Cafe | Point of Sale </h2>
+                    <h3 class="card-title">@yield('topTitle')</h3>
                 </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -19,11 +19,13 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item dropdown me-3">
-                            <a class="nav-link active showTransactionsModal" href="#">
-                                <i class="fa-solid fa-receipt fs-4 text-gray-600"></i>
-                            </a>
-                        </li>
+                        <div class="@yield('posTopNav')">
+                            <li class="nav-item dropdown me-3">
+                                <a class="nav-link active showTransactionsModal" href="#">
+                                    <i class="fa-solid fa-receipt fs-4 text-gray-600"></i>
+                                </a>
+                            </li>
+                        </div>
                     </ul>
                     <div class="dropdown">
                         <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -48,7 +50,7 @@
 
                                                     if ($employee) {
                                                         $position = $employee->position->name;
-                                                                                                                                    ?>
+                                                                                                                                                                                                                    ?>
                                                                                 {{ \Illuminate\Support\Str::upper($position) }}
                                                                                 <?php
                                                     }
@@ -70,7 +72,7 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                             </li>
                             <li id="exit-pos-btn"><a class="dropdown-item" href="#">
-                                    <i class="fa-solid fa-right-from-bracket"></i> End POS Session</a></li>
+                                    <i class="fa-solid fa-right-from-bracket"></i> End @yield('screen') Session</a></li>
                         </ul>
                     </div>
                 </div>
@@ -88,7 +90,6 @@
     <script src="{{ asset('source/jquery/datatables.js') }}"></script>
     <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/logout.js') }}"></script>
     @yield('scripts')
 </body>
 

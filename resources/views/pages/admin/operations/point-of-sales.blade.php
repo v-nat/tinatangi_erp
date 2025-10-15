@@ -1,5 +1,8 @@
-@extends('layouts.modules-layouts.pos-layout')
+@extends('layouts.modules-layouts.operations-screens-layout')
 @section('title') Point of Sale System | Tinatangi Cafe @endsection
+@section('topTitle') Tinatangi Cafe | Point of Sale @endsection
+@section('screen') POS @endsection
+@section('posTopNav') active @endsection
 @section('content')
     <div class="container-fluid p-0">
 

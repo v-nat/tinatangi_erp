@@ -1,4 +1,7 @@
 <?php $__env->startSection('title'); ?> Point of Sale System | Tinatangi Cafe <?php $__env->stopSection(); ?>
+<?php $__env->startSection('topTitle'); ?> Tinatangi Cafe | Point of Sale <?php $__env->stopSection(); ?>
+<?php $__env->startSection('screen'); ?> POS <?php $__env->stopSection(); ?>
+<?php $__env->startSection('posTopNav'); ?> active <?php $__env->stopSection(); ?>
 <?php $__env->startSection('content'); ?>
     <div class="container-fluid p-0">
 
@@ -195,4 +198,4 @@
     <script type="module" src="<?php echo e(asset('js/pointOfSale.js')); ?>   "></script>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.modules-layouts.pos-layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/operations/point-of-sales.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.modules-layouts.operations-screens-layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/operations/point-of-sales.blade.php ENDPATH**/ ?>
