@@ -69934,3 +69934,79 @@ Did you mean one of these?
     ],
     "socket": null
 }  
+[2025-10-15 12:24:28] local.INFO: Broadcasting [order.created] on channels [pos-orders] with payload:
+{
+    "id": 5,
+    "order_id": "ORD_863010",
+    "total_amount": "95.00",
+    "order_type": "DINE-IN",
+    "payment_method": "CASH",
+    "created_at": "Oct 15, 2025 12:24 PM",
+    "cashier_name": "Taylor Swift",
+    "status": "Pending",
+    "items": [
+        {
+            "product_name": "Ham & Egg Rice Meal",
+            "quantity": 1,
+            "subtotal": "95.00"
+        }
+    ],
+    "socket": null
+}  
+[2025-10-15 12:27:37] local.INFO: Broadcasting [order.created] on channels [pos-orders] with payload:
+{
+    "id": 6,
+    "order_id": "ORD_344060",
+    "total_amount": "80.00",
+    "order_type": "DINE-IN",
+    "payment_method": "CASH",
+    "created_at": "Oct 15, 2025 12:27 PM",
+    "cashier_name": "Taylor Swift",
+    "status": "Pending",
+    "items": [
+        {
+            "product_name": "Scrambled Eggs with Rice",
+            "quantity": 1,
+            "subtotal": "80.00"
+        }
+    ],
+    "socket": null
+}  
+[2025-10-15 12:29:51] local.INFO: Broadcasting [order.created] on channels [pos-orders] with payload:
+{
+    "id": 7,
+    "order_id": "ORD_894512",
+    "total_amount": "165.00",
+    "order_type": "DINE-IN",
+    "payment_method": "CASH",
+    "created_at": "Oct 15, 2025 12:29 PM",
+    "cashier_name": "Taylor Swift",
+    "status": "<span class=\"badge bg-warning\">In Queue<\/span>",
+    "items": [
+        {
+            "product_name": "Tuna Sisig Rice Bowl",
+            "quantity": 1,
+            "subtotal": "165.00"
+        }
+    ],
+    "socket": null
+}  
+[2025-10-15 12:33:10] local.INFO: Broadcasting [order.created] on channels [pos-orders] with payload:
+{
+    "id": 8,
+    "order_id": "ORD_495793",
+    "total_amount": "145.00",
+    "order_type": "DINE-IN",
+    "payment_method": "CASH",
+    "created_at": "Oct 15, 2025 12:33 PM",
+    "cashier_name": "Taylor Swift",
+    "status": "<span class=\"badge bg-warning\">In Queue<\/span>",
+    "items": [
+        {
+            "product_name": "Tuna Salad",
+            "quantity": 1,
+            "subtotal": "145.00"
+        }
+    ],
+    "socket": null
+}  

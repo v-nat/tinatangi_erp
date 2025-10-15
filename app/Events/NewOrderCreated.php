@@ -3,11 +3,12 @@
 namespace App\Events;
 
 use App\Models\Order;
+use App\Models\Status;
 use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 
 class NewOrderCreated implements ShouldBroadcast
 {
@@ -51,7 +52,7 @@ class NewOrderCreated implements ShouldBroadcast
             'payment_method'  => strtoupper($order->payment_method),
             'created_at'      => $order->created_at->format('M d, Y h:i A'),
             'cashier_name'    => $order->userRS->full_name ?? 'N/A',
-            'status'          => $order->statusRS->name ?? 'Pending',
+            'status'          => Status::getStatusText($order->status),
             'items'           => $order->orderItemsRS->map(function ($item) {
                 return [
                     'product_name' => $item->productRS->name ?? 'N/A',

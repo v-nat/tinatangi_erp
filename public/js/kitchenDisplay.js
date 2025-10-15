@@ -29,13 +29,10 @@ $(document).ready(function () {
         info: false,
         searching: false,
 
-        // AJAX source route from operations.php
         ajax: {
             url: "/operations/kds/get-today-orders",
             dataSrc: "",
         },
-
-        // Columns MUST match the data structure from the PHP files (Event and Controller)
         columns: [
             { title: "Order #", data: "order_id" },
             { title: "Cashier", data: "cashier_name" },
@@ -45,7 +42,6 @@ $(document).ready(function () {
             {
                 title: "Items",
                 data: "items",
-                // Robust renderer for the items array
                 render: function (data, type, row) {
                     if (type === "display" && Array.isArray(data)) {
                         let html = '';
@@ -61,7 +57,7 @@ $(document).ready(function () {
             {
                 title: "Action",
                 data: null,
-                defaultContent: '<button class="btn btn-sm btn-primary mark-ready">Mark Ready</button>',
+                defaultContent: '<button class="btn btn-sm btn-primary mark-ready">Ready</button>',
                 orderable: false,
             },
         ],
@@ -72,17 +68,14 @@ $(document).ready(function () {
     // ----------------------------------------------------
 
     if (window.Echo) {
-        // Subscribes to the 'pos-orders' channel and listens for the '.order.created' event
         window.Echo.channel("pos-orders").listen(".order.created", (event) => {
             console.log("KDS: New Order Received:", event);
 
-            // Adds the new order data to the table instantly
             ordersTable.row.add(event).draw(false);
 
-            // Highlight the new row temporarily
             const lastRow = ordersTable.row(":last").node();
             if (lastRow) {
-                $(lastRow).addClass("table-success").delay(5000).queue(function (next) {
+                $(lastRow).addClass("table-success").delay(1000).queue(function (next) {
                     $(this).removeClass("table-success");
                     next();
                 });
