@@ -571,11 +571,7 @@ $(function () {
             $("#confirmSubmitOrder")
                 .prop("disabled", true)
                 .removeClass("d-none");
-            $("#closeBtn")
-                .prop("disabled", true)
-                .removeClass("d-none");
             $("#printReceiptBtn").addClass("d-none");
-            $("#cancelBtn").addClass("d-none");
 
             $("#orderFinalization").modal("show");
         } else {
@@ -637,7 +633,8 @@ $(function () {
                     changeDue,
                     cashierName
                 );
-
+                $("#closeBtn").prop("disabled", true).removeClass("d-none");
+                $("#cancelBtn").addClass("d-none");
                 $("#confirmSubmitOrder").addClass("d-none");
                 $("#printReceiptBtn").removeClass("d-none");
                 $("#orderList").empty();
