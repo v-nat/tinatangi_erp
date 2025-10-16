@@ -572,7 +572,6 @@ $(function () {
                 .prop("disabled", true)
                 .removeClass("d-none");
             $("#printReceiptBtn").addClass("d-none");
-
             $("#orderFinalization").modal("show");
         } else {
             Toast.fire({
@@ -633,10 +632,10 @@ $(function () {
                     changeDue,
                     cashierName
                 );
-                $("#closeBtn").prop("disabled", true).removeClass("d-none");
+                $("#closeBtn").removeClass("d-none");
+                $("#printReceiptBtn").removeClass("d-none");
                 $("#cancelBtn").addClass("d-none");
                 $("#confirmSubmitOrder").addClass("d-none");
-                $("#printReceiptBtn").removeClass("d-none");
                 $("#orderList").empty();
                 $("#order-total-amount").text("₱ 0.00");
             },
