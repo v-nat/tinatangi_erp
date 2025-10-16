@@ -139,22 +139,19 @@ class ProductController extends Controller
 
         foreach ($product->ingredients as $ingredient) {
             $stockLevel = $ingredient->stock_level;
-            $purchaseUnit = $ingredient->item->unitRS; // The full Unit object
+            $purchaseUnit = $ingredient->item->unitRS;
             $quantityUsedInRecipe = $ingredient->pivot->quantity_used;
 
-            // 1. Dynamically find the correct base unit for this ingredient's type
             $baseUnit = ItemUnit::where('type', $purchaseUnit->type)
                 ->where('is_base_unit', true)
                 ->first();
 
-            // If no base unit is defined for this type, we can't calculate.
             if (!$baseUnit) {
-                continue; // Skip this ingredient
+                continue;
             }
 
-            // --- CONVERSION LOGIC ---
             $totalStockInBaseUnit = $stockLevel;
-            // Check if the purchase unit is different from the base unit for its type
+
             if ($purchaseUnit->id !== $baseUnit->id) {
                 $conversion = UnitConversion::where('from_unit_id', $purchaseUnit->id)
                     ->where('to_unit_id', $baseUnit->id)
@@ -163,13 +160,10 @@ class ProductController extends Controller
                 if ($conversion) {
                     $totalStockInBaseUnit = $stockLevel * $conversion->factor;
                 } else {
-                    // If there's no conversion rule, assume it can't be converted.
-                    // We can't calculate servings for this ingredient, so we set it to 0.
                     $minServings = 0;
                     continue;
                 }
             }
-            // --- END CONVERSION ---
 
             if ($quantityUsedInRecipe > 0) {
                 $servingsForThisIngredient = floor($totalStockInBaseUnit / $quantityUsedInRecipe);
