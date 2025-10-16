@@ -571,7 +571,11 @@ $(function () {
             $("#confirmSubmitOrder")
                 .prop("disabled", true)
                 .removeClass("d-none");
+            $("#closeBtn")
+                .prop("disabled", true)
+                .removeClass("d-none");
             $("#printReceiptBtn").addClass("d-none");
+            $("#cancelBtn").addClass("d-none");
 
             $("#orderFinalization").modal("show");
         } else {

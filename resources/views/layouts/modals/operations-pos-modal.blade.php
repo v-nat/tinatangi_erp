@@ -150,8 +150,11 @@
                     <input type="hidden" name="order_type" id="order_type_input" value="dine-in">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                    <button id="cancelBtn" type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
                         <span class="d-sm-block">Cancel</span>
+                    </button>
+                    <button id="closeBtn" type="button" class="btn btn-light-secondary d-none" data-bs-dismiss="modal">
+                        <span class="d-sm-block">Close</span>
                     </button>
                     <button id="printReceiptBtn" type="button" class="btn btn-primary ml-1 d-none">
                         <span class="d-sm-block">Print Receipt</span>
