@@ -30,7 +30,7 @@ $(document).ready(function () {
                     let imageUrl;
 
                     if (imagePath && imagePath !== "N/A") {
-                        imageUrl = "/storage/" + imagePath;
+                        imageUrl = "/storage/app/public/" + imagePath;
                     } else {
                         imageUrl = DEFAULT_PRODUCT_IMAGE;
                     }
