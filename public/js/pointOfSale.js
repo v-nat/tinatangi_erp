@@ -30,7 +30,7 @@ $(document).ready(function () {
                     let imageUrl;
 
                     if (imagePath && imagePath !== "N/A") {
-                        imageUrl = "/" + imagePath;
+                        imageUrl = "img/products/" + imagePath;
                     } else {
                         imageUrl = DEFAULT_PRODUCT_IMAGE;
                     }
