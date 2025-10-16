@@ -105,7 +105,6 @@ $(function () {
         let isValid = true;
         $(".form-control, .form-select").removeClass("is-invalid");
 
-        // 1. Validate Product Name (unchanged)
         const name = $("#name").val().trim();
         if (name === "") {
             isValid = false;
@@ -113,7 +112,6 @@ $(function () {
             $("#name_error").text("Product name is required.");
         }
 
-        // 2. Validate Base Price (unchanged)
         const price = $("#base_price").val();
         if (price === "" || parseFloat(price) < 0) {
             isValid = false;
@@ -123,7 +121,6 @@ $(function () {
             );
         }
 
-        // 3. Validate Category (unchanged)
         const category = $("#product_category_id").val();
         if (category === "") {
             isValid = false;
@@ -131,10 +128,8 @@ $(function () {
             $("#product_category_id_error").text("Please select a category.");
         }
 
-        // --- NEW: 4. Validate Image File ---
         const $imageInput = $("#image");
         if ($imageInput[0].files.length > 0) {
-            // Only validate if a file is selected
             const file = $imageInput[0].files[0];
             const allowedTypes = [
                 "image/jpeg",
@@ -142,9 +137,8 @@ $(function () {
                 "image/gif",
                 "image/jpg",
             ];
-            const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+            const maxSize = 10 * 1024 * 1024;
 
-            // Check file type
             if (!allowedTypes.includes(file.type)) {
                 isValid = false;
                 $imageInput.addClass("is-invalid");
@@ -153,11 +147,9 @@ $(function () {
                 );
             }
 
-            // Check file size
             if (file.size > maxSize) {
                 isValid = false;
                 $imageInput.addClass("is-invalid");
-                // If there was already a type error, append the size error. Otherwise, set it.
                 const existingError = $("#image_error").text();
                 const sizeError = "File is too large. Maximum size is 2MB.";
                 $("#image_error").text(
@@ -187,7 +179,7 @@ $(function () {
             },
             success: function (response) {
                 $("#addProductModal").modal("hide");
-                Swal.fire({
+                Toast.fire({
                     icon: "success",
                     title: "Success!",
                     text: response.message,

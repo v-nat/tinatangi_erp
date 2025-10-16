@@ -53,10 +53,8 @@ class ProductController extends Controller
             $imageFile = $request->file('image');
             $sourcePath = $imageFile->getRealPath();
 
-            // 1. Get original image dimensions and type
             list($sourceWidth, $sourceHeight, $sourceType) = getimagesize($sourcePath);
 
-            // 2. Create an image resource from the uploaded file based on its type
             switch ($sourceType) {
                 case IMAGETYPE_JPEG:
                     $sourceImage = imagecreatefromjpeg($sourcePath);
@@ -68,15 +66,12 @@ class ProductController extends Controller
                     $sourceImage = imagecreatefromgif($sourcePath);
                     break;
                 default:
-                    // Handle unsupported file type
                     return response()->json(['message' => 'Unsupported image type.'], 422);
             }
 
-            // 3. Define target dimensions for the square crop
             $targetWidth = 250;
             $targetHeight = 250;
 
-            // 4. Calculate the source coordinates for a center crop
             $sourceRatio = $sourceWidth / $sourceHeight;
             $targetRatio = $targetWidth / $targetHeight;
             $srcX = 0;
@@ -84,44 +79,39 @@ class ProductController extends Controller
             $srcW = $sourceWidth;
             $srcH = $sourceHeight;
 
-            if ($sourceRatio > $targetRatio) { // Image is wider than target
+            if ($sourceRatio > $targetRatio) {
                 $srcW = $sourceHeight * $targetRatio;
                 $srcX = ($sourceWidth - $srcW) / 2;
-            } else { // Image is taller than or same ratio as target
+            } else {
                 $srcH = $sourceWidth / $targetRatio;
                 $srcY = ($sourceHeight - $srcH) / 2;
             }
 
-            // 5. Create a new, blank destination image canvas
             $destImage = imagecreatetruecolor($targetWidth, $targetHeight);
 
-            // 6. Copy and resize the cropped portion of the source image to the destination
             imagecopyresampled(
                 $destImage,
                 $sourceImage,
                 0,
-                0, // Destination X, Y
+                0,
                 (int)$srcX,
-                (int)$srcY, // Source X, Y
+                (int)$srcY,
                 $targetWidth,
-                $targetHeight, // Destination Width, Height
+                $targetHeight,
                 (int)$srcW,
-                (int)$srcH  // Source Width, Height
+                (int)$srcH
             );
 
-            // 7. Capture the processed image output into a variable
             ob_start();
-            imagejpeg($destImage, null, 90); // Output as JPEG with 90% quality
+            imagejpeg($destImage, null, 90);
             $processedImage = ob_get_clean();
 
-            // 8. Save the processed image using Laravel's Storage
             $filename = uniqid() . '.jpg';
             $path = 'img/products/' . $filename;
             Storage::disk('public')->put($path, $processedImage);
 
             $validatedData['image'] = $path;
 
-            // 9. Free up memory
             imagedestroy($sourceImage);
             imagedestroy($destImage);
         }
