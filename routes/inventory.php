@@ -33,7 +33,7 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::get('/inventory/products/get', [ProductController::class, 'getProductData']);
     Route::get('/inventory/products/get-categories', [ProductController::class, 'getCategories']);
     Route::post('/inventory/products/store', [ProductController::class, 'store']);
-    Route::get('/inventory/products/{product}/edit', [RecipeController::class, 'edit']);
-    Route::get('/inventory/products/{product}/data', [RecipeController::class, 'getRecipeData']);
     Route::post('/inventory/recipes/{product}', [RecipeController::class, 'update'])->name('recipes.update');
+    Route::get('/inventory/products/{product}/servings', [ProductController::class, 'getServings']);
+    Route::get('/inventory/recipes/{product}/data', [RecipeController::class, 'getRecipeData'])->name('api.recipes.data');
 });

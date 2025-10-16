@@ -51,6 +51,11 @@ class InventoryItem extends Model
         return $this->belongsTo(Item::class, 'item_id');
     }
 
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+
     public function unit(): BelongsTo
     {
         return $this->belongsTo(ItemUnit::class, 'unit_id');

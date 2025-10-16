@@ -19,7 +19,12 @@ $(function () {
             {
                 data: "name",
                 title: "Name",
-                width: "500px",
+                width: "400px",
+            },
+            {
+                data: "desc",
+                title: "Description",
+                width: "280px",
             },
             {
                 data: "base_price",
@@ -40,29 +45,43 @@ $(function () {
             },
             {
                 data: null,
+                title: "Servings Available",
+                className: "text-center",
+                orderable: false,
+                defaultContent: '<i class="fas fa-spinner fa-spin"></i>',
+            },
+            {
+                data: null,
                 title: "Actions",
                 className: "text-center",
                 orderable: false,
                 render: function (data, type, row) {
-                    const recipeUrl = `/inventory/recipes/${row.id}/edit`;
                     const editUrl = `/inventory/products/${row.id}/edit`;
-
-                    return `
-                        <div class="btn-group" role="group">
-                            <a href="${recipeUrl}" class="btn btn-sm btn-secondary" title="Manage Recipe">
-                                <i class="fas fa-list-alt"></i> Recipe
-                            </a>
-                            <a href="${editUrl}" class="btn btn-sm btn-warning" title="Edit Product">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </div>
-                    `;
+                    return `<div class="action-btns" role="group">
+                                <button class="btn btn-sm btn-info manage-recipe-btn" title="Manage Recipe" data-product-id="${row.id}">
+                                    <i class="fas fa-list-alt"></i>
+                                </button>
+                                <a href="${editUrl}" class="btn btn-sm btn-warning" title="Edit Product"><i class="fas fa-edit"></i></a>
+                            </div>`;
                 },
             },
+            {
+                data: "id",
+                visible: false,
+            },
         ],
+        createdRow: function (row, data, dataIndex) {
+            // The new column is the second to last, so its index is -2
+            const servingsCell = $("td", row).eq(-2);
+
+            $.get(`/inventory/products/${data.id}/servings`, function (response) {
+                servingsCell.text(response.servings);
+            }).fail(function () {
+                servingsCell.text("Error");
+            });
+        },
         language: {
-            emptyTable: "No products found.",
-            zeroRecords: "No matching products found.",
+            // ...
         },
     });
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin\Inventory;
 use Carbon\Carbon;
 use App\Models\Status;
 use App\Models\Product;
+use App\Models\ItemUnit;
+use App\Models\UnitConversion;
 use App\Models\ProductCategory;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -27,6 +29,7 @@ class ProductController extends Controller
                     return [
                         'id'            => $product->id,
                         'name'          => $product->name,
+                        'desc'          => $product->description,
                         'base_price'    => $product->base_price,
                         'category_name' => optional($product->productCategoryRS)->name,
                         'status'        => Status::getStatusText($product->status),
@@ -122,5 +125,60 @@ class ProductController extends Controller
             'message' => 'Product added successfully!',
             'product' => $product
         ], 201);
+    }
+
+    public function getServings(Product $product)
+    {
+        $product->load('ingredients.item.unitRS');
+
+        if ($product->ingredients->isEmpty()) {
+            return response()->json(['servings' => 'N/A']);
+        }
+
+        $minServings = PHP_INT_MAX;
+
+        foreach ($product->ingredients as $ingredient) {
+            $stockLevel = $ingredient->stock_level;
+            $purchaseUnit = $ingredient->item->unitRS; // The full Unit object
+            $quantityUsedInRecipe = $ingredient->pivot->quantity_used;
+
+            // 1. Dynamically find the correct base unit for this ingredient's type
+            $baseUnit = ItemUnit::where('type', $purchaseUnit->type)
+                ->where('is_base_unit', true)
+                ->first();
+
+            // If no base unit is defined for this type, we can't calculate.
+            if (!$baseUnit) {
+                continue; // Skip this ingredient
+            }
+
+            // --- CONVERSION LOGIC ---
+            $totalStockInBaseUnit = $stockLevel;
+            // Check if the purchase unit is different from the base unit for its type
+            if ($purchaseUnit->id !== $baseUnit->id) {
+                $conversion = UnitConversion::where('from_unit_id', $purchaseUnit->id)
+                    ->where('to_unit_id', $baseUnit->id)
+                    ->first();
+
+                if ($conversion) {
+                    $totalStockInBaseUnit = $stockLevel * $conversion->factor;
+                } else {
+                    // If there's no conversion rule, assume it can't be converted.
+                    // We can't calculate servings for this ingredient, so we set it to 0.
+                    $minServings = 0;
+                    continue;
+                }
+            }
+            // --- END CONVERSION ---
+
+            if ($quantityUsedInRecipe > 0) {
+                $servingsForThisIngredient = floor($totalStockInBaseUnit / $quantityUsedInRecipe);
+                $minServings = min($minServings, $servingsForThisIngredient);
+            }
+        }
+
+        $servings = ($minServings == PHP_INT_MAX) ? 0 : $minServings;
+
+        return response()->json(['servings' => $servings]);
     }
 }

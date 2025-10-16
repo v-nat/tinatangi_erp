@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Status;
 use App\Models\Product;
+use App\Models\InventoryItem;
 use App\Models\ProductCategory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -168,13 +169,13 @@ class POSController extends Controller
         }
     }
 
+
     public function submitOrder(StoreOrderRequest $request)
     {
-        // You can now get order_type from the validated request data
         $validatedData = $request->validated();
         $orderItems = $validatedData['order_items'];
         $submittedGrandTotal = $validatedData['grand_total'];
-        $orderType = $validatedData['order_type']; // Get the validated order type
+        $orderType = $validatedData['order_type'];
 
         DB::beginTransaction();
 
@@ -211,18 +212,33 @@ class POSController extends Controller
                 throw new \Exception("Grand total mismatch. Client total: {$submittedGrandTotal}, Server total: {$calculatedGrandTotal}");
             }
 
-            $customOrderId = GenerateIdController::generateID('order');
-
             $order = Order::create([
-                'order_id' => $customOrderId,
-                'user_id' => auth('')->id(), // Standard way to get authenticated user ID
+                'order_id' => GenerateIdController::generateID('order'),
+                'user_id' => auth('')->id(),
                 'total_amount' => $calculatedGrandTotal,
-                'status' => 28, // Consider using a status model or enum for readability
-                'order_type' => $orderType, // <-- THIS IS THE ONLY CHANGE NEEDED
+                'status' => 28,
+                'order_type' => $orderType,
                 'payment_status' => 'paid',
             ]);
 
             $order->items()->createMany($itemsToSave);
+            
+            foreach ($orderItems as $item) {
+                $product = Product::with('ingredients')->find($item['product_id']);
+
+                if ($product && $product->ingredients->isNotEmpty()) {
+                    foreach ($product->ingredients as $ingredient) {
+                        $inventoryItem = InventoryItem::find($ingredient->id);
+
+                        if ($inventoryItem) {
+                            $quantityToDeduct = $ingredient->pivot->quantity_used * $item['quantity'];
+
+                            $inventoryItem->decrement('stock_level', $quantityToDeduct);
+                        }
+                    }
+                }
+            }
+            // --- END OF NEW LOGIC ---
 
             DB::commit();
 
@@ -238,6 +254,77 @@ class POSController extends Controller
             ], 500);
         }
     }
+
+    // public function submitOrder(StoreOrderRequest $request)
+    // {
+    //     // You can now get order_type from the validated request data
+    //     $validatedData = $request->validated();
+    //     $orderItems = $validatedData['order_items'];
+    //     $submittedGrandTotal = $validatedData['grand_total'];
+    //     $orderType = $validatedData['order_type']; // Get the validated order type
+
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $productIds = collect($orderItems)->pluck('product_id')->unique();
+    //         $products = Product::whereIn('id', $productIds)->pluck('base_price', 'id');
+
+    //         $calculatedGrandTotal = 0;
+    //         $itemsToSave = [];
+
+    //         foreach ($orderItems as $item) {
+    //             $productId = $item['product_id'];
+    //             $quantity = $item['quantity'];
+    //             $dbUnitPrice = $products->get($productId);
+
+    //             if (is_null($dbUnitPrice)) {
+    //                 throw new \Exception("Product ID {$productId} not found or price is missing.");
+    //             }
+
+    //             $itemTotal = $dbUnitPrice * $quantity;
+    //             $calculatedGrandTotal += $itemTotal;
+
+    //             $itemsToSave[] = [
+    //                 'product_id' => $productId,
+    //                 'quantity' => $quantity,
+    //                 'unit_price' => $dbUnitPrice,
+    //                 'subtotal' => $itemTotal,
+    //                 'created_at' => now(),
+    //                 'updated_at' => now(),
+    //             ];
+    //         }
+
+    //         if (abs($submittedGrandTotal - $calculatedGrandTotal) > 0.01) {
+    //             throw new \Exception("Grand total mismatch. Client total: {$submittedGrandTotal}, Server total: {$calculatedGrandTotal}");
+    //         }
+
+    //         $customOrderId = GenerateIdController::generateID('order');
+
+    //         $order = Order::create([
+    //             'order_id' => $customOrderId,
+    //             'user_id' => auth('')->id(), // Standard way to get authenticated user ID
+    //             'total_amount' => $calculatedGrandTotal,
+    //             'status' => 28, // Consider using a status model or enum for readability
+    //             'order_type' => $orderType, // <-- THIS IS THE ONLY CHANGE NEEDED
+    //             'payment_status' => 'paid',
+    //         ]);
+
+    //         $order->items()->createMany($itemsToSave);
+
+    //         DB::commit();
+
+    //         return response()->json([
+    //             'message' => 'Order completed successfully.',
+    //             'order_id' => $order->order_id,
+    //         ], 200);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'message' => 'Order submission failed.',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
 
     public function recentOrders()
     {

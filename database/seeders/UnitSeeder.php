@@ -12,42 +12,51 @@ class UnitSeeder extends Seeder
      */
     public function run(): void
     {
-        $units = [
-            // Full Name => Abbreviation
-            'Kilogram'      => 'KG',
-            'Liter'         => 'LITER',
-            'Bottle'        => 'BOTTLE',
-            'Box'           => 'BOX',
-            'Piece(s)'      => 'PCS',
-            'Sleeve'        => 'SLEEVE',
-            'Bundle'        => 'BUNDLE',
-            'Case'          => 'CASE',
-            'Jar'           => 'JAR',
-            'Tub'           => 'TUB',
-            'Set'           => 'SET',
-            'Unit'          => 'UNIT',
-            // Adding more common units from previous request for completeness
-            'Gram'          => 'G',
-            'Milliliter'    => 'ML',
-            'Bag'           => 'BAG',
-            'Sachet'        => 'SACHET',
-            'Roll'          => 'ROLL',
-            'Pack'          => 'PACK',
+        // ⭐ Restructured data for easier type and base unit assignment
+        $unitGroups = [
+            'weight' => [
+                'Gram' => ['abbreviation' => 'G', 'is_base' => true],
+                'Kilogram' => ['abbreviation' => 'KG', 'is_base' => false],
+            ],
+            'volume' => [
+                'Milliliter' => ['abbreviation' => 'ML', 'is_base' => true],
+                'Liter' => ['abbreviation' => 'LITER', 'is_base' => false],
+            ],
+            'count' => [
+                'Piece(s)' => ['abbreviation' => 'PCS', 'is_base' => true],
+                'Bottle' => ['abbreviation' => 'BOTTLE', 'is_base' => false],
+                'Box' => ['abbreviation' => 'BOX', 'is_base' => false],
+                'Sleeve' => ['abbreviation' => 'SLEEVE', 'is_base' => false],
+                'Bundle' => ['abbreviation' => 'BUNDLE', 'is_base' => false],
+                'Case' => ['abbreviation' => 'CASE', 'is_base' => false],
+                'Jar' => ['abbreviation' => 'JAR', 'is_base' => false],
+                'Tub' => ['abbreviation' => 'TUB', 'is_base' => false],
+                'Set' => ['abbreviation' => 'SET', 'is_base' => false],
+                'Unit' => ['abbreviation' => 'UNIT', 'is_base' => false],
+                'Bag' => ['abbreviation' => 'BAG', 'is_base' => false],
+                'Sachet' => ['abbreviation' => 'SACHET', 'is_base' => false],
+                'Roll' => ['abbreviation' => 'ROLL', 'is_base' => false],
+                'Pack' => ['abbreviation' => 'PACK', 'is_base' => false],
+            ],
         ];
 
         $dataToSeed = [];
-        $idCounter = 1; // Initialize ID counter to assign explicit IDs
 
-        foreach ($units as $fullName => $abbreviation) {
-            $dataToSeed[] = [
-                'id' => $idCounter++,
-                'name' => $fullName,
-                'abbreviation' => $abbreviation,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+        // Loop through the groups to build the data array
+        foreach ($unitGroups as $type => $units) {
+            foreach ($units as $name => $details) {
+                $dataToSeed[] = [
+                    'name' => $name,
+                    'abbreviation' => $details['abbreviation'],
+                    'type' => $type, // Set the measurement type
+                    'is_base_unit' => $details['is_base'], // Set if it's a base unit
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
         }
 
-        ItemUnit::upsert($dataToSeed, ['id'], ['name', 'abbreviation', 'updated_at']);
+        // Use upsert to efficiently create or update records based on the name
+        ItemUnit::upsert($dataToSeed, ['name'], ['abbreviation', 'type', 'is_base_unit', 'updated_at']);
     }
 }

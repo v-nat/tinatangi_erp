@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\UnitConversion;
 use Illuminate\Database\Seeder;
 
 
@@ -22,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CategorySeeder::class);
         $this->call(UnitSeeder::class);
         $this->call(ItemSeeder::class);
+        $this->call(UnitConversionSeeder::class);
         $this->call(ProductCategorySeeder::class);
         $this->call(ProductSeeder::class);
     }

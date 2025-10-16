@@ -9,32 +9,23 @@ use App\Http\Controllers\Controller;
 
 class RecipeController extends Controller
 {
-    public function edit(Product $product)
-    {
-        // The only job of this method is to return the view with the product ID.
-        // The JavaScript file will handle fetching all the data.
-        return view('pages.admin.inventory.recipes', ['product' => $product]);
-    }
-
-    /**
-     * NEW: Provide all necessary recipe data as a JSON response for AJAX calls.
-     */
+    // The getRecipeData() method is unchanged and works perfectly.
     public function getRecipeData(Product $product)
     {
-        // Eager load the pivot data for efficiency
-        $product->load('ingredients');
+        // Load all nested relationships for existing ingredients
+        $product->load('ingredients.item.categoryRS', 'ingredients.item.unitRS');
+
+        // Eager load all nested relationships for the dropdown
+        $allInventoryItems = InventoryItem::with('item.categoryRS', 'item.unitRS')->get();
 
         return response()->json([
             'product' => $product,
             'currentIngredients' => $product->ingredients,
-            'allInventoryItems' => InventoryItem::orderBy('name')->get()
+            'allInventoryItems' => $allInventoryItems
         ]);
     }
 
-    /**
-     * Update the recipe for the given product in storage.
-     * This method does not need to change.
-     */
+    // UPDATE this method to return JSON
     public function update(Request $request, Product $product)
     {
         $request->validate([
@@ -52,6 +43,7 @@ class RecipeController extends Controller
 
         $product->ingredients()->sync($dataToSync);
 
-        return redirect()->route('recipes.edit', $product)->with('success', 'Recipe updated successfully!');
+        // Return a JSON response instead of a redirect
+        return response()->json(['message' => 'Recipe updated successfully!']);
     }
 }

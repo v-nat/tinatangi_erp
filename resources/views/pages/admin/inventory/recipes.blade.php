@@ -44,5 +44,5 @@
     </div>
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/recipeManagement.js') }}"></script>
+    
 @endsection

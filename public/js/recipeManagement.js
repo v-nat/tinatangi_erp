@@ -1,95 +1,134 @@
 $(function () {
-    const productId = $("#recipe-editor").data("product-id");
-    if (!productId) {
-        console.error("Product ID not found.");
-        return;
-    }
+    // --- NEW: LOGIC FOR "MANAGE RECIPE" MODAL ---
 
-    let allInventoryItems = []; // To store all available ingredients for dropdowns
-    let ingredientIndex = 0; // To ensure unique names for form inputs
+    let allInventoryItems = []; // Global-like variable to store ingredients for dropdowns
+    let ingredientIndex = 0;
 
-    // --- Main function to fetch data and build the page ---
-    function loadRecipeData() {
+    // 1. Open the modal when a "Recipe" button is clicked
+    $("#products-table").on("click", ".manage-recipe-btn", function () {
+        const productId = $(this).data("product-id");
+        const $modal = $("#recipeModal");
+        const $form = $("#recipeForm");
+
+        // Reset form and set the action URL
+        $form[0].reset();
+        $form.attr("action", `/inventory/recipes/${productId}`);
+
+        // Clear previous data and show loading state
+        $("#recipe-product-name").text("Loading...");
+        $("#current-ingredients-list").html("<p>Loading recipe...</p>");
+        $("#ingredient-list").empty();
+
+        // Fetch data for the modal
+        loadRecipeData(productId);
+
+        $modal.modal("show");
+    });
+
+    // 2. Function to fetch and populate recipe data
+    function loadRecipeData(productId) {
         $.ajax({
-            url: `/api/recipes/${productId}/data`,
+            url: `/inventory/recipes/${productId}/data`,
             type: "GET",
-            dataType: "json",
             success: function (data) {
-                allInventoryItems = data.allInventoryItems; // Store for later
+                allInventoryItems = data.allInventoryItems;
+                ingredientIndex = 0;
 
-                // Populate product name
-                $("#product-name").text(data.product.name);
+                $("#recipe-product-name").text(data.product.name);
 
-                // Populate current ingredients list (read-only view)
-                const $currentList = $("#current-ingredients-list");
-                $currentList.empty(); // Clear "Loading..." message
+                const $currentList = $("#current-ingredients-list").empty();
                 if (data.currentIngredients.length > 0) {
                     data.currentIngredients.forEach((ing) => {
-                        const listItem = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                            ${ing.name}
-                            <span class="badge bg-primary rounded-pill">${ing.pivot.quantity_used} ${ing.unit_of_measure}</span>
-                        </li>`;
-                        $currentList.append(listItem);
+                        const unitName = ing.item.unit_r_s ? ing.item.unit_r_s.name : '';
+                        $currentList.append(
+                            `<li class="list-group-item d-flex justify-content-between align-items-center">${ing.item.name}<span class="badge bg-primary rounded-pill">${ing.pivot.quantity_used} ${unitName}</span></li>`
+                        );
                     });
                 } else {
-                    $("#no-recipe-message")
-                        .text("This product does not have a recipe yet.")
-                        .appendTo($currentList);
+                    $currentList.html(
+                        "<p>This product does not have a recipe yet.</p>"
+                    );
                 }
 
-                // Populate the editable form rows
-                const $formList = $("#ingredient-list");
-                $formList.empty();
+                // The rest of your function is unchanged...
+                const $formList = $("#ingredient-list").empty();
                 if (data.currentIngredients.length > 0) {
-                    data.currentIngredients.forEach((ing) => {
-                        addIngredientRow(ing);
-                    });
+                    data.currentIngredients.forEach((ing) =>
+                        addIngredientRow(ing)
+                    );
                 }
             },
             error: function () {
-                alert("Failed to load recipe data. Please try again.");
+                Swal.fire("Error", "Failed to load recipe data.", "error");
             },
         });
     }
 
-    // --- Helper function to create a new ingredient row in the form ---
+    // 3. Helper function to add a new row to the form
+    // in public/js/inventoryProducts.js
+
     function addIngredientRow(ingredient = null) {
         let optionsHtml = '<option value="">Select Ingredient...</option>';
+
         allInventoryItems.forEach((item) => {
-            // Check if the current item should be selected
             const isSelected =
                 ingredient && ingredient.id === item.id ? "selected" : "";
-            optionsHtml += `<option value="${item.id}" ${isSelected}>${item.name} (${item.unit_of_measure})</option>`;
+
+            // FIX: Access the snake_case version of your 'categoryRS' relationship
+            const categoryName = item.item.category_r_s
+                ? item.item.category_r_s.name
+                : "Uncategorized";
+            const displayText = `${item.item.name} (${categoryName})`;
+
+            optionsHtml += `<option value="${item.id}" ${isSelected}>${displayText}</option>`;
         });
 
+        // ... The rest of the function is unchanged ...
         const quantity = ingredient ? ingredient.pivot.quantity_used : "";
+        const rowHtml = `
+        <div class="row ingredient-row mb-2">
+            <div class="col-md-6"><select class="form-select" name="ingredients[${ingredientIndex}][id]">${optionsHtml}</select></div>
+            <div class="col-md-4"><input type="number" class="form-control" name="ingredients[${ingredientIndex}][quantity]" value="${quantity}" step="0.01" placeholder="Quantity"></div>
+            <div class="col-md-2"><button type="button" class="btn btn-danger remove-ingredient-btn">Remove</button></div>
+        </div>`;
 
-        const ingredientRowHtml = `
-            <div class="row ingredient-row mb-2">
-                <div class="col-md-6">
-                    <select class="form-select" name="ingredients[${ingredientIndex}][id]">${optionsHtml}</select>
-                </div>
-                <div class="col-md-4">
-                    <input type="number" class="form-control" name="ingredients[${ingredientIndex}][quantity]" value="${quantity}" step="0.01" placeholder="Quantity">
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger remove-ingredient-btn">Remove</button>
-                </div>
-            </div>`;
-
-        $("#ingredient-list").append(ingredientRowHtml);
+        $("#ingredient-list").append(rowHtml);
         ingredientIndex++;
     }
 
-    // --- Event Handlers ---
-    $("#add-ingredient-btn").click(function () {
-        addIngredientRow(); // Add a new, blank row
-    });
-
-    $("#ingredient-list").on("click", ".remove-ingredient-btn", function () {
+    // 4. Event handlers for adding/removing rows and submitting the form
+    $("#recipeModal").on("click", "#add-ingredient-btn", () =>
+        addIngredientRow()
+    );
+    $("#recipeModal").on("click", ".remove-ingredient-btn", function () {
         $(this).closest(".ingredient-row").remove();
     });
 
-    // --- Initial Load ---
-    loadRecipeData();
+    $("#recipeForm").on("submit", function (e) {
+        e.preventDefault();
+        const form = $(this);
+
+        $.ajax({
+            url: form.attr("action"),
+            type: "POST",
+            data: form.serialize(),
+            success: function (response) {
+                $("#recipeModal").modal("hide");
+                Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: response.message,
+                    timer: 1500,
+                });
+                $("#products-table").DataTable().ajax.reload();
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong!",
+                });
+            },
+        });
+    });
 });
