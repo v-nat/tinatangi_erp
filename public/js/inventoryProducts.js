@@ -165,7 +165,7 @@ $(function () {
         $(".form-control, .form-select").removeClass("is-invalid");
 
         const formData = new FormData(this);
-
+        $("#LoadingScreen").fadeIn(200);
         $.ajax({
             url: "/inventory/products/store",
             type: "POST",
@@ -179,6 +179,7 @@ $(function () {
             },
             success: function (response) {
                 $("#addProductModal").modal("hide");
+                $("#LoadingScreen").fadeOut(200);
                 Toast.fire({
                     icon: "success",
                     title: "Success!",
