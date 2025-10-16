@@ -53,12 +53,17 @@ class ProductController extends Controller
         //     $validatedData['image'] = $path;
         // }
 
-        if ($image = $request->file('image')) {
-            $toPath = 'img/products';
-            $prod_img = 'img/products/'. date('YmdHis') . "." . $image->getClientOriginalExtension();
-            $image->move($toPath, $prod_img);
-            $validatedData['image'] = $prod_img;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('img/products', 'public');
+            $validatedData['image'] = $path;
         }
+
+        // if ($image = $request->file('image')) {
+        //     $toPath = 'img/products';
+        //     $prod_img = 'img/products/' . date('YmdHis') . "." . $image->getClientOriginalExtension();
+        //     $image->move($toPath, $prod_img);
+        //     $validatedData['image'] = $prod_img;
+        // }
 
         $product = Product::create($validatedData);
 
