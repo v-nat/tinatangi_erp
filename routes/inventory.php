@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\Inventory\ProductController;
 use App\Http\Controllers\Admin\Inventory\InventoryController;
 use App\Http\Controllers\Admin\Inventory\StockManagementController;
 
-Route::middleware(['auth' , 'isEmployee'])->group(function () {
+Route::middleware(['auth', 'isEmployee'])->group(function () {
     ////////////////////////////////// DASHBOARD ////////////////////////////////////////////////
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory');
     Route::get('/inventory/get-to-receive', [InventoryController::class, 'getToReceive']);
@@ -36,4 +36,6 @@ Route::middleware(['auth' , 'isEmployee'])->group(function () {
     Route::post('/inventory/recipes/{product}', [RecipeController::class, 'update'])->name('recipes.update');
     Route::get('/inventory/products/{product}/servings', [ProductController::class, 'getServings']);
     Route::get('/inventory/recipes/{product}/data', [RecipeController::class, 'getRecipeData'])->name('api.recipes.data');
+    Route::get('/inventory/recipes/{product}/calculate-price', [RecipeController::class, 'calculatePrice'])->name('api.recipes.calculate_price');
+    Route::patch('/inventory/products/{product}/update-price', [RecipeController::class, 'updatePrice'])->name('api.products.update_price');
 });

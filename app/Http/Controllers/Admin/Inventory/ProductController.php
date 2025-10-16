@@ -173,6 +173,6 @@ class ProductController extends Controller
 
         $servings = ($minServings == PHP_INT_MAX) ? 0 : $minServings;
 
-        return response()->json(['servings' => $servings]);
+        return response()->json(['servings' => $servings / 1000]);
     }
 }

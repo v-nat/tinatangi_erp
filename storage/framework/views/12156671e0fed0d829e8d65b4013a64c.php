@@ -20,7 +20,7 @@
 <li class="sidebar-item <?php echo $__env->yieldContent('inventoryProducts'); ?> ">
     <a href="<?php echo e(route('inventory.products')); ?>" class='sidebar-link'>
         <i class="bi bi-egg-fried"></i>
-        <span>Recipe Management</span>
+        <span>Product Management</span>
     </a>
 </li>
 <?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modules-sidebar/inventory-sidebar.blade.php ENDPATH**/ ?>

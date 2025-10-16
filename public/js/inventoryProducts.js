@@ -1,5 +1,5 @@
 $(function () {
-    $("#products-table").DataTable({
+    const productsTable = $("#products-table").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
@@ -16,39 +16,27 @@ $(function () {
                 className: "text-center",
                 width: "45px",
             },
-            {
-                data: "name",
-                title: "Name",
-                width: "400px",
-            },
-            {
-                data: "desc",
-                title: "Description",
-                width: "280px",
-            },
+            { data: "name", title: "Name", width: "350px" },
+            { data: "desc", title: "Description", width: "280px" },
             {
                 data: "base_price",
                 title: "Base Price",
                 className: "dt-left",
                 render: $.fn.dataTable.render.number(",", ".", 2, "₱ "),
             },
-            {
-                data: "category_name",
-                title: "Category",
-                defaultContent: "N/A",
-            },
-            {
-                data: "status",
-                title: "Status",
-                className: "text-center",
-                defaultContent: "N/A",
-            },
+            { data: "category_name", title: "Category", defaultContent: "N/A" },
             {
                 data: null,
                 title: "Servings Available",
                 className: "text-center",
                 orderable: false,
                 defaultContent: '<i class="fas fa-spinner fa-spin"></i>',
+            },
+            {
+                data: "status",
+                title: "Status",
+                className: "text-center",
+                defaultContent: "N/A",
             },
             {
                 data: null,
@@ -65,34 +53,32 @@ $(function () {
                             </div>`;
                 },
             },
-            {
-                data: "id",
-                visible: false,
-            },
+            { data: "id", visible: false },
         ],
-        createdRow: function (row, data, dataIndex) {
-            // The new column is the second to last, so its index is -2
-            const servingsCell = $("td", row).eq(-2);
+        createdRow: function(row, data, dataIndex) {
+            const servingsCell = $('td', row).eq(-3);
 
-            $.get(`/inventory/products/${data.id}/servings`, function (response) {
+            $.get(`/inventory/products/${data.id}/servings`, function(response) {
                 servingsCell.text(response.servings);
-            }).fail(function () {
-                servingsCell.text("Error");
+            }).fail(function() {
+                servingsCell.text('Error');
             });
         },
         language: {
-            // ...
+            emptyTable: "No products found.",
+            zeroRecords: "No matching products found.",
         },
     });
 
+    // --- LOGIC FOR "ADD NEW PRODUCT" MODAL ---
     $("#addProductBtn").on("click", function (e) {
         e.preventDefault();
+        $("#addProductForm")[0].reset();
+        $(".form-control, .form-select").removeClass("is-invalid");
         loadDropdownsIntoModal();
-        $("#addProductModal").modal("show");
     });
 
     function loadDropdownsIntoModal() {
-        // Now we only need to load categories
         $.ajax({
             url: "/inventory/products/get-categories",
             type: "GET",
@@ -106,7 +92,6 @@ $(function () {
                         `<option value="${category.id}">${category.name}</option>`
                     );
                 });
-                // Once data is loaded, show the modal
                 $("#addProductModal").modal("show");
             },
             error: function () {
@@ -170,7 +155,7 @@ $(function () {
                 isValid = false;
                 $imageInput.addClass("is-invalid");
                 const existingError = $("#image_error").text();
-                const sizeError = "File is too large. Maximum size is 2MB.";
+                const sizeError = "File is too large. Maximum size is 10MB.";
                 $("#image_error").text(
                     existingError ? `${existingError} ${sizeError}` : sizeError
                 );
@@ -181,8 +166,6 @@ $(function () {
             return;
         }
 
-        $(".form-control, .form-select").removeClass("is-invalid");
-
         const formData = new FormData(this);
         $("#LoadingScreen").fadeIn(200);
         $.ajax({
@@ -192,7 +175,6 @@ $(function () {
             contentType: false,
             processData: false,
             cache: false,
-
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
             },
@@ -205,9 +187,10 @@ $(function () {
                     text: response.message,
                     timer: 1500,
                 });
-                $("#products-table").DataTable().ajax.reload();
+                productsTable.ajax.reload();
             },
             error: function (xhr) {
+                $("#LoadingScreen").fadeOut(200);
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     for (const key in errors) {

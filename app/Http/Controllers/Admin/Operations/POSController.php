@@ -7,7 +7,9 @@ use App\Models\Order;
 use App\Models\Status;
 use App\Models\Product;
 use App\Models\InventoryItem;
+use App\Enums\TransactionType;
 use App\Models\ProductCategory;
+use App\Models\StockTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
@@ -222,23 +224,35 @@ class POSController extends Controller
             ]);
 
             $order->items()->createMany($itemsToSave);
-            
+
             foreach ($orderItems as $item) {
                 $product = Product::with('ingredients')->find($item['product_id']);
 
                 if ($product && $product->ingredients->isNotEmpty()) {
                     foreach ($product->ingredients as $ingredient) {
                         $inventoryItem = InventoryItem::find($ingredient->id);
-
                         if ($inventoryItem) {
+                            $oldQuantity = $inventoryItem->stock_level;
                             $quantityToDeduct = $ingredient->pivot->quantity_used * $item['quantity'];
-
+                            if ($inventoryItem->stock_level < $quantityToDeduct) {
+                                throw new \Exception("Insufficient stock for: " . optional($inventoryItem->itemss)->name);
+                            }
                             $inventoryItem->decrement('stock_level', $quantityToDeduct);
+
+                            StockTransaction::create([
+                                'transaction_type' => TransactionType::OUT,
+                                'quantity' => $quantityToDeduct,
+                                'old_qnty' => $oldQuantity,
+                                'transaction_date' => now(),
+                                'reference_type' => 'Sale',
+                                'reference_id' => $inventoryItem->id,
+                                'user_id' => auth('')->id(),
+                                'status' => 23,
+                            ]);
                         }
                     }
                 }
             }
-            // --- END OF NEW LOGIC ---
 
             DB::commit();
 

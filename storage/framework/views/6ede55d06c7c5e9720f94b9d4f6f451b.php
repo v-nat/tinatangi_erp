@@ -1,11 +1,10 @@
-@extends('layouts.app')
-@include('partials.inventory-heading')
-@section('inventoryTransactions') active @endsection
-@section('headings') Transaction Records @endsection
-@section('content')
+<?php echo $__env->make('partials.inventory-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php $__env->startSection('inventoryTransactions'); ?> active <?php $__env->stopSection(); ?>
+<?php $__env->startSection('headings'); ?> Transaction Records <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{route('inventory')}}">Inventory</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo e(route('inventory')); ?>">Inventory</a></li>
             <li class="breadcrumb-item active" aria-current="page">Stock Transactions</li>
         </ol>
     </nav>
@@ -40,7 +39,9 @@
             </div>
         </div>
     </section>
-@endsection
-@section('scripts')
-    <script type="module" src="{{ asset('js/stockTransactions.js') }}"></script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('scripts'); ?>
+    <script type="module" src="<?php echo e(asset('js/stockTransactions.js')); ?>"></script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/pages/admin/inventory/stock-transactions.blade.php ENDPATH**/ ?>

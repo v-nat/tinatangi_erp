@@ -78408,3 +78408,15 @@ Did you mean one of these?
 #62 C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\Users\\\\Nathan...')
 #63 {main}
 "} 
+[2025-10-16 16:23:29] local.ERROR: Trait "App\Http\Controllers\Traits\FormatsUnitsForDisplay" not found {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"App\\Http\\Controllers\\Traits\\FormatsUnitsForDisplay\" not found at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\app\\Http\\Controllers\\Admin\\Inventory\\StockManagementController.php:23)
+[stacktrace]
+#0 {main}
+"} 
+[2025-10-16 16:23:32] local.ERROR: Trait "App\Http\Controllers\Traits\FormatsUnitsForDisplay" not found {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"App\\Http\\Controllers\\Traits\\FormatsUnitsForDisplay\" not found at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\app\\Http\\Controllers\\Admin\\Inventory\\StockManagementController.php:23)
+[stacktrace]
+#0 {main}
+"} 
+[2025-10-16 16:23:37] local.ERROR: Trait "App\Http\Controllers\Traits\FormatsUnitsForDisplay" not found {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"App\\Http\\Controllers\\Traits\\FormatsUnitsForDisplay\" not found at C:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\app\\Http\\Controllers\\Admin\\Inventory\\StockManagementController.php:23)
+[stacktrace]
+#0 {main}
+"} 
