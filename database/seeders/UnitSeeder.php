@@ -12,51 +12,42 @@ class UnitSeeder extends Seeder
      */
     public function run(): void
     {
-        // ⭐ Restructured data for easier type and base unit assignment
-        $unitGroups = [
-            'weight' => [
-                'Gram' => ['abbreviation' => 'G', 'is_base' => true],
-                'Kilogram' => ['abbreviation' => 'KG', 'is_base' => false],
-            ],
-            'volume' => [
-                'Milliliter' => ['abbreviation' => 'ML', 'is_base' => true],
-                'Liter' => ['abbreviation' => 'LITER', 'is_base' => false],
-            ],
-            'count' => [
-                'Piece(s)' => ['abbreviation' => 'PCS', 'is_base' => true],
-                'Bottle' => ['abbreviation' => 'BOTTLE', 'is_base' => false],
-                'Box' => ['abbreviation' => 'BOX', 'is_base' => false],
-                'Sleeve' => ['abbreviation' => 'SLEEVE', 'is_base' => false],
-                'Bundle' => ['abbreviation' => 'BUNDLE', 'is_base' => false],
-                'Case' => ['abbreviation' => 'CASE', 'is_base' => false],
-                'Jar' => ['abbreviation' => 'JAR', 'is_base' => false],
-                'Tub' => ['abbreviation' => 'TUB', 'is_base' => false],
-                'Set' => ['abbreviation' => 'SET', 'is_base' => false],
-                'Unit' => ['abbreviation' => 'UNIT', 'is_base' => false],
-                'Bag' => ['abbreviation' => 'BAG', 'is_base' => false],
-                'Sachet' => ['abbreviation' => 'SACHET', 'is_base' => false],
-                'Roll' => ['abbreviation' => 'ROLL', 'is_base' => false],
-                'Pack' => ['abbreviation' => 'PACK', 'is_base' => false],
-            ],
+        $units = [
+            // id => [name, abbreviation, type, is_base_unit]
+            1 => ['Kilogram', 'KG', 'weight', false],
+            2 => ['Liter', 'LITER', 'volume', false],
+            3 => ['Bottle', 'BOTTLE', 'volume', false],
+            4 => ['Box', 'BOX', 'count', false],
+            5 => ['Piece(s)', 'PCS', 'count', true], // Base unit for count
+            6 => ['Sleeve', 'SLEEVE', 'count', false],
+            7 => ['Bundle', 'BUNDLE', 'count', false],
+            8 => ['Case', 'CASE', 'count', false],
+            9 => ['Jar', 'JAR', 'count', false],
+            10 => ['Tub', 'TUB', 'count', false],
+            11 => ['Set', 'SET', 'count', false],
+            12 => ['Unit', 'UNIT', 'count', false],
+            13 => ['Gram', 'G', 'weight', true], // Base unit for weight
+            14 => ['Milliliter', 'ML', 'volume', true], // Base unit for volume
+            15 => ['Bag', 'BAG', 'count', false],
+            16 => ['Sachet', 'SACHET', 'count', false],
+            17 => ['Roll', 'ROLL', 'count', false],
+            18 => ['Pack', 'PACK', 'count', false],
         ];
 
         $dataToSeed = [];
 
-        // Loop through the groups to build the data array
-        foreach ($unitGroups as $type => $units) {
-            foreach ($units as $name => $details) {
-                $dataToSeed[] = [
-                    'name' => $name,
-                    'abbreviation' => $details['abbreviation'],
-                    'type' => $type, // Set the measurement type
-                    'is_base_unit' => $details['is_base'], // Set if it's a base unit
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
+        foreach ($units as $id => $details) {
+            $dataToSeed[] = [
+                'id' => $id,
+                'name' => $details[0],
+                'abbreviation' => $details[1],
+                'type' => $details[2],
+                'is_base_unit' => $details[3],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
         }
 
-        // Use upsert to efficiently create or update records based on the name
-        ItemUnit::upsert($dataToSeed, ['name'], ['abbreviation', 'type', 'is_base_unit', 'updated_at']);
+        ItemUnit::upsert($dataToSeed, ['id'], ['name', 'abbreviation', 'type', 'is_base_unit', 'updated_at']);
     }
 }
