@@ -55,7 +55,7 @@ class ProductController extends Controller
 
         if ($image = $request->file('image')) {
             $toPath = 'img/products';
-            $prod_img = date('YmdHis') . "." . $image->getClientOriginalExtension();
+            $prod_img = 'img/products'. date('YmdHis') . "." . $image->getClientOriginalExtension();
             $image->move($toPath, $prod_img);
             $validatedData['image'] = $prod_img;
         }
