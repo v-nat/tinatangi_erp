@@ -6,8 +6,7 @@ $(function () {
             url: "/inventory/products/get",
             dataSrc: "data",
         },
-        // Add this line to set the default sort order
-        order: [[5, "desc"]], // Sort by the 6th column (index 5) descending
+        order: [[6, "desc"]],
         columns: [
             {
                 title: "#",
@@ -28,11 +27,10 @@ $(function () {
             },
             { data: "category_name", title: "Category", defaultContent: "N/A" },
             {
-                // Use the 'servings' data directly from the AJAX source
-                data: "servings",
+                data: null,
                 title: "Servings Available",
                 className: "text-center",
-                defaultContent: 0, // Show 0 if data is missing
+                defaultContent: '<i class="fas fa-spinner fa-spin"></i>',
             },
             {
                 data: "status",
@@ -48,16 +46,24 @@ $(function () {
                 render: function (data, type, row) {
                     const editUrl = `/inventory/products/${row.id}/edit`;
                     return `<div class="action-btns" role="group">
-                            <button class="btn btn-sm btn-info manage-recipe-btn" title="Manage Recipe" data-product-id="${row.id}">
-                                <i class="fas fa-list-alt"></i>
-                            </button>
-                            <a href="${editUrl}" class="btn btn-sm btn-warning" title="Edit Product"><i class="fas fa-edit"></i></a>
-                        </div>`;
+                                <button class="btn btn-sm btn-info manage-recipe-btn" title="Manage Recipe" data-product-id="${row.id}">
+                                    <i class="fas fa-list-alt"></i>
+                                </button>
+                                <a href="${editUrl}" class="btn btn-sm btn-warning" title="Edit Product"><i class="fas fa-edit"></i></a>
+                            </div>`;
                 },
             },
             { data: "id", visible: false },
         ],
-        // The 'createdRow' function is no longer needed
+        createdRow: function(row, data, dataIndex) {
+            const servingsCell = $('td', row).eq(-3);
+
+            $.get(`/inventory/products/${data.id}/servings`, function(response) {
+                servingsCell.text(response.servings);
+            }).fail(function() {
+                servingsCell.text('Error');
+            });
+        },
         language: {
             emptyTable: "No products found.",
             zeroRecords: "No matching products found.",
