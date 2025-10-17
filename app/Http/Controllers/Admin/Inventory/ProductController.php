@@ -139,54 +139,46 @@ class ProductController extends Controller
         $minServings = PHP_INT_MAX;
 
         foreach ($product->ingredients as $ingredient) {
-            // Ensure we have all the necessary related data to proceed.
             if (!$ingredient->item || !$ingredient->item->unitRS) {
                 $minServings = 0;
-                break; // Break loop if ingredient data is misconfigured.
+                break;
             }
 
             $stockLevel = $ingredient->stock_level;
             $purchaseUnit = $ingredient->item->unitRS;
             $quantityUsedInRecipe = $ingredient->pivot->quantity_used;
 
-            // An ingredient must be used in the recipe to affect the serving count.
             if ($quantityUsedInRecipe <= 0) {
                 continue;
             }
 
-            // Find the base unit for the ingredient's measurement type (e.g., 'Gram' for 'weight').
             $baseUnit = ItemUnit::where('type', $purchaseUnit->type)
                 ->where('is_base_unit', true)
                 ->first();
 
             if (!$baseUnit) {
-                // If there's no base unit defined for this type, calculation is impossible.
                 $minServings = 0;
                 break;
             }
 
             $totalStockInBaseUnit = 0;
 
-            // If the stock's unit is already the base unit, no conversion is needed.
             if ($purchaseUnit->id === $baseUnit->id) {
                 $totalStockInBaseUnit = $stockLevel;
             } else {
-                // Otherwise, find the conversion factor to the base unit.
                 $conversion = UnitConversion::where('from_unit_id', $purchaseUnit->id)
                     ->where('to_unit_id', $baseUnit->id)
                     ->first();
 
                 if (!$conversion) {
-                    // If no conversion path is defined, we can't make any servings.
                     $minServings = 0;
                     break;
                 }
 
-                // **Switched computation logic per unit type for better accuracy and future extension.**
                 switch ($purchaseUnit->type) {
                     case 'weight':
                         // Formula: Total Grams = Number of Kilograms * 1000
-                        $totalStockInBaseUnit = $stockLevel * $conversion->factor;
+                        $totalStockInBaseUnit = $stockLevel * $conversion->factor / 1000;
                         break;
 
                     case 'volume':
@@ -200,28 +192,23 @@ class ProductController extends Controller
                         break;
 
                     default:
-                        // If an unsupported unit type is found, we cannot proceed.
                         $minServings = 0;
-                        break 2; // This breaks out of both the switch and the foreach loop.
+                        break 2;
                 }
             }
 
-            // Calculate how many full servings this ingredient's stock can provide.
             $servingsForThisIngredient = floor($totalStockInBaseUnit / $quantityUsedInRecipe);
 
-            // The final serving count is limited by the ingredient that runs out first.
             $minServings = min($minServings, $servingsForThisIngredient);
         }
 
-        // If the loop never ran or was broken, $minServings could still be at its max value.
         $servings = ($minServings === PHP_INT_MAX) ? 0 : $minServings;
 
-        // Automatically update the product's availability status.
         if ($servings <= 0 && $product->status != 2) {
-            $product->status = 2; // Set to 'Unavailable'
+            $product->status = 2;
             $product->save();
         } elseif ($servings > 0 && $product->status != 1) {
-            $product->status = 1; // Set to 'Available'
+            $product->status = 1;
             $product->save();
         }
 
