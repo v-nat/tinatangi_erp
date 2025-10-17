@@ -101,7 +101,7 @@
                     <div id="orderList" class="card-body overflow-y-auto">
 
                         <div id="order-placeholder" class="col-12 text-center my-5 p-5">
-                            <h3 class="text-muted">No items added to the order yet.</h3>
+                            <h6 class="text-muted">No items added to the order yet.</h6>
                             <p class="text-muted">New orders will appear here automatically.</p>
                         </div>
 
