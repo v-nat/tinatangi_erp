@@ -14,6 +14,7 @@ $(function () {
             {
                 title: "#",
                 data: null,
+                orderable: false,
                 render: function (data, type, row, meta) {
                     return meta.row + 1;
                 },
