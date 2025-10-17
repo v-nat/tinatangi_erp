@@ -6,7 +6,7 @@ $(function () {
             url: "/inventory/products/get",
             dataSrc: "data",
         },
-        order: [[6, "desc"]],
+        order: [[7, "asc"]],
         columns: [
             {
                 title: "#",
