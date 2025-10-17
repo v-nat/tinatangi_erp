@@ -16,8 +16,8 @@ export function formatDate2(date) {
 }
 
 export function formatToManilaTime(dateString) {
+    if (!dateString) return "N/A";
     const date = new Date(dateString);
-
     const options = {
         timeZone: "Asia/Manila",
         year: "numeric",
@@ -25,12 +25,9 @@ export function formatToManilaTime(dateString) {
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: false,
+        hour12: true,
     };
-
-    const formatter = new Intl.DateTimeFormat("en-PH", options);
-
-    return formatter.format(date);
+    return new Intl.DateTimeFormat("en-PH", options).format(date);
 }
 
 export function formatDateString(dateString) {
