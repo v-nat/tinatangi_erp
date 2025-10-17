@@ -26,7 +26,7 @@
     @endsection
 
     @section('procurement-dashboard')
-        <i class="fa-solid fa-paper-plane"></i>
+        <i class="fa-solid fa-cart-flatbed"></i>
         <span>Procurement Dashboard</span>
     @endsection
 
