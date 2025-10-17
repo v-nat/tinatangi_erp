@@ -6,7 +6,10 @@ $(function () {
             url: "/inventory/products/get",
             dataSrc: "data",
         },
-        order: [[-3, "desc"]],
+        order: [
+            [5, "desc"],
+            [6, "asc"],
+        ],
         columns: [
             {
                 title: "#",
@@ -55,13 +58,16 @@ $(function () {
             },
             { data: "id", visible: false },
         ],
-        createdRow: function(row, data, dataIndex) {
-            const servingsCell = $('td', row).eq(-3);
+        createdRow: function (row, data, dataIndex) {
+            const servingsCell = $("td", row).eq(-3);
 
-            $.get(`/inventory/products/${data.id}/servings`, function(response) {
-                servingsCell.text(response.servings);
-            }).fail(function() {
-                servingsCell.text('Error');
+            $.get(
+                `/inventory/products/${data.id}/servings`,
+                function (response) {
+                    servingsCell.text(response.servings);
+                }
+            ).fail(function () {
+                servingsCell.text("Error");
             });
         },
         language: {
