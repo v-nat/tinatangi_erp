@@ -13,13 +13,13 @@
 </li>
 <li class="sidebar-item @yield('financePurchases') ">
     <a href="{{route('finance.purchases')}}" class='sidebar-link'>
-        <i class="bi bi-bag-fill"></i>
+        <i class="fa-solid fa-clipboard-check"></i>
         <span>Purchase Order Approvals</span>
     </a>
 </li>
 <li class="sidebar-item @yield('financeBudgets') ">
     <a href="{{route('finance.budgets')}}" class='sidebar-link'>
-        <i class="bi bi-cash"></i>
+        <i class="fa-solid fa-money-check-dollar"></i>
         <span>Budget Releasing</span>
     </a>
 </li>

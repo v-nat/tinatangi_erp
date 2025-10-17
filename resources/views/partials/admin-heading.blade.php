@@ -21,12 +21,12 @@
     @endsection
 
     @section('finance-dashboard')
-        <i class="bi bi-bar-chart-line-fill"></i>
+        <i class="fa-solid fa-chart-pie"></i>
         <span>Finance Dashboard</span>
     @endsection
 
     @section('procurement-dashboard')
-        <i class="bi bi-shop"></i>
+        <i class="fa-solid fa-paper-plane"></i>
         <span>Procurement Dashboard</span>
     @endsection
 

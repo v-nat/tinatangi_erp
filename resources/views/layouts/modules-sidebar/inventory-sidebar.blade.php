@@ -13,7 +13,7 @@
 </li>
 <li class="sidebar-item @yield('inventoryTransactions') ">
     <a href="{{route('inventory.transactions')}}" class='sidebar-link'>
-        <i class="bi bi-receipt"></i>
+        <i class="fa-solid fa-receipt"></i>
         <span>Stock Transactions</span>
     </a>
 </li>

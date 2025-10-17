@@ -7,7 +7,7 @@
 </li>
 <li class="sidebar-item @yield('createPR') ">
     <a href="{{route('procurement.createPR')}}" class='sidebar-link'>
-        <i class="bi bi-receipt-cutoff"></i>
+        <i class="fa-solid fa-file-invoice"></i>
         <span>Purchase Request</span>
     </a>
 </li>
