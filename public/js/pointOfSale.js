@@ -246,6 +246,7 @@ $(document).ready(function () {
                     "₱" + parseFloat(updatedItemTotal).toFixed(2)
                 );
             } else {
+                $("#orderList").find("#order-placeholder").remove();
                 const order = `
                 <div class="d-flex align-items-center py-2 border-bottom">
                     <div class="flex-grow-1 me-3">

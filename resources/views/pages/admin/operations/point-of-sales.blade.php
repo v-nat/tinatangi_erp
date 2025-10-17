@@ -29,9 +29,8 @@
                                         aria-selected="false">Beverages</a>
                                     <a class="nav-link" id="v-pills-meals-tab" data-bs-toggle="pill" href="#v-pills-meals"
                                         role="tab" aria-controls="v-pills-meals" aria-selected="false">Meals</a>
-                                    <a class="nav-link" id="v-pills-snacks-tab" data-bs-toggle="pill"
-                                        href="#v-pills-snacks" role="tab" aria-controls="v-pills-snacks"
-                                        aria-selected="false">Snacks & Sides</a>
+                                    <a class="nav-link" id="v-pills-snacks-tab" data-bs-toggle="pill" href="#v-pills-snacks"
+                                        role="tab" aria-controls="v-pills-snacks" aria-selected="false">Snacks & Sides</a>
                                 </div>
                             </div>
                             <div class="col-10 overflow-y-auto vh-80">
@@ -101,7 +100,9 @@
 
                     <div id="orderList" class="card-body overflow-y-auto">
 
-                        {{-- WILL POPULATED BY JS --}}
+                        <div id="order-placeholder" class="text-center text-muted py-5">
+                            <p>No items added to the order yet.</p>
+                        </div>
 
                     </div>
 
@@ -126,6 +127,7 @@
         .col-md-2 {
             width: 20%;
         }
+
         .min-vh-90 {
             min-height: 90vh;
         }
