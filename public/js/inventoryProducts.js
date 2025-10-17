@@ -29,7 +29,6 @@ $(function () {
                 data: null,
                 title: "Servings Available",
                 className: "text-center",
-                orderable: false,
                 defaultContent: '<i class="fas fa-spinner fa-spin"></i>',
             },
             {
