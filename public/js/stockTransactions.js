@@ -1,5 +1,5 @@
 import { reloadTable } from "./utils/reloadTable.js";
-import { formatDate3, formatDateString } from "./utils/formatDateAndTime.js";
+import { formatToManilaTime } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {
     $("#allTransactions").DataTable({
@@ -46,7 +46,7 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "20%",
                 render: function (data) {
-                    return data ? formatDateString(data) : "N/A";
+                    return data ? formatToManilaTime(data) : "N/A";
                 },
                 type: "date",
             },
