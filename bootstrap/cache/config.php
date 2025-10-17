@@ -345,6 +345,7 @@
         'prefix_indexes' => true,
         'strict' => true,
         'engine' => NULL,
+        'timezone' => '+00:00',
         'options' => 
         array (
         ),
