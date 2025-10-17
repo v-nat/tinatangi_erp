@@ -47,7 +47,7 @@ class StockTransaction extends Model
     protected function serializeDate(DateTimeInterface $date): string
     {
         /** @var \Illuminate\Support\Carbon $date */
-        return $date->toIso8601ZuluString();
+        return $date->toIso8601String();
     }
     /*
     |--------------------------------------------------------------------------

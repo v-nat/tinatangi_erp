@@ -31,7 +31,7 @@ class StockManagementController extends Controller
                         'id'                => $data->id,
                         'type'              => $data->transaction_type,
                         'batch'             => $data->batch,
-                        'date'              => $data->transaction_date->toIso8601ZuluString(),
+                        'date'              => $data->transaction_date->toIso8601String(),
                         'reference'         => $data->reference_type,
                         'quantity'          => $data->quantity,
                         'item'              => optional(optional($data->inventoryItemRS)->itemss)->name,
