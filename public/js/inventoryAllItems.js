@@ -10,12 +10,12 @@ $(document).ready(function () {
             type: "GET",
             dataSrc: "data",
         },
+        order: [
+            [3, "asc"],
+        ],
         columns: [
             {
                 data: null,
-                render: function (data, type, row, meta) {
-                    return meta.row + 1;
-                },
                 className: "text-center",
                 width: "45px",
             },
@@ -44,5 +44,14 @@ $(document).ready(function () {
                 width: "150px",
             },
         ],
+        drawCallback: function (settings) {
+            const api = this.api();
+            const info = api.page.info();
+            api.column(0, { page: "current", order: "current" })
+                .nodes()
+                .each(function (cell, i) {
+                    cell.innerHTML = info.start + i + 1;
+                });
+        },
     });
 });
