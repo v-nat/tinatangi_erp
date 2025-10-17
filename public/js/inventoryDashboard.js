@@ -62,7 +62,7 @@ $(document).ready(function () {
                     $(targetId).text(Math.ceil(this.Counter).toLocaleString());
                 },
                 complete: function () {
-                    $(targetId).text(finalValue.toLocaleString());
+                    $(targetId).text(Math.ceil(finalValue).toLocaleString());
                 },
             }
         );
