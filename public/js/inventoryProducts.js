@@ -70,7 +70,6 @@ $(function () {
         },
     });
 
-    // --- LOGIC FOR "ADD NEW PRODUCT" MODAL ---
     $("#addProductBtn").on("click", function (e) {
         e.preventDefault();
         $("#addProductForm")[0].reset();

@@ -55,8 +55,6 @@ $(function () {
         });
     }
 
-    // In public/js/inventoryProducts.js
-
     function addIngredientRow(ingredient = null) {
         let optionsHtml = '<option value="">Select Ingredient...</option>';
         allInventoryItems.forEach((item) => {
@@ -84,18 +82,13 @@ $(function () {
             const $unitSelect = $newRow.find(".unit-select");
             const unitType = ingredient.item.unit_r_s.type;
 
-            // Populate the unit dropdown with all relevant units (e.g., Gram, Kilogram)
             populateUnitDropdown($unitSelect, unitType);
 
-            // ⭐ FIX: Find the BASE unit for this ingredient's type.
             const baseUnit = allUnits[unitType].find((u) => u.is_base_unit);
             if (baseUnit) {
-                // Set the dropdown to the BASE unit (e.g., Gram) instead of the purchase unit.
                 $unitSelect.val(baseUnit.id);
             }
 
-            // ⭐ FIX: Display the quantity AS IS from the database (in its base unit).
-            // No conversion is needed for the initial display anymore.
             $newRow.find(".quantity-input").val(ingredient.pivot.quantity_used);
         }
 
