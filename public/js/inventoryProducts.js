@@ -15,9 +15,6 @@ $(function () {
                 title: "#",
                 data: null,
                 orderable: false,
-                render: function (data, type, row, meta) {
-                    return meta.row + 1;
-                },
                 className: "text-center",
                 width: "45px",
             },
@@ -59,6 +56,14 @@ $(function () {
             },
             { data: "id", visible: false },
         ],
+        drawCallback: function (settings) {
+            const api = this.api();
+            api.column(0, { page: "current", order: "current" })
+                .nodes()
+                .each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+        },
         createdRow: function (row, data, dataIndex) {
             const servingsCell = $("td", row).eq(-3);
 
