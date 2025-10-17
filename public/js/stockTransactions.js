@@ -1,5 +1,5 @@
 import { reloadTable } from "./utils/reloadTable.js";
-import { formatDate3, formatDateString } from "./utils/formatDateAndTime.js";
+import { formatDate, formatDateString } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {
     $("#allTransactions").DataTable({
