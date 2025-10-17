@@ -24,22 +24,27 @@ $(document).ready(function () {
                 const productsArray = response.data;
                 let productsHtml = [];
 
-                productsArray.forEach((element) => {
-                    const imagePath = element.image;
+                if (productsArray.length === 0) {
+                    const placeholderHtml = `
+                    <div class="col-12 text-center mt-5">
+                        <p class="text-muted">No available products in this category.</p>
+                    </div>`;
+                    $(id).html(placeholderHtml);
+                } else {
+                    productsArray.forEach((element) => {
+                        const imagePath = element.image;
+                        let imageUrl;
 
-                    let imageUrl;
+                        if (imagePath && imagePath !== "N/A") {
+                            imageUrl = "/storage/app/public/" + imagePath;
+                        } else {
+                            imageUrl = DEFAULT_PRODUCT_IMAGE;
+                        }
 
-                    if (imagePath && imagePath !== "N/A") {
-                        imageUrl = "/storage/app/public/" + imagePath;
-                    } else {
-                        imageUrl = DEFAULT_PRODUCT_IMAGE;
-                    }
-
-                    productsHtml.push(`
-                        <div class="col"  data-id="${element.id}">
+                        productsHtml.push(`
+                        <div class="col" data-id="${element.id}">
                             <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2">
-                                <img src="${imageUrl}"
-                                    class="card-img-top img-fluid prod-img" alt="Product Image">
+                                <img src="${imageUrl}" class="card-img-top img-fluid prod-img" alt="Product Image">
                                 <div class="card-body p-2 flex-grow-1">
                                     <h6 class="card-title mb-1 prod-name">${
                                         element.name
@@ -51,14 +56,19 @@ $(document).ready(function () {
                             </div>
                         </div>
                     `);
-                });
+                    });
 
-                $(id).html(productsHtml.join(""));
+                    $(id).html(productsHtml.join(""));
+                }
             } else {
+                const errorHtml = `
+                <div class="col-12 text-center mt-5">
+                    <p class="text-danger">Error: Could not load products.</p>
+                </div>`;
+                $(id).html(errorHtml);
                 console.error(
                     "Error: products data not found or is not an array."
                 );
-                alert("Error: products not found.");
             }
         })
             .fail(function (xhr) {
@@ -66,7 +76,8 @@ $(document).ready(function () {
                     ? xhr.responseJSON.error
                     : "Failed to load products.";
                 console.error("AJAX Error:", errorMsg, xhr);
-                alert(errorMsg);
+                const errorHtml = `<div class="col-12 text-center mt-5"><p class="text-danger">${errorMsg}</p></div>`;
+                $(id).html(errorHtml);
             })
             .always(function () {
                 $("#LoadingScreen").fadeOut(200);
