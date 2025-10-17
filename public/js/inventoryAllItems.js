@@ -9,7 +9,7 @@ $(document).ready(function () {
             dataSrc: "data",
         },
         order: [
-            [2, "desc"],
+            [2, "asc"],
         ],
         columns: [
             {
