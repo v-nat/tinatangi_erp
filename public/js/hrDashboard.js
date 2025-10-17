@@ -58,14 +58,6 @@ $(document).ready(function () {
                 className: "dt-left",
             },
             {
-                data: "tardiness",
-                className: "dt-left",
-            },
-            {
-                data: "leave_info",
-                className: "dt-left",
-            },
-            {
                 data: "status",
                 className: "text-center",
                 width: "150px",

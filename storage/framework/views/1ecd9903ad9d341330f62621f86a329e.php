@@ -1,10 +1,10 @@
 <!-- view modal-->
-<div class="modal fade text-left w-100" id="viewPO" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
+<div class="modal fade text-left w-100" id="viewPayroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel20">View Purchase Request</h4>
+                <h4 class="modal-title" id="myModalLabel20">View Payroll</h4>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <i data-feather="x"></i>
                 </button>
@@ -21,4 +21,4 @@
             </div>
         </div>
     </div>
-</div><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modals/procurement-purchase-orders-modal.blade.php ENDPATH**/ ?>
+</div><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modals/hr-payroll-modal.blade.php ENDPATH**/ ?>

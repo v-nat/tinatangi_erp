@@ -1,4 +1,5 @@
 import { reloadTable } from "./utils/reloadTable.js";
+import { printPayslip } from "./utils/printPayslip.js";
 
 $(document).ready(function () {
     $("#payrollsTable").DataTable({
@@ -109,6 +110,20 @@ $(document).ready(function () {
                             </a>
                         </div>
                         `;
+                    } else if (
+                        row.status ==
+                        '<span class="badge bg-success">Released</span>'
+                    ) {
+                        return `
+                        <div class="action-btns">
+                            <a href="#" class="btn icon btn-sm btn-info btn-print-payslip bs-tooltip me-2"
+                            data-id="${data}"
+                            data-employee-id="${row.employee_id}"
+                            title="Print Payslip">
+                                <i class="fa-solid fa-money-check-dollar"></i>
+                            </a>
+                        </div>
+                        `;
                     } else {
                         return `
                         <div class="action-btns">
@@ -140,6 +155,15 @@ $(document).ready(function () {
             alert("Failed to load payslip.");
         });
     });
+
+    $(document).on("click", ".btn-print-payslip", function () {
+            const payroll_id = $(this).data("id");
+            $.get(`/human-resources/payroll/view/${payroll_id}`, function (response) {
+                printPayslip(response.data);
+            }).fail(function () {
+                alert("Failed to load payslip.");
+            });
+        });
 
     $(document).on("click", ".release-btn", function (e) {
         e.preventDefault();

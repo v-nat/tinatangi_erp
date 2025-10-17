@@ -53,12 +53,12 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="stats-icon purple">
-                                    <i class="iconly-boldShow"></i>
+                                    <i class="fa-solid fa-clock"></i>
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <h6 class="text-muted font-semibold">Profile Views</h6>
-                                <h6 class="font-extrabold mb-0">112.000</h6>
+                                <h6 class="text-muted font-semibold">Pending Overtimes</h6>
+                                <h6 class="font-extrabold mb-0"><?php echo e($overtimes); ?></h6>
                             </div>
                         </div>
                     </div>
@@ -70,13 +70,13 @@
                     <div class="card-body px-3 py-4-5">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="stats-icon red">
-                                    <i class="iconly-boldBookmark"></i>
+                                <div class="stats-icon purple">
+                                    <i class="fa-solid fa-user-xmark"></i>
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <h6 class="text-muted font-semibold">Saved Post</h6>
-                                <h6 class="font-extrabold mb-0">112</h6>
+                                <h6 class="text-muted font-semibold">Pending Leaves</h6>
+                                <h6 class="font-extrabold mb-0"><?php echo e($leaves); ?></h6>
                             </div>
                         </div>
                     </div>
@@ -100,8 +100,6 @@
                                 <th>Time Out</th>
                                 <th>Total Minutes</th>
                                 <th>Overtime</th>
-                                <th>Tardiness</th>
-                                <th>Leave Status</th>
                                 <th>Status</th>
                             </tr>
                         </thead>

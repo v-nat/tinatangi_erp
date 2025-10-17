@@ -66,6 +66,35 @@ class PayrollController extends Controller
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }
+    public function getPayslipList($id)
+    {
+        try {
+            $query = Payroll::with([
+                'employee',
+            ])->where('employee_id', $id)
+            ->orderBy('updated_at', 'desc');
+            $payroll = $query->get();
+            $result = $payroll->map(function ($payroll) {
+                return [
+                    'id' => $payroll->id,
+                    'employee_id' => $payroll->employee_id ?? 'N/A',
+                    'name' => optional(optional($payroll->employee)->userRS)->full_name,
+                    'department' => optional(optional($payroll->employee)->deptRS)->name,
+                    'position' => optional(optional($payroll->employee)->position)->name ?? 'N/A',
+                    'period' => $this->getMonthString($payroll->month) ?? '',
+                    'reg_pay' => $payroll->regular_hour_pay ?? '',
+                    'gross_pay' => $payroll->gross_pay ?? '',
+                    'gross_deduction' => $payroll->deduction + $payroll->days_absent_deduction ?? '',
+                    'net_pay' => $payroll->net_pay ?? '',
+                    'status' => Status::getStatusText($payroll->status),
+                ];
+            });
+
+            return response()->json(["data" => $result]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
     public function getPayrollView($id)
     {
 
@@ -117,7 +146,6 @@ class PayrollController extends Controller
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }
-
     public function putOnProcess(Request $request, $id, $status)
     {
         try {
@@ -129,7 +157,7 @@ class PayrollController extends Controller
                 $payroll->remarks = $request->remarks;
                 $payroll->status = $status;
                 $payroll->save();
-            } else {
+            } else if ($status != 12){
                 $payroll->remarks = 'requesting budget';
                 $payroll->status = $status;
                 $payroll->save();

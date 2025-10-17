@@ -75,7 +75,7 @@ $(document).ready(function () {
                 text: "Time End should not be earlier than Time Start",
                 icon: "warning",
             });
-            $("#time_end").val(""); 
+            $("#time_end").val("");
         }
         if (start > end) {
             $("#reqOt").prop("disabled", true);

@@ -52,10 +52,10 @@
 
                                             if ($employee) {
                                                 $position = $employee->position->name;
-                                                ?>
-                                                {{ \Illuminate\Support\Str::upper($position) }}
-                                                <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
-                                                <?php
+                                                                                                                ?>
+                                                                {{ \Illuminate\Support\Str::upper($position) }}
+                                                                <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
+                                                                <?php
                                             }
                                             break;
 
@@ -87,6 +87,9 @@
                                 href="{{route('hr.leave-application', ['id' => Auth::user()->id])}}"><i
                                     class="fa-solid fa-calendar-days"></i>
                                 Apply Leave</a></li>
+                        <li><a class="dropdown-item" href="{{route('hr.payslip', ['id' => Auth::user()->id])}}"><i
+                                    class="fa-solid fa-money-check"></i>
+                                Payslip</a></li>
                     </div>
 
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i>

@@ -53,11 +53,11 @@
 
                                             if ($employee) {
                                                 $position = $employee->position->name;
-                                                ?>
-                                                <?php echo e(\Illuminate\Support\Str::upper($position)); ?>
+                                                                                                                ?>
+                                                                <?php echo e(\Illuminate\Support\Str::upper($position)); ?>
 
-                                                <script type="module" src="<?php echo e(asset('js/employeeAttendance.js')); ?>"></script>
-                                                <?php
+                                                                <script type="module" src="<?php echo e(asset('js/employeeAttendance.js')); ?>"></script>
+                                                                <?php
                                             }
                                             break;
 
@@ -87,6 +87,9 @@
                                 href="<?php echo e(route('hr.leave-application', ['id' => Auth::user()->id])); ?>"><i
                                     class="fa-solid fa-calendar-days"></i>
                                 Apply Leave</a></li>
+                        <li><a class="dropdown-item" href="<?php echo e(route('hr.payslip', ['id' => Auth::user()->id])); ?>"><i
+                                    class="fa-solid fa-money-check"></i>
+                                Payslip</a></li>
                     </div>
 
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i>

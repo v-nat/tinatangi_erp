@@ -13,13 +13,13 @@
 </li>
 <li class="sidebar-item <?php echo $__env->yieldContent('inventoryTransactions'); ?> ">
     <a href="<?php echo e(route('inventory.transactions')); ?>" class='sidebar-link'>
-        <i class="bi bi-receipt"></i>
+        <i class="fa-solid fa-receipt"></i>
         <span>Stock Transactions</span>
     </a>
 </li>
 <li class="sidebar-item <?php echo $__env->yieldContent('inventoryProducts'); ?> ">
     <a href="<?php echo e(route('inventory.products')); ?>" class='sidebar-link'>
-        <i class="bi bi-egg-fried"></i>
+        <i class="fa-solid fa-utensils"></i>
         <span>Product Management</span>
     </a>
 </li>

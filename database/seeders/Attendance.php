@@ -15,9 +15,9 @@ class Attendance extends Seeder
     public function run(): void
     {
         //
-        $employeeId = 4;
+        $employeeId = 2;
 
-        // Start date: September 1, 2025
+        // Start date:
         $startDate = Carbon::create(2025, 10, 1);
 
         $records = [];

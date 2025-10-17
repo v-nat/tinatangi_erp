@@ -102,12 +102,13 @@ $(document).ready(function () {
                 </div>`,
             icon: "warning",
             showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
             confirmButtonText: "Generate Payroll",
             cancelButtonText: "Cancel",
             width: "500px",
         }).then((result) => {
             if (result.isConfirmed) {
-                // Disable button to prevent duplicate submissions
                 submitBtn
                     .prop("disabled", true)
                     .html(
@@ -120,13 +121,8 @@ $(document).ready(function () {
                     data: formData,
                     success: function (response) {
                         if (response.success) {
-                            // Close the modal
                             $("#generatePayrollModal").modal("hide");
 
-                            // Open printable page in new tab
-                            // window.open(response.redirect_url, '_blank');
-
-                            // Show success message
                             Toast.fire({
                                 text: "Payroll Generated Successfully!",
                                 icon: "success",

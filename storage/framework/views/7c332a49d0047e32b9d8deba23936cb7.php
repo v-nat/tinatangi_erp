@@ -7,19 +7,19 @@
 </li>
 <li class="sidebar-item <?php echo $__env->yieldContent('createPR'); ?> ">
     <a href="<?php echo e(route('procurement.createPR')); ?>" class='sidebar-link'>
-        <i class="bi bi-receipt-cutoff"></i>
+        <i class="fa-solid fa-file-invoice"></i>
         <span>Purchase Request</span>
     </a>
 </li>
 <li class="sidebar-item <?php echo $__env->yieldContent('purchaseOrders'); ?> ">
     <a href="<?php echo e(route('procurement.purchaseOrders')); ?>" class='sidebar-link'>
-        <i class="bi bi-cart"></i>
+        <i class="fa-solid fa-cart-shopping"></i>
         <span>Purchase Orders</span>
     </a>
 </li>
 <li class="sidebar-item <?php echo $__env->yieldContent('supplier'); ?> ">
     <a href="<?php echo e(route('procurement.supplier')); ?>" class='sidebar-link'>
-        <i class="bi bi-truck"></i>
+        <i class="fa-solid fa-truck"></i>
         <span>Suppliers</span>
     </a>
 </li>

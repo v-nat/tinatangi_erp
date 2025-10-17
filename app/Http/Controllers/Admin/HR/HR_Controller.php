@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin\HR;
 
-use App\Http\Controllers\Controller;
-use App\Models\Employee;
 use Carbon\Carbon;
+use App\Models\Leave;
+use App\Models\Employee;
+use App\Models\Overtime;
+use App\Http\Controllers\Controller;
 
 class HR_Controller extends Controller
 {
@@ -12,10 +14,12 @@ class HR_Controller extends Controller
     {
         $employees = Employee::with(['position'])->get();
         $totalActive = Employee::whereNull('deleted_at')->count();
+        $overtimes = Overtime::where('status', 11)->count();
+        $leaves = Leave::where('status', 11)->count();
         $newHires = Employee::whereNull('deleted_at')
                     ->where('created_at', '>=', Carbon::now()->subDays(30))
                     ->count();
-        return view('pages.admin.human_resources.dashboard', compact('totalActive', 'newHires'));
+        return view('pages.admin.human_resources.dashboard', compact('totalActive', 'newHires', 'overtimes', 'leaves'));
     }
 
     public function employees()
@@ -61,5 +65,10 @@ class HR_Controller extends Controller
     public function leaveMngmnt()
     {
         return view('pages.admin.human_resources.leave-mngmnt');
+    }
+
+    public function employeePayslip($id)
+    {
+        return view('pages.admin.human_resources.employee-payslip', compact('id'));
     }
 }

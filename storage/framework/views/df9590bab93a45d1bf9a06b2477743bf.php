@@ -21,17 +21,17 @@
     <?php $__env->stopSection(); ?>
 
     <?php $__env->startSection('finance-dashboard'); ?>
-        <i class="bi bi-bar-chart-line-fill"></i>
+        <i class="fa-solid fa-chart-pie"></i>
         <span>Finance Dashboard</span>
     <?php $__env->stopSection(); ?>
 
     <?php $__env->startSection('procurement-dashboard'); ?>
-        <i class="bi bi-shop"></i>
+        <i class="fa-solid fa-cart-flatbed"></i>
         <span>Procurement Dashboard</span>
     <?php $__env->stopSection(); ?>
 
     <?php $__env->startSection('inventory-dashboard'); ?>
-        <i class="bi bi-ui-checks"></i>
+        <i class="fa-solid fa-warehouse"></i>
         <span>Inventory Dashboard</span>
     <?php $__env->stopSection(); ?>
 
