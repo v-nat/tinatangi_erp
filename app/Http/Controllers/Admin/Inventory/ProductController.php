@@ -172,10 +172,10 @@ class ProductController extends Controller
         }
 
         $servings = ($minServings == PHP_INT_MAX) ? 0 : $minServings;
+        dd($servings);
         if (($servings / 1000) == 0 && $product->status != 2) {
             $product->status = 2;
             $product->save();
-            dd($servings);
         }
         return response()->json(['servings' => $servings / 1000]);
     }
