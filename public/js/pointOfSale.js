@@ -26,8 +26,9 @@ $(document).ready(function () {
 
                 if (productsArray.length === 0) {
                     const placeholderHtml = `
-                    <div class="col-12 text-center mt-5">
-                        <p class="text-muted">No available products in this category.</p>
+                    <div class="col-12 text-center my-5 p-5">
+                        <h3 class="text-muted">No available products in this category.</h3>
+                        <p class="text-muted">Available products will appear here automatically.</p>
                     </div>`;
                     $(id).html(placeholderHtml);
                 } else {
