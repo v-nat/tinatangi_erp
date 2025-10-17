@@ -1,5 +1,3 @@
-import { reloadTable } from "./utils/reloadTable.js";
-
 $(document).ready(function () {
     $("#allInventoryItems").DataTable({
         autoWidth: false,
@@ -11,13 +9,14 @@ $(document).ready(function () {
             dataSrc: "data",
         },
         order: [
-            [3, "asc"],
+            [2, "desc"],
         ],
         columns: [
             {
                 data: null,
                 className: "text-center",
                 width: "45px",
+                orderable: false,
             },
             { data: "sku", className: "dt-left" },
             { data: "item_name", className: "dt-left" },
