@@ -46,7 +46,7 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "20%",
                 render: function (data) {
-                    return data ? formatDate3(data) : "N/A";
+                    return data ? formatDate(data) : "N/A";
                 },
                 type: "date",
             },
