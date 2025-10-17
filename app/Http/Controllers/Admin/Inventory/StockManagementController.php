@@ -108,6 +108,7 @@ class StockManagementController extends Controller
                         ->first();
 
                     $previousBatchNumber = $previousBatchModel ? $previousBatchModel->batch : 0;
+                    $type = ($previousBatchNumber === 0) ? 'Purchase Order' : 'Restock';
 
                     StockTransaction::create([
                         'transaction_type' => $old_stock > 0 ? TransactionType::ADJ : TransactionType::IN,
@@ -115,7 +116,7 @@ class StockManagementController extends Controller
                         'old_qnty' => $old_stock,
                         'batch' => $previousBatchNumber + 1,
                         'transaction_date' => now(),
-                        'reference_type' => 'Restock',
+                        'reference_type' => $type,
                         'reference_id' => $inventoryItem->id,
                         'user_id' => auth('')->user()->id,
                         'status' => 23,
