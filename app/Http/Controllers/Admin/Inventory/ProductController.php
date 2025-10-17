@@ -132,7 +132,6 @@ class ProductController extends Controller
         $product->load('ingredients.item.unitRS');
 
         if ($product->ingredients->isEmpty()) {
-            // Don't change status here, just report that servings cannot be calculated.
             return response()->json(['servings' => 'N/A']);
         }
 
@@ -170,21 +169,19 @@ class ProductController extends Controller
                 $servingsForThisIngredient = floor($totalStockInBaseUnit / $quantityUsedInRecipe);
                 $minServings = min($minServings, $servingsForThisIngredient);
             } else {
-                // If an ingredient uses 0 quantity, it can't be a limiting factor
-                // but we should avoid division by zero.
             }
         }
 
         $servings = ($minServings == PHP_INT_MAX) ? 0 : $minServings;
 
-        // --- ⭐ CORRECTED LOGIC ---
-        // Update the product's status ONLY if servings are zero.
         if ($servings == 0 && $product->status != 2) {
-            $product->status = 2; // Assuming '2' is your 'Out of Stock' status ID
+            $product->status = 2;
+            $product->save();
+        } else if ($servings > 0 && $product->status != 1) {
+            $product->status = 1;
             $product->save();
         }
 
-        // Return the correct, whole number of servings.
         return response()->json(['servings' => $servings]);
     }
 
