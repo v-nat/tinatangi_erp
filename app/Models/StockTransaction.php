@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,6 +37,18 @@ class StockTransaction extends Model
         'transaction_date' => 'datetime',
         'quantity' => 'decimal:3', // Ensures quantity is cast as a float/decimal with 3 places
     ];
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date): string
+    {
+        /** @var \Illuminate\Support\Carbon $date */
+        return $date->toIso8601String();
+    }
     /*
     |--------------------------------------------------------------------------
     | Relationships
