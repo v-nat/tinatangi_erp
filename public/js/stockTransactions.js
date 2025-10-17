@@ -25,7 +25,6 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "16%",
                 render: function (data, type, row) {
-                    // data here is the value of the 'type' field from your data source
                     if (type === "display") {
                         switch (data) {
                             case "IN":
@@ -35,7 +34,7 @@ $(document).ready(function () {
                             case "OUT":
                                 return "Outgoing Stocks";
                             default:
-                                return data; // Return the original value if it doesn't match
+                                return data;
                         }
                     }
                     return data;

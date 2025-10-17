@@ -119,7 +119,7 @@ $(document).ready(function () {
                             <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 process-btn"
                                 data-id="${data}"
                                 title="Process">
-                                    <i class="fa-solid fa-cart-shopping"></i>
+                                    <i class="fa-solid fa-paper-plane"></i>
                             </a>
                         </div>
                         `;
@@ -138,7 +138,7 @@ $(document).ready(function () {
                                 data-id="${data}"
                                 data-invoice-id="${invoice_id}"
                                 title="Mark as Delivered">
-                                    <i class="fa-solid fa-truck"></i>
+                                    <i class="fa-solid fa-circle-check"></i>
                             </a>
                         </div>
                         `;

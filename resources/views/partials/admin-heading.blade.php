@@ -31,7 +31,7 @@
     @endsection
 
     @section('inventory-dashboard')
-        <i class="bi bi-ui-checks"></i>
+        <i class="fa-solid fa-warehouse"></i>
         <span>Inventory Dashboard</span>
     @endsection
 

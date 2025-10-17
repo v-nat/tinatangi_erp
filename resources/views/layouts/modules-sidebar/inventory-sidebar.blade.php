@@ -19,7 +19,7 @@
 </li>
 <li class="sidebar-item @yield('inventoryProducts') ">
     <a href="{{route('inventory.products')}}" class='sidebar-link'>
-        <i class="bi bi-egg-fried"></i>
+        <i class="fa-solid fa-utensils"></i>
         <span>Product Management</span>
     </a>
 </li>

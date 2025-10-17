@@ -177,17 +177,14 @@ class ProductController extends Controller
 
                 switch ($purchaseUnit->type) {
                     case 'weight':
-                        // Formula: Total Grams = Number of Kilograms * 1000
                         $totalStockInBaseUnit = $stockLevel * $conversion->factor / 1000;
                         break;
 
                     case 'volume':
-                        // Formula: Total Milliliters = Number of Liters * 1000
                         $totalStockInBaseUnit = $stockLevel * $conversion->factor;
                         break;
 
                     case 'count':
-                        // Formula: Total Pieces = Number of Boxes * (Pieces per Box)
                         $totalStockInBaseUnit = $stockLevel * $conversion->factor;
                         break;
 
