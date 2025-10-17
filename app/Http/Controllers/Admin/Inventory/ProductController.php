@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ItemUnit;
 use App\Models\UnitConversion;
 use App\Models\ProductCategory;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
@@ -127,7 +128,7 @@ class ProductController extends Controller
         ], 201);
     }
 
-    public function getServings(Product $product)
+    public function getServings(Product $product): JsonResponse
     {
         $product->load('ingredients.item.unitRS');
 
@@ -138,47 +139,89 @@ class ProductController extends Controller
         $minServings = PHP_INT_MAX;
 
         foreach ($product->ingredients as $ingredient) {
+            // Ensure we have all the necessary related data to proceed.
+            if (!$ingredient->item || !$ingredient->item->unitRS) {
+                $minServings = 0;
+                break; // Break loop if ingredient data is misconfigured.
+            }
+
             $stockLevel = $ingredient->stock_level;
             $purchaseUnit = $ingredient->item->unitRS;
             $quantityUsedInRecipe = $ingredient->pivot->quantity_used;
 
+            // An ingredient must be used in the recipe to affect the serving count.
+            if ($quantityUsedInRecipe <= 0) {
+                continue;
+            }
+
+            // Find the base unit for the ingredient's measurement type (e.g., 'Gram' for 'weight').
             $baseUnit = ItemUnit::where('type', $purchaseUnit->type)
                 ->where('is_base_unit', true)
                 ->first();
 
             if (!$baseUnit) {
-                continue;
+                // If there's no base unit defined for this type, calculation is impossible.
+                $minServings = 0;
+                break;
             }
 
-            $totalStockInBaseUnit = $stockLevel;
+            $totalStockInBaseUnit = 0;
 
-            if ($purchaseUnit->id !== $baseUnit->id) {
+            // If the stock's unit is already the base unit, no conversion is needed.
+            if ($purchaseUnit->id === $baseUnit->id) {
+                $totalStockInBaseUnit = $stockLevel;
+            } else {
+                // Otherwise, find the conversion factor to the base unit.
                 $conversion = UnitConversion::where('from_unit_id', $purchaseUnit->id)
                     ->where('to_unit_id', $baseUnit->id)
                     ->first();
 
-                if ($conversion) {
-                    $totalStockInBaseUnit = $stockLevel * $conversion->factor;
-                } else {
+                if (!$conversion) {
+                    // If no conversion path is defined, we can't make any servings.
                     $minServings = 0;
-                    continue;
+                    break;
+                }
+
+                // **Switched computation logic per unit type for better accuracy and future extension.**
+                switch ($purchaseUnit->type) {
+                    case 'weight':
+                        // Formula: Total Grams = Number of Kilograms * 1000
+                        $totalStockInBaseUnit = $stockLevel * $conversion->factor;
+                        break;
+
+                    case 'volume':
+                        // Formula: Total Milliliters = Number of Liters * 1000
+                        $totalStockInBaseUnit = $stockLevel * $conversion->factor;
+                        break;
+
+                    case 'count':
+                        // Formula: Total Pieces = Number of Boxes * (Pieces per Box)
+                        $totalStockInBaseUnit = $stockLevel * $conversion->factor;
+                        break;
+
+                    default:
+                        // If an unsupported unit type is found, we cannot proceed.
+                        $minServings = 0;
+                        break 2; // This breaks out of both the switch and the foreach loop.
                 }
             }
 
-            if ($quantityUsedInRecipe > 0) {
-                $servingsForThisIngredient = floor($totalStockInBaseUnit / $quantityUsedInRecipe);
-                $minServings = min($minServings, $servingsForThisIngredient);
-            } else {
-            }
+            // Calculate how many full servings this ingredient's stock can provide.
+            $servingsForThisIngredient = floor($totalStockInBaseUnit / $quantityUsedInRecipe);
+
+            // The final serving count is limited by the ingredient that runs out first.
+            $minServings = min($minServings, $servingsForThisIngredient);
         }
 
-        $servings = ($minServings == PHP_INT_MAX) ? 0 : $minServings;
+        // If the loop never ran or was broken, $minServings could still be at its max value.
+        $servings = ($minServings === PHP_INT_MAX) ? 0 : $minServings;
 
-        if ($servings == 0 && $product->status != 2) {
-            $product->status = 2;
+        // Automatically update the product's availability status.
+        if ($servings <= 0 && $product->status != 2) {
+            $product->status = 2; // Set to 'Unavailable'
             $product->save();
-        } else if ($servings > 0 && $product->status != 1) {
-            $product->status = 1;
+        } elseif ($servings > 0 && $product->status != 1) {
+            $product->status = 1; // Set to 'Available'
             $product->save();
         }
 
