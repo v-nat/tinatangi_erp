@@ -46,7 +46,7 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "20%",
                 render: function (data) {
-                    return data ? formatToManilaTime(data) : "N/A";
+                    return formatToManilaTime(data);
                 },
             },
             { data: "reference", className: "dt-left", width: "14%" },
