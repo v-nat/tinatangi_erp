@@ -23,7 +23,7 @@ class ProductController extends Controller
     public function getProductData()
     {
         try {
-            $products = Product::with(['productCategoryRS'])->orderBy('status', 'asc')->get();
+            $products = Product::with(['productCategoryRS'])->get();
 
             return response()->json([
                 'data' => $products->map(function ($product) {
