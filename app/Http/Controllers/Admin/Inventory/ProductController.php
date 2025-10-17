@@ -132,6 +132,8 @@ class ProductController extends Controller
         $product->load('ingredients.item.unitRS');
 
         if ($product->ingredients->isEmpty()) {
+            $product->status = 2;
+            $product->save();
             return response()->json(['servings' => 'N/A']);
         }
 
