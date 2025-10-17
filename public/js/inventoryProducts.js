@@ -58,10 +58,11 @@ $(function () {
         ],
         drawCallback: function (settings) {
             const api = this.api();
+            const info = api.page.info();
             api.column(0, { page: "current", order: "current" })
                 .nodes()
                 .each(function (cell, i) {
-                    cell.innerHTML = i + 1;
+                    cell.innerHTML = info.start + i + 1;
                 });
         },
         createdRow: function (row, data, dataIndex) {
