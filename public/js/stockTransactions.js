@@ -46,6 +46,7 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "20%",
                 render: function (data) {
+                    console.log("Final raw data received by browser:", data);
                     return formatToManilaTime(data);
                 },
             },
