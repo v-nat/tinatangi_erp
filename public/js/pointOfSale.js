@@ -344,13 +344,11 @@ $(document).ready(function () {
     });
 
     $(function () {
-        // This handler opens the modal and triggers the data loading
         $(document).on("click", ".showTransactionsModal", function (e) {
             $("#orderTransactions").modal("show");
             loadTodayOrdersData();
         });
 
-        // This is the main function to initialize and load the DataTable
         function loadTodayOrdersData() {
             const tableSelector = "#posOrdersTransactions";
 
@@ -444,7 +442,6 @@ $(document).ready(function () {
             });
         }
 
-        // This is the click handler for the void button
         $("#posOrdersTransactions").on("click", ".void-order-btn", function () {
             const orderId = $(this).data("id");
             const order_id = $(this).data("order");

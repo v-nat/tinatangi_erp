@@ -10,6 +10,7 @@ use App\Models\InventoryItem;
 use App\Enums\TransactionType;
 use App\Models\ProductCategory;
 use App\Models\StockTransaction;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
@@ -17,12 +18,25 @@ use App\Http\Controllers\GenerateIdController;
 
 class POSController extends Controller
 {
+    protected function getAvailableProducts($allProducts)
+    {
+        foreach ($allProducts as $product) {
+            $product->load('ingredients.item.unitRS');
+
+            if ($product->ingredients->isEmpty() && $product->status !== 2) {
+                $product->status = 2;
+                $product->save();
+            }
+        }
+    }
     public function getAllProducts()
     {
         try {
             $allProducts = Product::where('status', 1)
                 ->orderBy('name', 'asc')
                 ->get();
+
+            $this->getAvailableProducts($allProducts);
 
             return response()->json([
                 'data' => $allProducts->map(function ($p) {
@@ -54,6 +68,8 @@ class POSController extends Controller
                 ->where('product_category_id', $pastriesId)
                 ->orderBy('name', 'asc')
                 ->get();
+
+            $this->getAvailableProducts($pastriesProducts);
 
             return response()->json([
                 'data' => $pastriesProducts->map(function ($p) {
@@ -87,6 +103,8 @@ class POSController extends Controller
                 ->orderBy('name', 'asc')
                 ->get();
 
+            $this->getAvailableProducts($beveragesProducts);
+
             return response()->json([
                 'data' => $beveragesProducts->map(function ($p) {
                     return [
@@ -118,6 +136,8 @@ class POSController extends Controller
                 ->where('product_category_id', $mealsId)
                 ->orderBy('name', 'asc')
                 ->get();
+
+            $this->getAvailableProducts($mealsProducts);
 
             return response()->json([
                 'data' => $mealsProducts->map(function ($p) {
@@ -154,6 +174,8 @@ class POSController extends Controller
                 ->where('product_category_id', $categoryId)
                 ->orderBy('name', 'asc')
                 ->get();
+
+            $this->getAvailableProducts($products);
 
             return response()->json([
                 'data' => $products->map(function ($p) {
