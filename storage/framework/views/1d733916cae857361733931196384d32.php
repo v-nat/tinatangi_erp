@@ -26,7 +26,7 @@
     </div>
 </div>
 
-{{-- ////////////////////////////////////// RESSTOCK ///////////////////////////////////////////////////// --}}
+
 
 <!--warning theme Modal -->
 <div class="modal fade text-left" id="stockRequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel120"
@@ -46,7 +46,7 @@
                     Send Stock Request to Procurement Department
                 </h6>
                 <form id="restockReqForm" class="mt-4">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <input type="hidden" name="item_id" id="req_item_id">
                     <input type="hidden" name="sku" id="req_sku">
                     <div class="row">
@@ -84,7 +84,7 @@
     </div>
 </div>
 
-{{-- /////////////////////////////////////////////// ADD NEW PRODUCT ////////////////////////////////////// --}}
+
 
 <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -134,7 +134,7 @@
     </div>
 </div>
 
-{{-- /////////////////////////////////////////////// MANAGE RECIPE //////////////////////////////////////////////////// --}}
+
 
 <div class="modal fade" id="recipeModal" tabindex="-1" aria-labelledby="recipeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -143,9 +143,9 @@
                 <h5 class="modal-title" id="recipeModalLabel">Manage Recipe</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            {{-- The action URL will be set dynamically by JavaScript --}}
+            
             <form id="recipeForm" method="POST">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <div class="modal-body">
                     <h5 class="card-title">Recipe for: <strong id="recipe-product-name">Loading...</strong></h5>
                     <hr>
@@ -166,3 +166,4 @@
         </div>
     </div>
 </div>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modals/inventory-modal.blade.php ENDPATH**/ ?>

@@ -116,33 +116,22 @@ $(function () {
         });
     }
 
-    $("#addProductForm").on("submit", function (e) {
+    $("#submitProduct").on("click", function (e) {
         e.preventDefault();
         let isValid = true;
-        $(".form-control, .form-select").removeClass("is-invalid");
 
-        const name = $("#name").val().trim();
-        if (name === "") {
-            isValid = false;
-            $("#name").addClass("is-invalid");
-            $("#name_error").text("Product name is required.");
-        }
+        const $form = $("#addProductForm");
 
-        const price = $("#base_price").val();
-        if (price === "" || parseFloat(price) < 0) {
-            isValid = false;
-            $("#base_price").addClass("is-invalid");
-            $("#base_price_error").text(
-                "Please enter a valid, non-negative price."
-            );
-        }
-
-        const category = $("#product_category_id").val();
-        if (category === "") {
-            isValid = false;
-            $("#product_category_id").addClass("is-invalid");
-            $("#product_category_id_error").text("Please select a category.");
-        }
+        $form.find("input, number, select, option").each(function () {
+            const $field = $(this);
+            const value = $field.val();
+            if ($field.prop("required") && (!value || !value.trim())) {
+                $field.addClass("is-invalid");
+                isValid = false;
+            } else {
+                $field.removeClass("is-invalid");
+            }
+        });
 
         const $imageInput = $("#image");
         if ($imageInput[0].files.length > 0) {
@@ -159,7 +148,7 @@ $(function () {
                 isValid = false;
                 $imageInput.addClass("is-invalid");
                 $("#image_error").text(
-                    "Invalid file type. Please use jpeg, png, or gif."
+                    "Invalid file type. Please use jpg, jpeg, or png."
                 );
             }
 
@@ -178,7 +167,7 @@ $(function () {
             return;
         }
 
-        const formData = new FormData(this);
+        const formData = new FormData($("#addProductForm")[0]);
         $("#LoadingScreen").fadeIn(200);
         $.ajax({
             url: "/inventory/products/store",

@@ -30,41 +30,56 @@ $(document).ready(function () {
     }
 
     $(document).on("click", ".close-btn", function () {
-        Swal.fire({
-            title: "Close Form?",
-            text: "All the data you input will not be saved",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-        }).then((result) => {
-            if (!result.isConfirmed) {
-                return;
-            }
-            $("#category").val("");
-            // Clear item fields after confirmation
-            itemSearchInput.value = "";
-            itemHiddenInput.value = "";
-            availableItems = [];
-            itemResultsContainer.classList.add("d-none");
-            $("order_id").val("");
-            $("#supplier").val("");
-            $("#unit").val("");
-            $("#unit_price").val("");
-            $("#qnty").val("");
-
-            $("#category").prop("disabled", false);
-            $("#item_search_input").prop("readonly", false);
-            $("#qnty").prop("readonly", false);
-            $("#addItem").prop("disabled", false);
-
-            $("#submit-PO").parent("div").removeClass("d-none");
-            $("#submit-PR").parent("div").addClass("d-none");
-
-            orderTable.clear().draw();
-            $("#createPrModal").modal("hide");
+        var allTableData = orderTable.rows().data().toArray();
+        var cleanedData = allTableData.map(function (item) {
+            return {
+                item_id: parseInt(item.item_id),
+                supplier_id: parseInt(item.supplier_id),
+                category_id: parseInt(item.category_id),
+                qnty: item.qnty,
+                unit_price: parseFloat(item.unit_price),
+                total: parseFloat(item.total),
+            };
         });
+        if (!(cleanedData.length === 0)) {
+            Swal.fire({
+                title: "Close Form?",
+                text: "All the data you input will not be saved",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirm",
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+                $("#category").val("");
+                // Clear item fields after confirmation
+                itemSearchInput.value = "";
+                itemHiddenInput.value = "";
+                availableItems = [];
+                itemResultsContainer.classList.add("d-none");
+                $("order_id").val("");
+                $("#supplier").val("");
+                $("#unit").val("");
+                $("#unit_price").val("");
+                $("#qnty").val("");
+
+                $("#category").prop("disabled", false);
+                $("#item_search_input").prop("readonly", false);
+                $("#qnty").prop("readonly", false);
+                $("#addItem").prop("disabled", false);
+
+                $("#submit-PO").parent("div").removeClass("d-none");
+                $("#submit-PR").parent("div").addClass("d-none");
+
+                orderTable.clear().draw();
+                $("#createPrModal").modal("hide");
+            });
+        } else {
+            $("#createPrModal").modal("hide");
+        }
     });
 
     $(document).on("click", ".complete-req-btn", function () {
@@ -443,7 +458,6 @@ $(document).ready(function () {
         ],
     });
 
-    // --- Searchable Item Dropdown Logic ---
     const itemSearchInput = document.getElementById("item_search_input");
     const itemHiddenInput = document.getElementById("item");
     const itemResultsContainer = document.getElementById(
@@ -543,8 +557,6 @@ $(document).ready(function () {
             }
         }
     });
-
-    // --- End of Searchable Item Dropdown Logic ---
 
     const categorySelect = document.getElementById("category");
 

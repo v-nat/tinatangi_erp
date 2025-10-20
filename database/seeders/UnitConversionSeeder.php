@@ -21,7 +21,9 @@ class UnitConversionSeeder extends Seeder
 
             // --- Volume Conversions (to Milliliter, ID: 14) ---
             [2, 14, 1000], // 1 Liter (2) = 1000 Milliliters (14)
-            [3, 14, 750],
+            [3, 14, 750], // 1 Bottle (3) = 750 Milliliters (14)
+            [9, 14, 240],      // 1 Jar (9) = 240 Milliliters (14)
+
 
             // --- Count Conversions (to Piece(s), ID: 5) ---
             // NOTE: Adjust these factors to match your actual supplies.
@@ -29,8 +31,7 @@ class UnitConversionSeeder extends Seeder
             [6, 5, 50],     // 1 Sleeve (6) = 50 Pieces (e.g., a sleeve of cups)
             [7, 5, 10],     // 1 Bundle (7) = 10 Pieces
             [8, 5, 24],     // 1 Case (8) = 24 Pieces
-            [9, 5, 1],      // 1 Jar (9) = 1 Piece
-            [10, 5, 1],     // 1 Tub (10) = 1 Piece
+            [10, 5, 6],     // 1 Tub (10) = 6 Pieces
             [11, 5, 4],     // 1 Set (11) = 4 Pieces
             [12, 5, 1],     // 1 Unit (12) = 1 Piece
             [15, 5, 100],   // 1 Bag (15) = 100 Pieces (e.g., a bag of sugar packets)
@@ -40,10 +41,11 @@ class UnitConversionSeeder extends Seeder
         ];
 
         $dataToSeed = [];
+        $id = 0;
 
-        foreach ($conversions as $id => $rule) {
+        foreach ($conversions as $rule) {
             $dataToSeed[] = [
-                'id' => $id,
+                // 'id' => $id++,
                 'from_unit_id' => $rule[0],
                 'to_unit_id'   => $rule[1],
                 'factor'       => $rule[2],
@@ -56,7 +58,7 @@ class UnitConversionSeeder extends Seeder
         UnitConversion::upsert(
             $dataToSeed,
             ['from_unit_id', 'to_unit_id'],
-            ['factor', 'updated_at']      
+            ['factor', 'updated_at']
         );
     }
 }

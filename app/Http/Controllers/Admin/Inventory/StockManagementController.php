@@ -56,7 +56,6 @@ class StockManagementController extends Controller
 
                     $purchaseUnit = $detail->itemss->unitRS;
                     $pricePerPurchaseUnit = $detail->unit_price;
-                    $pricePerBaseUnit = $pricePerPurchaseUnit;
 
                     $baseUnit = ItemUnit::where('type', $purchaseUnit->type)->where('is_base_unit', true)->first();
 
@@ -64,16 +63,13 @@ class StockManagementController extends Controller
                         $conversion = UnitConversion::where('from_unit_id', $purchaseUnit->id)
                             ->where('to_unit_id', $baseUnit->id)
                             ->first();
-
-                        if ($conversion && $conversion->factor > 0) {
-                            $pricePerBaseUnit = $pricePerPurchaseUnit / $conversion->factor;
-                        }
                     }
 
                     $inventoryItem = InventoryItem::firstOrNew(['item_id' => $detail->item_id]);
 
                     $old_stock = $inventoryItem->stock_level ?? 0;
-                    $old_total_value = $old_stock * $inventoryItem->unit_cost;
+                    $old_stock_base_unit = $inventoryItem->base_unit_stock_level ?? 0;
+                    $old_total_value = $old_stock * $inventoryItem->cost_price ?? 0;
 
                     $received_quantity = $detail->quantity;
                     $received_quantity_in_base_unit = $received_quantity;
@@ -81,28 +77,40 @@ class StockManagementController extends Controller
                         $received_quantity_in_base_unit = $received_quantity * $conversion->factor;
                     }
 
+                    $new_stock = $old_stock + $received_quantity;
+                    $new_stock_base_unit = $old_stock_base_unit + $received_quantity_in_base_unit;
+
                     $received_total_value = $received_quantity * $pricePerPurchaseUnit;
 
-                    $new_stock = $old_stock + $received_quantity_in_base_unit;
                     $new_total_value = $old_total_value + $received_total_value;
 
-                    $new_unit_cost = ($new_stock > 0) ? $new_total_value / $new_stock : 0;
+                    if (!$inventoryItem->unit_cost > 0.00000) {
+                        $qty = 1;
+                        if (isset($conversion) && $baseUnit && $purchaseUnit->id !== $baseUnit->id) {
+                            $qty = $qty * $conversion->factor;
+                        }
+                        $price = Item::where('id', $detail->item_id)->value('unit_price');
+                        $new_unit_cost = $price / $qty;
+
+                        $inventoryItem->unit_cost = $new_unit_cost;
+                    }
 
                     $inventoryItem->stock_level = $new_stock;
+                    $inventoryItem->base_unit_stock_level = $new_stock_base_unit;
                     $inventoryItem->cost_price = $new_total_value;
-                    $inventoryItem->unit_cost = $new_unit_cost;
 
                     if (!$inventoryItem->exists) {
                         $inventoryItem->sku = GenerateIdController::generateID('sku');
                         $inventoryItem->item_id = $detail->item_id;
                         $inventoryItem->inventory_location_id = $detail->itemss->inventory_location_id;
-                        $inventoryItem->unit_id = $baseUnit->id;
+                        $inventoryItem->unit_id = $purchaseUnit->id;
+                        $inventoryItem->base_unit_id = $baseUnit->id;
                         $inventoryItem->category_id = $detail->itemss->category_id;
                     }
 
                     $inventoryItem->status = 24;
                     $inventoryItem->save();
-
+                    ////////////////////////////////////////////////////////////////////////////////////////////
                     $previousBatchModel = StockTransaction::where('reference_id', $inventoryItem->id)
                         ->orderByDesc('batch')
                         ->first();
@@ -112,7 +120,7 @@ class StockManagementController extends Controller
 
                     StockTransaction::create([
                         'transaction_type' => $old_stock > 0 ? TransactionType::ADJ : TransactionType::IN,
-                        'quantity' => $received_quantity_in_base_unit,
+                        'quantity' => $received_quantity,
                         'old_qnty' => $old_stock,
                         'batch' => $previousBatchNumber + 1,
                         'transaction_date' => now(),
@@ -121,7 +129,7 @@ class StockManagementController extends Controller
                         'user_id' => auth('')->user()->id,
                         'status' => 23,
                     ]);
-
+                    ///////////////////////////////////////////////////////////////////////////////////////////////
                     $detail->status = 23;
                     $detail->save();
                 }

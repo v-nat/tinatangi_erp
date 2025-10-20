@@ -60,6 +60,10 @@ class InventoryItem extends Model
     {
         return $this->belongsTo(ItemUnit::class, 'unit_id');
     }
+    public function baseUnit(): BelongsTo
+    {
+        return $this->belongsTo(ItemUnit::class, 'base_unit_id');
+    }
 
     public function category(): BelongsTo
     {

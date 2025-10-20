@@ -22,7 +22,7 @@ class UnitSeeder extends Seeder
             6 => ['Sleeve', 'SLEEVE', 'count', false],
             7 => ['Bundle', 'BUNDLE', 'count', false],
             8 => ['Case', 'CASE', 'count', false],
-            9 => ['Jar', 'JAR', 'count', false],
+            9 => ['Jar', 'JAR', 'volume', false],
             10 => ['Tub', 'TUB', 'count', false],
             11 => ['Set', 'SET', 'count', false],
             12 => ['Unit', 'UNIT', 'count', false],

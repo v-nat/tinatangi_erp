@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('from_unit_id');
             $table->unsignedBigInteger('to_unit_id');
-            $table->decimal('factor', 10, 5);
+            $table->decimal('factor', 12, 6);
             $table->timestamps();
 
             $table->foreign('from_unit_id')->references('id')->on('item_units')->onDelete('cascade');

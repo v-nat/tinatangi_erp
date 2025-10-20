@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('item_units', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('type'); // e.g., 'weight', 'volume', 'count'
+            $table->boolean('is_base_unit')->default(false);
             $table->string('abbreviation')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -27,7 +27,7 @@ class InventoryController extends Controller
     public function fetchDataToDisplay()
     {
         $toReceiveCount = PurchaseRequest::where('status', 16)->count();
-        $itemsInStock = InventoryItem::sum('stock_level');
+        $itemsInStock = InventoryItem::distinct()->count('item_id');
         $inventoryItems = InventoryItem::get(['id', 'stock_level', 'status']);
 
         $lowStockCount = 0;
