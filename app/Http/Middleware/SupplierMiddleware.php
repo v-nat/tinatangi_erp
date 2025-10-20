@@ -18,10 +18,10 @@ class SupplierMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $excludedRoutes = [
-            'dashboard',
             'profile',
             'settings',
         ];
+
         if (Auth::check()) {
             /** @var \App\Models\User */
             $user = Auth::user();
@@ -36,7 +36,6 @@ class SupplierMiddleware
                     return $next($request);
                 }
             }
-
             $requiredPrefix = 'supplier';
 
             if ($requiredPrefix && $requiredPrefix !== '/') {

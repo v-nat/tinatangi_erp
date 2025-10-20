@@ -51,7 +51,7 @@ $(document).ready(function () {
                         if (response.user == 'employee') {
                             window.location.href = "/human-resources";
                         } else if (response.user == 'supplier') {
-                            window.location.href = "/supplier/approve-purchase";
+                            window.location.href = "/supplier";
                         }
                     });
                 } else {

@@ -12,6 +12,10 @@ class SupplierController extends Controller
     {
         return view('pages.supplier.approve-purchase');
     }
+    public function index()
+    {
+        return view('pages.supplier.index');
+    }
 
     public function purchaseOrdersList()
     {

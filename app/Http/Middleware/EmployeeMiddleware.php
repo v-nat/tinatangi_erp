@@ -18,7 +18,6 @@ class EmployeeMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $excludedRoutes = [
-            'dashboard',
             'profile',
             'settings',
             'attendance',
