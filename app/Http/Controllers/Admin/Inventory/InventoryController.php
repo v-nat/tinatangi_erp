@@ -87,7 +87,7 @@ class InventoryController extends Controller
                         'item_name'         => optional($item->itemss)->name,
                         'category'          => optional($item->category)->name,
                         'unit'              => optional($item->unit)->abbreviation,
-                        'stock_level'       => (int)$item->stock_level,
+                        'stock_level'       => $item->stock_level,
                         'cost_price'        => (float)$item->cost_price,
                         // 'selling_price'     => (float)$item->selling_price, --- IGNORE ---
                         'status'            => Status::getStatusText($item->status),
@@ -112,7 +112,7 @@ class InventoryController extends Controller
                         'inventory_location' => optional(optional($item->itemss)->inventoryLocation)->name,
                         'category'          => optional($item->category)->name,
                         'unit'              => optional($item->unit)->abbreviation,
-                        'stock_level'       => (int)$item->stock_level,
+                        'stock_level'       => $item->stock_level,
                         'cost_price'        => (float)$item->cost_price,
                         // 'selling_price'     => (float)$item->selling_price, --- IGNORE ---
                         'status'            => Status::getStatusText($item->status),

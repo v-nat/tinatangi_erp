@@ -128,138 +128,47 @@ class ProductController extends Controller
         ], 201);
     }
 
+    /**
+     * Calculate the number of servings a product can make based on ingredient stock.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getServings(Product $product): JsonResponse
     {
-        $product->load('ingredients.item.unitRS');
+        $product->load('ingredients');
 
-        if ($product->ingredients->isEmpty()) {
-            return response()->json(['servings' => 'N/A']);
-        }
+        $totalServings = 0;
+        if ($product->ingredients->isNotEmpty()) {
+            $servingsPerIngredient = [];
 
-        $minServings = PHP_INT_MAX;
+            foreach ($product->ingredients as $ingredient) {
+                $stockInBaseUnit = $ingredient->base_unit_stock_level ?? 0;
+                $quantityUsedInRecipe = $ingredient->pivot->quantity_used;
 
-        foreach ($product->ingredients as $ingredient) {
-            if (!$ingredient->item || !$ingredient->item->unitRS) {
-                $minServings = 0;
-                break;
-            }
-
-            $stockLevel = $ingredient->stock_level;
-            $purchaseUnit = $ingredient->item->unitRS;
-            $quantityUsedInRecipe = $ingredient->pivot->quantity_used;
-
-            if ($quantityUsedInRecipe <= 0) {
-                continue;
-            }
-
-            $baseUnit = ItemUnit::where('type', $purchaseUnit->type)
-                ->where('is_base_unit', true)
-                ->first();
-
-            if (!$baseUnit) {
-                $minServings = 0;
-                break;
-            }
-
-            $totalStockInBaseUnit = 0;
-
-            if ($purchaseUnit->id === $baseUnit->id) {
-                $totalStockInBaseUnit = $stockLevel;
-            } else {
-                $conversion = UnitConversion::where('from_unit_id', $purchaseUnit->id)
-                    ->where('to_unit_id', $baseUnit->id)
-                    ->first();
-
-                if (!$conversion) {
-                    $minServings = 0;
-                    break;
-                }
-
-                switch ($purchaseUnit->type) {
-                    case 'weight':
-                        $totalStockInBaseUnit = $stockLevel * $conversion->factor / 1000;
-                        break;
-
-                    case 'volume':
-                        $totalStockInBaseUnit = $stockLevel * $conversion->factor;
-                        break;
-
-                    case 'count':
-                        $totalStockInBaseUnit = $stockLevel * $conversion->factor;
-                        break;
-
-                    default:
-                        $minServings = 0;
-                        break 2;
+                if ($quantityUsedInRecipe > 0) {
+                    $servingsPerIngredient[] = floor($stockInBaseUnit / $quantityUsedInRecipe);
+                } else {
+                    $servingsPerIngredient[] = INF;
                 }
             }
 
-            $servingsForThisIngredient = floor($totalStockInBaseUnit / $quantityUsedInRecipe);
-
-            $minServings = min($minServings, $servingsForThisIngredient);
+            if (!empty($servingsPerIngredient)) {
+                $totalServings = min($servingsPerIngredient);
+            }
         }
 
-        $servings = ($minServings === PHP_INT_MAX) ? 0 : $minServings;
+        if ($totalServings === INF) {
+            $totalServings = 0;
+        }
 
-        if ($servings <= 0 && $product->status != 2) {
-            $product->status = 2;
-            $product->save();
-        } elseif ($servings > 0 && $product->status != 1) {
-            $product->status = 1;
+        $newStatus = ($totalServings > 0) ? 1 : 2;
+
+        if ($product->status != $newStatus) {
+            $product->status = $newStatus;
             $product->save();
         }
 
-        return response()->json(['servings' => $servings]);
+        return response()->json(['servings' => $totalServings]);
     }
-
-    // public function getServings(Product $product)
-    // {
-    //     $product->load('ingredients.item.unitRS');
-
-    //     if ($product->ingredients->isEmpty()) {
-    //         $product->status = 2;
-    //         $product->save();
-    //         return response()->json(['servings' => 'N/A']);
-    //     }
-
-    //     $minServings = PHP_INT_MAX;
-
-    //     foreach ($product->ingredients as $ingredient) {
-    //         $stockLevel = $ingredient->stock_level;
-    //         $purchaseUnit = $ingredient->item->unitRS;
-    //         $quantityUsedInRecipe = $ingredient->pivot->quantity_used;
-
-    //         $baseUnit = ItemUnit::where('type', $purchaseUnit->type)
-    //             ->where('is_base_unit', true)
-    //             ->first();
-
-    //         if (!$baseUnit) {
-    //             continue;
-    //         }
-
-    //         $totalStockInBaseUnit = $stockLevel;
-
-    //         if ($purchaseUnit->id !== $baseUnit->id) {
-    //             $conversion = UnitConversion::where('from_unit_id', $purchaseUnit->id)
-    //                 ->where('to_unit_id', $baseUnit->id)
-    //                 ->first();
-
-    //             if ($conversion) {
-    //                 $totalStockInBaseUnit = $stockLevel * $conversion->factor;
-    //             } else {
-    //                 $minServings = 0;
-    //                 continue;
-    //             }
-    //         }
-
-    //         if ($quantityUsedInRecipe > 0) {
-    //             $servingsForThisIngredient = floor($totalStockInBaseUnit / $quantityUsedInRecipe);
-    //             $minServings = min($minServings, $servingsForThisIngredient);
-    //         }
-    //     }
-
-    //     $servings = ($minServings == PHP_INT_MAX) ? 0 : $minServings;
-
-    //     return response()->json(['servings' => $servings / 1000]);
-    // }
 }

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Controllers\GenerateIdController;
+use App\Models\UnitConversion;
 
 class POSController extends Controller
 {
@@ -193,7 +194,6 @@ class POSController extends Controller
         }
     }
 
-
     public function submitOrder(StoreOrderRequest $request)
     {
         $validatedData = $request->validated();
@@ -253,13 +253,19 @@ class POSController extends Controller
                 if ($product && $product->ingredients->isNotEmpty()) {
                     foreach ($product->ingredients as $ingredient) {
                         $inventoryItem = InventoryItem::find($ingredient->id);
+                        $conversion = UnitConversion::where('from_unit_id', $inventoryItem->unit_id)
+                            ->where('to_unit_id', $inventoryItem->base_unit_id)
+                            ->first();
                         if ($inventoryItem) {
+                            $unitCost = $inventoryItem->unit_cost;
                             $oldQuantity = $inventoryItem->stock_level;
                             $quantityToDeduct = $ingredient->pivot->quantity_used * $item['quantity'];
-                            if ($inventoryItem->stock_level < $quantityToDeduct) {
+                            if ($inventoryItem->base_unit_stock_level < $quantityToDeduct) {
                                 throw new \Exception("Insufficient stock for: " . optional($inventoryItem->itemss)->name);
                             }
-                            $inventoryItem->decrement('stock_level', $quantityToDeduct);
+                            $inventoryItem->decrement('stock_level', $quantityToDeduct / $conversion->factor);
+                            $inventoryItem->decrement('base_unit_stock_level', $quantityToDeduct);
+                            $inventoryItem->decrement('cost_price', $unitCost * $quantityToDeduct);
 
                             StockTransaction::create([
                                 'transaction_type' => TransactionType::OUT,

@@ -144,8 +144,8 @@ $(function () {
             error: function (xhr) {
                 Toast.fire({
                     icon: "error",
-                    title: "Oops...",
-                    text: "Something went wrong!",
+                    title: "Error",
+                    text: "Please remove the blank ingredient!",
                 });
             },
         });
