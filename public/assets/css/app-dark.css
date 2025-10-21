@@ -6185,7 +6185,7 @@ html[data-bs-theme=dark] .page-link.active,.active>html[data-bs-theme=dark] .pag
     border-color: var(--bs-pagination-active-border-color)
 }
 
-html[data-bs-theme=dark] .page-link.disabled,.disabled>html[data-bs-theme=dark] .page-link {
+html[data-bs-theme=dark] .page-item.disabled,.disabled>html[data-bs-theme=dark] .page-link {
     color: var(--bs-pagination-disabled-color);
     pointer-events: none;
     background-color: var(--bs-pagination-disabled-bg);
