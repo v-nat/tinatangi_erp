@@ -71,6 +71,17 @@ class UserSeeder extends Seeder
                 'updated_at' => '2025-09-08 12:00:00',
             ],
             [
+                'id' => 6,
+                'first_name' => 'Customer',
+                'last_name' => 'Service',
+                'email' => 'crm@mail.com',
+                'password' => bcrypt('@Swizzle-1989'),
+                'phone_number' => '09123456789',
+                'user_type' => 'employee',
+                'created_at' => '2025-09-08 12:00:00',
+                'updated_at' => '2025-09-08 12:00:00',
+            ],
+            [
                 'id' => 23,
                 'first_name' => 'Premium Coffee Roasters Inc.',
                 'last_name' => 'Supplier',

@@ -150,5 +150,32 @@ class EmployeeSeeder extends Seeder
                 'updated_at'    => '2025-09-08 12:00:00',
             ],
         ]);
+        DB::table('employees')->insert([
+            [
+                'id'            => 6,
+                'user_id'       => 6,
+                'address'       => 'Cavite',
+                'postal_code'   => 4107,
+                'gender'        => 'Male',
+                'birth_date'    => '2003-08-21',
+                'age'           => Carbon::parse('2003-08-21')->age,
+                'phone_number'  => '09070959723',
+                'citizenship'   => 'Filipino',
+
+                'department'    => 6,
+                'supervisor_id' => 1,
+                'level'         => 'manager',
+                'position_id'   => 8,
+
+                'sss'           => 600.00,
+                'pagibig'       => 100.00,
+                'philhealth'    => 450.00,
+                'base_salary'   => 20800.00,
+
+                'status'        => 1,
+                'created_at'    => '2025-09-08 12:00:00',
+                'updated_at'    => '2025-09-08 12:00:00',
+            ],
+        ]);
     }
 }

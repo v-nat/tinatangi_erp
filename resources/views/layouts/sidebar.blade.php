@@ -45,16 +45,10 @@
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
-
                 <li class="sidebar-title">@yield('sidebar-title')</li>
 
-                <div class="@yield('general_employee')">
-                    <li class="sidebar-item  active">
-                        <a href="{{route('hr.dashboard')}}" class='sidebar-link'>
-                            <i class="bi bi-box-arrow-left"></i>
-                            <span>Back</span>
-                        </a>
-                    </li>
+                <div class="@yield('admin')">
+                    @include('layouts.modules-sidebar.admin-sidebar')
                 </div>
 
                 <div class="@yield('human_resources')">
@@ -75,6 +69,19 @@
 
                 <div class="@yield('operations')">
                     @include('layouts.modules-sidebar.operations-sidebar')
+                </div>
+
+                <div class="@yield('crm')">
+                    @include('layouts.modules-sidebar.crm-sidebar')
+                </div>
+
+                <div class="@yield('general_employee')">
+                    <li class="sidebar-item  active">
+                        <a href="{{route('hr.dashboard')}}" class='sidebar-link'>
+                            <i class="bi bi-box-arrow-left"></i>
+                            <span>Back</span>
+                        </a>
+                    </li>
                 </div>
 
                 <div class="@yield('supplierPage')">

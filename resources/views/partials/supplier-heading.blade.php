@@ -1,5 +1,6 @@
 @section('title') Tinatangi Cafe ERP Management System @endsection
 @section('sidebar-title') Tinatangi Cafe Supplier @endsection
+@section('admin') d-none @endsection
 @section('supplierPage') d-block @endsection
 @section('human_resources') d-none @endsection
 @section('finance') d-none @endsection

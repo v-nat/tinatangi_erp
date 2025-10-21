@@ -49,7 +49,7 @@ $(document).ready(function () {
                         $("#LoadingScreen").fadeIn();
                         console.log(response.user);
                         if (response.user == 'employee') {
-                            window.location.href = "/human-resources";
+                            window.location.href = "/admin";
                         } else if (response.user == 'supplier') {
                             window.location.href = "/supplier";
                         }

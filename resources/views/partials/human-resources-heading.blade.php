@@ -7,6 +7,7 @@
 
 @section('title') Human Resources Dashboard @endsection
 @section('sidebar-title') Human Resources Management @endsection
+@section('admin') d-none @endsection
 @section('human_resources') d-block @endsection
 @section('finance') d-none @endsection
 @section('procurement') d-none @endsection
