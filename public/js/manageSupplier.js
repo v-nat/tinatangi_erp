@@ -63,7 +63,6 @@ $(document).ready(function () {
                             });
                         },
                         error: function (xhr) {
-                            // console.error('Error response:', xhr);
                             $("#LoadingScreen").fadeOut(200);
                             if (xhr.responseJSON?.errors) {
                                 let errorMessages = Object.values(

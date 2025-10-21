@@ -19,6 +19,17 @@ $(document).ready(function () {
     });
 
     function getProducts(url, id) {
+        const loading_items = `
+             <div class="col-12 text-center my-5 p-5 d-flex flex-column align-items-center">
+                <div class="spinner-border" style="width: 3rem; height: 3rem"
+                    role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h6 class="text-muted mt-2">Loading...</h6>
+            </div>
+            `;
+        $(id).html(loading_items);
+
         $.get(url, function (response) {
             if (response.data && Array.isArray(response.data)) {
                 const productsArray = response.data;
