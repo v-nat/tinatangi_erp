@@ -6163,6 +6163,13 @@ html[data-bs-theme=dark] .page-link {
     }
 }
 
+html[data-bs-theme=dark] .page-item .disabled {
+    z-index: 2;
+    color: var(--bs-pagination-hover-color);
+    background-color: var(--bs-pagination-hover-bg);
+    border-color: var(--bs-pagination-hover-border-color)
+}
+
 html[data-bs-theme=dark] .page-link:hover {
     z-index: 2;
     color: var(--bs-pagination-hover-color);
