@@ -30,6 +30,12 @@
 
 <link rel="icon" href="{{ asset('logo.png') }} " type="image/x-icon">
 <style>
+    html[data-bs-theme=dark] .pagination .page-item.disabled .page-link {
+        background-color: #000;
+        color: #6c757d;
+        border-color: #000;
+    }
+
     .dt-column-header {
         color: #6c757d !important;
         font-weight: 610 !important;

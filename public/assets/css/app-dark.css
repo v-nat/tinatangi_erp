@@ -6185,7 +6185,7 @@ html[data-bs-theme=dark] .page-link.active,.active>html[data-bs-theme=dark] .pag
     border-color: var(--bs-pagination-active-border-color)
 }
 
-html[data-bs-theme=dark] .dt-paging-button.page-item.disabled,.disabled>html[data-bs-theme=dark] .page-link.first,.disabled>html[data-bs-theme=dark] .page-link.previous,.disabled>html[data-bs-theme=dark] .page-link.next, .disabled>html[data-bs-theme=dark] .page-link.last{
+html[data-bs-theme=dark] .page-link.disabled,.disabled>html[data-bs-theme=dark] .page-link {
     color: var(--bs-pagination-disabled-color);
     pointer-events: none;
     background-color: var(--bs-pagination-disabled-bg);
