@@ -30,7 +30,7 @@
 
 <link rel="icon" href="{{ asset('logo.png') }} " type="image/x-icon">
 <style>
-    html[data-bs-theme=dark] .dt-paging-button .page-item .disabled {
+    html[data-bs-theme=dark] li.dt-paging-button .page-item .disabled {
         z-index: 2;
         color: var(--bs-pagination-hover-color);
         background-color: var(--bs-pagination-hover-bg);
