@@ -76,11 +76,12 @@ class Employee extends Model
     {
         return $this->hasMany(Employee::class, 'supervisor_id');
     }
-    // ////////////////////////////////////////////////
-    // public function directSupervisorRS(): BelongsTo
-    // {
-    //     return $this->belongsTo(Employee::class, 'direct_supervisor');
-    // }
+
+    public function empPosition(): BelongsTo
+    {
+        return $this->belongsTo(Position::class, 'position_id');
+    }
+
     public function deptRS(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department');

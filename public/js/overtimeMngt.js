@@ -127,6 +127,7 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr) {
+                $("#LoadingScreen").fadeOut(200);
                 Toast.fire(
                     "Error",
                     xhr.responseJSON?.message || "Something went wrong",
@@ -161,6 +162,7 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr) {
+                $("#LoadingScreen").fadeOut(200);
                 Toast.fire(
                     "Error",
                     xhr.responseJSON?.message || "Something went wrong",

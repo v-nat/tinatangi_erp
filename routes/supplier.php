@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\Finance\FinanceController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 
-Route::middleware(['isSupplier'])->group(function () {
+Route::middleware(['auth', 'isSupplier'])->group(function () {
     Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier');
     Route::get('/supplier/approve-purchase', [SupplierController::class, 'approveRequest'])->name('supplier.approve');
     Route::get('/supplier/orders/get-list', [SupplierController::class, 'purchaseOrdersList']);

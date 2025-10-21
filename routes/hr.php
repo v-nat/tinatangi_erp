@@ -17,7 +17,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/get-employee-attendance-list/{id}', [AttendanceController::class, 'getEmployeeAttendanceList']);
 });
 
-Route::middleware(['auth' , 'isEmployee'])->group(function () {
+Route::middleware(['auth', 'isEmployee'])->group(function () {
     /////////////////////////// ATTENDANCE ///////////////////////////////////////
     Route::get('/human-resources/attendance/list', [AttendanceController::class, 'attendanceList']);
 

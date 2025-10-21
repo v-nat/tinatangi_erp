@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminController;
 
-Route::middleware(['isEmployee'])->group(function () {
+Route::middleware(['auth', 'isEmployee'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin');
 });

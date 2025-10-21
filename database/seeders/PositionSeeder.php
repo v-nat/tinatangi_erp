@@ -15,7 +15,7 @@ class PositionSeeder extends Seeder
     {
         //
         $positions = [
-            [ 'id' =>  1, 'name' => 'CEO', 'department_id' => 1],
+            [ 'id' =>  1, 'name' => 'CEO', 'level' => 'ceo', 'department_id' => 1],
             [ 'id' =>  2, 'name' => 'HR Manager',  'level' => 'manager', 'department_id' => 2],
             [ 'id' =>  3, 'name' => 'HR Assistant',  'level' => 'staff', 'department_id' => 2],
             [ 'id' =>  4, 'name' => 'Finance Manager',  'level' => 'manager', 'department_id' => 3],

@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\Procurement\ProcurementController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 use App\Http\Controllers\GenerateIdController;
 
-Route::middleware(['auth' , 'isEmployee'])->group(function () {
+Route::middleware(['auth', 'isEmployee'])->group(function () {
     //////////////////////////////////////////  to views /////////////////////////////////////
     Route::get('/procurement', [ProcurementController::class, 'index'])->name('procurement.index');
     Route::get('/procurement/create-purchase-request', [ProcurementController::class, 'createPR'])->name('procurement.createPR');

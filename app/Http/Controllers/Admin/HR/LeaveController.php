@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Admin\HR;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreLeaveRequest;
+use App\Http\Controllers\AuthController;
 use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB;
 use App\Models\Leave;
 use App\Models\Status;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreLeaveRequest;
+use Illuminate\Validation\ValidationException;
 
 class LeaveController extends Controller
 {
@@ -20,7 +22,6 @@ class LeaveController extends Controller
             $leaves = $query->get();
             $result = $leaves->map(function ($leave) {
                 return [
-                    // 'dept'=> $leave->employeeRS->department,
                     'leave_id'       => $leave->id,
                     'employee'          => optional(optional($leave->employeeRS)->userRS)->full_name,
                     'department'        => optional(optional($leave->employeeRS)->deptRS)->name,
@@ -42,6 +43,14 @@ class LeaveController extends Controller
     {
         try {
             $leave = Leave::findOrFail($leave_id);
+
+            if (auth('')->user()->id == $leave->employee_id || !AuthController::checkAccess()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized for this action.'
+                ], 401);
+            }
+
             $reason = request()->input('reason', '');
 
             $leave->status = 13;
@@ -96,6 +105,13 @@ class LeaveController extends Controller
     {
         try {
             $leave = Leave::findOrFail($leave_id);
+
+            if (auth('')->user()->id == $leave->employee_id && !AuthController::checkAccess()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized for this action.'
+                ], 401);
+            }
 
             $leave->status = 12;
             $leave->reason = request()->input('reason', '');

@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Admin\HR;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreOvertimeRequest;
+use Carbon\Carbon;
+use App\Models\Status;
 use App\Models\Overtime;
 use App\Models\Attendance;
-use App\Models\Status;
-use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\AuthController;
+use App\Http\Requests\StoreOvertimeRequest;
+use Illuminate\Validation\ValidationException;
 
 
 class OvertimeController extends Controller
@@ -45,6 +47,13 @@ class OvertimeController extends Controller
         try {
             $overtime = Overtime::findOrFail($overtime_id);
 
+            if (auth('')->user()->id == $overtime->employee_id || !AuthController::checkAccess()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized for this action.'
+                ], 401);
+            }
+
             $attendance = Attendance::where('date', $overtime->date)
                 ->where('employee_id', $overtime->employee_id)->first();
             $start = Carbon::parse($overtime->time_start);
@@ -75,6 +84,13 @@ class OvertimeController extends Controller
         try {
             $overtime = Overtime::findOrFail($overtime_id);
 
+            if (auth('')->user()->id == $overtime->employee_id || !AuthController::checkAccess()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized for this action.'
+                ], 401);
+            }
+
             $overtime->status = 12;
             $overtime->reason = request()->input('reason', '');
             $overtime->approved_by = auth('')->user()->id;
@@ -104,7 +120,7 @@ class OvertimeController extends Controller
                     'date'              => $ot->date ?? 'N/A',
                     'time_start'        => $ot->time_start ?? 'N/A',
                     'time_end'          => $ot->time_end ?? 'N/A',
-                    'total_minutes'     => $ot->total_minutes ??'',
+                    'total_minutes'     => $ot->total_minutes ?? '',
                     'reason'            => $ot->reason ?? 'N/A',
                     'status'            => Status::getStatusText($ot->status),
                 ];

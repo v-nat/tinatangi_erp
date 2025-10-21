@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -30,10 +31,41 @@ class AuthController extends Controller
         abort_if($user->status != 1, 401, 'Your account is deactivated. Please contact the admin.');
         return response()->json([
             'message' => 'Login successful!',
-            'user'=> $user_type,
+            'user' => $user_type,
         ], 200);
-
     }
+
+    public static function checkAccess()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        $hierarchy = [
+            'ceo' => 4,
+            'manager' => 3,
+            'supervisor' => 2,
+            'staff' => 1,
+        ];
+
+        $userLevelString = strtolower(Auth::user()->employeeRS->empPosition->level);
+        $requiredLevelString = 'manager';
+
+        if (!array_key_exists($userLevelString, $hierarchy)) {
+            $userLevelNumber = 0;
+        } else {
+            $userLevelNumber = $hierarchy[$userLevelString];
+        }
+
+        $requiredLevelNumber = $hierarchy[$requiredLevelString];
+
+        if ($userLevelNumber >= $requiredLevelNumber) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();
