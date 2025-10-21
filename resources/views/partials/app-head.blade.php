@@ -30,6 +30,13 @@
 
 <link rel="icon" href="{{ asset('logo.png') }} " type="image/x-icon">
 <style>
+    html[data-bs-theme=dark] .dt-paging-button .page-item .disabled {
+        z-index: 2;
+        color: var(--bs-pagination-hover-color);
+        background-color: var(--bs-pagination-hover-bg);
+        border-color: var(--bs-pagination-hover-border-color)
+    }
+
     .dt-column-header {
         color: #6c757d !important;
         font-weight: 610 !important;
