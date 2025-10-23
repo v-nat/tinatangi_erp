@@ -14,7 +14,7 @@
 
     <section class="section">
         <div class="card">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h4 class="card-title mb-0">Employee List</h4>
 
                 <div class="d-flex align-items-center" style="width: 320px;">

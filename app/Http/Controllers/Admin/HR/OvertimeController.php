@@ -47,7 +47,7 @@ class OvertimeController extends Controller
         try {
             $overtime = Overtime::findOrFail($overtime_id);
 
-            if (auth('')->user()->id == $overtime->employee_id || !AuthController::checkAccess()) {
+            if (auth('')->user()->id == $overtime->employee_id || !AuthController::checkAuthorization()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You are not authorized for this action.'
@@ -84,7 +84,7 @@ class OvertimeController extends Controller
         try {
             $overtime = Overtime::findOrFail($overtime_id);
 
-            if (auth('')->user()->id == $overtime->employee_id || !AuthController::checkAccess()) {
+            if (auth('')->user()->id == $overtime->employee_id || !AuthController::checkAuthorization()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You are not authorized for this action.'

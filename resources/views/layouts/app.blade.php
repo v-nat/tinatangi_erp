@@ -7,6 +7,19 @@
 
 <body class="dark light">
     <script src="{{ asset('assets/js/initTheme.js')}}"></script>
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            });
+        </script>
+    @endif
     <div id="app">
         @include('layouts.sidebar')
         <div id="main" class="layout-navbar">

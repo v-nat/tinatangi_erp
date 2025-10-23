@@ -1,277 +1,3 @@
-/**
- * Builds payslip HTML from data and prints it directly without a modal.
- * This function constructs the payslip, applies print-specific CSS,
- * opens the print dialog, and then cleans up the temporary elements.
- * @param {object} data - The payslip data object.
- */
-export function printPayslip(data) {
-    // 1. Prepare data for the combined table
-    const earnings = [
-        { label: "Regular Pay", value: data.reg_pay },
-        { label: "Overtime Pay", value: data.overtime_pay },
-    ];
-
-    const deductions = [
-        { label: "Days Absent Deduction", value: data.absent_deduction },
-        { label: "Tardiness Deduction", value: data.tardiness_deduction },
-        { label: "SSS", value: data.sss },
-        { label: "Pagibig", value: data.pagibig },
-        { label: "Philhealth", value: data.philhealth },
-        { label: "Tax", value: data.tax_deduction },
-    ];
-
-    let tableRowsHtml = "";
-    const numRows = Math.max(earnings.length, deductions.length);
-
-    for (let i = 0; i < numRows; i++) {
-        const earning = earnings[i];
-        const deduction = deductions[i];
-
-        tableRowsHtml += `
-            <tr>
-                ${
-                    earning
-                        ? `<td class="text-bold-500">${
-                              earning.label
-                          }</td><td>₱ ${parseFloat(
-                              earning.value
-                          ).toLocaleString()}</td>`
-                        : "<td></td><td></td>"
-                }
-                ${
-                    deduction
-                        ? `<td class="text-bold-500">${
-                              deduction.label
-                          }</td><td>₱ ${parseFloat(
-                              deduction.value
-                          ).toLocaleString()}</td>`
-                        : "<td></td><td></td>"
-                }
-            </tr>
-        `;
-    }
-
-    // 2. Build the Payslip HTML content with the new single table format and integrated footer.
-    const payslipHtml = `
-        <div class="payslip-print-container">
-            <div class="row mb-4 px-48">
-                <div class="col-md-6">
-                    <p class="mb-1"><strong>Employee: ${data.name}</strong></p>
-                    <p class="mb-0">Department: ${data.department}</p>
-                    <p class="mb-0">Position: ${data.position}</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="mb-1"><strong>Pay Period: ${data.start_date} - ${
-        data.end_date
-    }</strong></p>
-                    <p class="mb-1">Working Days: ${data.working_days}</p>
-                    <p class="mb-1">Days Present: ${data.days_present}</p>
-                </div>
-
-                <!-- Combined Earnings and Deductions Table -->
-                <div class="col-md-12 mt-5">
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Earnings</th>
-                                    <th>Amount</th>
-                                    <th>Deductions</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tableRowsHtml}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="2"></td>
-                                    <td class="text-bold-500">Gross Pay:</td>
-                                    <td><strong>₱ ${parseFloat(
-                                        data.gross_pay
-                                    ).toLocaleString()}</strong></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2"></td>
-                                    <td class="text-bold-500">Gross Deduction:</td>
-                                    <td><strong>₱ ${parseFloat(
-                                        data.gross_deduction
-                                    ).toLocaleString()}</strong></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2"></td>
-                                    <td class="text-bold-500">Salary Before Tax:</td>
-                                    <td><strong>₱ ${parseFloat(
-                                        data.salary_before_tax
-                                    ).toLocaleString()}</strong></td>
-                                </tr>
-                                 <tr>
-                                    <td colspan="2"></td>
-                                    <td class="text-bold-500">Net Pay:</td>
-                                    <td><strong>₱ ${parseFloat(
-                                        data.net_pay
-                                    ).toLocaleString()}</strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // 3. Create a temporary container for the print content.
-    const $printContent = $('<div id="temp-print-content"></div>').html(
-        payslipHtml
-    );
-    $("body").append($printContent);
-
-    // 4. Define Print-Specific CSS Styles
-    const printStyles = `
-        @media print {
-            /* Hide everything on the page by default */
-            body > *:not(#temp-print-content) {
-                display: none !important;
-            }
-
-            /* Global Body Reset for Print */
-            body {
-                margin: 0 !important;
-                padding: 0 !important;
-                font-size: 10pt;
-                color: #000 !important;
-                background-color: #fff !important;
-            }
-
-            /* --- CRITICAL FULL-PAGE EXPANSION --- */
-            #temp-print-content {
-                display: block !important;
-                visibility: visible !important;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100% !important;
-                max-width: 100vw !important;
-                margin: 0 !important;
-                padding: 1.5rem !important; /* Add standard printer margins */
-                box-shadow: none !important;
-                border: none !important;
-                background-color: white !important;
-                text-align: left !important;
-            }
-
-            /* Add a title for the printed page */
-            body::before {
-                content: "PAYSLIP DETAILS";
-                display: block;
-                text-align: center;
-                font-size: 14pt;
-                margin-top: 1rem;
-                margin-bottom: 2rem;
-                font-weight: bold;
-                visibility: visible !important;
-            }
-
-            /* --- PAYSLIP LAYOUT FIXES --- */
-            #temp-print-content .row {
-                overflow: hidden !important; /* Clearfix for floated columns */
-            }
-
-            #temp-print-content .row > .col-md-6:nth-of-type(1),
-            #temp-print-content .row > .col-md-6:nth-of-type(2) {
-                float: left !important;
-                width: 50% !important;
-            }
-            #temp-print-content .row > .col-md-6:nth-of-type(2) {
-                text-align: right !important;
-            }
-
-            #temp-print-content .row > .col-md-12 {
-                clear: both !important;
-                float: none !important;
-                width: 100% !important;
-                margin-top: 1.5rem !important;
-            }
-
-            /* --- TABLE STYLING --- */
-            .table-responsive {
-                overflow: visible !important;
-            }
-
-            #temp-print-content table.table-sm {
-                width: 100% !important;
-                border-collapse: collapse !important;
-                margin-top: 1.5rem !important;
-            }
-
-            #temp-print-content .table-sm th {
-                text-align: left !important;
-                padding: 5px 6px !important;
-                border-bottom: 2px solid #000 !important;
-            }
-
-            #temp-print-content .table-sm td {
-                padding: 4px 6px !important;
-                border-bottom: 1px solid #ddd;
-            }
-
-            #temp-print-content .table-sm tbody tr:last-child td {
-                 border-bottom: none !important;
-            }
-
-            #temp-print-content .table-sm th:nth-child(1),
-            #temp-print-content .table-sm td:nth-child(1) { width: 30% !important; }
-
-            #temp-print-content .table-sm th:nth-child(2),
-            #temp-print-content .table-sm td:nth-child(2) { width: 20% !important; text-align: right !important; }
-
-            #temp-print-content .table-sm th:nth-child(3),
-            #temp-print-content .table-sm td:nth-child(3) { width: 30% !important; padding-left: 1.5rem !important; }
-
-            #temp-print-content .table-sm th:nth-child(4),
-            #temp-print-content .table-sm td:nth-child(4) { width: 20% !important; text-align: right !important; }
-
-            /* --- TABLE FOOTER (SUMMARY) STYLING --- */
-            #temp-print-content .table-sm tfoot td {
-                border-top: 2px solid #000 !important;
-                border-bottom: none !important;
-                padding: 5px 6px !important;
-                text-align: right;
-                font-weight: bold;
-            }
-            #temp-print-content .table-sm tfoot tr:first-child td {
-                padding-top: 10px !important;
-            }
-        }
-    `;
-
-    // 5. Apply Styles and Trigger Print
-    const $printStyleElement = $(
-        '<style type="text/css" id="print-temp-style">'
-    ).text(printStyles);
-    $("head").append($printStyleElement);
-
-    // 6. Define Cleanup Logic
-    const cleanupAndRestore = () => {
-        window.removeEventListener("focus", cleanupAndRestore);
-        $printStyleElement.remove();
-        $printContent.remove();
-    };
-
-    // 7. Set up Event Listeners for Cleanup
-    window.addEventListener("focus", cleanupAndRestore, { once: true });
-    const mediaQueryList = window.matchMedia("print");
-    mediaQueryList.addListener((mql) => {
-        if (!mql.matches) {
-            cleanupAndRestore();
-        }
-    });
-    setTimeout(cleanupAndRestore, 500);
-
-    // 8. Initiate the Print Dialog
-    window.print();
-}
-
 export function buildPayslipModal(data) {
     const html = `
         <div class="row mb-4 px-48">
@@ -297,6 +23,10 @@ export function buildPayslipModal(data) {
                         </thead>
                         <tbody>
                             <tr>
+                                <td class="text-bold-500">Total Hours Pay</td>
+                                <td>${data.total_hours} hours</td>
+                            </tr>
+                            <tr>
                                 <td class="text-bold-500">Regular Pay</td>
                                 <td>₱ ${parseFloat(
                                     data.reg_pay
@@ -306,6 +36,12 @@ export function buildPayslipModal(data) {
                                 <td class="text-bold-500">Overtime Pay</td>
                                 <td>₱ ${parseFloat(
                                     data.overtime_pay
+                                ).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold-500">Leave Pay</td>
+                                <td>₱ ${parseFloat(
+                                    data.leave_pay
                                 ).toLocaleString()}</td>
                             </tr>
                         </tbody>
@@ -389,4 +125,299 @@ export function buildPayslipModal(data) {
     $("#LoadingScreen").fadeOut(200);
     $("#viewPayroll .modal-body").html(html);
     $("#viewPayroll").modal("show");
+}
+
+/**
+ * Builds payslip HTML from data and prints it directly without a modal.
+ * This function constructs the payslip, applies print-specific CSS,
+ * opens the print dialog, and then cleans up the temporary elements.
+ * @param {object} data - The payslip data object.
+ */
+export function printPayslip(data) {
+    const earnings = [
+        { label: "Working Days", days: data.working_days },
+        { label: "Days Present", days: data.days_present },
+        { label: "Total Hours", hours: data.total_hours },
+        { label: "Regular Pay", value: data.reg_pay },
+        { label: "Overtime Pay", value: data.overtime_pay },
+        { label: "Leave Pay", value: data.leave_pay },
+    ];
+
+    const deductions = [
+        { label: "Days Absent Deduction", value: data.absent_deduction },
+        { label: "Tardiness Deduction", value: data.tardiness_deduction },
+        { label: "SSS", value: data.sss },
+        { label: "Pagibig", value: data.pagibig },
+        { label: "Philhealth", value: data.philhealth },
+        { label: "Tax", value: data.tax_deduction },
+    ];
+
+    let tableRowsHtml = "";
+    const numRows = Math.max(earnings.length, deductions.length);
+
+    for (let i = 0; i < numRows; i++) {
+        const earning = earnings[i];
+        const deduction = deductions[i];
+
+        tableRowsHtml += `
+            <tr>
+                ${
+                    earning
+                        ? earning.value
+                            ? // If earning.value exists
+                              `<td class="text-bold-500">${
+                                  earning.label
+                              }</td><td>₱ ${parseFloat(
+                                  earning.value
+                              ).toLocaleString()}</td>`
+                            : earning.days
+                            ? // Else, if earning.days exists
+                              `<td class="text-bold-500">${earning.label}</td><td>${earning.days} days</td>`
+                            : earning.hours
+                            ? // Else, if earning.hours exists
+                              `<td class="text-bold-500">${earning.label}</td><td>${earning.hours} hours</td>`
+                            : // Else, if earning exists but has none of the above
+                              "<td></td><td></td>"
+                        : // Else, if earning does not exist
+                          "<td></td><td></td>"
+                }
+                ${
+                    deduction
+                        ? `<td class="text-bold-500">${
+                              deduction.label
+                          }</td><td>₱ ${parseFloat(
+                              deduction.value
+                          ).toLocaleString()}</td>`
+                        : "<td></td><td></td>"
+                }
+            </tr>
+        `;
+    }
+
+    const payslipHtml = `
+        <div class="payslip-print-container">
+            <div class="row d-flex justify-content-center align-items-center mb-3">
+                <div class="col-6 col-md-6">
+                    <img src="/tinatangilogo2 - Copy.png" style="width:auto; height: 40px !important;" alt="Tinatangi Logo">
+                </div>
+                <div class="col-6 col-md-6 text-end">
+                    <p class="mb-0">${new Date().toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })}</p>
+                </div>
+            </div>
+
+            <div class="d-flex mb-1">
+                <div>
+                    <h6 style="color:#A9A9A9; margin-bottom:0">Tinatangi Cafe ERP Management System</h6>
+                    <p style="color:#A9A9A9"><strong>System Generated Employee Payslip</strong></p>
+                </div>
+            </div>
+            <div class="row px-48">
+                <div class="row d-flex m-0 p-0">
+                    <div class="col-md-6">
+                        <p class="mb-0">Employee: ${data.name}</p>
+                        <p class="mb-0">Department: ${data.department}</p>
+                        <p class="mb-0">Position: ${data.position}</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0">Pay Period: ${data.period}</p>
+                        <p class="mb-0">Starting Date: ${data.start_date}</p>
+                        <p class="mb-0">End Date: ${data.end_date}</p>
+                    </div>
+                </div>
+                <!-- Combined Earnings and Deductions Table -->
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Earnings</th>
+                                    <th>Amount</th>
+                                    <th>Deductions</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRowsHtml}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2"></td>
+                                    <td class="text-bold-100">Gross Pay:</td>
+                                    <td>₱ ${parseFloat(
+                                        data.gross_pay
+                                    ).toLocaleString()}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"></td>
+                                    <td class="text-bold-100">Gross Deduction:</td>
+                                    <td>₱ ${parseFloat(
+                                        data.gross_deduction
+                                    ).toLocaleString()}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"></td>
+                                    <td class="text-bold-100">Salary Before Tax:</td>
+                                    <td>₱ ${parseFloat(
+                                        data.salary_before_tax
+                                    ).toLocaleString()}</td>
+                                </tr>
+                                 <tr>
+                                    <td colspan="2"></td>
+                                    <td class="text-bold-100">Net Pay:</td>
+                                    <td><strong>₱ ${parseFloat(
+                                        data.net_pay
+                                    ).toLocaleString()}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const $printContent = $('<div id="temp-print-content"></div>').html(
+        payslipHtml
+    );
+    $("body").append($printContent);
+
+    const printStyles = `
+        @media print {
+            /* Hide everything on the page by default */
+            body > *:not(#temp-print-content) {
+                display: none !important;
+            }
+
+            /* Global Body Reset for Print */
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 10pt;
+                color: #000 !important;
+                background-color: #fff !important;
+            }
+
+            /* --- CRITICAL FULL-PAGE EXPANSION --- */
+            #temp-print-content {
+                display: block !important;
+                visibility: visible !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                max-width: 100vw !important;
+                margin: 0 !important;
+                padding: 1.5rem !important; /* Add standard printer margins */
+                box-shadow: none !important;
+                border: none !important;
+                background-color: white !important;
+                text-align: left !important;
+            }
+
+            /* Add a title for the printed page */
+            body::before {
+                content: "PAYSLIP DETAILS";
+                display: block;
+                text-align: center;
+                font-size: 14pt;
+                margin-top: 1rem;
+                margin-bottom: 2rem;
+                font-weight: bold;
+                visibility: visible !important;
+            }
+
+            /* --- PAYSLIP LAYOUT FIXES --- */
+            #temp-print-content .row {
+                overflow: hidden !important; /* Clearfix for floated columns */
+            }
+
+            #temp-print-content .row > .col-md-6:nth-of-type(1),
+            #temp-print-content .row > .col-md-6:nth-of-type(2) {
+                float: left !important;
+                width: 50% !important;
+            }
+            #temp-print-content .row > .col-md-6:nth-of-type(2) {
+                text-align: right !important;
+            }
+
+            #temp-print-content .row > .col-md-12 {
+                clear: both !important;
+                float: none !important;
+                width: 100% !important;
+                // margin-top: 1.5rem !important;
+            }
+
+            /* --- TABLE STYLING --- */
+            .table-responsive {
+                overflow: visible !important;
+            }
+
+            #temp-print-content table.table-sm {
+                width: 100% !important;
+                border: 1px solid #000 !important;
+            }
+
+            #temp-print-content .table-sm th {
+                text-align: left !important;
+                padding: 2px 3px !important;
+                border-bottom: 1px solid #000 !important;
+            }
+
+            #temp-print-content .table-sm td {
+                padding: 2px 3px !important;
+                border: 1px solid #000 !important;
+            }
+
+            #temp-print-content .table-sm th:nth-child(1),
+            #temp-print-content .table-sm td:nth-child(1) { width: 30% !important; }
+
+            #temp-print-content .table-sm th:nth-child(2),
+            #temp-print-content .table-sm td:nth-child(2) { width: 20% !important; text-align: right !important; }
+
+            #temp-print-content .table-sm th:nth-child(3),
+            #temp-print-content .table-sm td:nth-child(3) { width: 30% !important; padding-left: 1.5rem !important; }
+
+            #temp-print-content .table-sm th:nth-child(4),
+            #temp-print-content .table-sm td:nth-child(4) { width: 20% !important; text-align: right !important; }
+
+            /* --- TABLE FOOTER (SUMMARY) STYLING --- */
+            #temp-print-content .table-sm tfoot td {
+                border-top: 1px solid #000 !important;
+                border: none !important;
+                padding: 2px 3px !important;
+                text-align: right;
+            }
+            #temp-print-content .table-sm tfoot tr:first-child td {
+                padding-top: 1px !important;
+            }
+        }
+    `;
+
+    const $printStyleElement = $(
+        '<style type="text/css" id="print-temp-style">'
+    ).text(printStyles);
+    $("head").append($printStyleElement);
+
+    const cleanupAndRestore = () => {
+        window.removeEventListener("focus", cleanupAndRestore);
+        $printStyleElement.remove();
+        $printContent.remove();
+    };
+
+    window.addEventListener("focus", cleanupAndRestore, { once: true });
+    const mediaQueryList = window.matchMedia("print");
+    mediaQueryList.addListener((mql) => {
+        if (!mql.matches) {
+            cleanupAndRestore();
+        }
+    });
+    setTimeout(cleanupAndRestore, 500);
+
+    window.print();
 }

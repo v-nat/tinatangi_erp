@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers\Admin\HR;
 
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\GenerateIdController;
-use App\Http\Requests\StorePayrollRequest;
-use App\Models\Employee;
-use App\Models\Payroll;
-use App\Models\Attendance;
-use App\Models\BudgetRelease;
-use App\Models\Status;
-use App\Services\CompensationCalculator;
 use Carbon\Carbon;
+use App\Models\Status;
+use App\Models\Payroll;
+use App\Models\Employee;
 use Carbon\CarbonPeriod;
+use App\Models\Attendance;
+use Illuminate\Http\Request;
+use App\Models\BudgetRelease;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AuthController;
+use App\Services\CompensationCalculator;
+use App\Http\Requests\StorePayrollRequest;
+use App\Http\Controllers\GenerateIdController;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Request;
 
 class PayrollController extends Controller
 {
@@ -72,7 +73,8 @@ class PayrollController extends Controller
             $query = Payroll::with([
                 'employee',
             ])->where('employee_id', $id)
-            ->orderBy('updated_at', 'desc');
+                ->where('status', 15)
+                ->orderBy('updated_at', 'desc');
             $payroll = $query->get();
             $result = $payroll->map(function ($payroll) {
                 return [
@@ -126,6 +128,7 @@ class PayrollController extends Controller
                 'reg_pay' => $payroll->regular_hour_pay ?? '',
                 'total_hours' => $payroll->total_hours_worked ?? '',
                 'overtime_pay' => $payroll->overtime_pay ?? '',
+                'leave_pay' => $payroll->leave_pay ?? '',
                 'gross_pay' => $payroll->gross_pay ?? '',
                 'absent_deduction' => $payroll->days_absent_deduction ?? '',
                 'tardiness_deduction' => $payroll->tardiness_deduction ?? '',
@@ -157,7 +160,7 @@ class PayrollController extends Controller
                 $payroll->remarks = $request->remarks;
                 $payroll->status = $status;
                 $payroll->save();
-            } else if ($status != 12){
+            } else if ($status != 12) {
                 $payroll->remarks = 'requesting budget';
                 $payroll->status = $status;
                 $payroll->save();
@@ -201,13 +204,20 @@ class PayrollController extends Controller
             DB::beginTransaction();
 
             $payroll = Payroll::find($id);
+
+            if (auth('')->user()->id == $payroll->employee_id || !AuthController::checkAuthorization()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized for this action.'
+                ], 401);
+            }
             $payroll->remarks = 'payroll released';
             $payroll->status = 15;
             $payroll->save();
 
             DB::commit();
 
-            return response()->json(['message' => 'Payroll Released Successfully!'], 200);
+            return response()->json(['success' => true, 'message' => 'Payroll Released Successfully!'], 200);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
@@ -301,6 +311,7 @@ class PayrollController extends Controller
         $total_hours_worked = $this->totalHoursWorked($employee->id, $start_date, $end_date);
         $regular_pay = $this->regularPay($employee, $working_days, $days_present);
         $overtime_pay = $this->overtimePay($employee, $start_date, $end_date, $per_hour_rate);
+        $leave_pay = $this->leavePay($employee->id, $start_date, $end_date, $daily_rate, $working_days);
 
         ///// deduct
         $days_absent = $this->absencesTotal($employee->id, $start_date, $end_date, $working_days);
@@ -314,6 +325,8 @@ class PayrollController extends Controller
             'total_hours_worked' => $total_hours_worked,
             'regular_hour_pay' => $regular_pay,
             'overtime_pay' => $overtime_pay,
+            'leave_pay' => $leave_pay,
+
             'days_absent' => $days_absent,
             'days_absent_deduction' => $days_absent_deduction,
             'tardiness_deduction' => $tardiness_deduction,
@@ -405,13 +418,11 @@ class PayrollController extends Controller
         return $minutes / 60;
     }
 
-    protected function absencesTotal($employeeID, $start_date, $end_date, $working_days)
+    protected function leavePay($employeeID, $start_date, $end_date, $daily_rate, $working_days)
     {
-        $presentDays = Attendance::where('employee_id', $employeeID)
+        $daysLeave = Attendance::where('employee_id', $employeeID)
             ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
-            ->where('is_leave', false)
-            ->whereNotNull('time_in')
-            ->whereNotNull('time_out')
+            ->where('is_leave', 1)
             ->pluck('date')
             ->map(fn($d) => Carbon::parse($d)->toDateString())
             ->unique()
@@ -423,7 +434,26 @@ class PayrollController extends Controller
                 ->filter(fn(Carbon $date) => $date->isWeekday())
                 ->count();
         }
+        $leaveCount = min(count($daysLeave), $working_days);
 
+        return $leaveCount * $daily_rate;
+    }
+
+    protected function absencesTotal($employeeID, $start_date, $end_date, $working_days)
+    {
+        $presentDays = Attendance::where('employee_id', $employeeID)
+            ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
+            ->pluck('date')
+            ->map(fn($d) => Carbon::parse($d)->toDateString())
+            ->unique()
+            ->toArray();
+
+        if (empty($working_days) || $working_days < 1) {
+            $period = CarbonPeriod::create($start_date, '1 day', $end_date);
+            $working_days = collect($period)
+                ->filter(fn(Carbon $date) => $date->isWeekday())
+                ->count();
+        }
         $presentCount = min(count($presentDays), $working_days);
 
         return max($working_days - $presentCount, 0);

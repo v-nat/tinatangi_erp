@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -35,7 +34,7 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public static function checkAccess()
+    public static function checkAuthorization()
     {
         if (!Auth::check()) {
             return false;

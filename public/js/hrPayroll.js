@@ -1,5 +1,5 @@
 import { reloadTable } from "./utils/reloadTable.js";
-import { printPayslip } from "./utils/printPayslip.js";
+import { printPayslip, buildPayslipModal } from "./utils/printPayslip.js";
 
 $(document).ready(function () {
     $("#payrollsTable").DataTable({
@@ -157,13 +157,16 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".btn-print-payslip", function () {
-            const payroll_id = $(this).data("id");
-            $.get(`/human-resources/payroll/view/${payroll_id}`, function (response) {
+        const payroll_id = $(this).data("id");
+        $.get(
+            `/human-resources/payroll/view/${payroll_id}`,
+            function (response) {
                 printPayslip(response.data);
-            }).fail(function () {
-                alert("Failed to load payslip.");
-            });
+            }
+        ).fail(function () {
+            alert("Failed to load payslip.");
         });
+    });
 
     $(document).on("click", ".release-btn", function (e) {
         e.preventDefault();
@@ -194,12 +197,17 @@ $(document).ready(function () {
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    $("#LoadingScreen").fadeOut(200);
-                    reloadTable("payrollsTable");
-                    Toast.fire({
-                        text: response.message,
-                        icon: "success",
-                    });
+                    if (response.success) {
+                        $("#LoadingScreen").fadeOut(200);
+                        reloadTable("payrollsTable");
+                        Toast.fire({
+                            text: response.message,
+                            icon: "success",
+                        });
+                    } else {
+                        $("#LoadingScreen").fadeOut(200);
+                        Toast.fire("Error", response.message, "error");
+                    }
                 },
                 error: function (xhr) {
                     // console.error('Error response:', xhr);
@@ -212,9 +220,10 @@ $(document).ready(function () {
                             .join("\n");
                         Toast.fire("Validation Error", errorMessages, "error");
                     } else {
+                        $("#LoadingScreen").fadeOut(200);
                         Toast.fire(
                             "Error",
-                            "An unexpected error occurred.",
+                            xhr.responseJSON?.message || "Something went wrong",
                             "error"
                         );
                     }
@@ -222,123 +231,4 @@ $(document).ready(function () {
             });
         });
     });
-
-    function buildPayslipModal(data) {
-        const html = `
-        <div class="row mb-4 px-48">
-            ${data.remarks}
-            <div class="col-md-6">
-                <h6 class="mb-1">Employee: <strong>${data.name}</strong></h6>
-                <p class="mb-0">Department: ${data.department}</p>
-                <p class="mb-0">Position: ${data.position}</p>
-            </div>
-            <div class="col-md-6 text-md-end">
-                <h6 class="mb-1">Pay Period: <strong>${data.start_date} - ${
-            data.end_date
-        }</strong></h6>
-                <h6 class="mb-1">Working Days: ${data.working_days}</h6>
-                <h6 class="mb-1">Days Present: ${data.days_present}</h6>
-            </div>
-            <div class="col-md-6 mt-5">
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <th>Earnings</th>
-                            <th>Amount</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="text-bold-500">Regular Pay</td>
-                                <td>₱ ${parseFloat(
-                                    data.reg_pay
-                                ).toLocaleString()}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">Overtime Pay</td>
-                                <td>₱ ${parseFloat(
-                                    data.overtime_pay
-                                ).toLocaleString()}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-6 mt-5 text-md-end">
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <th>Deductions</th>
-                            <th>Amount</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="text-bold-500">Days Absent Deduction</td>
-                                <td>₱ ${parseFloat(
-                                    data.absent_deduction
-                                ).toLocaleString()}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">Tardiness Deduction</td>
-                                <td>₱ ${parseFloat(
-                                    data.tardiness_deduction
-                                ).toLocaleString()}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">SSS</td>
-                                <td>₱ ${parseFloat(
-                                    data.sss
-                                ).toLocaleString()}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">Pagibig</td>
-                                <td>₱ ${parseFloat(
-                                    data.pagibig
-                                ).toLocaleString()}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">Philhealth</td>
-                                <td>₱ ${parseFloat(
-                                    data.philhealth
-                                ).toLocaleString()}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">Tax</td>
-                                <td>₱ ${parseFloat(
-                                    data.tax_deduction
-                                ).toLocaleString()}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-6">
-            </div>
-            <div class="col-md-6 text-md-start">
-                <h6 class="mb-1">Gross Pay: <strong>₱ ${parseFloat(
-                    data.gross_pay
-                ).toLocaleString()}</strong></h6>
-                <h6 class="mb-1">Gross Deduction: <strong>₱ ${parseFloat(
-                    data.gross_deduction
-                ).toLocaleString()}</strong></h6>
-                <h6 class="mb-1">Salary Before Tax: <strong>₱ ${parseFloat(
-                    data.salary_before_tax
-                ).toLocaleString()}</strong></h6>
-                <br>
-                <h6 class="mb-1">Net Pay: <strong>₱ ${parseFloat(
-                    data.net_pay
-                ).toLocaleString()}</strong></h6>
-            </div>
-        </div>
-        <style>
-        .table-sm td,
-        .table-sm th {
-            padding: 0.4rem 0.6rem; /* tighter vertical and horizontal spacing */
-            font-size: 0.875rem;    /* slightly smaller text */
-        }
-        </style>
-    `;
-        $("#LoadingScreen").fadeOut(200);
-        $("#viewPayroll .modal-body").html(html);
-        $("#viewPayroll").modal("show");
-    }
 });

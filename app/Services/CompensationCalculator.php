@@ -14,7 +14,7 @@ class CompensationCalculator
         $mandatory_deduction = $attrs['mandatory_deduction']['total'];
 
         // Earnings before deductions
-        $grossPay = $attrs['regular_hour_pay'] + $attrs['overtime_pay'];
+        $grossPay = $attrs['regular_hour_pay'] + $attrs['overtime_pay'] + $attrs['leave_pay'];
 
         // dd($grossPay);
 

@@ -29,6 +29,7 @@ return new class extends Migration
             // Earnings
             $table->decimal('regular_hour_pay', 10, 2)->default(0);
             $table->decimal('overtime_pay', 10, 2)->default(0);
+            $table->decimal('leave_pay', 10, 2)->default(0);
 
             // Deductions
             $table->integer('days_absent')->default(0);

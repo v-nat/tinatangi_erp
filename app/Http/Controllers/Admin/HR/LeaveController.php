@@ -44,7 +44,7 @@ class LeaveController extends Controller
         try {
             $leave = Leave::findOrFail($leave_id);
 
-            if (auth('')->user()->id == $leave->employee_id || !AuthController::checkAccess()) {
+            if (auth('')->user()->id == $leave->employee_id || !AuthController::checkAuthorization()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You are not authorized for this action.'
@@ -106,7 +106,7 @@ class LeaveController extends Controller
         try {
             $leave = Leave::findOrFail($leave_id);
 
-            if (auth('')->user()->id == $leave->employee_id && !AuthController::checkAccess()) {
+            if (auth('')->user()->id == $leave->employee_id && !AuthController::checkAuthorization()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You are not authorized for this action.'
