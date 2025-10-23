@@ -12,12 +12,33 @@
 
     <section class="section">
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Payroll Table</h4>
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">Payroll Table</h4>
+
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <label for="payroll_department_filter" class="form-label mb-1">Department:</label>
+                            <select id="payroll_department_filter" class="form-select form-select-sm" style="width: 200px;">
+                                <option value="">All Departments</option>
+                                <!-- Auto-populated -->
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="payroll_period_filter" class="form-label mb-1">Pay Period:</label>
+                            <select id="payroll_period_filter" class="form-select form-select-sm" style="width: 200px;">
+                                <option value="">All Periods</option>
+                                <!-- Auto-populated -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="payrollsTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
+                    <table id="payrollsTable" class="table table-hover dataTable no-footer"
+                        style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>

@@ -6,7 +6,7 @@ import {
 import { reloadTable } from "./utils/reloadTable.js";
 
 $(document).ready(function () {
-    $("#purchaseReqTable").DataTable({
+    const purchaseReqTable = $("#purchaseReqTable").DataTable({
         autoWidth: false,
         processing: true,
         serverSide: false,

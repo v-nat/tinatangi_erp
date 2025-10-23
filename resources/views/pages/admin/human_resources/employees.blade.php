@@ -14,10 +14,19 @@
 
     <section class="section">
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Employee Table</h4>
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Employee List</h4>
+
+                <div class="d-flex align-items-center" style="width: 320px;">
+                  <label for="department_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Department:</label>
+                  <select id="department_filter" class="form-select form-select-sm">
+                    <option value="">All Departments</option>
+
+                  </select>
+                </div>
             </div>
             <div class="card-body">
+
                 <div class="table-responsive">
                     <table id="employee_table" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
                         <thead>

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $("#allInventoryItems").DataTable({
+    const allItems = $("#allInventoryItems").DataTable({
         autoWidth: false,
         processing: true,
         serverSide: false,
@@ -52,5 +52,24 @@ $(document).ready(function () {
                     cell.innerHTML = info.start + i + 1;
                 });
         },
+        initComplete: function () {
+            const column = this.api().column(5);
+            const select = $('#category_filter');
+
+            column.data().unique().sort().each(function (d, j) {
+                if(d) {
+                    select.append($('<option></option>').attr('value', d).text(d));
+                }
+            });
+        }
+    });
+    $("#category_filter").on("change", function() {
+        const selectedCategory = $(this).val();
+
+        allItems.column(5).search(
+            selectedCategory ? '^' + selectedCategory + '$' : '',
+            true,
+            false
+        ).draw();
     });
 });

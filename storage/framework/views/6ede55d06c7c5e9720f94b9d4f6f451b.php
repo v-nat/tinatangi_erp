@@ -11,8 +11,36 @@
 
     <section class="section">
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Transactions Table</h4>
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="card-title mb-0">Transactions Table</h4>
+
+                    <div class="d-flex align-items-center" style="width: 320px;">
+                        <label for="transaction_type_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by
+                            Type:</label>
+                        <select id="transaction_type_filter" class="form-select form-select-sm">
+                            <option value="">All Types</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="batch_filter" class="form-label mb-1">Filter by Batch:</label>
+                        <input type="text" id="batch_filter" class="form-control form-control-sm"
+                            placeholder="Enter batch...">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="reference_filter" class="form-label mb-1">Filter by Reference:</label>
+                        <select id="reference_filter" class="form-select form-select-sm">
+                            <option value="">All References</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="date_filter" class="form-label mb-1">Filter by Date:</label>
+                        <input type="date" id="date_filter" class="form-control form-control-sm">
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

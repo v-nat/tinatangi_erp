@@ -81,6 +81,26 @@ $(function () {
             emptyTable: "No products found.",
             zeroRecords: "No matching products found.",
         },
+        initComplete: function () {
+            const column = this.api().column(4);
+            const select = $('#category_filter');
+
+            column.data().unique().sort().each(function (d, j) {
+                if(d) { 
+                    select.append($('<option></option>').attr('value', d).text(d));
+                }
+            });
+        }
+    });
+
+    $("#category_filter").on("change", function() {
+        const selectedCategory = $(this).val();
+
+        productsTable.column(4).search(
+            selectedCategory ? '^' + selectedCategory + '$' : '',
+            true,
+            false
+        ).draw();
     });
 
     $("#addProductBtn").on("click", function (e) {

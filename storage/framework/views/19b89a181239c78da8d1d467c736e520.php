@@ -16,7 +16,8 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="approvalTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
+                    <table id="approvalTable" class="table table-hover dataTable no-footer"
+                        style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -41,11 +42,22 @@
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Released Budget History</h4>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="card-title">Released Budget History</h4>
+
+                    <div class="d-flex align-items-center" style="width: 320px;">
+                        <label for="pr_finance_type_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by
+                            Type:</label>
+                        <select id="pr_finance_type_filter" class="form-select form-select-sm">
+                            <option value="">All Types</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="historyTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
+                    <table id="historyTable" class="table table-hover dataTable no-footer"
+                        style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>

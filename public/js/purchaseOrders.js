@@ -7,7 +7,7 @@ import { reloadTable } from "./utils/reloadTable.js";
 import { formatDate } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {
-    $("#purchaseOrderTable").DataTable({
+    const purchaseOrderTable = $("#purchaseOrderTable").DataTable({
         responsive: true,
         scrollX: false,
         processing: true,
@@ -43,14 +43,17 @@ $(document).ready(function () {
                 data: "purchase_orders",
                 title: "Order Date",
                 className: "dt-left",
-                render: function (data) {
-                    if (data && data.length > 0) {
-                        const orderDate = data[0].order_date;
-                        return orderDate ? formatDate(orderDate) : "N/A";
-                    }
-                    return "N/A";
+                render: {
+                    _: function (data, type, row) {
+                        let orderDate =
+                            data && data.length > 0 ? data[0].order_date : null;
+                        if (type === "display") {
+                            return orderDate ? formatDate(orderDate) : "N/A";
+                        }
+                        // Return raw data for filtering
+                        return orderDate;
+                    },
                 },
-                type: "date",
                 className: "dt-left",
             },
             {
@@ -68,14 +71,21 @@ $(document).ready(function () {
             {
                 data: "purchase_orders",
                 title: "Delivery Date",
-                render: function (data) {
-                    if (data && data.length > 0) {
-                        const deliveryDate = data[0].delivery_date;
-                        return deliveryDate ? formatDate(deliveryDate) : "N/A";
-                    }
-                    return "N/A";
+                render: {
+                    _: function (data, type, row) {
+                        let deliveryDate =
+                            data && data.length > 0
+                                ? data[0].delivery_date
+                                : null;
+                        if (type === "display") {
+                            return deliveryDate
+                                ? formatDate(deliveryDate)
+                                : "N/A";
+                        }
+                        // Return raw data for filtering
+                        return deliveryDate;
+                    },
                 },
-                type: "date",
                 className: "dt-left",
             },
             { data: "requested_by_id", className: "dt-left" },
@@ -144,9 +154,9 @@ $(document).ready(function () {
                         `;
                     } else if (
                         row.status ==
-                        '<span class="badge bg-success">Delivered</span>' ||
+                            '<span class="badge bg-success">Delivered</span>' ||
                         row.status ==
-                        '<span class="badge bg-success">Completed</span>'
+                            '<span class="badge bg-success">Completed</span>'
                     ) {
                         return `
                         <div class="action-btns">
@@ -177,6 +187,81 @@ $(document).ready(function () {
                 visible: false,
             },
         ],
+        initComplete: function () {
+            const supplierColumn = this.api().column(4);
+            const supplierSelect = $("#supplier_filter");
+
+            const supplierNames = new Set();
+
+            supplierColumn.data().each(function (d, j) {
+                let supplierName = "N/A";
+                if (d && d.length > 0) {
+                    supplierName = d[0].supplier_name;
+                }
+
+                if (supplierName && supplierName !== "N/A") {
+                    supplierNames.add(supplierName);
+                }
+            });
+
+            const sortedNames = Array.from(supplierNames).sort();
+            sortedNames.forEach(function (name) {
+                supplierSelect.append(
+                    $("<option></option>").attr("value", name).text(name)
+                );
+            });
+
+            const statusColumn = this.api().column(8);
+            const statusSelect = $("#status_filter");
+            const statusValues = new Set();
+
+            statusColumn
+                .data()
+                .unique()
+                .each(function (d, j) {
+                    if (d) {
+                        let statusText = $(d).text();
+                        if (!statusText) statusText = d;
+
+                        statusValues.add(statusText);
+                    }
+                });
+            const sortedStatuses = Array.from(statusValues).sort();
+
+            sortedStatuses.forEach(function (text) {
+                statusSelect.append(
+                    $("<option></option>").attr("value", text).text(text)
+                );
+            });
+        },
+    });
+
+    $("#order_date_filter").on("change", function () {
+        purchaseOrderTable.column(3).search($(this).val(), false, true).draw();
+    });
+
+    $("#supplier_filter").on("change", function () {
+        const selectedSupplier = $(this).val();
+        purchaseOrderTable
+            .column(4)
+            .search(
+                selectedSupplier ? "^" + selectedSupplier + "$" : "",
+                true,
+                false
+            )
+            .draw();
+    });
+
+    $("#delivery_date_filter").on("change", function () {
+        purchaseOrderTable.column(5).search($(this).val(), false, true).draw();
+    });
+
+    $("#status_filter").on("change", function () {
+        const selectedStatus = $(this).val();
+        purchaseOrderTable
+            .column(8)
+            .search(selectedStatus, false, false)
+            .draw();
     });
 
     $(document).on("click", ".process-btn", function () {

@@ -75,6 +75,14 @@ $(document).ready(function () {
         ],
     });
 
+    $("#pr_finance_type_filter").on("change", function () {
+        const selectedType = $(this).val();
+        releaseTable
+            .column(2)
+            .search(selectedType ? "^" + selectedType + "$" : "", true, false)
+            .draw();
+    });
+
     $(document).on("click", ".reject-btn", function (e) {
         e.preventDefault();
         const id = $(this).data("id");
@@ -189,7 +197,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#historyTable").DataTable({
+    const releaseTable = $("#historyTable").DataTable({
         autoWidth: false,
         processing: true,
         serverSide: false,
@@ -198,6 +206,58 @@ $(document).ready(function () {
             type: "GET",
             dataSrc: "data",
         },
+        dom: '<"row mb-3"<"col-md-6"B><"col-md-6"f>>rtip',
+        buttons: [
+            {
+                extend: "print",
+                title: "",
+                text: '<i class="fa-solid fa-print"></i> Print',
+                className: "btn btn-sm btn-primary",
+                exportOptions: {
+                    columns: ":visible:not(:eq(0)):not(:eq(-1))",
+                },
+                customize: function (win) {
+                    win.document.title = 'https://tinatangi.site/finance/budgets/';
+
+                    $(win.document.head).append(
+                        "<style>" +
+                        "body { font-family: Arial, sans-serif; font-size: 8pt; }" +
+                        ".print-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ccc; }" +
+                        ".print-header-left { font-weight: bold; }" +
+                        ".print-header-right { font-size: 8pt; color: #555; }" +
+                        ".print-title { text-align: center; font-size: 12pt; font-weight: bold; margin-bottom: 5px; }" +
+                        ".print-subtitle { text-align: center; font-size: 10pt; font-weight: normal; margin-bottom: 20px; }" +
+                        "table { width: 100%; margin-top: 20px; border: 2px solid #000; }" +
+                        "table th, table td { text-align: left; padding: 4px; border: 2px solid #000; }" +
+                        "</style>"
+                    );
+
+                    $(win.document.body).prepend(
+                        '<div class="print-header">' +
+                            '<div class="print-header-left">Tinatangi Cafe ERP Management System</div>' +
+                            '<div class="print-header-right">' +
+                            new Date().toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            }) +
+                            "</div>" +
+                        "</div>" +
+                        '<div class="print-title">Tinatangi Cafe | Finance and Accounting Department</div>' +
+                        '<div class="print-subtitle">Budget Release Records</div>'
+                    );
+
+                    $(win.document.body).find("h1").remove();
+                    $(win.document.body)
+                        .find("table")
+                        .removeClass("dataTable")
+                        .addClass("compact")
+                        .css("font-size", "inherit");
+                },
+            },
+        ],
         columns: [
             {
                 data: null,
@@ -233,5 +293,21 @@ $(document).ready(function () {
                 width: "150px",
             },
         ],
+        initComplete: function () {
+            const column = this.api().column(2);
+            const select = $("#pr_finance_type_filter");
+
+            column
+                .data()
+                .unique()
+                .sort()
+                .each(function (d, j) {
+                    if (d) {
+                        select.append(
+                            $("<option></option>").attr("value", d).text(d)
+                        );
+                    }
+                });
+        },
     });
 });

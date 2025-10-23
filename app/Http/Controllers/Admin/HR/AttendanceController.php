@@ -139,9 +139,14 @@ class AttendanceController extends Controller
                 'atEmployeeRS',
                 'leaveRS',
                 'overtimeRS'
-            ])->orderBy('date', 'desc')
+            ])
+                ->whereDoesntHave('atEmployeeRS.position', function ($query) {
+                    $query->where('level', 'ceo');
+                })
+                ->orderBy('date', 'desc')
                 ->orderBy('time_in', 'desc')
                 ->get();
+
 
             $result = $attendances->map(function ($attendance) {
                 return [

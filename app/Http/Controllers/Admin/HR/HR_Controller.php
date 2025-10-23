@@ -29,7 +29,12 @@ class HR_Controller extends Controller
     public function getEmployees()
     {
         try {
-            $employees = Employee::with(['user', 'user.statusRS', 'supervisor.user', 'position'])->orderBy('created_at', 'desc')->get();
+            $employees = Employee::with(['user', 'user.statusRS', 'supervisor.user', 'position'])
+            ->whereDoesntHave('position', function ($query) {
+                $query->where('level', 'ceo');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
 
             return response()->json([
                 'data' => $employees->map(function ($e) {

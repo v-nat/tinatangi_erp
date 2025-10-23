@@ -20,8 +20,34 @@
 
     <section class="section">
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Purchase Requests Table</h4>
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="card-title mb-3">Purchase Requests</h4>
+                    <div class="d-flex align-items-center"  style="width: 320px;">
+                        <label for="status_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Status:</label>
+                        <select id="status_filter" class="form-select form-select-sm">
+                            <option value="">All Statuses</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="pr_type_filter" class="form-label mb-1">Filter by Type:</label>
+                        <select id="pr_type_filter" class="form-select form-select-sm">
+                            <option value="">All Types</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="pr_order_date_filter" class="form-label mb-1">Filter by Order Date:</label>
+                        <input type="date" id="pr_order_date_filter" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="pr_supplier_filter" class="form-label mb-1">Filter by Supplier:</label>
+                        <select id="pr_supplier_filter" class="form-select form-select-sm">
+                            <option value="">All Suppliers</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

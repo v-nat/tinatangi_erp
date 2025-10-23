@@ -1,13 +1,19 @@
 import { formatDate2, formatDateString } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {
-    $("#employee_table").DataTable({
+    const employeeTable = $("#employee_table").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
             url: "/human-resources/employees/get",
             type: "GET",
             dataSrc: "data",
+            error: function (xhr, error, thrown) {
+                console.error("Ajax error:", error, thrown);
+                alert(
+                    "Error loading employee data. Check the console and ensure the AJAX URL is correct."
+                );
+            },
         },
         columns: [
             {
@@ -37,27 +43,57 @@ $(document).ready(function () {
                 data: "employee_id",
                 render: function (data, type, row) {
                     return `
-                    <div class="action-btns">
-                        <a href="#" class="btn icon btn-primary btn-edit bs-tooltip me-2"
-                           data-id="${data}"
-                           data-name="${row.name}"
-                           data-employee-id="${row.employee_id}"
-                           title="Edit">
-                            <i class="fa-solid fa-pen"></i>
-                        </a>
-                        <a href="#" class="btn icon btn-info generate-payroll bs-tooltip me-2"
-                           title="Generate Payroll"
-                           data-id="${data}"
-                           data-name="${row.name}">
-                            <i class="fa-solid fa-money-check-dollar"></i>
-                        </a>
-                    </div>
-                        `;
+                            <div class="action-btns">
+                                <a href="#" class="btn icon btn-primary btn-edit bs-tooltip me-2"
+                                    data-id="${data}"
+                                    data-name="${row.name}"
+                                    data-employee-id="${row.employee_id}"
+                                    title="Edit">
+                                     <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <a href="#" class="btn icon btn-info generate-payroll bs-tooltip me-2"
+                                    title="Generate Payroll"
+                                    data-id="${data}"
+                                    data-name="${row.name}">
+                                     <i class="fa-solid fa-money-check-dollar"></i>
+                                </a>
+                            </div>
+                            `;
                 },
                 width: "150px",
                 className: "text-center",
             },
         ],
+
+        initComplete: function () {
+            const column = this.api().column(3);
+            const select = $("#department_filter");
+
+            column
+                .data()
+                .unique()
+                .sort()
+                .each(function (d, j) {
+                    if (d) {
+                        select.append(
+                            $("<option></option>").attr("value", d).text(d)
+                        );
+                    }
+                });
+        },
+    });
+
+    $("#department_filter").on("change", function () {
+        const selectedDepartment = $(this).val();
+
+        employeeTable
+            .column(3)
+            .search(
+                selectedDepartment ? "^" + selectedDepartment + "$" : "",
+                true,
+                false
+            )
+            .draw();
     });
 
     $(document).on("click", ".btn-edit", function (e) {

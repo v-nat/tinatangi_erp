@@ -3,7 +3,7 @@ import { printPayslip, buildPayslipModal } from "./utils/printPayslip.js";
 
 
 $(document).ready(function () {
-    $("#payrollsTable").DataTable({
+    const payrollsTable = $("#payrollsTable").DataTable({
         autoWidth: false,
         processing: true,
         serverSide: false,
@@ -129,7 +129,43 @@ $(document).ready(function () {
                 width: "150px",
             },
         ],
+        initComplete: function () {
+            const deptColumn = this.api().column(2);
+            const deptSelect = $('#payroll_department_filter');
+            deptColumn.data().unique().sort().each(function (d, j) {
+                if(d) {
+                    deptSelect.append($('<option></option>').attr('value', d).text(d));
+                }
+            });
+
+            const periodColumn = this.api().column(4);
+            const periodSelect = $('#payroll_period_filter');
+            periodColumn.data().unique().sort().each(function (d, j) {
+                 if(d) {
+                    periodSelect.append($('<option></option>').attr('value', d).text(d));
+                }
+            });
+        }
     });
+
+    $("#payroll_department_filter").on("change", function() {
+        const selectedDept = $(this).val();
+        payrollsTable.column(2).search(
+            selectedDept ? '^' + selectedDept + '$' : '',
+            true,
+            false
+        ).draw();
+    });
+
+    $("#payroll_period_filter").on("change", function() {
+        const selectedPeriod = $(this).val();
+        payrollsTable.column(4).search(
+            selectedPeriod ? '^' + selectedPeriod + '$' : '',
+            true,
+            false
+        ).draw();
+    });
+
     $(document).on("click", ".btn-view", function () {
         const payroll_id = $(this).data("id");
         $("#LoadingScreen").fadeIn(200);

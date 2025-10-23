@@ -241,7 +241,8 @@ $(document).ready(function () {
         $("#createPrModal").modal("show");
     }
 
-    $("#purchaseRequestTable").DataTable({
+
+    const purchaseRequestTable = $("#purchaseRequestTable").DataTable({
         responsive: true,
         scrollX: false,
         processing: true,
@@ -277,14 +278,17 @@ $(document).ready(function () {
                 data: "purchase_orders",
                 title: "Order Date",
                 className: "dt-left",
-                render: function (data) {
-                    if (data && data.length > 0) {
-                        const orderDate = data[0].order_date;
-                        return orderDate ? formatDate(orderDate) : "N/A";
+                render: function (data, type, row) {
+                    let orderDate = "N/A";
+                    if (data && data.length > 0 && data[0].order_date) {
+                        orderDate = data[0].order_date;
                     }
-                    return "N/A";
+
+                    if (type === 'display') {
+                        return orderDate !== "N/A" ? formatDate(orderDate) : "N/A";
+                    }
+                    return orderDate;
                 },
-                type: "date",
                 className: "dt-left",
             },
             {
@@ -392,6 +396,89 @@ $(document).ready(function () {
                 visible: false,
             },
         ],
+        initComplete: function () {
+            const typeColumn = this.api().column(2);
+            const typeSelect = $('#pr_type_filter');
+
+            const supplierColumn = this.api().column(4);
+            const supplierSelect = $('#pr_supplier_filter');
+
+            typeColumn.data().unique().sort().each(function (d, j) {
+                if(d) {
+                    typeSelect.append($('<option></option>').attr('value', d).text(d));
+                }
+            });
+
+            const supplierNames = new Set();
+            supplierColumn.data().each(function (d, j) {
+                let supplierName = "N/A";
+                if (d && d.length > 0 && d[0].supplier_name) {
+                    supplierName = d[0].supplier_name;
+                }
+                supplierNames.add(supplierName);
+            });
+
+            const sortedNames = Array.from(supplierNames).sort();
+            sortedNames.forEach(function(name) {
+                supplierSelect.append($('<option></option>').attr('value', name).text(name));
+            });
+
+            const statusColumn = this.api().column(8);
+            const statusSelect = $("#status_filter");
+            const statusValues = new Set();
+
+            statusColumn
+                .data()
+                .unique()
+                .each(function (d, j) {
+                    if (d) {
+                        let statusText = $(d).text();
+                        if (!statusText) statusText = d;
+
+                        statusValues.add(statusText);
+                    }
+                });
+            const sortedStatuses = Array.from(statusValues).sort();
+
+            sortedStatuses.forEach(function (text) {
+                statusSelect.append(
+                    $("<option></option>").attr("value", text).text(text)
+                );
+            });
+        }
+    });
+
+
+    $("#pr_type_filter").on("change", function() {
+        const selectedType = $(this).val();
+        purchaseRequestTable.column(2).search(
+            selectedType ? '^' + selectedType + '$' : '',
+            true,
+            false
+        ).draw();
+    });
+
+    $("#pr_order_date_filter").on("change", function() {
+        const selectedDate = $(this).val();
+        // Search the raw date string
+        purchaseRequestTable.column(3).search(selectedDate).draw();
+    });
+
+    $("#pr_supplier_filter").on("change", function() {
+        const selectedSupplier = $(this).val();
+        purchaseRequestTable.column(4).search(
+            selectedSupplier ? '^' + selectedSupplier + '$' : '',
+            true,
+            false
+        ).draw();
+    });
+
+    $("#status_filter").on("change", function () {
+        const selectedStatus = $(this).val();
+        purchaseOrderTable
+            .column(8)
+            .search(selectedStatus, false, false)
+            .draw();
     });
 
     var orderTable = $("#orderRequest").DataTable({
