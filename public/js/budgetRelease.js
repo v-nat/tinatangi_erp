@@ -217,36 +217,46 @@ $(document).ready(function () {
                     columns: ":visible:not(:eq(0)):not(:eq(-1))",
                 },
                 customize: function (win) {
-                    win.document.title = 'https://tinatangi.site/finance/budgets/';
+                    win.document.title =
+                        "https://tinatangi.site/finance/budgets/";
+                    const now = new Date();
+                    const dateStr =
+                        now.getFullYear() +
+                        "-" +
+                        (now.getMonth() + 1).toString().padStart(2, "0") +
+                        "-" +
+                        now.getDate().toString().padStart(2, "0");
+
+                    win.document.title = `Budget Release Records - ${dateStr}`;
 
                     $(win.document.head).append(
                         "<style>" +
-                        "body { font-family: Arial, sans-serif; font-size: 8pt; }" +
-                        ".print-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ccc; }" +
-                        ".print-header-left { font-weight: bold; }" +
-                        ".print-header-right { font-size: 8pt; color: #555; }" +
-                        ".print-title { text-align: center; font-size: 12pt; font-weight: bold; margin-bottom: 5px; }" +
-                        ".print-subtitle { text-align: center; font-size: 10pt; font-weight: normal; margin-bottom: 20px; }" +
-                        "table { width: 100%; margin-top: 20px; border: 2px solid #000; }" +
-                        "table th, table td { text-align: left; padding: 4px; border: 2px solid #000; }" +
-                        "</style>"
+                            "body { font-family: Arial, sans-serif; font-size: 8pt; }" +
+                            ".print-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ccc; }" +
+                            ".print-header-left { font-weight: bold; }" +
+                            ".print-header-right { font-size: 8pt; color: #555; }" +
+                            ".print-title { text-align: center; font-size: 12pt; font-weight: bold; margin-bottom: 5px; }" +
+                            ".print-subtitle { text-align: center; font-size: 10pt; font-weight: normal; margin-bottom: 20px; }" +
+                            "table { width: 100%; margin-top: 20px; border: 2px solid #000; }" +
+                            "table th, table td { text-align: left; padding: 4px; border: 2px solid #000; }" +
+                            "</style>"
                     );
 
                     $(win.document.body).prepend(
                         '<div class="print-header">' +
                             '<div class="print-header-left">Tinatangi Cafe ERP Management System</div>' +
                             '<div class="print-header-right">' +
-                            new Date().toLocaleString('en-US', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
+                            new Date().toLocaleString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
                             }) +
                             "</div>" +
-                        "</div>" +
-                        '<div class="print-title">Tinatangi Cafe | Finance and Accounting Department</div>' +
-                        '<div class="print-subtitle">Budget Release Records</div>'
+                            "</div>" +
+                            '<div class="print-title">Tinatangi Cafe | Finance and Accounting Department</div>' +
+                            '<div class="print-subtitle">Budget Release Records</div>'
                     );
 
                     $(win.document.body).find("h1").remove();
