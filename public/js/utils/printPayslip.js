@@ -173,6 +173,13 @@ export function printPayslip(data) {
 
     let tableRowsHtml = "";
     const numRows = Math.max(earnings.length, deductions.length);
+    const timeStamp = new Date().toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    });
 
     for (let i = 0; i < numRows; i++) {
         const earning = earnings[i];
@@ -220,13 +227,7 @@ export function printPayslip(data) {
                     <img src="/tinatangilogo2 - Copy.png" style="width:auto; height: 40px !important;" alt="Tinatangi Logo">
                 </div>
                 <div class="col-6 col-md-6 text-end">
-                    <p class="mb-0">${new Date().toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                    })}</p>
+                    <p class="mb-0">${timeStamp}</p>
                 </div>
             </div>
 
@@ -424,7 +425,7 @@ export function printPayslip(data) {
     $("head").append($printStyleElement);
 
     const originalTitle = document.title;
-    const filename = `Payslip-${formatToManilaTime(data.payroll_date)}-${data.name}-Tinatangi Cafe`;
+    const filename = `Payslip-${timeStamp}-${data.name}-Tinatangi Cafe`;
     document.title = filename;
 
     const cleanupAndRestore = () => {
