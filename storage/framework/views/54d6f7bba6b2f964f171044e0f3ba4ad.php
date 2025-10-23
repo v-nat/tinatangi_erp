@@ -21,11 +21,15 @@
                 <div class="text-center">
                     <h1 class="error-title">Unauthorized</h1>
                     <p class="fs-5 text-gray-600">You are unauthorized to see this page.</p>
-                    <a href="<?php echo e(route('admin')); ?>" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
+                    <div class="text-center">
+                        <a href="<?php echo e(url()->previous()); ?>" class="btn btn-lg btn-primary mt-3">Go Back</a>
+                        <a href="<?php echo e(route('home')); ?>" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
 <?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/errors/401.blade.php ENDPATH**/ ?>

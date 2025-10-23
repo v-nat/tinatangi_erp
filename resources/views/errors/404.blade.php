@@ -19,9 +19,12 @@
             <div class="col-md-8 col-12 offset-md-2">
                 <img class="img-error" src="{{ asset('assets/images/samples/error-404.png') }}" alt="Not Found">
                 <div class="text-center">
-                     <h1 class="error-title">NOT FOUND</h1>
+                    <h1 class="error-title">NOT FOUND</h1>
                     <p class='fs-5 text-gray-600'>The page you are looking not found.</p>
-                    <a href="{{ route('admin') }}" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
+                    <div class="text-center">
+                        <a href="{{ url()->previous() }}" class="btn btn-lg btn-primary mt-3">Go Back</a>
+                        <a href="{{ route('home') }}" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
+                    </div>
                 </div>
             </div>
         </div>
