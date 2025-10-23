@@ -433,7 +433,7 @@ export function printPayslip(data) {
         now.getDate().toString().padStart(2, "0");
 
     const originalTitle = document.title;
-    const filename = `payslip-${dateStr}-${data.name}-Tinatangi-Cafe`;
+    const filename = `${dateStr}-payslip-${data.name}-Tinatangi-Cafe`;
     document.title = filename;
 
     const cleanupAndRestore = () => {

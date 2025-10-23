@@ -48,7 +48,7 @@ export function buildInvoiceModal(data) {
             <p class="mb-0">Delivery #: ${data.delivery_no || "N/A"}</p>
         </div>
         <div class="col-md-6 text-md-end">
-            <p class="mb-0">Invoice #: ${data.id || "N/A"}</p>
+            <p id="view_invoice_number" class="mb-0">Invoice #: ${data.id || "N/A"}</p>
             <p class="mb-0">Date Approved: ${data.date_approved || "N/A"}</p>
             <p class="mb-0">Approved By: ${data.approved_by_id || "N/A"}</p>
         </div>
@@ -201,6 +201,26 @@ export function buildPOmodal(data) {
 export function printInvoice() {
     const $viewInvoiceModal = $("#viewInvoice");
     const $modalContent = $viewInvoiceModal.find(".modal-content");
+
+    const originalTitle = document.title;
+
+    let invoiceNum = "Invoice";
+    const invoiceElement = $viewInvoiceModal.find("#view_invoice_number");
+
+    if (invoiceElement.length) {
+        invoiceNum = invoiceElement.text();
+    }
+    const now = new Date();
+    const dateStr =
+        now.getFullYear() +
+        "-" +
+        (now.getMonth() + 1).toString().padStart(2, "0") +
+        "-" +
+        now.getDate().toString().padStart(2, "0");
+
+    const filename = `${dateStr}-invoice-${invoiceNum}-Tinatangi-Cafe`;
+    document.title = filename;
+
     const $printContent = $modalContent.clone();
     $viewInvoiceModal.css("display", "none").removeClass("show");
 
@@ -357,6 +377,7 @@ export function printInvoice() {
 
         $viewInvoiceModal.css("display", "block");
         $viewInvoiceModal.modal("show");
+        document.title = originalTitle;
     };
 
     window.addEventListener("focus", cleanupAndRestore);
