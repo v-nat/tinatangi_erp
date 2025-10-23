@@ -127,6 +127,25 @@ export function buildPayslipModal(data) {
     $("#viewPayroll").modal("show");
 }
 
+function formatToManilaTime(dateString) {
+    if (!dateString) {
+        return "N/A";
+    }
+    const date = new Date(dateString);
+
+    const options = {
+        timeZone: "Asia/Manila",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+    };
+
+    return new Intl.DateTimeFormat("en-PH", options).format(date);
+}
+
 /**
  * Builds payslip HTML from data and prints it directly without a modal.
  * This function constructs the payslip, applies print-specific CSS,
@@ -404,10 +423,16 @@ export function printPayslip(data) {
     ).text(printStyles);
     $("head").append($printStyleElement);
 
+    const originalTitle = document.title;
+    const filename = `Payslip-${formatToManilaTime(data.payroll_date)}-${data.name}-Tinatangi Cafe`;
+    document.title = filename;
+
     const cleanupAndRestore = () => {
         window.removeEventListener("focus", cleanupAndRestore);
         $printStyleElement.remove();
         $printContent.remove();
+
+        document.title = originalTitle;
     };
 
     window.addEventListener("focus", cleanupAndRestore, { once: true });
