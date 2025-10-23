@@ -12,8 +12,8 @@
         </ol>
     </nav>
 
-    <section class="section">
-        <div class="card">
+    <section class="section row">
+        <div class="card col-12">
             <div class="card-header row py-3 d-flex justify-content-between align-items-center">
                 <div class="col-6 d-flex justify-content-start align-items-center">
                     <h4 class="card-title mb-0 me-2">Employee List</h4>
@@ -45,9 +45,8 @@
                 </div>
 
             </div>
-            <div class="card-body row">
-
-                <div class="table-responsive d-flex col-12">
+            <div class="card-body">
+                <div class="table-responsive">
                     <table id="employee_table" class="table table-hover dataTable no-footer"
                         style="width:100% !important; table-layout:fixed">
                         <thead>
