@@ -227,7 +227,7 @@ $(document).ready(function () {
                         "-" +
                         now.getDate().toString().padStart(2, "0");
 
-                    win.document.title = `Budget Release Records - ${dateStr}`;
+                    win.document.title = `${dateStr}-finance-budget-release-records`;
 
                     $(win.document.head).append(
                         "<style>" +
