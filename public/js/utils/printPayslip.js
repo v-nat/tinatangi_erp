@@ -174,12 +174,12 @@ export function printPayslip(data) {
     let tableRowsHtml = "";
     const numRows = Math.max(earnings.length, deductions.length);
     const timeStamp = new Date().toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                    });
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
 
     for (let i = 0; i < numRows; i++) {
         const earning = earnings[i];
@@ -424,8 +424,16 @@ export function printPayslip(data) {
     ).text(printStyles);
     $("head").append($printStyleElement);
 
+    const now = new Date();
+    const dateStr =
+        now.getFullYear() +
+        "-" +
+        (now.getMonth() + 1).toString().padStart(2, "0") +
+        "-" +
+        now.getDate().toString().padStart(2, "0");
+
     const originalTitle = document.title;
-    const filename = `Payslip-${timeStamp}-${data.name}-Tinatangi Cafe`;
+    const filename = `payslip-${dateStr}-${data.name}-Tinatangi-Cafe`;
     document.title = filename;
 
     const cleanupAndRestore = () => {
