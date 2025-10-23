@@ -47,7 +47,7 @@
             </div>
             <div class="card-body row">
 
-                <div class="table-responsive col-12">
+                <div class="table-responsive d-flex col-12">
                     <table id="employee_table" class="table table-hover dataTable no-footer"
                         style="width:100% !important; table-layout:fixed">
                         <thead>
