@@ -208,7 +208,8 @@ export function printInvoice() {
     const invoiceElement = $viewInvoiceModal.find("#view_invoice_number");
 
     if (invoiceElement.length) {
-        invoiceNum = invoiceElement.text();
+        const fullText = invoiceElement.text();
+        invoiceNum = fullText.replace("Invoice #: ", "").trim();
     }
     const now = new Date();
     const dateStr =
