@@ -123,7 +123,7 @@ class PayrollController extends Controller
                 'end_date' => optional(Carbon::parse($payroll->end_date))->format('M d, Y'),
                 'working_days' => $this->getTotalWorkingDays($payroll->start_date, $payroll->end_date),
                 'period' => $this->getMonthString($payroll->month) ?? '',
-                'payroll_date' => $payroll->payroll_date->setTimezone('Asia/Manila')->format('Y-m-d\TH:i:s\Z') ?? '',
+                'payroll_date' => $payroll->payroll_date ?? '',
                 'days_present' => $payroll->days_present,
                 'days_absent' => $payroll->days_absent,
                 'reg_pay' => $payroll->regular_hour_pay ?? '',
