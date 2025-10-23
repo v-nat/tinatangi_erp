@@ -18,6 +18,7 @@ use App\Http\Controllers\AuthController;
 use App\Services\CompensationCalculator;
 use App\Http\Requests\StorePayrollRequest;
 use App\Http\Controllers\GenerateIdController;
+use App\Http\Requests\StoreBatchPayrollRequest;
 use Illuminate\Validation\ValidationException;
 
 class PayrollController extends Controller
@@ -294,6 +295,44 @@ class PayrollController extends Controller
             Log::error('Payroll Error: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Payroll generation failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function generateBatchPayroll(StoreBatchPayrollRequest $request)
+    {
+        $validated = $request->validated();
+
+        try {
+            DB::beginTransaction();
+
+            $payroll_start_date = Carbon::parse($validated['start_date']);
+            $payroll_end_date = Carbon::parse($validated['end_date']);
+
+            $employeeIds = $validated['employee_ids'];
+
+            foreach ($employeeIds as $employeeId) {
+                $employee = Employee::findOrFail($employeeId);
+
+                $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date);
+                $breakdown = $this->calculator->fromPayrollAttributes($data);
+
+                $payroll = Payroll::create(array_merge($data, $breakdown));
+                $payroll->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Batch payroll for ' . count($employeeIds) . ' employees generated successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Batch Payroll Error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Batch payroll generation failed: ' . $e->getMessage()
             ], 500);
         }
     }

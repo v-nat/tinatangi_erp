@@ -17,11 +17,12 @@ $(document).ready(function () {
         },
         columns: [
             {
-                data: null,
-                render: function (data, type, row, meta) {
-                    return meta.row + 1;
+                data: "employee_id",
+                render: function (data, type, row) {
+                    return `<input class="form-check-input employee-checkbox" type="checkbox" value="${data}">`;
                 },
                 className: "text-center",
+                orderable: false,
                 width: "45px",
             },
             { data: "name", className: "dt-left" },
@@ -118,6 +119,226 @@ $(document).ready(function () {
         $("#generatePayroll").modal("show");
     });
 
+    $("#payroll_start_date").on("change", function () {
+        const startDateStr = $(this).val();
+        if (!startDateStr) {
+            $("#payroll_end_date").prop("min", "");
+            return;
+        }
+
+        try {
+            const startDate = new Date(startDateStr);
+
+            const minEndDate = new Date(startDate.getTime());
+            minEndDate.setDate(minEndDate.getDate() + 14);
+
+            const minEndDateStr = minEndDate.toISOString().split("T")[0];
+
+            $("#payroll_end_date").prop("min", minEndDateStr);
+
+            const endDateStr = $("#payroll_end_date").val();
+            if (endDateStr) {
+                const endDate = new Date(endDateStr);
+                if (endDate < minEndDate) {
+                    $("#payroll_end_date").val("");
+                    Toast.fire({
+                        text: "End date was cleared as it must be at least 15 days after the start date.",
+                        icon: "error",
+                    });
+                }
+            }
+        } catch (e) {
+            Toast.fire("Invalid start date", e);
+            $("#payroll_end_date").prop("min", "");
+        }
+    });
+
+    $("#payroll_end_date").on("change", function () {
+        const endDateStr = $(this).val();
+        const startDateStr = $("#payroll_start_date").val();
+
+        if (!endDateStr || !startDateStr) {
+            return;
+        }
+
+        try {
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr);
+
+            const minEndDate = new Date(startDate.getTime());
+            minEndDate.setDate(minEndDate.getDate() + 14);
+
+            if (endDate < minEndDate) {
+                Toast.fire({
+                    text: "End date must be at least 15 days after the start date.",
+                    icon: "error",
+                });
+                $(this).val("");
+            }
+        } catch (e) {
+            Toast.fire("Invalid date comparison", e);
+        }
+    });
+
+    $("#select_all_employees").on("change", function () {
+        const isChecked = $(this).is(":checked");
+        employeeTable
+            .rows({ page: "current" })
+            .nodes()
+            .to$()
+            .find(".employee-checkbox")
+            .prop("checked", isChecked);
+    });
+
+    $("#employee_table tbody").on("change", ".employee-checkbox", function () {
+        if (!$(this).is(":checked")) {
+            $("#select_all_employees").prop("checked", false);
+        } else {
+            const allCheckedOnPage =
+                employeeTable
+                    .rows({ page: "current" })
+                    .nodes()
+                    .to$()
+                    .find(".employee-checkbox:not(:checked)").length === 0;
+            $("#select_all_employees").prop("checked", allCheckedOnPage);
+        }
+    });
+
+    employeeTable.on("page.dt", function () {
+        $("#select_all_employees").prop("checked", false);
+    });
+
+    $("#select_all_employees").on("change", function () {
+        const isChecked = $(this).is(":checked");
+        employeeTable
+            .rows({ page: "current" })
+            .nodes()
+            .to$()
+            .find(".employee-checkbox")
+            .prop("checked", isChecked);
+    });
+
+    $("#employee_table tbody").on("change", ".employee-checkbox", function () {
+        if (!$(this).is(":checked")) {
+            $("#select_all_employees").prop("checked", false);
+        } else {
+            const allCheckedOnPage =
+                employeeTable
+                    .rows({ page: "current" })
+                    .nodes()
+                    .to$()
+                    .find(".employee-checkbox:not(:checked)").length === 0;
+            $("#select_all_employees").prop("checked", allCheckedOnPage);
+        }
+    });
+
+    employeeTable.on("page.dt", function () {
+        $("#select_all_employees").prop("checked", false);
+    });
+
+    $("#batch_payroll_btn").on("click", function () {
+        const selectedEmployeeIds = [];
+
+        employeeTable
+            .rows()
+            .nodes()
+            .to$()
+            .find(".employee-checkbox:checked")
+            .each(function () {
+                selectedEmployeeIds.push($(this).val());
+            });
+
+        const startDate = $("#payroll_start_date").val();
+        const endDate = $("#payroll_end_date").val();
+
+        if (selectedEmployeeIds.length === 0) {
+            Toast.fire({
+                text: "No employees selected!",
+                icon: "error",
+            });
+            return;
+        }
+
+        if (!startDate || !endDate) {
+            Toast.fire({
+                text: "Please select a start and end date for the payroll period.",
+                icon: "warning",
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: "Confirm Payroll Generation",
+            html: `<div class="text-left">
+                    <ul class="list-unstyled">
+                        <li>From: ${startDate}</li>
+                        <li>To: ${endDate}</li>
+                    </ul>
+                    <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> Please verify the dates before proceeding.</p>
+                </div>`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Generate Payroll",
+            cancelButtonText: "Cancel",
+            width: "500px",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#batch_payroll_btn")
+                    .prop("disabled", true)
+                    .html(
+                        '<i class="fas fa-spinner fa-spin"></i> Processing...'
+                    );
+                $.ajax({
+                    url: "/human-resources/payroll/batch-generate",
+                    type: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                            "content"
+                        ),
+                    },
+                    data: {
+                        employee_ids: selectedEmployeeIds,
+                        start_date: startDate,
+                        end_date: endDate,
+                    },
+                    success: function (response) {
+                        Toast.fire(
+                            "Success!",
+                            "Batch payroll generation has started.",
+                            "success"
+                        );
+                        $("#payroll_start_date").val("");
+                        $("#payroll_end_date").val("");
+                        $("#payroll_end_date").prop("min", "");
+
+                        $("#select_all_employees").prop("checked", false);
+                        employeeTable
+                            .rows()
+                            .nodes()
+                            .to$()
+                            .find(".employee-checkbox")
+                            .prop("checked", false);
+
+                        employeeTable.draw(false);
+                        $("#batch_payroll_btn")
+                            .prop("disabled", false)
+                            .html("Generate Batch Payroll");
+                    },
+                    error: function (xhr) {
+                        console.error("Batch payroll error:", xhr.responseText);
+                        Toast.fire(
+                            "Error",
+                            "Could not start batch payroll.",
+                            "error"
+                        );
+                    },
+                });
+            }
+        });
+    });
+
     $("#payrollForm").on("submit", function (e) {
         e.preventDefault();
         $("#generatePayroll").modal("hide");
@@ -182,7 +403,6 @@ $(document).ready(function () {
                         });
                     },
                     complete: function () {
-                        // Re-enable button
                         submitBtn
                             .prop("disabled", false)
                             .html("Generate Payroll");

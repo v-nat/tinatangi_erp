@@ -13,24 +13,47 @@
 
     <section class="section">
         <div class="card">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h4 class="card-title mb-0">Employee List</h4>
+            <div class="card-header row py-3 d-flex justify-content-between align-items-center">
+                <div class="col-6 d-flex justify-content-start align-items-center">
+                    <h4 class="card-title mb-0 me-2">Employee List</h4>
+                    <label for="department_filter">Filter by Department:</label>
+                    <select id="department_filter" class="form-select form-select-sm ml-2 w-25">
+                        <option value="">All Departments</option>
 
-                <div class="d-flex align-items-center" style="width: 320px;">
-                  <label for="department_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Department:</label>
-                  <select id="department_filter" class="form-select form-select-sm">
-                    <option value="">All Departments</option>
-
-                  </select>
+                    </select>
                 </div>
+
+                <div class="col-6 d-flex justify-content-end">
+                    <div class="d-flex align-items-cente me-2" style="gap: 0.5rem;">
+                        <div class="d-flex align-items-center">
+                            <label for="payroll_start_date" class="payroll-date-label">Start:</label>
+                            <input type="date" id="payroll_start_date" class="form-control form-control-sm"
+                                style="width: 150px;">
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label for="payroll_end_date" class="payroll-date-label">End:</label>
+                            <input type="date" id="payroll_end_date" class="form-control form-control-sm"
+                                style="width: 150px;">
+                        </div>
+                    </div>
+
+                    <button id="batch_payroll_btn" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-money-check-dollar me-1"></i>
+                        Generate Batch Payroll
+                    </button>
+                </div>
+
             </div>
             <div class="card-body">
 
                 <div class="table-responsive">
-                    <table id="employee_table" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
+                    <table id="employee_table" class="table table-hover dataTable no-footer"
+                        style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th class="text-center" style="width: 45px;">
+                                    <input class="form-check-input" type="checkbox" id="select_all_employees">
+                                </th>
                                 <th>Name</th>
                                 <th>Position</th>
                                 <th>Department</th>

@@ -58,6 +58,7 @@ Route::middleware(['auth', 'isEmployee'])->group(function () {
     Route::get('/human-resources/payroll/view/{id}', [PayrollController::class, 'getPayrollview']);
     Route::put('/human-resources/payroll/release/{id}', [PayrollController::class, 'releasePayroll']);
     Route::post('/human-resources/payroll/generate', [PayrollController::class, 'generatePayroll'])->name('hr.payroll.generate');
+    Route::post('/human-resources/payroll/batch-generate', [PayrollController::class, 'generateBatchPayroll']);
 
     ///////////////////////////////// PAYSLIP ///////////////////////////////////////
     Route::get('/employee/payslip/{id}', [HR_Controller::class, 'employeePayslip'])->name('hr.payslip');

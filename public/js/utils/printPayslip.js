@@ -156,7 +156,7 @@ export function printPayslip(data) {
     const earnings = [
         { label: "Working Days", days: data.working_days },
         { label: "Days Present", days: data.days_present },
-        { label: "Total Hours", hours: data.total_hours },
+        { label: "Regular Hours Worked", hours: data.total_hours },
         { label: "Regular Pay", value: data.reg_pay },
         { label: "Overtime Pay", value: data.overtime_pay },
         { label: "Leave Pay", value: data.leave_pay },

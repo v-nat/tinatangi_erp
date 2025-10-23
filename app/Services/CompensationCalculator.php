@@ -48,13 +48,13 @@ class CompensationCalculator
     {
         if ($taxableIncome <= 20833) {
             return 0;
-        } elseif ($taxableIncome <= 33332) {
+        } else if ($taxableIncome <= 33332) {
             return ($taxableIncome - 20833) * 0.20;
-        } elseif ($taxableIncome <= 66666) {
+        } else if ($taxableIncome <= 66666) {
             return 2500 + ($taxableIncome - 33333) * 0.25;
-        } elseif ($taxableIncome <= 166666) {
+        } else if ($taxableIncome <= 166666) {
             return 10833.33 + ($taxableIncome - 66667) * 0.30;
-        } elseif ($taxableIncome <= 666666) {
+        } else if ($taxableIncome <= 666666) {
             return 40833.33 + ($taxableIncome - 166667) * 0.32;
         } else {
             return 200833.33 + ($taxableIncome - 666667) * 0.35;
