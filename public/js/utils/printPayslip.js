@@ -9,10 +9,9 @@ export function buildPayslipModal(data) {
             </div>
             <div class="col-md-6 text-md-end">
                 <h6 class="mb-1">Pay Period: <strong>${data.start_date} - ${
-        data.end_date
-    }</strong></h6>
+                    data.end_date
+                }</strong></h6>
                 <h6 class="mb-1">Working Days: ${data.working_days}</h6>
-                <h6 class="mb-1">Days Present: ${data.days_present}</h6>
             </div>
             <div class="col-md-6 mt-5">
                 <div class="table-responsive">
@@ -22,6 +21,10 @@ export function buildPayslipModal(data) {
                             <th>Amount</th>
                         </thead>
                         <tbody>
+                            <tr>
+                                <td class="text-bold-500">Days Present</td>
+                                <td>${data.days_present} days</td>
+                            </tr>
                             <tr>
                                 <td class="text-bold-500">Total Hours Pay</td>
                                 <td>${data.total_hours} hours</td>
@@ -154,7 +157,6 @@ function formatToManilaTime(dateString) {
  */
 export function printPayslip(data) {
     const earnings = [
-        { label: "Working Days", days: data.working_days },
         { label: "Days Present", days: data.days_present },
         { label: "Regular Hours Worked", hours: data.total_hours },
         { label: "Regular Pay", value: data.reg_pay },
@@ -245,9 +247,9 @@ export function printPayslip(data) {
                         <p class="mb-0">Position: ${data.position}</p>
                     </div>
                     <div class="col-md-6 text-md-end">
-                        <p class="mb-0">Pay Period: ${data.period}</p>
-                        <p class="mb-0">Starting Date: ${data.start_date}</p>
-                        <p class="mb-0">End Date: ${data.end_date}</p>
+                    <p class="mb-0">Starting Date: ${data.start_date}</p>
+                    <p class="mb-0">End Date: ${data.end_date}</p>
+                    <p class="mb-0">Working Days: ${data.working_days}</p>
                     </div>
                 </div>
                 <!-- Combined Earnings and Deductions Table -->
