@@ -16,7 +16,11 @@ $(document).ready(function () {
         );
     });
     $("#postal_code").on("input", function () {
-        this.value = this.value.replace(/\D/g, "");
+        value = value.replace(/[^\d]/g, '');
+        if (value.length > 4) {
+            value = value.slice(0, 4);
+        }
+        $(this).val(value);
     });
 });
 var mode = "";
