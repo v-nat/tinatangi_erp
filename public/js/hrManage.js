@@ -15,6 +15,9 @@ $(document).ready(function () {
                 .replace(/[^\d+]/g, "")
         );
     });
+    $("#postal_code").on("input", function () {
+        this.value = this.value.replace(/\D/g, "");
+    });
 });
 var mode = "";
 $(document).ready(function () {
@@ -193,12 +196,12 @@ $("#reset").click(function (e) {
     const $form = $("#employeeForm");
     $form.find("select").val("").trigger("change");
     $form.find('input[type="date"]').val("");
-    $form.find('input, select').val('');
+    $form.find("input, select").val("");
     $form.find(".is-invalid").removeClass("is-invalid");
     $form.find(".invalid-feedback").remove();
-    $("#sss").val(600.00);
-    $("#philhealth").val(450.00);
-    $("#pagibig").val(100.00);
+    $("#sss").val(600.0);
+    $("#philhealth").val(450.0);
+    $("#pagibig").val(100.0);
 });
 $("#cancel").click(function (e) {
     e.preventDefault();
