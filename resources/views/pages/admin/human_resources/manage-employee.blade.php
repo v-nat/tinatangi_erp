@@ -127,7 +127,7 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="postal_code">Postal Code </label>
-                                            <input type="tel" id="postal_code" class="form-control" name="postal_code" required
+                                            <input type="tel" id="postal_code" class="form-control" name="postal_code" min="4" max="4" required
                                                 placeholder="19611" value="{{ old('postal_code', $data['postal_code'] ?? '') }}">
                                             @error('postal_code')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
