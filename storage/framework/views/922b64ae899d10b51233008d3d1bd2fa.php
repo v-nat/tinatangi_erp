@@ -52,8 +52,8 @@
 
         <?php echo $__env->make('layouts.toast-swal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-        <script src="<?php echo e(asset('source/jquery/datatables.js')); ?>"></script>
-        <script src="<?php echo e(asset('source/jquery/datatables.min.js')); ?>"></script>
+        <script src="<?php echo e(asset('source/datatable/datatables.js')); ?>"></script>
+        <script src="<?php echo e(asset('source/datatable/datatables.min.js')); ?>"></script>
         <script src="<?php echo e(asset('assets/js/bootstrap.bundle.min.js')); ?>"></script>
         <script src="<?php echo e(asset('js/logout.js')); ?>"></script>
         <?php echo $__env->yieldContent('scripts'); ?>

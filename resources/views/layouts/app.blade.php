@@ -52,8 +52,8 @@
 
         @include('layouts.toast-swal')
 
-        <script src="{{ asset('source/jquery/datatables.js') }}"></script>
-        <script src="{{ asset('source/jquery/datatables.min.js') }}"></script>
+        <script src="{{ asset('source/datatable/datatables.js') }}"></script>
+        <script src="{{ asset('source/datatable/datatables.min.js') }}"></script>
         <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('js/logout.js') }}"></script>
         @yield('scripts')

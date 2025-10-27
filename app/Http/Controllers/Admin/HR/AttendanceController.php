@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\HR;
 
 use Carbon\Carbon;
 use App\Models\Status;
+use App\Models\Schedule;
 use App\Models\Attendance;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -83,55 +84,155 @@ class AttendanceController extends Controller
         return sprintf('%d minutes', $minutes);
     }
 
+    // public function timeIn()
+    // {
+    //     $employee = Auth::user()->id;
+
+    //     $existing = Attendance::where('employee_id', $employee)
+    //         ->whereDate('date', now())
+    //         ->exists();
+
+    //     $isOnLeave = optional($existing)->is_leave ?? false;
+
+    //     if ($existing) {
+    //         return back()->with('error', 'You already timed in today');
+    //     }
+    //     if ($isOnLeave) {
+    //         return back()->with('error', "You're on Leave today");
+    //     }
+
+    //     // Create new attendance record
+    //     Attendance::create([
+    //         'employee_id' => Auth::user()->id,
+    //         'date' => now(),
+    //         'time_in' => now(),
+    //         'status' => 7
+    //     ]);
+
+    //     return back()->with('success', 'Time in recorded');
+    // }
+
+
+
+    // public function timeOut()
+    // {
+    //     $employee = Auth::user()->id;
+
+    //     $attendance = Attendance::where('employee_id', $employee)
+    //         ->whereDate('date', now())
+    //         ->first();
+
+    //     if (!$attendance) {
+    //         return back()->with('error', 'No time in found for today');
+    //     }
+
+    //     $attendance->update([
+    //         'time_out' => now(),
+    //         'hours_worked' => $attendance->time_in->diffInMinutes(now()),
+    //         'status' => 6
+    //     ]);
+
+    //     return back()->with('success', 'Time out recorded');
+    // }
+
+
+
     public function timeIn()
     {
-        $employee = Auth::user()->id;
+        try {
+            $employeeId = Auth::user()->id;
 
-        $existing = Attendance::where('employee_id', $employee)
-            ->whereDate('date', now())
-            ->exists();
+            $existingAttendance = Attendance::where('employee_id', $employeeId)
+                ->whereDate('date', now())
+                ->first();
 
-        $isOnLeave = optional($existing)->is_leave ?? false;
+            if ($existingAttendance) {
+                if ($existingAttendance->is_leave) {
+                    return response()->json(['success' => false, 'message' => "You are on leave today and cannot time in."], 422);
+                }
+                if ($existingAttendance->time_in) {
+                    return response()->json(['success' => false, 'message' => 'You have already timed in today.'], 422);
+                }
+            }
 
-        if ($existing) {
-            return back()->with('error', 'You already timed in today');
+            $todayDayOfWeek = now()->dayOfWeek;
+            $schedule = Schedule::where('employee_id', $employeeId)
+                ->whereJsonContains('days_of_week', (string) $todayDayOfWeek)
+                ->first();
+
+            if (!$schedule) {
+                return response()->json(['success' => false, 'message' => 'You do not have a schedule for today.'], 422);
+            }
+
+            $now = now();
+
+            $scheduledTimeIn = Carbon::parse(today()->toDateString() . ' ' . Carbon::parse($schedule->time_in)->format('H:i:s'));
+
+            if ($now->isBefore($scheduledTimeIn)) {
+                return response()->json([
+                    'message' => 'You cannot time in before your scheduled start time of ' . $scheduledTimeIn->format('h:i') . '.'
+                ], 422);
+            }
+
+            $tardiness = 0;
+            $tardiness_minutes = 0;
+            $status = 7;
+
+            $gracePeriodTime = $scheduledTimeIn->copy()->addMinute();
+
+            if ($now->isAfter($gracePeriodTime)) {
+                $tardiness = 1;
+                $tardiness_minutes = abs($now->diffInMinutes($scheduledTimeIn));
+                $status = 9;
+            }
+
+            Attendance::create([
+                'employee_id' => $employeeId,
+                'date' => $now,
+                'time_in' => $now,
+                'status' => $status,
+                'tardiness' => $tardiness,
+                'tardiness_minutes' => $tardiness_minutes,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Time in recorded successfully!']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
-        if ($isOnLeave) {
-            return back()->with('error', "You're on Leave today");
-        }
-
-        // Create new attendance record
-        Attendance::create([
-            'employee_id' => Auth::user()->id,
-            'date' => now(),
-            'time_in' => now(),
-            'status' => 7
-        ]);
-
-        return back()->with('success', 'Time in recorded');
     }
 
     public function timeOut()
     {
-        $employee = Auth::user()->id;
+        try {
+            $employee = Auth::user()->id;
 
-        $attendance = Attendance::where('employee_id', $employee)
-            ->whereDate('date', now())
-            ->first();
+            $attendance = Attendance::where('employee_id', $employee)
+                ->whereDate('date', now())
+                ->first();
 
-        if (!$attendance) {
-            return back()->with('error', 'No time in found for today');
+            if (!$attendance) {
+                // MODIFIED: Return JSON error
+                return response()->json(['message' => 'No time in found for today'], 422);
+            }
+
+            if ($attendance->time_out) {
+                // MODIFIED: Return JSON error
+                return response()->json(['message' => 'You have already timed out today.'], 422);
+            }
+
+            $attendance->update([
+                'time_out' => now(),
+                'hours_worked' => $attendance->time_in->diffInMinutes(now()),
+                'status' => 6
+            ]);
+
+            // MODIFIED: Return JSON success
+            return response()->json(['success' => true, 'message' => 'Time out recorded successfully!']);
+        } catch (\Exception $e) {
+            // MODIFIED: Return JSON exception error
+            return response()->json(['message' => 'An error occurred while timing out.'], 500);
         }
-
-        $attendance->update([
-            'time_out' => now(),
-            'hours_worked' => $attendance->time_in->diffInMinutes(now()),
-            'status' => 6
-        ]);
-
-        return back()->with('success', 'Time out recorded');
     }
-
     public function attendanceList()
     {
         try {

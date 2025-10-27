@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
 class Employee extends Model
@@ -93,5 +94,11 @@ class Employee extends Model
     public function budgetRequests(): HasMany
     {
         return $this->hasMany(BudgetRelease::class, 'requested_by_id');
+    }
+    public function schedule(): HasOne
+    {
+        // An employee has one schedule.
+        // Assumes your 'schedules' table has an 'employee_id' column.
+        return $this->hasOne(Schedule::class, 'employee_id');
     }
 }

@@ -22,7 +22,7 @@ $(document).ready(function () {
             icon: "error",
             title: "Error",
             text: message,
-            timer: 500,
+            timer: 2000,
         });
     }
 
@@ -175,6 +175,7 @@ $(document).ready(function () {
                                         "Failed to record Time In"
                                 );
                             });
+                        $("#LoadingScreen").fadeOut(200);
                     }
                 });
             }

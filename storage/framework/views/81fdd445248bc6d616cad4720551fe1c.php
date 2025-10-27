@@ -90,7 +90,8 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="attendanceTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
+                    <table id="attendanceTable" class="table table-hover dataTable no-footer"
+                        style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -111,6 +112,18 @@
             </div>
         </div>
     </section>
+
+    <div class="section">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Calendar</h4>
+            </div>
+            <div class="card-body">
+
+                <div id='calendar'></div>
+            </div>
+        </div>
+    </div>
 
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
