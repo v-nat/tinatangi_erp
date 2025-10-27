@@ -1,24 +1,21 @@
 import { formatDate, formatMinutesToHours } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {
-    var calendarEl = $("#calendar")[0]; // FullCalendar needs the DOM element, not jQuery object
+    var calendarEl = $("#calendar")[0];
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        // Use the 'dayGridMonth' view
         initialView: "dayGridMonth",
 
-        // 6. ADDED themeSystem option
-        themeSystem: "bootstrap5", // Tells FullCalendar to use Bootstrap 5 classes
+        themeSystem: "bootstrap5",
 
-        // Set the calendar header
         headerToolbar: {
             left: "prev,next today",
             center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay listMonth", // Added listMonth for example
+            right: "dayGridMonth,timeGridWeek,timeGridDay listMonth",
         },
-    });
 
-    // Render the calendar
+        events: calendarEl.dataset.eventsUrl,
+    });
     calendar.render();
 
     $("#attendanceTable").DataTable({

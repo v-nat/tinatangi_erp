@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Leave;
 use App\Models\Employee;
 use App\Models\Overtime;
+use App\Models\Schedule;
 use App\Http\Controllers\Controller;
 
 class HR_Controller extends Controller
@@ -20,6 +21,34 @@ class HR_Controller extends Controller
                     ->where('created_at', '>=', Carbon::now()->subDays(30))
                     ->count();
         return view('pages.admin.human_resources.dashboard', compact('totalActive', 'newHires', 'overtimes', 'leaves'));
+    }
+
+    public function getSchedules()
+    {
+        $schedules = Schedule::with('employee.user')->get();
+        $events = [];
+
+        foreach ($schedules as $schedule) {
+            if ($schedule->employee && $schedule->employee->user) {
+                $events[] = [
+                    'id'          => $schedule->id,
+
+                    'resourceId'  => $schedule->employee_id,
+
+                    'title'       => ($schedule->employee->user->first_name . ' ' . $schedule->employee->user->last_name),
+
+                    'daysOfWeek'  => $schedule->days_of_week,
+                    'startTime'   => $schedule->time_in,
+                    'endTime'     => $schedule->time_out,
+                    'color'       => $schedule->color,
+                    'employee_id' => $schedule->employee_id,
+
+                    'allDay'      => false 
+                ];
+            }
+        }
+
+        return response()->json($events);
     }
 
     public function employees()

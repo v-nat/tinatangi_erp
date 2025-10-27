@@ -119,8 +119,7 @@
                 <h4 class="card-title">Calendar</h4>
             </div>
             <div class="card-body">
-
-                <div id='calendar'></div>
+                <div id='calendar' data-events-url="<?php echo e(route('hr.schedules')); ?>"></div></div>
             </div>
         </div>
     </div>

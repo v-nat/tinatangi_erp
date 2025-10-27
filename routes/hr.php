@@ -21,8 +21,12 @@ Route::middleware(['auth', 'isEmployee'])->group(function () {
     /////////////////////////// ATTENDANCE ///////////////////////////////////////
     Route::get('/human-resources/attendance/list', [AttendanceController::class, 'attendanceList']);
 
-    ////////////////////////////////// EMPLOYEE MANAGEMENT //////////////////////////
+    ///////////////////////////////////// DASHBOARD ////////////////////////////////////////////////
     Route::get('/human-resources', [HR_Controller::class, 'index'])->name('hr.dashboard');
+    Route::get('/human-resources/schedules', [HR_Controller::class, 'getSchedules'])->name('hr.schedules');
+
+
+    ////////////////////////////////// EMPLOYEE MANAGEMENT //////////////////////////
     Route::get('/human-resources/employees', [HR_Controller::class, 'employees'])->name('hr.employees');
     Route::get('/human-resources/employees/get', [HR_Controller::class, 'getEmployees']);
     Route::post('/human-resources/store-employee', [EmployeeController::class, 'storeEmployee']);

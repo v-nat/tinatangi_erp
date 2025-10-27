@@ -393,12 +393,12 @@ unset($__errorArgs, $__bag); ?>
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="schedule_time_in" class="form-label">Start Time</label>
-                                        <input type="time" class="form-control" id="schedule_time_in" name="time_in" value="<?php echo e(old('time_in', optional($data['schedule'] ?? null)->time_in ? Carbon\Carbon::parse(optional($data['schedule'] ?? null)->time_in)->format('H:i') : '')); ?>">
+                                        <input type="time" class="form-control" id="schedule_time_in" name="time_in" required value="<?php echo e(old('time_in', optional($data['schedule'] ?? null)->time_in ? Carbon\Carbon::parse(optional($data['schedule'] ?? null)->time_in)->format('H:i') : '')); ?>">
                                         <div class="invalid-feedback" id="time_in_error"></div>
                                     </div>
                                     <div class="col">
                                         <label for="schedule_time_out" class="form-label">End Time</label>
-                                        <input type="time" class="form-control" id="schedule_time_out" name="time_out" value="<?php echo e(old('time_out', optional($data['schedule'] ?? null)->time_out ? Carbon\Carbon::parse(optional($data['schedule'] ?? null)->time_out)->format('H:i') : '')); ?>">
+                                        <input type="time" class="form-control" id="schedule_time_out" name="time_out" required value="<?php echo e(old('time_out', optional($data['schedule'] ?? null)->time_out ? Carbon\Carbon::parse(optional($data['schedule'] ?? null)->time_out)->format('H:i') : '')); ?>">
                                         <div class="invalid-feedback" id="time_out_error"></div>
                                     </div>
                                 </div>
@@ -419,7 +419,7 @@ unset($__errorArgs, $__bag); ?>
                     </div>
 
                     
-                    <div class="card">
+                    <div class="card d-none">
                         <div class="card-header mt-6">
                             <h4 class="card-title">Salary Information</h4>
                         </div>
@@ -494,15 +494,16 @@ endif;
 unset($__errorArgs, $__bag); ?>
                                         </div>
                                     </div>
-                                    <div class="col-12 mt-3 d-flex justify-content-start">
-                                        <button id="insert-btn-employee" data-mode="<?php echo e($mode ?? 'add'); ?>" class="btn btn-primary me-1 mb-1">Add Employee</button>
-                                        <button id="edit-btn-employee" hidden class="btn btn-primary me-1 mb-1">Update Employee</button>
-                                        <button type="reset" id="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
-                                        <button type="button" id="cancel" hidden class="btn btn-light-secondary me-1 mb-1">Cancel</button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="col-12 mt-3 mb-3 d-flex justify-content-start">
+                        <button id="insert-btn-employee" data-mode="<?php echo e($mode ?? 'add'); ?>" class="btn btn-primary me-1 mb-1">Add Employee</button>
+                        <button id="edit-btn-employee" hidden class="btn btn-primary me-1 mb-1">Update Employee</button>
+                        <button type="reset" id="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                        <button type="button" id="cancel" hidden class="btn btn-light-secondary me-1 mb-1">Cancel</button>
                     </div>
                 </form>
             </div>
