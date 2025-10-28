@@ -170,7 +170,7 @@ class AttendanceController extends Controller
 
             if ($now->isBefore($scheduledTimeIn)) {
                 return response()->json([
-                    'message' => 'You cannot time in before your scheduled start time of ' . $scheduledTimeIn->format('h:i') . '.'
+                    'message' => 'You cannot time in before your scheduled start time of ' . $scheduledTimeIn->format('h:i A') . '.'
                 ], 422);
             }
 
@@ -205,31 +205,48 @@ class AttendanceController extends Controller
     {
         try {
             $employee = Auth::user()->id;
+            $now = now();
 
             $attendance = Attendance::where('employee_id', $employee)
-                ->whereDate('date', now())
+                ->whereDate('date', $now->toDateString())
                 ->first();
 
             if (!$attendance) {
-                // MODIFIED: Return JSON error
                 return response()->json(['message' => 'No time in found for today'], 422);
             }
 
             if ($attendance->time_out) {
-                // MODIFIED: Return JSON error
                 return response()->json(['message' => 'You have already timed out today.'], 422);
             }
 
-            $attendance->update([
-                'time_out' => now(),
-                'hours_worked' => $attendance->time_in->diffInMinutes(now()),
-                'status' => 6
-            ]);
+            $todayDayOfWeek = $now->dayOfWeek;
+            $schedule = Schedule::where('employee_id', $employee)
+                ->whereJsonContains('days_of_week', (string) $todayDayOfWeek)
+                ->first();
 
-            // MODIFIED: Return JSON success
+            if (!$schedule) {
+                $hours_worked = $attendance->time_in->diffInMinutes($now);
+            } else {
+                $scheduledTimeOut = Carbon::parse($now->toDateString() . ' ' . Carbon::parse($schedule->time_out)->format('H:i:s'));
+
+                $timeForCalc = $now->isAfter($scheduledTimeOut) ? $scheduledTimeOut : $now;
+
+                $hours_worked = $attendance->time_in->diffInMinutes($timeForCalc);
+            }
+
+            $dataToUpdate = [
+                'time_out' => $now,
+                'hours_worked' => $hours_worked,
+            ];
+
+            if ($attendance->status != 9) {
+                $dataToUpdate['status'] = 6;
+            }
+
+            $attendance->update($dataToUpdate);
+
             return response()->json(['success' => true, 'message' => 'Time out recorded successfully!']);
         } catch (\Exception $e) {
-            // MODIFIED: Return JSON exception error
             return response()->json(['message' => 'An error occurred while timing out.'], 500);
         }
     }
@@ -244,6 +261,7 @@ class AttendanceController extends Controller
                 ->whereDoesntHave('atEmployeeRS.position', function ($query) {
                     $query->where('level', 'ceo');
                 })
+                ->whereDate('date', now())
                 ->orderBy('date', 'desc')
                 ->orderBy('time_in', 'desc')
                 ->get();

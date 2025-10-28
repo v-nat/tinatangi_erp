@@ -4,12 +4,21 @@
 @section('headings') Payroll List @endsection
 
 @section('content')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('hr.dashboard') }}">Human Resources</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Payroll</li>
-        </ol>
-    </nav>
+    <div class="page-title mb-2">
+        <div class="row">
+            <div class="col-12 col-md-6 order-md-1 order-first pt-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ route('hr.dashboard') }}">Human Resources</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Payroll</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-12 col-md-6 order-md-2 order-last float-end d-flex justify-content-end">
+                <button id="payrollSettings" class="btn btn-primary">Payroll Settings</button>
+            </div>
+        </div>
+    </div>
     <section class="section">
         <div class="card">
             <div class="card-header">
@@ -17,7 +26,8 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="payrollsTable" class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed">
+                    <table id="payrollsTable" class="table table-hover dataTable no-footer"
+                        style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
                                 <th>#</th>

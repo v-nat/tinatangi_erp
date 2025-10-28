@@ -8,13 +8,8 @@ $(document).ready(function () {
 
         themeSystem: "bootstrap5",
 
-        headerToolbar: {
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay listMonth",
-        },
-
         events: calendarEl.dataset.eventsUrl,
+
     });
     calendar.render();
 

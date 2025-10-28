@@ -11,9 +11,11 @@ use App\Models\Schedule;
 use App\Models\Department;
 use App\Helpers\MailSender;
 use Illuminate\Http\Request;
+use App\Models\PayrollSettings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\EmployeeSalarySettings;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Controllers\GenerateIdController;
@@ -98,6 +100,44 @@ class EmployeeController extends Controller
         return response()->json($this->fetchCEO());
     }
 
+    public function getPayrollSettings()
+    {
+        // Find the first active payroll setting. You might adjust this logic
+        // if you have multiple settings, but typically there's one default.
+        $settings = PayrollSettings::where('status', 1)->first();
+
+        if (!$settings) {
+            // Return a default structure or an error if no settings are found
+            return response()->json([
+                'sss' => '0.00',
+                'philhealth' => '0.00',
+                'pagibig' => '0.00'
+            ], 404); // Not Found
+        }
+
+        return response()->json($settings);
+    }
+
+    public function getSalaryByPosition(Request $request)
+    {
+        // Validate that position_id is present in the request
+        $request->validate([
+            'position_id' => 'required|integer|exists:positions,id'
+        ]);
+
+        // Find the salary setting linked to the provided position_id
+        $salary = EmployeeSalarySettings::where('position_id', $request->position_id)
+            ->where('status', 1) // Ensure the setting is active
+            ->first();
+
+        if (!$salary) {
+            // Return a null or empty response if no salary is set for this position
+            return response()->json(null);
+        }
+
+        return response()->json($salary);
+    }
+
 
     public function storeEmployee(StoreEmployeeRequest $request)
     {
@@ -105,22 +145,16 @@ class EmployeeController extends Controller
             DB::beginTransaction();
 
             $validated = $request->validated();
-
-            // Attempt to resolve Level Enum, handle potential failure
             $levelEnum = Level::tryFrom(strtolower(trim($validated['level'] ?? '')));
             if (!$levelEnum) {
-                 // Throw validation exception or handle default/error case
                  throw ValidationException::withMessages(['level' => 'Invalid role specified.']);
             }
 
-            // Generate Employee ID
             $employee_Id = GenerateIdController::generateID('employee');
 
-            // --- Create User ---
-            // Sanitize names right before use if absolutely necessary
-            $firstName = $validated['first_name']; // Already validated as string
+            $firstName = $validated['first_name'];
             $lastName = $validated['last_name'];
-            $password = bcrypt($lastName . $firstName); // Simpler password generation
+            $password = bcrypt($lastName . $firstName);
 
             $user = User::create([
                 'id' => $employee_Id,
@@ -128,41 +162,37 @@ class EmployeeController extends Controller
                 'middle_name' => $validated['middle_name'] ?? null,
                 'last_name' => $lastName,
                 'email' => $validated['email'],
-                'password' => $password, // Use the variable
+                'password' => $password,
                 'phone_number' => $validated['phone_number'],
                 'user_type' => 'employee',
             ]);
-            // No need to call $user->save() after create()
 
-            // --- Create Employee ---
             $employee = Employee::create([
-                'id' => $employee_Id, // Use the generated ID
-                'user_id' => $employee_Id, // Use the generated ID
+                'id' => $employee_Id,
+                'user_id' => $employee_Id,
                 'address' => $validated['address'],
                 'postal_code' => $validated['postal_code'],
                 'gender' => $validated['gender'],
                 'birth_date' => $validated['birth_date'],
-                // Calculate age server-side for accuracy
                 'age' => Carbon::parse($validated['birth_date'])->age,
                 'phone_number' => $validated['phone_number'],
                 'citizenship' => $validated['citizenship'],
-                'department' => $validated['department'], // Assuming 'department' is the ID
+                'department' => $validated['department'],
                 'level' => $levelEnum,
                 'position_id' => $validated['position_id'],
                 'supervisor_id' => $validated['supervisor_id'],
-                'sss' => $validated['sss'] ?? 600.00, // Use validated or default
+                'sss' => $validated['sss'] ?? 600.00,
                 'pagibig' => $validated['pagibig'] ?? 100.00,
                 'philhealth' => $validated['philhealth'] ?? 450.00,
                 'base_salary' => $validated['base_salary'],
-                'status' => 1 // Assuming 1 means active
+                'status' => 1
             ]);
 
-            // --- ADDED: Create Schedule IF data is present ---
             if (!empty($validated['days_of_week']) && !empty($validated['time_in']) && !empty($validated['time_out'])) {
                 Schedule::create([
-                    'employee_id' => $employee->id, // Link to the created employee
-                    'title' => $validated['schedule_title'] ?? null, // Use validated field name
-                    'days_of_week' => $validated['days_of_week'], // Already an array from request/casting
+                    'employee_id' => $employee->id,
+                    'title' => $validated['schedule_title'] ?? null,
+                    'days_of_week' => $validated['days_of_week'],
                     'time_in' => $validated['time_in'],
                     'time_out' => $validated['time_out'],
                     'color' => $validated['color'] ?? null,

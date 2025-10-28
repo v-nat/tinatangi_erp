@@ -419,85 +419,89 @@ unset($__errorArgs, $__bag); ?>
                     </div>
 
                     
-                    <div class="card d-none">
-                        <div class="card-header mt-6">
-                            <h4 class="card-title">Salary Information</h4>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-body">
-                                <div class="row">
-                                     <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="base_salary">Base Salary</label> 
-                                            <input type="number" id="base_salary" class="form-control" placeholder="0.00"
-                                                name="base_salary" value="<?php echo e(old('base_salary', $data['base_salary'] ?? '')); ?>" readonly>
-                                            <?php $__errorArgs = ['base_salary'];
+                    <div class="card">
+     <div class="card-header mt-6">
+         <h4 class="card-title">Salary Information</h4>
+     </div>
+     <div class="card-content">
+         <div class="card-body">
+             <div class="row">
+                 <div class="col-md-6 col-12">
+                     <div class="form-group">
+                         <label for="base_salary">Base Salary</label>
+                         
+                         <input type="text" id="base_salary" class="form-control" placeholder="₱0.00"
+                             inputmode="decimal" name="base_salary" value="<?php echo e(old('base_salary', $data['base_salary'] ?? '')); ?>" readonly>
+                         <?php $__errorArgs = ['base_salary'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                                <div class="text-danger mt-1"><?php echo e($message); ?></div>
-                                            <?php unset($message);
+                             <div class="text-danger mt-1"><?php echo e($message); ?></div>
+                         <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="sss">SSS</label>
-                                            <input type="number" id="sss" class="form-control" placeholder="0.00"
-                                                name="sss" value="600.00" readonly>
-                                            <?php $__errorArgs = ['sss'];
+                     </div>
+                 </div>
+                 <div class="col-md-6 col-12">
+                     <div class="form-group">
+                         <label for="sss">SSS</label>
+                         
+                         <input type="text" id="sss" class="form-control" placeholder="₱0.00"
+                             inputmode="decimal" name="sss" value="<?php echo e(old('sss', $data['sss'] ?? '')); ?>" readonly>
+                         <?php $__errorArgs = ['sss'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                                <div class="text-danger mt-1"><?php echo e($message); ?></div>
-                                            <?php unset($message);
+                             <div class="text-danger mt-1"><?php echo e($message); ?></div>
+                         <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="pagibig">Pag-ibig</label>
-                                            <input type="number" id="pagibig" class="form-control" placeholder="0.00"
-                                                name="pagibig" value="100.00" readonly>
-                                            <?php $__errorArgs = ['pagibig'];
+                     </div>
+                 </div>
+                 <div class="col-md-6 col-12">
+                     <div class="form-group">
+                         <label for="pagibig">Pag-ibig</label>
+                         
+                         <input type="text" id="pagibig" class="form-control" placeholder="₱0.00"
+                             inputmode="decimal" name="pagibig" value="<?php echo e(old('pagibig', $data['pagibig'] ?? '')); ?>" readonly>
+                         <?php $__errorArgs = ['pagibig'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                                <div class="text-danger mt-1"><?php echo e($message); ?></div>
-                                            <?php unset($message);
+                             <div class="text-danger mt-1"><?php echo e($message); ?></div>
+                         <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="philhealth">Philhealth</label>
-                                            <input type="number" id="philhealth" class="form-control" placeholder="0.00"
-                                                name="philhealth" value="450.00" readonly>
-                                            <?php $__errorArgs = ['philhealth'];
+                     </div>
+                 </div>
+                 <div class="col-md-6 col-12">
+                     <div class="form-group">
+                         <label for="philhealth">Philhealth</label>
+                         
+                         <input type="text" id="philhealth" class="form-control" placeholder="₱0.00"
+                             inputmode="decimal" name="philhealth" value="<?php echo e(old('philhealth', $data['philhealth'] ?? '')); ?>" readonly>
+                         <?php $__errorArgs = ['philhealth'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                                <div class="text-danger mt-1"><?php echo e($message); ?></div>
-                                            <?php unset($message);
+                             <div class="text-danger mt-1"><?php echo e($message); ?></div>
+                         <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
 
                     <div class="col-12 mt-3 mb-3 d-flex justify-content-start">
                         <button id="insert-btn-employee" data-mode="<?php echo e($mode ?? 'add'); ?>" class="btn btn-primary me-1 mb-1">Add Employee</button>

@@ -7,6 +7,7 @@ use App\Models\Leave;
 use App\Models\Employee;
 use App\Models\Overtime;
 use App\Models\Schedule;
+use App\Models\Attendance;
 use App\Http\Controllers\Controller;
 
 class HR_Controller extends Controller
@@ -25,27 +26,21 @@ class HR_Controller extends Controller
 
     public function getSchedules()
     {
-        $schedules = Schedule::with('employee.user')->get();
-        $events = [];
+        $leaves = Attendance::with(['atEmployeeRS.userRS'])->where('is_leave', 1)
+                           // Removed: ->whereBetween('date', [$start, $end])
+                           ->get();
 
-        foreach ($schedules as $schedule) {
-            if ($schedule->employee && $schedule->employee->user) {
-                $events[] = [
-                    'id'          => $schedule->id,
-
-                    'resourceId'  => $schedule->employee_id,
-
-                    'title'       => ($schedule->employee->user->first_name . ' ' . $schedule->employee->user->last_name),
-
-                    'daysOfWeek'  => $schedule->days_of_week,
-                    'startTime'   => $schedule->time_in,
-                    'endTime'     => $schedule->time_out,
-                    'color'       => $schedule->color,
-                    'employee_id' => $schedule->employee_id,
-
-                    'allDay'      => false 
-                ];
-            }
+        foreach ($leaves as $leave) {
+            $events[] = [
+                'id'         => 'leave-' . $leave->id,
+                'resourceId' => $leave->employee_id,
+                'title'      => $leave->atEmployeeRS->userRS->full_name,
+                'start'      => Carbon::parse($leave->date)->toDateString(),
+                'allDay'     => true,
+                // 'display'    => 'background',
+                'color'      => '#dc3545',
+                'textColor'  => '#fff'
+            ];
         }
 
         return response()->json($events);

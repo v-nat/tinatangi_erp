@@ -10,6 +10,7 @@ use Carbon\CarbonPeriod;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use App\Models\BudgetRelease;
+use App\Models\PayrollSettings;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -18,16 +19,14 @@ use App\Http\Controllers\AuthController;
 use App\Services\CompensationCalculator;
 use App\Http\Requests\StorePayrollRequest;
 use App\Http\Controllers\GenerateIdController;
-use App\Http\Requests\StoreBatchPayrollRequest;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\StoreBatchPayrollRequest;
 
 class PayrollController extends Controller
 {
     public function __construct(
         protected CompensationCalculator $calculator
     ) {}
-
-    // for views
 
     public function indexOnHr()
     {
@@ -103,6 +102,8 @@ class PayrollController extends Controller
 
         try {
             $payroll = Payroll::findOrFail($id);
+            $payrollSettings = PayrollSettings::where('status', 1)->first();
+
             $remarks = null;
             if ($payroll->remarks == 'payroll released') {
                 $remarks = '<div class="alert alert-success">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
@@ -134,9 +135,9 @@ class PayrollController extends Controller
                 'gross_pay' => $payroll->gross_pay ?? '',
                 'absent_deduction' => $payroll->days_absent_deduction ?? '',
                 'tardiness_deduction' => $payroll->tardiness_deduction ?? '',
-                'sss' => self::SSS,
-                'philhealth' => self::PHILHEALTH,
-                'pagibig' => self::PAGIBIG,
+                'sss' => $payrollSettings->sss ?? 0,
+                'philhealth' => $payrollSettings->philhealth ?? 0,
+                'pagibig' => $payrollSettings->pagibig ?? 0,
                 'mandatory_deduction' => $payroll->deduction,
                 'tax_deduction' => $payroll->tardiness_deduction,
                 'salary_before_tax' => $payroll->salary_before_tax,
@@ -252,26 +253,27 @@ class PayrollController extends Controller
             case 10:
                 return "October";
             case 11:
-                return "Nomvember";
+                return "November";
             case 12:
                 return "December";
         }
     }
 
-    // VARIABLES
-    const SSS = 600;
-    const PHILHEALTH = 450;
-    const PAGIBIG = 100;
     const WORKING_DAYS_PER_MONTH = 26;
     const DAY_OFF_PER_MONTH = 4;
     const WORKING_HOURS_PER_DAY = 8;
     const OVERTIME_RATE_MULTIPLIER = 1.25;
 
-    // FUNCTIONS
     public function generatePayroll(StorePayrollRequest $request)
     {
         try {
             DB::beginTransaction();
+
+            $payrollSettings = PayrollSettings::where('status', 1)->first();
+            if (!$payrollSettings) {
+                DB::rollBack();
+                return response()->json(['error' => 'Active payroll settings not found. Please configure payroll settings first.'], 404);
+            }
 
             $validated = $request->validated();
 
@@ -279,7 +281,7 @@ class PayrollController extends Controller
             $payroll_start_date = Carbon::parse($validated['start_date']);
             $payroll_end_date = Carbon::parse($validated['end_date']);
 
-            $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date);
+            $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date, $payrollSettings);
             $breakdown = $this->calculator->fromPayrollAttributes($data);
 
             $payroll = Payroll::create(array_merge($data, $breakdown));
@@ -306,6 +308,12 @@ class PayrollController extends Controller
         try {
             DB::beginTransaction();
 
+            $payrollSettings = PayrollSettings::where('status', 1)->first();
+            if (!$payrollSettings) {
+                DB::rollBack();
+                return response()->json(['error' => 'Active payroll settings not found. Please configure payroll settings first.'], 404);
+            }
+
             $payroll_start_date = Carbon::parse($validated['start_date']);
             $payroll_end_date = Carbon::parse($validated['end_date']);
 
@@ -314,7 +322,7 @@ class PayrollController extends Controller
             foreach ($employeeIds as $employeeId) {
                 $employee = Employee::findOrFail($employeeId);
 
-                $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date);
+                $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date, $payrollSettings);
                 $breakdown = $this->calculator->fromPayrollAttributes($data);
 
                 $payroll = Payroll::create(array_merge($data, $breakdown));
@@ -327,7 +335,6 @@ class PayrollController extends Controller
                 'success' => true,
                 'message' => 'Batch payroll for ' . count($employeeIds) . ' employees generated successfully.'
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Batch Payroll Error: ' . $e->getMessage());
@@ -337,28 +344,23 @@ class PayrollController extends Controller
         }
     }
 
-    protected function initialComputation($employee, $start_date, $end_date)
+    protected function initialComputation($employee, $start_date, $end_date, PayrollSettings $payrollSettings)
     {
-        ///// for calculation
         $per_hour_rate = $this->ratePerHour($employee->base_salary);
         $working_days = $this->getTotalWorkingDays($start_date, $end_date);
         $daily_rate = $employee->base_salary / $working_days;
 
-        ///// to pass for computation
-
-        ///// pay
         $days_present = $this->getTotalPresentDays($employee->id, $start_date, $end_date);
         $total_hours_worked = $this->totalHoursWorked($employee->id, $start_date, $end_date);
         $regular_pay = $this->regularPay($employee, $working_days, $days_present);
         $overtime_pay = $this->overtimePay($employee, $start_date, $end_date, $per_hour_rate);
         $leave_pay = $this->leavePay($employee->id, $start_date, $end_date, $daily_rate, $working_days);
 
-        ///// deduct
         $days_absent = $this->absencesTotal($employee->id, $start_date, $end_date, $working_days);
         $days_absent_deduction = $this->absentDeduction($days_absent, $daily_rate);
         $tardiness_total = $this->tardinessTotal($employee->id, $start_date, $end_date);
         $tardiness_deduction = $this->tardinessDeduction($employee->id, $start_date, $end_date, $per_hour_rate);
-        $mandatory_deduction = $this->totalMandatoryDeductions();
+        $mandatory_deduction = $this->totalMandatoryDeductions($payrollSettings);
 
         return [
             'days_present' => $days_present,
@@ -415,11 +417,9 @@ class PayrollController extends Controller
 
     protected function regularPay($employee, $working_days, $days_present)
     {
-        /////// whole month
         if ($working_days >= self::WORKING_DAYS_PER_MONTH) {
             return ($days_present / self::WORKING_DAYS_PER_MONTH) * $employee->base_salary;
         }
-        ////// half month
         $dailyRate = $employee->base_salary / self::WORKING_DAYS_PER_MONTH;
         return $days_present * $dailyRate;
     }
@@ -517,11 +517,11 @@ class PayrollController extends Controller
             ->sum('tardiness_minutes');
     }
 
-    protected function totalMandatoryDeductions()
+    protected function totalMandatoryDeductions(PayrollSettings $payrollSettings)
     {
-        $sss = 600;
-        $philhealth = 450;
-        $pagibig = 100;
+        $sss = $payrollSettings->sss;
+        $philhealth = $payrollSettings->philhealth;
+        $pagibig = $payrollSettings->pagibig;
         $total = $sss + $philhealth + $pagibig;
         return [
             'sss' => $sss,

@@ -150,11 +150,11 @@ $(document).ready(function () {
                                     "error"
                                 );
                             } else {
-                                Toast.fire(
-                                    "Error",
-                                    "An unexpected error occurred.",
-                                    "error"
-                                );
+                                Toast.fire({
+                                    text: xhr.responseJSON.error,
+                                    icon: "error",
+                                    timer: 3000
+                                });
                             }
                         },
                     });

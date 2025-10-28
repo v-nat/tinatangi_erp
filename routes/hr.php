@@ -36,6 +36,8 @@ Route::middleware(['auth', 'isEmployee'])->group(function () {
     Route::get('/human-resources/manage', [EmployeeController::class, 'manage'])->name('hr.manage');
     Route::get('/human-resources/supervisors-by-department-and-position', [EmployeeController::class, 'getSupervisorForPosition']);
     Route::get('/human-resources/positions-by-department', [EmployeeController::class, 'getPositions']);
+    Route::get('/human-resources/get-payroll-settings', [EmployeeController::class, 'getPayrollSettings'])->name('hr.getPayrollSettings');
+    Route::get('/human-resources/get-salary-by-position', [EmployeeController::class, 'getSalaryByPosition'])->name('hr.getSalaryByPosition');
     Route::get('/ceo', [EmployeeController::class, 'getCEO']);
 
     //////////////////////////////// OVERTIME ///////////////////////////////////////////

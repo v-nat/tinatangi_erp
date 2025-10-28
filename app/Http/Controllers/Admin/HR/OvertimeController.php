@@ -139,6 +139,14 @@ class OvertimeController extends Controller
 
             $validated = $request->validated();
 
+            $attendanceExists = Attendance::where('employee_id', $validated['employee_id'])
+                ->whereDate('date', $validated['date'])
+                ->exists();
+
+            if (!$attendanceExists) {
+                return response()->json(['error' => 'You cannot file for overtime on a day you did not attend.'], 422);
+            }
+
             $start = Carbon::parse($validated['time_start']);
             $end = Carbon::parse($validated['time_end']);
 

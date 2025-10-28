@@ -87,11 +87,11 @@
 
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Employees Attendance</h4>
+                <h4 class="card-title">Employees Today's Attendance</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="attendanceTable" class="table table-hover dataTable no-footer"
+                    <table id="attendanceTable" class="table table-sm table-hover dataTable no-footer"
                         style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
@@ -112,18 +112,20 @@
                 </div>
             </div>
         </div>
-    </section>
 
-    <div class="section">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Calendar</h4>
+                <h4 class="card-title">Employees On Leave</h4>
             </div>
             <div class="card-body">
-                <div id='calendar' data-events-url="{{ route('hr.schedules') }}"></div></div>
+                <div id='calendar' data-events-url="{{ route('hr.schedules') }}"></div>
             </div>
         </div>
-    </div>
+        </div>
+
+
+    </section>
+
 
 @endsection
 @section('scripts')
