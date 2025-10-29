@@ -12,21 +12,23 @@ use App\Http\Controllers\AuthController;
 use App\Http\Requests\StorePositionRequest;
 use App\Http\Requests\UpdateSalarySettingRequest;
 use App\Http\Requests\UpdatePayrollSettingsRequest;
+use App\Jobs\NotifyAllEmployeesOfContributionUpdate;
+use App\Jobs\NotifyEmployeesOfSalaryUpdate;
 
 class PayrollSettingsController extends Controller
 {
     public function updatePayrollSettings(UpdatePayrollSettingsRequest $request)
     {
         if (!AuthController::checkAuthorization()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You are not authorized for this action.'
-                ], 401);
-            }
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized for this action.'
+            ], 401);
+        }
         try {
-            DB::transaction(function () use ($request) {
-                $validatedData = $request->validated();
+            $validatedData = $request->validated();
 
+            DB::transaction(function () use ($validatedData) {
                 $settings = PayrollSettings::firstOrCreate(['id' => 1]);
                 $settings->update($validatedData);
 
@@ -37,7 +39,9 @@ class PayrollSettingsController extends Controller
                 ]);
             });
 
-            return response()->json(['message' => 'Contribution settings and all employees have been updated successfully!']);
+            NotifyAllEmployeesOfContributionUpdate::dispatch($validatedData);
+
+            return response()->json(['message' => 'Contribution settings updated and notifications are being sent!']);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -68,14 +72,12 @@ class PayrollSettingsController extends Controller
             $validatedData = $request->validated();
             $baseSalary = $validatedData['base_salary'];
 
-            $ratePerDay = 0;
-            $ratePerHour = 0;
-            if ($baseSalary > 0 && self::WORKING_DAYS_PER_MONTH > 0 && self::WORKING_HOURS_PER_DAY > 0) {
-                $ratePerDay = $baseSalary / self::WORKING_DAYS_PER_MONTH;
-                $ratePerHour = $ratePerDay / self::WORKING_HOURS_PER_DAY;
-            }
+            $ratePerDay = $baseSalary / self::WORKING_DAYS_PER_MONTH;
+            $ratePerHour = $ratePerDay / self::WORKING_HOURS_PER_DAY;
 
             $salarySetting = EmployeeSalarySettings::findOrFail($id);
+
+            $affectedEmployees = Employee::where('position_id', $salarySetting->position_id)->get();
 
             DB::transaction(function () use ($salarySetting, $baseSalary, $ratePerHour, $ratePerDay) {
                 $salarySetting->update([
@@ -85,12 +87,19 @@ class PayrollSettingsController extends Controller
                 ]);
 
                 if ($salarySetting->position_id) {
-                    Employee::where('position_id', $salarySetting->position_id)
-                        ->update(['base_salary' => $baseSalary]);
+                    Employee::where('position_id', $salarySetting->position_id)->update(['base_salary' => $baseSalary]);
                 }
             });
 
-            return response()->json(['message' => 'Salary setting and affected employees have been updated successfully!']);
+            if ($affectedEmployees->isNotEmpty()) {
+                NotifyEmployeesOfSalaryUpdate::dispatch(
+                    $affectedEmployees->pluck('id'),
+                    $baseSalary,
+                    $salarySetting->position->name
+                );
+            }
+
+            return response()->json(['message' => 'Salary updated and notifications are being sent to affected employees!']);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
