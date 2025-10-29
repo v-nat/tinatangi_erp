@@ -2,7 +2,7 @@ import { reloadTable } from "./utils/reloadTable.js";
 import { printPayslip, buildPayslipModal } from "./utils/printPayslip.js";
 
 $(document).ready(function () {
-    $("#payrollsTable").DataTable({
+    const table = $("#payrollsTable").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
@@ -141,7 +141,37 @@ $(document).ready(function () {
                 width: "150px",
             },
         ],
+        initComplete: function() {
+            // Populate Department Filter
+            const departmentColumn = this.api().column(2);
+            const departmentSelect = $("#departmentFilter");
+            departmentColumn.data().unique().sort().each(function(d, j) {
+                if (d) {
+                    departmentSelect.append($("<option></option>").attr("value", d).text(d));
+                }
+            });
+
+            // Populate Period Filter
+            const periodColumn = this.api().column(4);
+            const periodSelect = $("#periodFilter");
+            periodColumn.data().unique().sort().each(function(d, j) {
+                if (d) {
+                    periodSelect.append($("<option></option>").attr("value", d).text(d));
+                }
+            });
+        }
     });
+
+    $("#departmentFilter").on("change", function() {
+        const selectedDepartment = $(this).val();
+        table.column(2).search(selectedDepartment ? "^" + selectedDepartment + "$" : "", true, false).draw();
+    });
+
+    $("#periodFilter").on("change", function() {
+        const selectedPeriod = $(this).val();
+        table.column(4).search(selectedPeriod ? "^" + selectedPeriod + "$" : "", true, false).draw();
+    });
+
     $(document).on("click", ".btn-view", function () {
         const payroll_id = $(this).data("id");
         $("#LoadingScreen").fadeIn(200);

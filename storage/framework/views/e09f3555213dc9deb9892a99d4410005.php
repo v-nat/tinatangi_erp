@@ -20,8 +20,26 @@
     </div>
     <section class="section">
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Payroll Table</h4>
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <h4 class="card-title mb-0">Payroll Table</h4>
+
+                <div class="d-flex align-items-center">
+                    <div class="me-2">
+                        <label for="departmentFilter" class="form-label mb-0 me-1">Department:</label>
+                        <select id="departmentFilter" class="form-select form-select-sm" style="width: auto;">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="periodFilter" class="form-label mb-0 me-1">Pay Period:</label>
+                        <select id="periodFilter" class="form-select form-select-sm" style="width: auto;">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                </div>
+
             </div>
             <div class="card-body">
                 <div class="table-responsive">
