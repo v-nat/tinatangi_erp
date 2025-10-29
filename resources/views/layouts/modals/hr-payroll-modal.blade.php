@@ -167,12 +167,14 @@
                     <div class="form-group mb-3">
                         <label for="add_position_name" class="form-label">Position Name</label>
                         <input type="text" id="add_position_name" name="name" class="form-control" required>
+                        <div class="invalid-feedback">Position Name is required.</div>
                     </div>
                     <div class="form-group mb-3">
                         <label for="add_department_id" class="form-label">Department</label>
                         <select id="add_department_id" name="department_id" class="form-select" required>
                             <option value="" disabled selected>Loading departments...</option>
                         </select>
+                        <div class="invalid-feedback">Department is required.</div>
                     </div>
                     <div class="form-group mb-3">
                         <label for="add_level" class="form-label">Level</label>
@@ -181,17 +183,20 @@
                             <option value="supervisor">Supervisor</option>
                             <option value="manager">Manager</option>
                         </select>
+                        <div class="invalid-feedback">Position Level is required.</div>
                     </div>
                     <div class="form-group mb-3">
                         <label for="add_base_salary" class="form-label">Base Salary</label>
                         <input type="text" id="add_base_salary" name="base_salary" class="form-control"
                             inputmode="decimal" required placeholder="₱0.00">
+                        <div class="invalid-feedback">Base Salary is required.</div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="addPositionForm" class="btn btn-primary">Create Position</button>
+                <button id="cancelAddPosition" type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="submitAddPosition" type="submit" form="addPositionForm" class="btn btn-primary">Create
+                    Position</button>
             </div>
         </div>
     </div>

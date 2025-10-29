@@ -460,7 +460,6 @@ $(document).ready(function () {
 
     $("#pr_order_date_filter").on("change", function() {
         const selectedDate = $(this).val();
-        // Search the raw date string
         purchaseRequestTable.column(3).search(selectedDate).draw();
     });
 
@@ -664,7 +663,6 @@ $(document).ready(function () {
             )
                 .then((res) => res.json())
                 .then((data) => {
-                    // Store fetched items globally
                     availableItems = data.map((p) => ({
                         id: p.id,
                         name: p.name,

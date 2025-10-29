@@ -4,16 +4,17 @@ namespace App\Http\Controllers\Admin\HR;
 
 use App\Models\Employee;
 use App\Models\Position;
+use App\Mail\SalaryUpdated;
 use App\Models\PayrollSettings;
+use App\Mail\ContributionUpdated;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use App\Models\EmployeeSalarySettings;
 use App\Http\Controllers\AuthController;
 use App\Http\Requests\StorePositionRequest;
 use App\Http\Requests\UpdateSalarySettingRequest;
 use App\Http\Requests\UpdatePayrollSettingsRequest;
-use App\Jobs\NotifyAllEmployeesOfContributionUpdate;
-use App\Jobs\NotifyEmployeesOfSalaryUpdate;
 
 class PayrollSettingsController extends Controller
 {
@@ -39,7 +40,16 @@ class PayrollSettingsController extends Controller
                 ]);
             });
 
-            NotifyAllEmployeesOfContributionUpdate::dispatch($validatedData);
+            $employees = Employee::with('user:id,email')->get();
+            foreach ($employees as $employee) {
+                if ($employee->user && $employee->user->email) {
+                    try {
+                        Mail::to($employee->user->email)->send(new ContributionUpdated($validatedData));
+                    } catch (\Exception $e) {
+                        return response()->json(['message' => $e->getMessage()], 500);
+                    }
+                }
+            }
 
             return response()->json(['message' => 'Contribution settings updated and notifications are being sent!']);
         } catch (\Exception $e) {
@@ -91,12 +101,18 @@ class PayrollSettingsController extends Controller
                 }
             });
 
-            if ($affectedEmployees->isNotEmpty()) {
-                NotifyEmployeesOfSalaryUpdate::dispatch(
-                    $affectedEmployees->pluck('id'),
-                    $baseSalary,
-                    $salarySetting->position->name
-                );
+            foreach ($affectedEmployees as $employee) {
+                if ($employee->user && $employee->user->email) {
+                     try {
+                        Mail::to($employee->user->email)->send(new SalaryUpdated(
+                            $employee->user->first_name,
+                            $salarySetting->position->name,
+                            $baseSalary
+                        ));
+                    } catch (\Exception $e) {
+                        return response()->json(['message' => $e->getMessage()], 500);
+                    }
+                }
             }
 
             return response()->json(['message' => 'Salary updated and notifications are being sent to affected employees!']);
