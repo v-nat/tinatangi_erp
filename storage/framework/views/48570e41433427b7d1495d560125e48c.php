@@ -17,7 +17,7 @@
                                 <div class="card-content">
                                     <div class="card-body">
                                         <form class="form" id="submitPORequest" enctype="multipart/form-data">
-                                            @csrf
+                                            <?php echo csrf_field(); ?>
                                             <input type="hidden" id="order_items_payload" name="order_items_payload">
                                             <div class="row">
                                                 <div class="col-md-6 col-12">
@@ -53,33 +53,31 @@
                                                         <div class="invalid-feedback">Category is required.</div>
                                                     </div>
                                                 </div>
-                                                {{-- START OF SEARCHABLE ITEM INPUT REPLACEMENT --}}
+                                                
                                                 <div class="col-md-4.5 col-4">
                                                     <div class="form-group position-relative">
                                                         <label for="item_search_input">Item</label>
-                                                        {{-- The visible input for searching --}}
+                                                        
                                                         <input type="text" id="item_search_input"
                                                             class="form-control py-3" placeholder="Search Item"
                                                             autocomplete="off">
-                                                        {{-- This hidden input stores the selected item ID for form
-                                                        submission --}}
+                                                        
                                                         <input type="hidden" id="item" name="item" required>
 
-                                                        {{-- Dropdown container for search results --}}
-                                                        {{-- **FIXED: Increased z-index to 999 to ensure it floats above
-                                                        the table.** --}}
+                                                        
+                                                        
                                                         <div id="item_results_container"
                                                             class="list-group position-absolute w-100 border shadow-lg d-none"
                                                             style="max-height: 250px; overflow-y: auto; z-index: 999; background-color: white;">
                                                             <div id="item_search_list">
-                                                                {{-- Search results will be injected here --}}
+                                                                
                                                             </div>
                                                         </div>
 
                                                         <div class="invalid-feedback">Item is required.</div>
                                                     </div>
                                                 </div>
-                                                {{-- END OF SEARCHABLE ITEM INPUT REPLACEMENT --}}
+                                                
 
                                                 <div class="col-md-1 col-4">
                                                     <div class="form-group">
@@ -181,11 +179,9 @@
                     <i class="bx bx-x d-block d-sm-none"></i>
                     <span class="d-none d-sm-block">Close</span>
                 </button>
-                {{-- <button type="button" class="btn btn-primary ml-1" data-bs-dismiss="modal">
-                    <i class="bx bx-check d-block d-sm-none"></i>
-                    <span class="d-none d-sm-block">Accept</span>
-                </button> --}}
+                
             </div>
         </div>
     </div>
 </div>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modals/procurement-purchase-request-modal.blade.php ENDPATH**/ ?>

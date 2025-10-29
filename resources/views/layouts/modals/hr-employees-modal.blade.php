@@ -1,5 +1,6 @@
 <!--primary theme Modal -->
-<div class="modal fade text-left" id="generatePayroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel160">
+<div class="modal fade text-left" id="generatePayroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel160"
+    data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header bg-info">

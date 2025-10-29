@@ -14,7 +14,7 @@
                 </nav>
             </div>
             <div class="col-12 col-md-6 order-md-2 order-last float-end d-flex justify-content-end">
-                <button id="payrollSettings" class="btn btn-primary">Payroll Settings</button>
+                <button id="payrollSettingsBtn" class="btn btn-primary">Payroll Settings</button>
             </div>
         </div>
     </div>

@@ -142,7 +142,6 @@ $(document).ready(function () {
             },
         ],
         initComplete: function() {
-            // Populate Department Filter
             const departmentColumn = this.api().column(2);
             const departmentSelect = $("#departmentFilter");
             departmentColumn.data().unique().sort().each(function(d, j) {
@@ -151,7 +150,6 @@ $(document).ready(function () {
                 }
             });
 
-            // Populate Period Filter
             const periodColumn = this.api().column(4);
             const periodSelect = $("#periodFilter");
             periodColumn.data().unique().sort().each(function(d, j) {
@@ -171,6 +169,11 @@ $(document).ready(function () {
         const selectedPeriod = $(this).val();
         table.column(4).search(selectedPeriod ? "^" + selectedPeriod + "$" : "", true, false).draw();
     });
+
+    $("#payrollSettingsBtn").click(function () {
+        $("#payrollSettings").modal("show");
+    });
+
 
     $(document).on("click", ".btn-view", function () {
         const payroll_id = $(this).data("id");

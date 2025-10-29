@@ -25,7 +25,7 @@
 
 
 <div class="modal fade text-left" id="RejectionConfirmation" tabindex="-1" role="dialog"
-    aria-labelledby="myModalLabel120" aria-hidden="true">
+    aria-labelledby="myModalLabel120" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header bg-danger">
@@ -59,4 +59,5 @@
             </div>
         </div>
     </div>
-</div><?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modals/finance-payroll-modal.blade.php ENDPATH**/ ?>
+</div>
+<?php /**PATH C:\Users\Nathaniel\Documents\Nathaniel\Thesis A\tinatangi_erp\resources\views/layouts/modals/finance-payroll-modal.blade.php ENDPATH**/ ?>

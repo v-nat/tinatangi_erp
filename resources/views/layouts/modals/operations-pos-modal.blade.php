@@ -1,6 +1,6 @@
 <!--warning theme Modal -->
 <div class="modal fade text-left" id="addItemOrder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel120"
-    aria-hidden="true">
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header bg-warning">
@@ -109,7 +109,7 @@
 <!--warning theme Modal -->
 <span id="cashierNameDisplay" class="d-none">{{ auth()->user()->full_name }}</span>
 <div class="modal fade text-left" id="orderFinalization" tabindex="-1" role="dialog" aria-labelledby="myModalLabel120"
-    aria-hidden="true">
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header bg-warning">
