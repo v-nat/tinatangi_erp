@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\HR;
 use Carbon\Carbon;
 use App\Enums\Level;
 use App\Models\User;
+use App\Models\Status;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\Schedule;
@@ -43,7 +44,6 @@ class EmployeeController extends Controller
             return response()->json([], 404);
         }
 
-        // If the level is 'manager', return CEO(s) directly
         if ($position->level === 'manager') {
             $supervisorIds = Employee::where('level', 'ceo')->pluck('id');
         } else {
@@ -102,12 +102,9 @@ class EmployeeController extends Controller
 
     public function getPayrollSettings()
     {
-        // Find the first active payroll setting. You might adjust this logic
-        // if you have multiple settings, but typically there's one default.
         $settings = PayrollSettings::where('status', 1)->first();
 
         if (!$settings) {
-            // Return a default structure or an error if no settings are found
             return response()->json([
                 'sss' => '0.00',
                 'philhealth' => '0.00',
@@ -120,22 +117,46 @@ class EmployeeController extends Controller
 
     public function getSalaryByPosition(Request $request)
     {
-        // Validate that position_id is present in the request
         $request->validate([
             'position_id' => 'required|integer|exists:positions,id'
         ]);
 
-        // Find the salary setting linked to the provided position_id
         $salary = EmployeeSalarySettings::where('position_id', $request->position_id)
-            ->where('status', 1) // Ensure the setting is active
+            ->where('status', 1)
             ->first();
 
         if (!$salary) {
-            // Return a null or empty response if no salary is set for this position
             return response()->json(null);
         }
 
         return response()->json($salary);
+    }
+
+    public function getSalarySettings()
+    {
+        try {
+            $salaries = EmployeeSalarySettings::with(['position.department'])
+                ->where('status', 1)
+                ->orderBy('updated_at', 'desc')->get();
+
+            return response()->json([
+                'data' => $salaries->map(function ($setting) {
+                    return [
+                        'id'            => $setting->id,
+                        'position_id'   => $setting->position_id,
+                        'position'      => optional($setting->position)->name,
+                        'department'    => optional($setting->position)->department->name,
+                        'base_salary'   => $setting->base_salary,
+                        'rate_per_hour' => $setting->rate_per_hour,
+                        'rate_per_day'  => $setting->rate_per_day,
+                        'status'        => Status::getStatusText($setting->status),
+                    ];
+                })
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch salary settings list: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
 

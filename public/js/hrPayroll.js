@@ -2,6 +2,423 @@ import { reloadTable } from "./utils/reloadTable.js";
 import { printPayslip, buildPayslipModal } from "./utils/printPayslip.js";
 
 $(document).ready(function () {
+    let positionsTable = null;
+    const WORKING_DAYS_PER_MONTH = 26;
+    const WORKING_HOURS_PER_DAY = 8;
+
+    function formatToCurrency(value) {
+        if (value === null || value === undefined || value === "") return "";
+        const number = Number(String(value).replace(/[₱,]/g, ""));
+        if (isNaN(number) || !isFinite(number)) return "";
+        return new Intl.NumberFormat("en-PH", {
+            style: "currency",
+            currency: "PHP",
+        }).format(number);
+    }
+
+    function formatToNumber(value) {
+        if (typeof value !== "string") return value;
+        return value.replace(/[₱,]/g, "").trim();
+    }
+
+    $("body")
+        .on("focus", 'input[inputmode="decimal"]', function () {
+            if (!$(this).is("[readonly]")) {
+                $(this).val(formatToNumber($(this).val()));
+            }
+        })
+        .on("blur", 'input[inputmode="decimal"]', function () {
+            if (!$(this).is("[readonly]")) {
+                $(this).val(formatToCurrency($(this).val()));
+            }
+            if ($(this).attr("id") === "edit_base_salary") {
+                calculateAndUpdateRates();
+            }
+        });
+
+    function calculateRates(baseSalary) {
+        const base = parseFloat(baseSalary) || 0;
+        let ratePerHour = 0;
+        let ratePerDay = 0;
+        if (
+            base > 0 &&
+            WORKING_DAYS_PER_MONTH > 0 &&
+            WORKING_HOURS_PER_DAY > 0
+        ) {
+            ratePerDay = base / WORKING_DAYS_PER_MONTH;
+            ratePerHour = ratePerDay / WORKING_HOURS_PER_DAY;
+        }
+        return {
+            rate_per_hour: ratePerHour,
+            rate_per_day: ratePerDay,
+        };
+    }
+
+    function calculateAndUpdateRates() {
+        const baseSalaryValue = formatToNumber($("#edit_base_salary").val());
+        const rates = calculateRates(baseSalaryValue);
+        $("#edit_rate_per_hour").val(
+            formatToCurrency(rates.rate_per_hour.toFixed(2))
+        );
+        $("#edit_rate_per_day").val(
+            formatToCurrency(rates.rate_per_day.toFixed(2))
+        );
+    }
+
+    $("#payrollSettingsBtn").click(function () {
+        if (!positionsTable) {
+            positionsTable = $("#positionsTable").DataTable({
+                processing: true,
+                serverSide: false,
+                ajax: {
+                    url: "/human-resources/get-salary-settings",
+                    type: "GET",
+                    dataSrc: "data",
+                    error: function (xhr, error, thrown) {
+                        console.error(
+                            "Error loading salary settings:",
+                            error,
+                            thrown
+                        );
+                        Toast.fire(
+                            "Error",
+                            "Could not load salary settings.",
+                            "error"
+                        );
+                    },
+                },
+                columns: [
+                    {
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
+                        },
+                        className: "text-center",
+                        width: "45px",
+                    },
+                    {
+                        data: "position",
+                        className: "dt-left",
+                    },
+                    {
+                        data: "base_salary",
+                        className: "dt-left",
+                        render: formatToCurrency,
+                    },
+                    {
+                        data: "rate_per_hour",
+                        className: "dt-left",
+                        render: formatToCurrency,
+                    },
+                    {
+                        data: "rate_per_day",
+                        className: "dt-left",
+                        render: formatToCurrency,
+                    },
+                    {
+                        data: "department",
+                        className: "dt-left",
+                    },
+                    {
+                        data: "status",
+                        className: "text-center",
+                        width: "150px",
+                    },
+                    {
+                        data: "id",
+                        render: function (data, type, row) {
+                            return `<div class="action-btns">
+                                    <a href="#" class="btn icon btn-sm btn-primary edit-setting-btn bs-tooltip"
+                                       data-id="${data}" title="Edit Salary">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                </div>`;
+                        },
+                        className: "text-center",
+                        width: "100px",
+                    },
+                ],
+                initComplete: function () {
+                    const departmentColumn = this.api().column(5);
+                    const select = $("#positionDepartmentFilter");
+
+                    departmentColumn
+                        .data()
+                        .unique()
+                        .sort()
+                        .each(function (d, j) {
+                            if (d) {
+                                select.append(
+                                    $("<option></option>")
+                                        .attr("value", d)
+                                        .text(d)
+                                );
+                            }
+                        });
+                },
+            });
+            $("#positionDepartmentFilter").on("change", function () {
+                const selectedDepartment = $(this).val();
+                
+                positionsTable
+                    .column(5)
+                    .search(
+                        selectedDepartment
+                            ? "^" + selectedDepartment + "$"
+                            : "",
+                        true, 
+                        false 
+                    )
+                    .draw();
+            });
+        } else {
+            positionsTable.ajax.reload();
+        }
+        fetchAndSetDeductions();
+        $("#payrollSettings").modal("show");
+    });
+
+    function fetchAndSetDeductions() {
+        $.ajax({
+            url: "/human-resources/get-payroll-settings",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                if (data) {
+                    $("#sss").val(formatToCurrency(data.sss));
+                    $("#philhealth").val(formatToCurrency(data.philhealth));
+                    $("#pagibig").val(formatToCurrency(data.pagibig));
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching payroll settings:", error);
+            },
+        });
+    }
+
+    $("#payrollSettingsForm").on("submit", function (e) {
+        e.preventDefault();
+        const form = $(this);
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will update the default SSS, PhilHealth, and Pag-IBIG contributions for ALL employees. This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, update all!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.find('input[inputmode="decimal"]').each(function () {
+                    $(this).val(formatToNumber($(this).val()));
+                });
+                $("#LoadingScreen").fadeIn(200);
+                $.ajax({
+                    url: "/human-resources/update-payroll-settings",
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function (response) {
+                        $("#LoadingScreen").fadeOut(200);
+                        Toast.fire({
+                            icon: "success",
+                            title: "Success!",
+                            text: response.message,
+                        });
+                        form.find('input[inputmode="decimal"]').each(
+                            function () {
+                                $(this).val(formatToCurrency($(this).val()));
+                            }
+                        );
+                    },
+                    error: function (xhr) {
+                        $("#LoadingScreen").fadeOut(200);
+                        Toast.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "Failed to update settings.",
+                        });
+                        form.find('input[inputmode="decimal"]').each(
+                            function () {
+                                $(this).val(formatToCurrency($(this).val()));
+                            }
+                        );
+                    },
+                });
+            }
+        });
+    });
+
+    $("#positionsTable").on("click", ".edit-setting-btn", function () {
+        const settingId = $(this).data("id");
+        const $form = $("#editSalarySettingForm");
+        $form[0].reset();
+        $form.attr(
+            "action",
+            `/human-resources/update-salary-setting/${settingId}`
+        );
+        $("#modal-position-name").text("Loading...");
+        loadSettingData(settingId);
+    });
+
+    $("#editSalarySettingModal").on("input", "#edit_base_salary", function () {
+        calculateAndUpdateRates();
+    });
+
+    function loadSettingData(settingId) {
+        $.ajax({
+            url: `/human-resources/get-salary-setting/${settingId}`,
+            type: "GET",
+            success: function (data) {
+                if (data) {
+                    $("#modal-position-name").text(data.position.name);
+                    $("#edit_base_salary").val(
+                        formatToCurrency(data.base_salary)
+                    );
+                    calculateAndUpdateRates();
+                    $("#editSalarySettingModal").modal("show");
+                }
+            },
+            error: function () {
+                Toast.fire("Error", "Failed to load setting details.", "error");
+            },
+        });
+    }
+
+    $("#editSalarySettingForm").on("submit", function (e) {
+        e.preventDefault();
+        const form = $(this);
+        const positionName = $("#modal-position-name").text();
+
+        Swal.fire({
+            title: "Confirm Salary Change?",
+            html: `This will update the base salary for <b>all employees</b> with the "<b>${positionName}</b>" position. Are you sure you want to proceed?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, update it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const baseSalaryValue = formatToNumber(
+                    $("#edit_base_salary").val()
+                );
+                const formData = {
+                    base_salary: baseSalaryValue,
+                    _token: form.find('input[name="_token"]').val(),
+                    _method: form.find('input[name="_method"]').val(),
+                };
+                $("#LoadingScreen").fadeIn(200);
+                $.ajax({
+                    url: form.attr("action"),
+                    type: "POST",
+                    data: formData,
+                    success: function (response) {
+                        $("#LoadingScreen").fadeOut(200);
+                        $("#editSalarySettingModal").modal("hide");
+                        Toast.fire({
+                            icon: "success",
+                            title: "Updated!",
+                            text: response.message,
+                        });
+                        if (positionsTable) {
+                            positionsTable.ajax.reload();
+                        }
+                    },
+                    error: function (xhr) {
+                        $("#LoadingScreen").fadeOut(200);
+                        let errorMessage = "Failed to update salary setting.";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                            if (xhr.responseJSON.errors) {
+                                console.error(
+                                    "Validation Errors:",
+                                    xhr.responseJSON.errors
+                                );
+                            }
+                        }
+                        Toast.fire("Error", errorMessage, "error");
+                    },
+                });
+            }
+        });
+    });
+
+    $("#payrollSettings").on("click", "#addNewPositionBtn", function () {
+        const $form = $("#addPositionForm");
+        $form[0].reset();
+        $("#addPositionModal").modal("show");
+        populateDepartmentDropdown();
+    });
+
+    function populateDepartmentDropdown() {
+        const $select = $("#add_department_id");
+        $.ajax({
+            url: "/human-resources/departments/list",
+            type: "GET",
+            success: function (response) {
+                $select.html(
+                    '<option value="" disabled selected>Select a Department</option>'
+                );
+                response.data.forEach(function (department) {
+                    $select.append(
+                        `<option value="${department.id}">${department.name}</option>`
+                    );
+                });
+            },
+            error: function () {
+                $select.html(
+                    '<option value="">Could not load departments</option>'
+                );
+                Toast.fire("Error", "Failed to load department list.", "error");
+            },
+        });
+    }
+
+    $("#addPositionForm").on("submit", function (e) {
+        e.preventDefault();
+        const form = $(this);
+
+        const formData = form.serializeArray();
+        formData.forEach(function (field) {
+            if (field.name === "base_salary") {
+                field.value = formatToNumber(field.value);
+            }
+        });
+        $("#LoadingScreen").fadeIn(200);
+        $.ajax({
+            url: "/human-resources/store-position-and-salary",
+            type: "POST",
+            data: $.param(formData),
+            success: function (response) {
+                $("#LoadingScreen").fadeOut(200);
+                $("#addPositionModal").modal("hide");
+                Toast.fire({
+                    icon: "success",
+                    title: "Created!",
+                    text: response.message,
+                });
+                if (positionsTable) {
+                    positionsTable.ajax.reload();
+                }
+            },
+            error: function (xhr) {
+                $("#LoadingScreen").fadeOut(200);
+                let errorMessage = "Failed to create position.";
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage = Object.values(xhr.responseJSON.errors)
+                        .flat()
+                        .join("<br>");
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                Toast.fire("Error", errorMessage, "error");
+            },
+        });
+    });
+
+    ///////////////////////////////////////////////////////
+
     const table = $("#payrollsTable").DataTable({
         processing: true,
         serverSide: false,
@@ -141,39 +558,60 @@ $(document).ready(function () {
                 width: "150px",
             },
         ],
-        initComplete: function() {
+        initComplete: function () {
             const departmentColumn = this.api().column(2);
             const departmentSelect = $("#departmentFilter");
-            departmentColumn.data().unique().sort().each(function(d, j) {
-                if (d) {
-                    departmentSelect.append($("<option></option>").attr("value", d).text(d));
-                }
-            });
+            departmentColumn
+                .data()
+                .unique()
+                .sort()
+                .each(function (d, j) {
+                    if (d) {
+                        departmentSelect.append(
+                            $("<option></option>").attr("value", d).text(d)
+                        );
+                    }
+                });
 
             const periodColumn = this.api().column(4);
             const periodSelect = $("#periodFilter");
-            periodColumn.data().unique().sort().each(function(d, j) {
-                if (d) {
-                    periodSelect.append($("<option></option>").attr("value", d).text(d));
-                }
-            });
-        }
+            periodColumn
+                .data()
+                .unique()
+                .sort()
+                .each(function (d, j) {
+                    if (d) {
+                        periodSelect.append(
+                            $("<option></option>").attr("value", d).text(d)
+                        );
+                    }
+                });
+        },
     });
 
-    $("#departmentFilter").on("change", function() {
+    $("#departmentFilter").on("change", function () {
         const selectedDepartment = $(this).val();
-        table.column(2).search(selectedDepartment ? "^" + selectedDepartment + "$" : "", true, false).draw();
+        table
+            .column(2)
+            .search(
+                selectedDepartment ? "^" + selectedDepartment + "$" : "",
+                true,
+                false
+            )
+            .draw();
     });
 
-    $("#periodFilter").on("change", function() {
+    $("#periodFilter").on("change", function () {
         const selectedPeriod = $(this).val();
-        table.column(4).search(selectedPeriod ? "^" + selectedPeriod + "$" : "", true, false).draw();
+        table
+            .column(4)
+            .search(
+                selectedPeriod ? "^" + selectedPeriod + "$" : "",
+                true,
+                false
+            )
+            .draw();
     });
-
-    $("#payrollSettingsBtn").click(function () {
-        $("#payrollSettings").modal("show");
-    });
-
 
     $(document).on("click", ".btn-view", function () {
         const payroll_id = $(this).data("id");
@@ -243,7 +681,6 @@ $(document).ready(function () {
                     }
                 },
                 error: function (xhr) {
-                    // console.error('Error response:', xhr);
                     $("#LoadingScreen").fadeOut(200);
                     if (xhr.responseJSON?.errors) {
                         let errorMessages = Object.values(

@@ -127,7 +127,7 @@
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="postal_code">Postal Code </label>
+                                            <label for="postal_code">Postal Code *</label>
                                              <input type="tel" id="postal_code" class="form-control" name="postal_code" pattern="^\d{4}$" maxlength="4" required
                                                 inputmode="numeric" placeholder="4114" value="{{ old('postal_code', $data['postal_code'] ?? '') }}">
                                             @error('postal_code')
@@ -161,7 +161,7 @@
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <label for="citizenship">Citizenship</label>
+                                            <label for="citizenship">Citizenship *</label>
                                             <input type="text" id="citizenship" class="form-control" name="citizenship" required
                                                 placeholder="Enter Citizenship" value="{{ old('citizenship', $data['citizenship'] ?? '') }}">
                                             @error('citizenship')
@@ -244,7 +244,7 @@
 
                     {{-- SCHEDULE --}}
 
-                        <div class="card">
+                    <div class="card">
                         <div class="card-header mt-6">
                             <h4 class="card-title">Schedule Management</h4>
                         </div>
@@ -321,60 +321,56 @@
 
                     {{-- SALARY CARD --}}
                     <div class="card">
-     <div class="card-header mt-6">
-         <h4 class="card-title">Salary Information</h4>
-     </div>
-     <div class="card-content">
-         <div class="card-body">
-             <div class="row">
-                 <div class="col-md-6 col-12">
-                     <div class="form-group">
-                         <label for="base_salary">Base Salary</label>
-                         {{-- Changed type to "text" to allow currency symbols --}}
-                         <input type="text" id="base_salary" class="form-control" placeholder="₱0.00"
-                             inputmode="decimal" name="base_salary" value="{{ old('base_salary', $data['base_salary'] ?? '') }}" readonly>
-                         @error('base_salary')
-                             <div class="text-danger mt-1">{{ $message }}</div>
-                         @enderror
-                     </div>
-                 </div>
-                 <div class="col-md-6 col-12">
-                     <div class="form-group">
-                         <label for="sss">SSS</label>
-                         {{-- Changed type and updated value to be dynamic --}}
-                         <input type="text" id="sss" class="form-control" placeholder="₱0.00"
-                             inputmode="decimal" name="sss" value="{{ old('sss', $data['sss'] ?? '') }}" readonly>
-                         @error('sss')
-                             <div class="text-danger mt-1">{{ $message }}</div>
-                         @enderror
-                     </div>
-                 </div>
-                 <div class="col-md-6 col-12">
-                     <div class="form-group">
-                         <label for="pagibig">Pag-ibig</label>
-                         {{-- Changed type and updated value to be dynamic --}}
-                         <input type="text" id="pagibig" class="form-control" placeholder="₱0.00"
-                             inputmode="decimal" name="pagibig" value="{{ old('pagibig', $data['pagibig'] ?? '') }}" readonly>
-                         @error('pagibig')
-                             <div class="text-danger mt-1">{{ $message }}</div>
-                         @enderror
-                     </div>
-                 </div>
-                 <div class="col-md-6 col-12">
-                     <div class="form-group">
-                         <label for="philhealth">Philhealth</label>
-                         {{-- Changed type and updated value to be dynamic --}}
-                         <input type="text" id="philhealth" class="form-control" placeholder="₱0.00"
-                             inputmode="decimal" name="philhealth" value="{{ old('philhealth', $data['philhealth'] ?? '') }}" readonly>
-                         @error('philhealth')
-                             <div class="text-danger mt-1">{{ $message }}</div>
-                         @enderror
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
- </div>
+                        <div class="card-header mt-6">
+                            <h4 class="card-title">Salary Information</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="base_salary">Base Salary</label>
+                                            <input type="text" id="base_salary" class="form-control" placeholder="₱0.00"
+                                                inputmode="decimal" name="base_salary" value="{{ old('base_salary', $data['base_salary'] ?? '') }}" readonly>
+                                            @error('base_salary')
+                                                <div class="text-danger mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="sss">SSS</label>
+                                            <input type="text" id="sss" class="form-control" placeholder="₱0.00"
+                                                inputmode="decimal" name="sss" value="{{ old('sss', $data['sss'] ?? '') }}" readonly>
+                                            @error('sss')
+                                                <div class="text-danger mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="pagibig">Pag-ibig</label>
+                                            <input type="text" id="pagibig" class="form-control" placeholder="₱0.00"
+                                                inputmode="decimal" name="pagibig" value="{{ old('pagibig', $data['pagibig'] ?? '') }}" readonly>
+                                            @error('pagibig')
+                                                <div class="text-danger mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="philhealth">Philhealth</label>
+                                            <input type="text" id="philhealth" class="form-control" placeholder="₱0.00"
+                                                inputmode="decimal" name="philhealth" value="{{ old('philhealth', $data['philhealth'] ?? '') }}" readonly>
+                                            @error('philhealth')
+                                                <div class="text-danger mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="col-12 mt-3 mb-3 d-flex justify-content-start">
                         <button id="insert-btn-employee" data-mode="{{$mode ?? 'add'}}" class="btn btn-primary me-1 mb-1">Add Employee</button>

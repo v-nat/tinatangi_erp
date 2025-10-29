@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\HR\AttendanceController;
 use App\Http\Controllers\Admin\HR\HR_Controller;
-use App\Http\Controllers\Admin\HR\EmployeeController;
-use App\Http\Controllers\Admin\HR\OvertimeController;
 use App\Http\Controllers\Admin\HR\LeaveController;
 use App\Http\Controllers\Admin\HR\PayrollController;
+use App\Http\Controllers\Admin\HR\EmployeeController;
+use App\Http\Controllers\Admin\HR\OvertimeController;
+use App\Http\Controllers\Admin\HR\AttendanceController;
+use App\Http\Controllers\Admin\HR\DepartmentController;
+use App\Http\Controllers\Admin\HR\PayrollSettingsController;
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/this-day', [AttendanceController::class, 'thisDay']);
@@ -36,8 +38,16 @@ Route::middleware(['auth', 'isEmployee'])->group(function () {
     Route::get('/human-resources/manage', [EmployeeController::class, 'manage'])->name('hr.manage');
     Route::get('/human-resources/supervisors-by-department-and-position', [EmployeeController::class, 'getSupervisorForPosition']);
     Route::get('/human-resources/positions-by-department', [EmployeeController::class, 'getPositions']);
-    Route::get('/human-resources/get-payroll-settings', [EmployeeController::class, 'getPayrollSettings'])->name('hr.getPayrollSettings');
-    Route::get('/human-resources/get-salary-by-position', [EmployeeController::class, 'getSalaryByPosition'])->name('hr.getSalaryByPosition');
+
+    ////////////////////////////////// PAYROLL SETTINGS AND POSITIONS SALARIES //////////////////////////
+    Route::get('/human-resources/get-payroll-settings', [EmployeeController::class, 'getPayrollSettings']);
+    Route::get('/human-resources/get-salary-by-position', [EmployeeController::class, 'getSalaryByPosition']);
+    Route::get('/human-resources/get-salary-settings', [EmployeeController::class, 'getSalarySettings']);
+    Route::post('/human-resources/update-payroll-settings', [PayrollSettingsController::class, 'updatePayrollSettings']);
+    Route::get('/human-resources/get-salary-setting/{id}', [PayrollSettingsController::class, 'getSingleSalarySetting']);
+    Route::put('/human-resources/update-salary-setting/{id}', [PayrollSettingsController::class, 'updateSalarySetting']);
+    Route::get('/human-resources/departments/list', [DepartmentController::class, 'getDepartmentList']);
+    Route::post('/human-resources/store-position-and-salary', [PayrollSettingsController::class, 'storePositionAndSalary']);
     Route::get('/ceo', [EmployeeController::class, 'getCEO']);
 
     //////////////////////////////// OVERTIME ///////////////////////////////////////////
