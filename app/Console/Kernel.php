@@ -18,7 +18,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         // ADD THIS LINE
-        $schedule->command('queue:work --stop-when-empty')->everyMinute()->withoutOverlapping();
+        $schedule->command('test:cron')->everyMinute();
+        // $schedule->command('queue:work --stop-when-empty')->everyMinute()->withoutOverlapping();
     }
 
     /**
