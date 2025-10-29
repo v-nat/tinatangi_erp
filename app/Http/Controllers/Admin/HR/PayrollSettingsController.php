@@ -8,6 +8,7 @@ use App\Models\PayrollSettings;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\EmployeeSalarySettings;
+use App\Http\Controllers\AuthController;
 use App\Http\Requests\StorePositionRequest;
 use App\Http\Requests\UpdateSalarySettingRequest;
 use App\Http\Requests\UpdatePayrollSettingsRequest;
@@ -16,6 +17,12 @@ class PayrollSettingsController extends Controller
 {
     public function updatePayrollSettings(UpdatePayrollSettingsRequest $request)
     {
+        if (!AuthController::checkAuthorization()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized for this action.'
+                ], 401);
+            }
         try {
             DB::transaction(function () use ($request) {
                 $validatedData = $request->validated();
@@ -51,6 +58,12 @@ class PayrollSettingsController extends Controller
 
     public function updateSalarySetting(UpdateSalarySettingRequest $request, $id)
     {
+        if (!AuthController::checkAuthorization()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized for this action.'
+            ], 401);
+        }
         try {
             $validatedData = $request->validated();
             $baseSalary = $validatedData['base_salary'];
@@ -85,6 +98,12 @@ class PayrollSettingsController extends Controller
 
     public function storePositionAndSalary(StorePositionRequest $request)
     {
+        if (!AuthController::checkAuthorization()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized for this action.'
+            ], 401);
+        }
         try {
             $validatedData = $request->validated();
             $baseSalary = $validatedData['base_salary'];
@@ -92,8 +111,8 @@ class PayrollSettingsController extends Controller
             $ratePerDay = 0;
             $ratePerHour = 0;
             if ($baseSalary > 0 && self::WORKING_DAYS_PER_MONTH > 0 && self::WORKING_HOURS_PER_DAY > 0) {
-                 $ratePerDay = $baseSalary / self::WORKING_DAYS_PER_MONTH;
-                 $ratePerHour = $ratePerDay / self::WORKING_HOURS_PER_DAY;
+                $ratePerDay = $baseSalary / self::WORKING_DAYS_PER_MONTH;
+                $ratePerHour = $ratePerDay / self::WORKING_HOURS_PER_DAY;
             }
 
             $newPosition = DB::transaction(function () use ($validatedData, $baseSalary, $ratePerHour, $ratePerDay) {
@@ -116,7 +135,6 @@ class PayrollSettingsController extends Controller
             });
 
             return response()->json(['message' => 'New position "' . $newPosition->name . '" created successfully!']);
-
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

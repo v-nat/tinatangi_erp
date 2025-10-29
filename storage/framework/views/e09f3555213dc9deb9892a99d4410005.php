@@ -13,9 +13,11 @@
                     </ol>
                 </nav>
             </div>
+            <?php if(\App\Http\Controllers\AuthController::checkAuthorization()): ?>
             <div class="col-12 col-md-6 order-md-2 order-last float-end d-flex justify-content-end">
                 <button id="payrollSettingsBtn" class="btn btn-primary">Payroll Settings</button>
             </div>
+            <?php endif; ?>
         </div>
     </div>
     <section class="section">
