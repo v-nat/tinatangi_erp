@@ -22,10 +22,9 @@ class StoreServiceFeedbackRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Assuming you have these fields in your form
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'message' => 'nullable|string|max:720',
+            'message' => 'nullable|string|max:740',
 
             'food_rating' => 'required|numeric|min:0.5|max:5',
             'staff_rating' => 'required|numeric|min:0.5|max:5',
