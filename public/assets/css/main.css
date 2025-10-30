@@ -1532,10 +1532,11 @@ section,
 } */
 
 .testimonials .testimonial-item .testimonial-img {
-    width: 120px;
-    height: 120px; /* Added to ensure a perfect square */
-    border-radius: 8px; /* Changed from 50% to make it square with rounded corners */
-    margin: -60px 0 0 40px; /* Adjusted top margin to re-center the larger image */
+    width: 400px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: -60px 0 0 40px;
     position: relative;
     z-index: 2;
     border: 6px solid var(--background-color);
