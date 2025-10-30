@@ -6,11 +6,12 @@ use App\Http\Controllers\Admin\Finance\FinanceController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 
-Route::middleware(['auth', 'isSupplier'])->group(function () {
-    Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier');
-    Route::get('/supplier/approve-purchase', [SupplierController::class, 'approveRequest'])->name('supplier.approve');
-    Route::get('/supplier/orders/get-list', [SupplierController::class, 'purchaseOrdersList']);
-    Route::get('/supplier/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
-    Route::get('/supplier/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
-    Route::put('/supplier/orders/process/{id}/{status}', [PurchaseOrderController::class, 'processPurchaseOrders']);
+Route::get('/supplier', [SupplierController::class, 'index'])->middleware('auth', 'isSupplier')->name('supplier');
+
+Route::prefix('/supplier')->middleware(['auth', 'isSupplier'])->group(function () {
+    Route::get('/approve-purchase', [SupplierController::class, 'approveRequest'])->name('supplier.approve');
+    Route::get('/orders/get-list', [SupplierController::class, 'purchaseOrdersList']);
+    Route::get('/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
+    Route::get('/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
+    Route::put('/orders/process/{id}/{status}', [PurchaseOrderController::class, 'processPurchaseOrders']);
 });

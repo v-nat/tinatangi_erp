@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 
-Route::middleware(['auth', 'isEmployee'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin');
+Route::get('/admin', [AdminController::class, 'index'])->middleware('auth', 'isEmployee')->name('admin');
+
+Route::prefix('/admin')->middleware(['auth', 'isEmployee'])->group(function () {
 });

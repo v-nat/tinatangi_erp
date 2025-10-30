@@ -6,26 +6,27 @@ use App\Http\Controllers\Admin\Finance\FinanceController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 
-Route::middleware(['auth' , 'isEmployee'])->group(function () {
-    Route::get('/finance', [FinanceController::class, 'finance'])->name('finance');
+Route::get('/finance', [FinanceController::class, 'finance'])->middleware('auth', 'isEmployee')->name('finance');
+
+Route::prefix('/finance')->middleware(['auth' , 'isEmployee'])->group(function () {
 
     /////////////////////////////////////////////////////////// PAYROLL //////////////////////////////////////////////////////
-    Route::get('/finance/payroll', [PayrollController::class, 'indexOnFinance'])->name('finance.payroll');
-    Route::get('/finance/payroll/list', [PayrollController::class, 'getPayrollList']);
-    Route::get('/finance/payroll/view/{id}', [PayrollController::class, 'getPayrollview']);
-    Route::put('/finance/payroll/process/{id}/{status}', [PayrollController::class, 'putOnProcess']);
+    Route::get('/payroll', [PayrollController::class, 'indexOnFinance'])->name('finance.payroll');
+    Route::get('/payroll/list', [PayrollController::class, 'getPayrollList']);
+    Route::get('/payroll/view/{id}', [PayrollController::class, 'getPayrollview']);
+    Route::put('/payroll/process/{id}/{status}', [PayrollController::class, 'putOnProcess']);
 
     /////////////////////////////////////////////////////////// BUDGETS //////////////////////////////////////////////////////
-    Route::get('/finance/budgets', [FinanceController::class, 'budgetsIndex'])->name('finance.budgets');
-    Route::get('/finance/budgets/requests', [FinanceController::class, 'getPendingRequests']);
-    Route::get('/finance/budgets/history', [FinanceController::class, 'getRequestsHistory']);
-    Route::put('/finance/budgets/requests/approve/{id}/{req_id}', [FinanceController::class,'approveRequest']);
-    Route::put('/finance/budgets/requests/reject/{id}', [FinanceController::class,'rejectRequest']);
+    Route::get('/budgets', [FinanceController::class, 'budgetsIndex'])->name('finance.budgets');
+    Route::get('/budgets/requests', [FinanceController::class, 'getPendingRequests']);
+    Route::get('/budgets/history', [FinanceController::class, 'getRequestsHistory']);
+    Route::put('/budgets/requests/approve/{id}/{req_id}', [FinanceController::class,'approveRequest']);
+    Route::put('/budgets/requests/reject/{id}', [FinanceController::class,'rejectRequest']);
 
     /////////////////////////////////////////////////////////// PR / PO //////////////////////////////////////////////////////
-    Route::get('/finance/purchases', [FinanceController::class, 'purchasesIndex'])->name('finance.purchases');
-    Route::get('/finance/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
-    Route::get('/finance/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
-    Route::get('/finance/purchases/get-requests', [FinanceController::class, 'purchaseRequests']);
-    Route::put('/finance/purchases/process/{id}/{status}', [PurchaseOrderController::class, 'putOnProcess']);
+    Route::get('/purchases', [FinanceController::class, 'purchasesIndex'])->name('finance.purchases');
+    Route::get('/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
+    Route::get('/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
+    Route::get('/purchases/get-requests', [FinanceController::class, 'purchaseRequests']);
+    Route::put('/purchases/process/{id}/{status}', [PurchaseOrderController::class, 'putOnProcess']);
 });

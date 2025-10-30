@@ -5,26 +5,26 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Operations\OperationsController;
 use App\Http\Controllers\Admin\Operations\POSController;
 
-Route::middleware(['auth', 'isEmployee'])->group(function () {
-    /////////////////////////////////////// DASHBOARD //////////////////////////////////////////
-    Route::get('/operations', [OperationsController::class, 'index'])->name('op.dashboard');
+Route::get('/operations', [OperationsController::class, 'index'])->middleware('auth', 'isEmployee')->name('op.dashboard');
+
+Route::prefix('/operations')->middleware(['auth', 'isEmployee'])->group(function () {
 
     ////////////////////////////////// NAV ROUTES //////////////////////////////////////////////
-    Route::get('/operations/pos', [OperationsController::class, 'pos'])->name('op.pos');
-    Route::get('/operations/kds', [OperationsController::class, 'kds'])->name('op.kds');
+    Route::get('/pos', [OperationsController::class, 'pos'])->name('op.pos');
+    Route::get('/kds', [OperationsController::class, 'kds'])->name('op.kds');
 
     ////////////////////////////////////////////// POS /////////////////////////////////////////
-    Route::get('/operations/pos/get-all-products', [POSController::class, 'getAllProducts']);
-    Route::get('/operations/pos/get-pastries-products', [POSController::class, 'getPastriesProducts']);
-    Route::get('/operations/pos/get-beverages-products', [POSController::class, 'getBeveragesProducts']);
-    Route::get('/operations/pos/get-meals-products', [POSController::class, 'getMealsProducts']);
-    Route::get('/operations/pos/get-snacks-sides-products', [POSController::class, 'getSnacksAndSidesProducts']);
-    Route::post('/operations/pos/submit-order', [POSController::class, 'submitOrder']);
-    Route::get('/operations/pos/recent-orders', [POSController::class, 'recentOrders']);
+    Route::get('/pos/get-all-products', [POSController::class, 'getAllProducts']);
+    Route::get('/pos/get-pastries-products', [POSController::class, 'getPastriesProducts']);
+    Route::get('/pos/get-beverages-products', [POSController::class, 'getBeveragesProducts']);
+    Route::get('/pos/get-meals-products', [POSController::class, 'getMealsProducts']);
+    Route::get('/pos/get-snacks-sides-products', [POSController::class, 'getSnacksAndSidesProducts']);
+    Route::post('/pos/submit-order', [POSController::class, 'submitOrder']);
+    Route::get('/pos/recent-orders', [POSController::class, 'recentOrders']);
 
     //////////////////////////////////////////// KDS ///////////////////////////////////////////
-    Route::get('/operations/kds/check-new-orders', [KitchenDisplayController::class, 'checkNewOrders']);
-    Route::get('/operations/kds/get-today-orders', [KitchenDisplayController::class, 'fetchTodayOrders']);
-    Route::post('/operations/kds/update-status', [KitchenDisplayController::class, 'updateStatus']);
-    Route::post('/operations/pos/void-order/{order}', [POSController::class, 'voidOrder'])->name('pos.voidOrder');
+    Route::get('/kds/check-new-orders', [KitchenDisplayController::class, 'checkNewOrders']);
+    Route::get('/kds/get-today-orders', [KitchenDisplayController::class, 'fetchTodayOrders']);
+    Route::post('/kds/update-status', [KitchenDisplayController::class, 'updateStatus']);
+    Route::post('/pos/void-order/{order}', [POSController::class, 'voidOrder'])->name('pos.voidOrder');
 });
