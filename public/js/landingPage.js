@@ -137,7 +137,7 @@ $(document).ready(function () {
                                         <span>${feedback.message}</span>
                                         <i class="bi bi-quote quote-icon-right"></i>
                                     </p>
-                                    <img src="${imageUrl}" class="testimonial-img" alt="${feedback.name}'s photo">
+                                    <img src="${imageUrl}" class="testimonial-img" alt="No photo provided.">
                                     <h3>${feedback.name}</h3>
                                     <h4>Valued Customer</h4>
                                 </div>
