@@ -104,7 +104,7 @@ class CrmController extends Controller
                 $path = 'img/feedback_photos/' . $filename;
                 Storage::disk('public')->put($path, $processedImage);
 
-                $validatedData['photo_path'] = $path;
+                $validatedData['photo'] = $path;
 
                 imagedestroy($sourceImage);
                 imagedestroy($destImage);

@@ -71,6 +71,37 @@
             padding-top: 10px;
             margin-top: 15px;
         }
+
+        html[data-bs-theme=dark] .feedback-card {
+            background-color: #2d3748 !important;
+            border-color: #4a5568 !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        html[data-bs-theme=dark] .feedback-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        html[data-bs-theme=dark] .card-header,
+        .card-footer {
+            border-color: #4a5568 !important;
+        }
+
+        html[data-bs-theme=dark] .card-header h5 {
+            color: #edf2f7 !important;
+        }
+
+        html[data-bs-theme=dark] .card-body p {
+            color: #cbd5e0 !important;
+        }
+
+        html[data-bs-theme=dark] .card-photo a {
+            color: #63b3ed !important;
+        }
+
+        html[data-bs-theme=dark] .card-footer {
+            color: #a0aec0 !important;
+        }
     </style>
 @endsection
 @section('scripts')
