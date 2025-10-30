@@ -126,7 +126,7 @@ $(document).ready(function () {
 
                     testimonials.forEach(feedback => {
                         const imageUrl = feedback.photo
-                            ? `/storage/${feedback.photo}`
+                            ? `/storage/app/public/${feedback.photo}`
                             : 'assets/img/default-avatar.png';
 
                         const slideHtml = `
