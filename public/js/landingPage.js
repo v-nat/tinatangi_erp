@@ -150,15 +150,12 @@ $(document).ready(function () {
                         swiperContainer[0].swiper.destroy(true, true);
                     }
 
-                    // Create a new Swiper instance with the configuration from your HTML
                     const config = JSON.parse(swiperContainer.find('.swiper-config').text());
                     new Swiper(swiperContainer[0], config);
                 }
-                // If no testimonials are fetched, the static ones in your HTML will remain.
             },
             error: function(err) {
                 console.error("Failed to load testimonials:", err);
-                // The static testimonials will remain on error.
             }
         });
     });
