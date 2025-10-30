@@ -93,7 +93,6 @@ $(document).ready(function () {
 
     $(document).on("click", ".view-photo-btn", function (e) {
         e.preventDefault();
-        console.log($(this).data("image-url"));
         const imageUrl = $(this).data("image-url");
         $("#modalImage").attr("src", imageUrl);
     });
