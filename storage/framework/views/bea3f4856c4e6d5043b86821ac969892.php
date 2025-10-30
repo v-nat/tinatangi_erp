@@ -24,6 +24,9 @@
     <link href="<?php echo e(asset('assets/vendor/glightbox/css/glightbox.min.css')); ?>" rel="stylesheet">
     <link href="<?php echo e(asset('assets/vendor/swiper/swiper-bundle.min.css')); ?>" rel="stylesheet">
 
+    <script src="<?php echo e(asset('source/jquery/jquery-3.6.0.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/swal/dist/sweetalert2.all.min.js')); ?>"></script>
+    <link rel="stylesheet" href="<?php echo e(asset('css/fontawesome-free-7.0.1-web/css/all.min.css')); ?>">
     <!-- Main CSS File -->
     <link href="<?php echo e(asset('assets/css/main.css')); ?>" rel="stylesheet">
 
@@ -285,9 +288,6 @@
             </div>
 
         </section><!-- /Menu Section -->
-
-        <!-- Specials Section -->
-        
 
         <!-- Events Section -->
         <section id="events" class="events section">
@@ -680,8 +680,6 @@
 
         </section><!-- /Gallery Section -->
 
-        
-
         <!-- Contact Section -->
         <section id="contact" class="contact section">
 
@@ -702,64 +700,96 @@
 
                 <div class="row gy-4">
 
-                    <div class="col-lg-4">
+                    <div class="col-lg-4 d-flex flex-column justify-content-center">
+
                         <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
                             <i class="bi bi-geo-alt flex-shrink-0"></i>
                             <div>
                                 <h3>Location</h3>
                                 <p>Brgy 13 Jose Abad Santos Ave,<br> Dasmariñas, 4114 Cavite</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                         <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
                             <i class="bi bi-telephone flex-shrink-0"></i>
                             <div>
                                 <h3>Open Hours</h3>
                                 <p>Monday-Saturday:<br>07:00 AM - 12:00 AM</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                         <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
                             <i class="bi bi-telephone flex-shrink-0"></i>
                             <div>
                                 <h3>Call Us</h3>
-                                <p>0960 216 4109 | 0915 796 8729</p>
+                                <p>0960-216-4109 | 0915-796-8729</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                         <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="500">
                             <i class="bi bi-envelope flex-shrink-0"></i>
                             <div>
                                 <h3>Email Us</h3>
                                 <p>tinatangicafe@gmail.com</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                     </div>
 
                     <div class="col-lg-8">
-                        <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up"
-                            data-aos-delay="200">
+                        <h1 class="mb-4">Send a Feedback about Our Service</h1>
+                        <form id="serviceFeedbackForm" enctype="multipart/form-data" action="" method="post"
+                            class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+                            <?php echo csrf_field(); ?>
                             <div class="row gy-4">
 
                                 <div class="col-md-6">
+                                    <label for="name">Name</label>
                                     <input type="text" name="name" class="form-control" placeholder="Your Name"
                                         required="">
+                                    <div class="invalid-feedback">Name is required.</div>
                                 </div>
 
                                 <div class="col-md-6 ">
+                                    <label for="email">Email</label>
                                     <input type="email" class="form-control" name="email" placeholder="Your Email"
                                         required="">
+                                    <div class="invalid-feedback">Email is required.</div>
                                 </div>
 
                                 <div class="col-md-12">
-                                    <input type="text" class="form-control" name="subject" placeholder="Subject"
-                                        required="">
-                                </div>
-
-                                <div class="col-md-12">
-                                    <textarea class="form-control" name="message" rows="6" placeholder="Message"
+                                    <label for="message">Message</label>
+                                    <textarea class="form-control" name="message" rows="6" placeholder="Enter your Comments here"
                                         required=""></textarea>
+                                    <div class="invalid-feedback">Message is required.</div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="photo">Upload a Photo (Optional)</label>
+                                    <input class="form-control" type="file" id="photo" name="photo" accept="image/*">
+                                </div>
+
+                                <div class="col-md-12 ratings-container">
+                                    <div class="ratings">
+                                        <div class="rating-icon">
+                                            <i class="fa-solid fa-bowl-food" style="color: var(--accent-color)"></i>
+                                        </div>
+                                        <h6>Food</h6>
+                                        <p class="rating-description">How was the quality of the meal?</p>
+                                        <div id="food-rater"></div>
+                                    </div>
+                                    <div class="ratings">
+                                        <div class="rating-icon">
+                                            <i class="fa-solid fa-user" style="color: var(--accent-color)"></i>
+                                        </div>
+                                        <h6>Staff</h6>
+                                        <p class="rating-description">Was the service friendly and helpful?</p>
+                                        <div id="staff-rater"></div>
+                                    </div>
+                                    <div class="ratings">
+                                        <div class="rating-icon">
+                                            <i class="fa-solid fa-shop" style="color: var(--accent-color)"></i>
+                                        </div>
+                                        <h6>Environment</h6>
+                                        <p class="rating-description">Did you enjoy the ambiance?</p>
+                                        <div id="environment-rater"></div>
+                                    </div>
                                 </div>
 
                                 <div class="col-md-12 text-center">
@@ -767,7 +797,7 @@
                                     <div class="error-message"></div>
                                     <div class="sent-message">Your message has been sent. Thank you!</div>
 
-                                    <button type="submit">Send Message</button>
+                                    <button id="submitFeedback" type="submit">Send Feedback</button>
                                 </div>
 
                             </div>
@@ -828,6 +858,9 @@
 
     </footer>
 
+    <?php echo $__env->make('layouts.loading-state', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    <?php echo $__env->make('layouts.toast-swal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
     <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
@@ -844,8 +877,11 @@
     <script src="<?php echo e(asset('assets/vendor/isotope-layout/isotope.pkgd.min.js')); ?>"></script>
     <script src="<?php echo e(asset('assets/vendor/swiper/swiper-bundle.min.js')); ?>"></script>
 
+    <!-- Custom JS Files -->
+    <script src="<?php echo e(asset('source/rater-js-1.0.1/index.js')); ?>"></script>
     <!-- Main JS File -->
     <script src="<?php echo e(asset('assets/js/main.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/landingPage.js')); ?>"></script>
 
 </body>
 

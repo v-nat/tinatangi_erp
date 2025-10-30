@@ -25,6 +25,9 @@
     <link href="{{ asset('assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
 
+    <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}">
     <!-- Main CSS File -->
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
@@ -288,130 +291,6 @@
             </div>
 
         </section><!-- /Menu Section -->
-
-        <!-- Specials Section -->
-        {{-- <section id="specials" class="specials section">
-
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Specials</h2>
-                <p>Check Our Specials</p>
-            </div><!-- End Section Title -->
-
-            <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-                <div class="row">
-                    <div class="col-lg-3">
-                        <ul class="nav nav-tabs flex-column">
-                            <li class="nav-item">
-                                <a class="nav-link active show" data-bs-toggle="tab" href="#specials-tab-1">Modi sit
-                                    est</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#specials-tab-2">Unde praesentium sed</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#specials-tab-3">Pariatur explicabo
-                                    vel</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#specials-tab-4">Nostrum qui quasi</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#specials-tab-5">Iusto ut expedita
-                                    aut</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-9 mt-4 mt-lg-0">
-                        <div class="tab-content">
-                            <div class="tab-pane active show" id="specials-tab-1">
-                                <div class="row">
-                                    <div class="col-lg-8 details order-2 order-lg-1">
-                                        <h3>Architecto ut aperiam autem id</h3>
-                                        <p class="fst-italic">Qui laudantium consequatur laborum sit qui ad sapiente
-                                            dila parde sonata raqer a videna mareta paulona marka</p>
-                                        <p>Et nobis maiores eius. Voluptatibus ut enim blanditiis atque harum sint.
-                                            Laborum eos ipsum ipsa odit magni. Incidunt hic ut molestiae aut qui. Est
-                                            repellat minima eveniet eius et quis magni nihil. Consequatur dolorem
-                                            quaerat quos qui similique accusamus nostrum rem vero</p>
-                                    </div>
-                                    <div class="col-lg-4 text-center order-1 order-lg-2">
-                                        <img src="assets/img/specials-1.png" alt="" class="img-fluid">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="specials-tab-2">
-                                <div class="row">
-                                    <div class="col-lg-8 details order-2 order-lg-1">
-                                        <h3>Et blanditiis nemo veritatis excepturi</h3>
-                                        <p class="fst-italic">Qui laudantium consequatur laborum sit qui ad sapiente
-                                            dila parde sonata raqer a videna mareta paulona marka</p>
-                                        <p>Ea ipsum voluptatem consequatur quis est. Illum error ullam omnis quia et
-                                            reiciendis sunt sunt est. Non aliquid repellendus itaque accusamus eius et
-                                            velit ipsa voluptates. Optio nesciunt eaque beatae accusamus lerode pakto
-                                            madirna desera vafle de nideran pal</p>
-                                    </div>
-                                    <div class="col-lg-4 text-center order-1 order-lg-2">
-                                        <img src="assets/img/specials-2.png" alt="" class="img-fluid">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="specials-tab-3">
-                                <div class="row">
-                                    <div class="col-lg-8 details order-2 order-lg-1">
-                                        <h3>Impedit facilis occaecati odio neque aperiam sit</h3>
-                                        <p class="fst-italic">Eos voluptatibus quo. Odio similique illum id quidem non
-                                            enim fuga. Qui natus non sunt dicta dolor et. In asperiores velit quaerat
-                                            perferendis aut</p>
-                                        <p>Iure officiis odit rerum. Harum sequi eum illum corrupti culpa veritatis
-                                            quisquam. Neque necessitatibus illo rerum eum ut. Commodi ipsam minima
-                                            molestiae sed laboriosam a iste odio. Earum odit nesciunt fugiat sit ullam.
-                                            Soluta et harum voluptatem optio quae</p>
-                                    </div>
-                                    <div class="col-lg-4 text-center order-1 order-lg-2">
-                                        <img src="assets/img/specials-3.png" alt="" class="img-fluid">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="specials-tab-4">
-                                <div class="row">
-                                    <div class="col-lg-8 details order-2 order-lg-1">
-                                        <h3>Fuga dolores inventore laboriosam ut est accusamus laboriosam dolore</h3>
-                                        <p class="fst-italic">Totam aperiam accusamus. Repellat consequuntur iure
-                                            voluptas iure porro quis delectus</p>
-                                        <p>Eaque consequuntur consequuntur libero expedita in voluptas. Nostrum ipsam
-                                            necessitatibus aliquam fugiat debitis quis velit. Eum ex maxime error in
-                                            consequatur corporis atque. Eligendi asperiores sed qui veritatis aperiam
-                                            quia a laborum inventore</p>
-                                    </div>
-                                    <div class="col-lg-4 text-center order-1 order-lg-2">
-                                        <img src="assets/img/specials-4.png" alt="" class="img-fluid">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="specials-tab-5">
-                                <div class="row">
-                                    <div class="col-lg-8 details order-2 order-lg-1">
-                                        <h3>Est eveniet ipsam sindera pad rone matrelat sando reda</h3>
-                                        <p class="fst-italic">Omnis blanditiis saepe eos autem qui sunt debitis porro
-                                            quia.</p>
-                                        <p>Exercitationem nostrum omnis. Ut reiciendis repudiandae minus. Omnis
-                                            recusandae ut non quam ut quod eius qui. Ipsum quia odit vero atque qui
-                                            quibusdam amet. Occaecati sed est sint aut vitae molestiae voluptate vel</p>
-                                    </div>
-                                    <div class="col-lg-4 text-center order-1 order-lg-2">
-                                        <img src="assets/img/specials-5.png" alt="" class="img-fluid">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </section><!-- /Specials Section --> --}}
 
         <!-- Events Section -->
         <section id="events" class="events section">
@@ -804,79 +683,6 @@
 
         </section><!-- /Gallery Section -->
 
-        {{-- <!-- Chefs Section -->
-        <section id="chefs" class="chefs section">
-
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Team</h2>
-                <p>Necessitatibus eius consequatur</p>
-            </div><!-- End Section Title -->
-
-            <div class="container">
-
-                <div class="row gy-4">
-
-                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                        <div class="member">
-                            <img src="assets/img/chefs/chefs-1.jpg" class="img-fluid" alt="">
-                            <div class="member-info">
-                                <div class="member-info-content">
-                                    <h4>Walter White</h4>
-                                    <span>Master Chef</span>
-                                </div>
-                                <div class="social">
-                                    <a href=""><i class="bi bi-twitter-x"></i></a>
-                                    <a href=""><i class="bi bi-facebook"></i></a>
-                                    <a href=""><i class="bi bi-instagram"></i></a>
-                                    <a href=""><i class="bi bi-linkedin"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End Team Member -->
-
-                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                        <div class="member">
-                            <img src="assets/img/chefs/chefs-2.jpg" class="img-fluid" alt="">
-                            <div class="member-info">
-                                <div class="member-info-content">
-                                    <h4>Sarah Jhonson</h4>
-                                    <span>Patissier</span>
-                                </div>
-                                <div class="social">
-                                    <a href=""><i class="bi bi-twitter-x"></i></a>
-                                    <a href=""><i class="bi bi-facebook"></i></a>
-                                    <a href=""><i class="bi bi-instagram"></i></a>
-                                    <a href=""><i class="bi bi-linkedin"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End Team Member -->
-
-                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                        <div class="member">
-                            <img src="assets/img/chefs/chefs-3.jpg" class="img-fluid" alt="">
-                            <div class="member-info">
-                                <div class="member-info-content">
-                                    <h4>William Anderson</h4>
-                                    <span>Cook</span>
-                                </div>
-                                <div class="social">
-                                    <a href=""><i class="bi bi-twitter-x"></i></a>
-                                    <a href=""><i class="bi bi-facebook"></i></a>
-                                    <a href=""><i class="bi bi-instagram"></i></a>
-                                    <a href=""><i class="bi bi-linkedin"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End Team Member -->
-
-                </div>
-
-            </div>
-
-        </section><!-- /Chefs Section --> --}}
-
         <!-- Contact Section -->
         <section id="contact" class="contact section">
 
@@ -897,64 +703,96 @@
 
                 <div class="row gy-4">
 
-                    <div class="col-lg-4">
+                    <div class="col-lg-4 d-flex flex-column justify-content-center">
+
                         <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
                             <i class="bi bi-geo-alt flex-shrink-0"></i>
                             <div>
                                 <h3>Location</h3>
                                 <p>Brgy 13 Jose Abad Santos Ave,<br> Dasmariñas, 4114 Cavite</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                         <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
                             <i class="bi bi-telephone flex-shrink-0"></i>
                             <div>
                                 <h3>Open Hours</h3>
                                 <p>Monday-Saturday:<br>07:00 AM - 12:00 AM</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                         <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
                             <i class="bi bi-telephone flex-shrink-0"></i>
                             <div>
                                 <h3>Call Us</h3>
-                                <p>0960 216 4109 | 0915 796 8729</p>
+                                <p>0960-216-4109 | 0915-796-8729</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                         <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="500">
                             <i class="bi bi-envelope flex-shrink-0"></i>
                             <div>
                                 <h3>Email Us</h3>
                                 <p>tinatangicafe@gmail.com</p>
                             </div>
-                        </div><!-- End Info Item -->
-
+                        </div>
                     </div>
 
                     <div class="col-lg-8">
-                        <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up"
-                            data-aos-delay="200">
+                        <h1 class="mb-4">Send a Feedback about Our Service</h1>
+                        <form id="serviceFeedbackForm" enctype="multipart/form-data" action="" method="post"
+                            class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+                            @csrf
                             <div class="row gy-4">
 
                                 <div class="col-md-6">
+                                    <label for="name">Name</label>
                                     <input type="text" name="name" class="form-control" placeholder="Your Name"
                                         required="">
+                                    <div class="invalid-feedback">Name is required.</div>
                                 </div>
 
                                 <div class="col-md-6 ">
+                                    <label for="email">Email</label>
                                     <input type="email" class="form-control" name="email" placeholder="Your Email"
                                         required="">
+                                    <div class="invalid-feedback">Email is required.</div>
                                 </div>
 
                                 <div class="col-md-12">
-                                    <input type="text" class="form-control" name="subject" placeholder="Subject"
-                                        required="">
-                                </div>
-
-                                <div class="col-md-12">
-                                    <textarea class="form-control" name="message" rows="6" placeholder="Message"
+                                    <label for="message">Message</label>
+                                    <textarea class="form-control" name="message" rows="6" placeholder="Enter your Comments here"
                                         required=""></textarea>
+                                    <div class="invalid-feedback">Message is required.</div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="photo">Upload a Photo (Optional)</label>
+                                    <input class="form-control" type="file" id="photo" name="photo" accept="image/*">
+                                </div>
+
+                                <div class="col-md-12 ratings-container">
+                                    <div class="ratings">
+                                        <div class="rating-icon">
+                                            <i class="fa-solid fa-bowl-food" style="color: var(--accent-color)"></i>
+                                        </div>
+                                        <h6>Food</h6>
+                                        <p class="rating-description">How was the quality of the meal?</p>
+                                        <div id="food-rater"></div>
+                                    </div>
+                                    <div class="ratings">
+                                        <div class="rating-icon">
+                                            <i class="fa-solid fa-user" style="color: var(--accent-color)"></i>
+                                        </div>
+                                        <h6>Staff</h6>
+                                        <p class="rating-description">Was the service friendly and helpful?</p>
+                                        <div id="staff-rater"></div>
+                                    </div>
+                                    <div class="ratings">
+                                        <div class="rating-icon">
+                                            <i class="fa-solid fa-shop" style="color: var(--accent-color)"></i>
+                                        </div>
+                                        <h6>Environment</h6>
+                                        <p class="rating-description">Did you enjoy the ambiance?</p>
+                                        <div id="environment-rater"></div>
+                                    </div>
                                 </div>
 
                                 <div class="col-md-12 text-center">
@@ -962,7 +800,7 @@
                                     <div class="error-message"></div>
                                     <div class="sent-message">Your message has been sent. Thank you!</div>
 
-                                    <button type="submit">Send Message</button>
+                                    <button id="submitFeedback" type="submit">Send Feedback</button>
                                 </div>
 
                             </div>
@@ -1052,6 +890,9 @@
 
     </footer>
 
+    @include('layouts.loading-state')
+    @include('layouts.toast-swal')
+
     <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
@@ -1068,8 +909,11 @@
     <script src="{{ asset('assets/vendor/isotope-layout/isotope.pkgd.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
 
+    <!-- Custom JS Files -->
+    <script src="{{ asset('source/rater-js-1.0.1/index.js') }}"></script>
     <!-- Main JS File -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script src="{{ asset('js/landingPage.js') }}"></script>
 
 </body>
 

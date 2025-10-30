@@ -87,6 +87,50 @@ h6 {
   font-family: var(--heading-font);
 }
 
+.ratings-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 70px;
+    padding: 20px;
+    width: 100%;
+}
+
+.ratings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.rating-icon {
+    font-size: 50px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid var(--accent-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.rating-description {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0 10px 0;
+    max-width: 150px;
+}
+
+@media (max-width: 768px) {
+    .ratings-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+}
+
 .logo-img {
     object-fit: contain;
     height: auto !important;
@@ -94,6 +138,11 @@ h6 {
 
 /* PHP Email Form Messages
 ------------------------------*/
+.php-email-form .form-control {
+    color: var(--accent-color);
+    background-color: var(--contrast-color);
+    border: 1px solid var(--accent-color);
+}
 .php-email-form .error-message {
   display: none;
   background: #df1529;
