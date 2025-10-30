@@ -19,6 +19,8 @@
         <div id="pagination-links" class="mt-4 d-flex justify-content-center"></div>
     </div>
 
+    <?php echo $__env->make('layouts.modals.crm-view-photo-modal', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
     <style>
         .feedback-card {
             background-color: #fff;

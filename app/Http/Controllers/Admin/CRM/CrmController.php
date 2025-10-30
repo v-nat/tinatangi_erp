@@ -101,7 +101,7 @@ class CrmController extends Controller
                 $processedImage = ob_get_clean();
 
                 $filename = uniqid() . '.jpg';
-                $path = 'img/feedback_photos/' . $filename;
+                $path = 'public/img/feedback_photos/' . $filename;
                 Storage::disk('public')->put($path, $processedImage);
 
                 $validatedData['photo'] = $path;

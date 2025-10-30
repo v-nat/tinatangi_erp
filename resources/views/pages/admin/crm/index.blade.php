@@ -20,6 +20,8 @@
         <div id="pagination-links" class="mt-4 d-flex justify-content-center"></div>
     </div>
 
+    @include('layouts.modals.crm-view-photo-modal')
+
     <style>
         .feedback-card {
             background-color: #fff;
