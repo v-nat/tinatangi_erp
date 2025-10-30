@@ -39,9 +39,9 @@ Route::prefix('/employee')->middleware(['auth', 'isEmployee'])->group(function (
 });
 
 
+//////////////////////////////////////// HR ///////////////////////////////////////
 Route::get('/human-resources', [HR_Controller::class, 'index'])->middleware('auth', 'isEmployee')->name('hr.dashboard');
 
-//////////////////////////////////////// HR ///////////////////////////////////////
 Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(function () {
     /////////////////////////// ATTENDANCE ///////////////////////////////////////
     Route::get('/attendance/list', [AttendanceController::class, 'attendanceList']);
