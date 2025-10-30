@@ -760,6 +760,7 @@
                                     <label for="message">Message</label>
                                     <textarea class="form-control" name="message" rows="6" placeholder="Enter your Comments here"
                                         required=""></textarea>
+                                    <small id="char-count" class="form-text text-muted">1000 characters remaining</small>
                                     <div class="invalid-feedback">Message is required.</div>
                                 </div>
 

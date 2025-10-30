@@ -37,14 +37,14 @@ $(document).ready(function () {
 
         form_validation.find(".is-invalid").removeClass("is-invalid");
 
-        form_validation.find("input[required], select[required], textarea[required]").each(
-            function () {
+        form_validation
+            .find("input[required], select[required], textarea[required]")
+            .each(function () {
                 if (!$(this).val()) {
                     $(this).addClass("is-invalid");
                     isValid = false;
                 }
-            }
-        );
+            });
 
         if (
             staff_ratings === null ||
@@ -111,23 +111,46 @@ $(document).ready(function () {
         });
     });
 
+    const commentField = $("#message");
+    const charCount = $("#char-count");
+    const maxLength = commentField.attr("maxlength");
 
+    charCount.text(maxLength + " characters remaining");
 
-    $(document).ready(function() {
-        const swiperContainer = $('#testimonials .init-swiper');
-        const swiperWrapper = swiperContainer.find('.swiper-wrapper');
+    commentField.on("input", function () {
+        let currentLength = $(this).val().length;
+        let remaining = maxLength - currentLength;
+
+        charCount.text(remaining + " characters remaining");
+
+        if (remaining < 20) {
+            charCount.addClass("text-warning");
+        } else {
+            charCount.removeClass("text-warning");
+        }
+
+        if (remaining < 0) {
+            charCount.addClass("text-danger");
+        } else {
+            charCount.removeClass("text-danger");
+        }
+    });
+
+    $(document).ready(function () {
+        const swiperContainer = $("#testimonials .init-swiper");
+        const swiperWrapper = swiperContainer.find(".swiper-wrapper");
 
         $.ajax({
-            url: '/testimonials',
-            method: 'GET',
-            success: function(testimonials) {
+            url: "/testimonials",
+            method: "GET",
+            success: function (testimonials) {
                 if (testimonials && testimonials.length > 0) {
                     swiperWrapper.empty();
 
-                    testimonials.forEach(feedback => {
+                    testimonials.forEach((feedback) => {
                         const imageUrl = feedback.photo
                             ? `/storage/app/public/${feedback.photo}`
-                            : 'assets/img/default-avatar.png';
+                            : "assets/img/default-avatar.png";
 
                         const slideHtml = `
                             <div class="swiper-slide">
@@ -150,13 +173,15 @@ $(document).ready(function () {
                         swiperContainer[0].swiper.destroy(true, true);
                     }
 
-                    const config = JSON.parse(swiperContainer.find('.swiper-config').text());
+                    const config = JSON.parse(
+                        swiperContainer.find(".swiper-config").text()
+                    );
                     new Swiper(swiperContainer[0], config);
                 }
             },
-            error: function(err) {
+            error: function (err) {
                 console.error("Failed to load testimonials:", err);
-            }
+            },
         });
     });
 });
