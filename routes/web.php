@@ -15,6 +15,8 @@ Route::get('/admintest', function () {
     return view('dashboard-test');
 })->name('test');
 
+Route::get('/testimonials', [App\Http\Controllers\Admin\CRM\CrmController::class, 'fetchPublicTestimonials']);
+
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';

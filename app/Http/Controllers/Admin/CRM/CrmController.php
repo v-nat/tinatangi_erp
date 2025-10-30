@@ -16,6 +16,19 @@ class CrmController extends Controller
         return view('pages.admin.crm.index');
     }
 
+    public function fetchPublicTestimonials()
+    {
+        $testimonials = ServiceFeedback::where('overall_rating', '>=', 4)
+            ->whereNotNull('message')
+            ->where('message', '!=', '')
+            ->latest()
+            ->limit(10)
+            ->select('name', 'message', 'photo')
+            ->get();
+
+        return response()->json($testimonials);
+    }
+
     public function fetchFeedbacks()
     {
         try {

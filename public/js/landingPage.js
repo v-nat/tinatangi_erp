@@ -110,4 +110,56 @@ $(document).ready(function () {
             },
         });
     });
+
+
+
+    $(document).ready(function() {
+        const swiperContainer = $('#testimonials .init-swiper');
+        const swiperWrapper = swiperContainer.find('.swiper-wrapper');
+
+        $.ajax({
+            url: '/testimonials',
+            method: 'GET',
+            success: function(testimonials) {
+                if (testimonials && testimonials.length > 0) {
+                    swiperWrapper.empty();
+
+                    testimonials.forEach(feedback => {
+                        const imageUrl = feedback.photo
+                            ? `/storage/${feedback.photo}`
+                            : 'assets/img/default-avatar.png';
+
+                        const slideHtml = `
+                            <div class="swiper-slide">
+                                <div class="testimonial-item">
+                                    <p>
+                                        <i class="bi bi-quote quote-icon-left"></i>
+                                        <span>${feedback.message}</span>
+                                        <i class="bi bi-quote quote-icon-right"></i>
+                                    </p>
+                                    <img src="${imageUrl}" class="testimonial-img" alt="${feedback.name}'s photo">
+                                    <h3>${feedback.name}</h3>
+                                    <h4>Valued Customer</h4>
+                                </div>
+                            </div>
+                        `;
+                        swiperWrapper.append(slideHtml);
+                    });
+
+                    if (swiperContainer[0].swiper) {
+                        swiperContainer[0].swiper.destroy(true, true);
+                    }
+
+                    // Create a new Swiper instance with the configuration from your HTML
+                    const config = JSON.parse(swiperContainer.find('.swiper-config').text());
+                    new Swiper(swiperContainer[0], config);
+                }
+                // If no testimonials are fetched, the static ones in your HTML will remain.
+            },
+            error: function(err) {
+                console.error("Failed to load testimonials:", err);
+                // The static testimonials will remain on error.
+            }
+        });
+    });
 });
