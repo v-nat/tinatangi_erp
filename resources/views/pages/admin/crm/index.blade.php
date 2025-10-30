@@ -55,7 +55,6 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #ffc107;
-            /* Gold color for stars */
         }
 
         .card-body p {
@@ -78,10 +77,13 @@
             background-color: #2d3748 !important;
             border-color: #4a5568 !important;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+            margin-bottom: 20px !important;
+            padding: 20px !important;
+            transition: box-shadow 0.3s ease !important;
         }
 
         html[data-bs-theme=dark] .feedback-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4) !important;
         }
 
         html[data-bs-theme=dark] .card-header,

@@ -3,13 +3,13 @@ $(document).ready(function () {
         const feedbackContainer = $("#feedback-container");
 
         $.ajax({
-            url: `/customer-service/feedbacks?page=${page}`, // Assumes your route is /admin/feedbacks
+            url: `/customer-service/feedbacks?page=${page}`,
             method: "GET",
             beforeSend: function () {
-                feedbackContainer.html("<p>Loading feedback...</p>"); // Show loading message
+                feedbackContainer.html("<p>Loading feedback...</p>");
             },
             success: function (response) {
-                feedbackContainer.empty(); // Clear the loading message
+                feedbackContainer.empty();
 
                 if (!response.data || response.data.length === 0) {
                     feedbackContainer.html(
@@ -41,43 +41,45 @@ $(document).ready(function () {
                     });
 
                     const cardHtml = `
-                        <div class="col-md-6 col-lg-4">
-                            <div class="feedback-card">
-                                <div class="card-header">
-                                    <h5>${feedback.name}</h5>
-                                    <span class="card-rating">${
-                                        feedback.overall_rating
-                                    } ★</span>
-                                </div>
-                                <div class="card-body">
-                                    <p><strong>Email:</strong> ${
-                                        feedback.email || "N/A"
-                                    }</p>
-                                    <p><em>"${
-                                        feedback.message ||
-                                        "No comments provided."
-                                    }"</em></p>
-                                    ${photoHtml}
-                                </div>
-                                <div class="card-footer">
-                                    <strong>Location:</strong> ${
-                                        feedback.location || "N/A"
-                                    }<br>
-                                    <strong>IP:</strong> ${
-                                        feedback.ip_address || "N/A"
-                                    }<br>
-                                    <small>Submitted on: ${submissionDate}</small>
+                            <div class="col-md-6 col-lg-4">
+                                <div class="feedback-card">
+                                    <div class="card-header">
+                                        <h5>${feedback.name}</h5>
+                                        <span class="card-rating">${
+                                            feedback.overall_rating
+                                        } ★</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><em>"${
+                                            feedback.message || "No comments provided."
+                                        }"</em></p>
+
+                                        <div class="rating-details mt-3">
+                                            <p class="mb-1"><strong>Environment:</strong> ${
+                                                feedback.environment_rating
+                                            } ★</p>
+                                            <p class="mb-1"><strong>Food:</strong> ${
+                                                feedback.food_rating
+                                            } ★</p>
+                                            <p class="mb-1"><strong>Staff:</strong> ${
+                                                feedback.staff_rating
+                                            } ★</p>
+                                        </div>
+                                        ${photoHtml}
+                                    </div>
+                                    <div class="card-footer">
+                                        <strong>Location:</strong> ${
+                                            feedback.location || "N/A"
+                                        }<br>
+                                        <strong>IP:</strong> ${feedback.ip_address || "N/A"}<br>
+                                        <small>Submitted on: ${submissionDate}</small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
 
                     feedbackContainer.append(cardHtml);
                 });
-
-                // (Optional but Recommended) Render Laravel's pagination links
-                // You would need a separate function to parse `response.links`
-                // and build the pagination UI in the `#pagination-links` div.
             },
             error: function () {
                 feedbackContainer.html(
@@ -87,7 +89,6 @@ $(document).ready(function () {
         });
     }
 
-    // Initial load of the first page
     loadFeedbacks(1);
 
     $(document).on("click", ".view-photo-btn", function (e) {
