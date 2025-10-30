@@ -27,7 +27,7 @@ class CrmController extends Controller
             $userIp = in_array($ip, ['127.0.0.1', '::1']) ? '8.8.8.8' : $ip;
 
             if ($locationData = Location::get($userIp)) {
-                $validatedData['location'] = "{$locationData->cityName}, {$locationData->regionName}, {$locationData->countryName}";
+                $validatedData['location'] = "{$locationData->cityName}, {$locationData->regionName}, {$locationData->countryName}, {$locationData->postalCode}";
             } else {
                 $validatedData['location'] = 'Location not found';
             }
