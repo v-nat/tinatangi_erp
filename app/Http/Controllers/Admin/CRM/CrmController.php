@@ -16,6 +16,17 @@ class CrmController extends Controller
         return view('pages.admin.crm.index');
     }
 
+    public function fetchFeedbacks()
+    {
+        try {
+            $feedbacks = ServiceFeedback::latest()->paginate(15);
+
+            return response()->json($feedbacks);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
     public function submitFeedback(StoreServiceFeedbackRequest $request)
     {
         try {
