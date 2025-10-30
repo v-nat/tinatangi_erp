@@ -17,8 +17,8 @@ $(document).ready(function() {
                 }
 
                 response.data.forEach(feedback => {
-                    const photoHtml = feedback.photo_path
-                        ? `<div class="card-photo mt-2"><a href="/storage/public/${feedback.photo_path}" target="_blank">View Uploaded Photo</a></div>`
+                    const photoHtml = feedback.photo
+                        ? `<div class="card-photo mt-2"><a href="/storage/public/${feedback.photo}" target="_blank">View Uploaded Photo</a></div>`
                         : '';
 
                     const submissionDate = new Date(feedback.created_at).toLocaleString('en-US', {
