@@ -129,7 +129,7 @@ $(document).ready(function () {
             charCount.removeClass("text-warning");
         }
 
-        if (remaining < 0) {
+        if (remaining < 1) {
             charCount.addClass("text-danger");
         } else {
             charCount.removeClass("text-danger");
