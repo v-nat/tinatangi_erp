@@ -34,14 +34,20 @@ $(document).ready(function () {
         const staff_ratings = staff_rating.getRating();
         const food_ratings = food_rating.getRating();
         const environment_ratings = environment_rating.getRating();
+        const $imageInput = $("#photo");
 
         form_validation.find(".is-invalid").removeClass("is-invalid");
+        $imageInput.removeClass("is-invalid");
 
         form_validation
             .find("input[required], select[required], textarea[required]")
             .each(function () {
                 if (!$(this).val()) {
                     $(this).addClass("is-invalid");
+                    Toast.fire({
+                        icon: "warning",
+                        text: "Please fill all fields before submitting.",
+                    });
                     isValid = false;
                 }
             });
@@ -51,10 +57,13 @@ $(document).ready(function () {
             food_ratings == null ||
             environment_ratings == null
         ) {
+            Toast.fire({
+                icon: "warning",
+                text: "Please fill and rate all fields before submitting.",
+            });
             isValid = false;
         }
 
-        const $imageInput = $("#photo");
         if ($imageInput[0].files.length > 0) {
             const file = $imageInput[0].files[0];
             const allowedTypes = [
@@ -85,10 +94,6 @@ $(document).ready(function () {
         }
 
         if (!isValid) {
-            Toast.fire({
-                icon: "warning",
-                text: "Please fill and rate all fields before submitting.",
-            });
             return;
         }
 
