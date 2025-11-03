@@ -37,6 +37,7 @@ $(document).ready(function () {
         const $imageInput = $("#photo");
 
         form_validation.find(".is-invalid").removeClass("is-invalid");
+        $("#image_error").text("");
         $imageInput.removeClass("is-invalid");
 
         form_validation
