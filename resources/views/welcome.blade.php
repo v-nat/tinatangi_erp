@@ -510,7 +510,7 @@
                                 <div class="col-md-12">
                                     <label for="message">Message</label>
                                     <textarea class="form-control" id="message" name="message" rows="6"
-                                        placeholder="Enter your Message here" required="" maxlength="720"></textarea>
+                                        placeholder="Enter your Message here" required="" maxlength="255"></textarea>
                                     <small id="char-count" class="form-text" style="color: antiquewhite">1000 characters
                                         remaining</small>
                                     <div class="invalid-feedback">Message is required.</div>

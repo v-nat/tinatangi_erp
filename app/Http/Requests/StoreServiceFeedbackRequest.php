@@ -24,7 +24,7 @@ class StoreServiceFeedbackRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'message' => 'nullable|string|max:740',
+            'message' => 'nullable|string|max:255',
 
             'food_rating' => 'required|numeric|min:0.5|max:5',
             'staff_rating' => 'required|numeric|min:0.5|max:5',

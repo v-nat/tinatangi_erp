@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->nullable();
-            $table->text('message')->nullable();
+            $table->string('message')->nullable();
             $table->float('environment_rating');
             $table->float('food_rating');
             $table->float('staff_rating');
