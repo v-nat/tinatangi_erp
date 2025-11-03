@@ -51,14 +51,14 @@ $(document).ready(function () {
             food_ratings == null ||
             environment_ratings == null
         ) {
-            Toast.fire({
-                icon: "warning",
-                text: "Please fill and rate all fields before submitting.",
-            });
             isValid = false;
         }
 
         if (!isValid) {
+            Toast.fire({
+                icon: "warning",
+                text: "Please fill and rate all fields before submitting.",
+            });
             return;
         }
 
