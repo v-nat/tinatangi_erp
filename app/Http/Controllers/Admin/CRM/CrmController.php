@@ -19,8 +19,7 @@ class CrmController extends Controller
 
     public function fetchPublicTestimonials()
     {
-        $testimonials = ServiceFeedback::where('overall_rating', '>=', 4.0)
-            ->whereNotNull('message')
+        $testimonials = ServiceFeedback::whereNotNull('message')
             ->where('message', '!=', '')
             ->where('status', 35)
             ->latest()
@@ -125,7 +124,7 @@ class CrmController extends Controller
                 imagedestroy($destImage);
             }
 
-            $validatedData['status'] = 1;
+            $validatedData['status'] = 34;
 
             ServiceFeedback::create($validatedData);
 
