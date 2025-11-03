@@ -31,7 +31,7 @@ class StoreServiceFeedbackRequest extends FormRequest
             'environment_rating' => 'required|numeric|min:0.5|max:5',
             'overall_rating' => 'required|numeric|min:0.5|max:5',
 
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ];
     }
 
