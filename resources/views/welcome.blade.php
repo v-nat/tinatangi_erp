@@ -648,6 +648,7 @@
 
     @include('layouts.loading-state')
     @include('layouts.toast-swal')
+    @include('layouts.modals.landing-page-modal')
 
     <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i

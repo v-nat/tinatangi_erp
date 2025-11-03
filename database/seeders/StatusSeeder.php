@@ -47,6 +47,8 @@ class StatusSeeder extends Seeder
             31 => 'Voided',
             32 => 'Loss',
             33 => 'Growth',
+            34 => 'Hidden',
+            35 => 'Displayed',
 
         ];
 

@@ -20,9 +20,18 @@
         <div id="pagination-links" class="mt-4 d-flex justify-content-center"></div>
     </div>
 
-    @include('layouts.modals.crm-view-photo-modal')
+    @include('layouts.modals.crm-modal')
 
     <style>
+        .feedback-hidden {
+            opacity: 0.6;
+            border: 1px dashed #ccc;
+        }
+
+        .feedback-displayed {
+            opacity: 1;
+        }
+
         .feedback-card {
             background-color: #fff;
             border: 1px solid #e9ecef;

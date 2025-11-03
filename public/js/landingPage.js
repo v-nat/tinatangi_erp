@@ -180,52 +180,149 @@ $(document).ready(function () {
         }
     });
 
-    $(document).ready(function () {
-        const swiperContainer = $("#testimonials .init-swiper");
-        const swiperWrapper = swiperContainer.find(".swiper-wrapper");
+    // $(document).ready(function () {
+    //     const swiperContainer = $("#testimonials .init-swiper");
+    //     const swiperWrapper = swiperContainer.find(".swiper-wrapper");
 
-        $.ajax({
-            url: "/testimonials",
-            method: "GET",
-            success: function (testimonials) {
-                if (testimonials && testimonials.length > 0) {
-                    swiperWrapper.empty();
+    //     $.ajax({
+    //         url: "/testimonials",
+    //         method: "GET",
+    //         success: function (testimonials) {
+    //             if (testimonials && testimonials.length > 0) {
+    //                 swiperWrapper.empty();
 
-                    testimonials.forEach((feedback) => {
-                        const imageUrl = feedback.photo
-                            ? `/storage/app/public/${feedback.photo}`
-                            : "assets/img/default-avatar.png";
+    //                 testimonials.forEach((feedback) => {
+    //                     const imageUrl = feedback.photo
+    //                         ? `/storage/app/public/${feedback.photo}`
+    //                         : "assets/img/default-avatar.png";
 
-                        const slideHtml = `
-                            <div class="swiper-slide">
-                                <div class="testimonial-item">
-                                    <p>
-                                        <i class="bi bi-quote quote-icon-left"></i>
-                                        <span>${feedback.message}</span>
-                                        <i class="bi bi-quote quote-icon-right"></i>
-                                    </p>
-                                    <img src="${imageUrl}" class="testimonial-img" alt="No photo provided.">
-                                    <h3>${feedback.name}</h3>
-                                    <h4>Valued Customer</h4>
-                                </div>
-                            </div>
+    //                     const slideHtml = `
+    //                         <div class="swiper-slide">
+    //                             <div class="testimonial-item">
+    //                                 <p>
+    //                                     <i class="bi bi-quote quote-icon-left"></i>
+    //                                     <span>${feedback.message}</span>
+    //                                     <i class="bi bi-quote quote-icon-right"></i>
+    //                                 </p>
+    //                                 <img src="${imageUrl}" class="testimonial-img" alt="No photo provided.">
+    //                                 <h3>${feedback.name}</h3>
+    //                                 <h4>Valued Customer</h4>
+    //                             </div>
+    //                         </div>
+    //                     `;
+    //                     swiperWrapper.append(slideHtml);
+    //                 });
+
+    //                 if (swiperContainer[0].swiper) {
+    //                     swiperContainer[0].swiper.destroy(true, true);
+    //                 }
+
+    //                 const config = JSON.parse(
+    //                     swiperContainer.find(".swiper-config").text()
+    //                 );
+    //                 new Swiper(swiperContainer[0], config);
+    //             }
+    //         },
+    //         error: function (err) {
+    //             console.error("Failed to load testimonials:", err);
+    //         },
+    //     });
+    // });
+});
+
+$(document).ready(function () {
+
+    /**
+     * Helper function to safely escape text for a data attribute.
+     * @param {string} s - The string to escape.
+     * @returns {string} The escaped string.
+     */
+    function escapeAttribute(s) {
+        if (!s) return '';
+        return s.toString()
+                .replace(/"/g, '&quot;')  
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+    }
+
+    const swiperContainer = $("#testimonials .init-swiper");
+    const swiperWrapper = swiperContainer.find(".swiper-wrapper");
+
+    $.ajax({
+        url: "/testimonials",
+        method: "GET",
+        success: function (testimonials) {
+            if (testimonials && testimonials.length > 0) {
+                swiperWrapper.empty();
+
+                testimonials.forEach((feedback) => {
+                    const imageUrl = feedback.photo
+                        ? `/storage/app/public/${feedback.photo}`
+                        : "assets/img/default-avatar.png";
+
+                    const fullMessage = feedback.message || "No comments provided.";
+                    const maxLength = 100;
+                    let messageHtml = "";
+
+                    if (fullMessage.length > maxLength) {
+                        const truncatedMessage = fullMessage.substring(0, maxLength) + "...";
+                        const encodedMessage = escapeAttribute(fullMessage);
+
+                        messageHtml = `
+                            <span>${truncatedMessage}</span>
+                            <i class="bi bi-quote quote-icon-right"></i>
+                            <a href="#" class="see-more-btn-testimonial ms-1"
+                               data-bs-toggle="modal"
+                               data-bs-target="#messageModal"
+                               data-full-message="${encodedMessage}"
+                               style="font-size: 14px; color: #cda45e; font-weight: 500;">
+                               See More
+                            </a>
                         `;
-                        swiperWrapper.append(slideHtml);
-                    });
-
-                    if (swiperContainer[0].swiper) {
-                        swiperContainer[0].swiper.destroy(true, true);
+                    } else {
+                        messageHtml = `
+                            <span>${fullMessage}</span>
+                            <i class="bi bi-quote quote-icon-right"></i>
+                        `;
                     }
 
-                    const config = JSON.parse(
-                        swiperContainer.find(".swiper-config").text()
-                    );
-                    new Swiper(swiperContainer[0], config);
+                    const slideHtml = `
+                        <div class="swiper-slide">
+                            <div class="testimonial-item">
+                                <p>
+                                    <i class="bi bi-quote quote-icon-left"></i>
+                                    ${messageHtml}
+                                </p>
+                                <img src="${imageUrl}" class="testimonial-img" alt="No photo provided.">
+                                <h3>${feedback.name}</h3>
+                                <h4>Valued Customer</h4>
+                            </div>
+                        </div>
+                    `;
+                    swiperWrapper.append(slideHtml);
+                });
+
+                if (swiperContainer[0].swiper) {
+                    swiperContainer[0].swiper.destroy(true, true);
                 }
-            },
-            error: function (err) {
-                console.error("Failed to load testimonials:", err);
-            },
-        });
+
+                const config = JSON.parse(
+                    swiperContainer.find(".swiper-config").text()
+                );
+                new Swiper(swiperContainer[0], config);
+            }
+        },
+        error: function (err) {
+            console.error("Failed to load testimonials:", err);
+        },
+    });
+
+    $(document).on("click", ".see-more-btn-testimonial", function (e) {
+        e.preventDefault();
+        const fullMessage = $(this).data("full-message");
+        $("#modalMessageBody").text(fullMessage);
     });
 });
+
+

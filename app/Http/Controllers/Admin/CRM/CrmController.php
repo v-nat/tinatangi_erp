@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin\CRM;
 
+use Exception;
 use App\Models\ServiceFeedback;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreServiceFeedbackRequest;
 use Illuminate\Support\Facades\Storage;
 use Stevebauman\Location\Facades\Location;
-use Exception;
+use App\Http\Requests\StoreServiceFeedbackRequest;
+use App\Http\Requests\UpdateFeedbackStatusRequest;
 
 class CrmController extends Controller
 {
@@ -18,9 +19,10 @@ class CrmController extends Controller
 
     public function fetchPublicTestimonials()
     {
-        $testimonials = ServiceFeedback::where('overall_rating', '>=', 4)
+        $testimonials = ServiceFeedback::where('overall_rating', '>=', 4.0)
             ->whereNotNull('message')
             ->where('message', '!=', '')
+            ->where('status', 35)
             ->latest()
             ->limit(10)
             ->select('name', 'message', 'photo')
@@ -128,6 +130,23 @@ class CrmController extends Controller
             ServiceFeedback::create($validatedData);
 
             return response()->json(['message' => 'Thank you for your feedback!'], 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updateStatus(UpdateFeedbackStatusRequest $request, ServiceFeedback $feedback)
+    {
+        try {
+            $feedback->status = $request->input('status');
+            $feedback->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Feedback status updated successfully.',
+                'feedback' => $feedback
+            ]);
+
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

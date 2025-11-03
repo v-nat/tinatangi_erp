@@ -87,6 +87,31 @@ h6 {
   font-family: var(--heading-font);
 }
 
+#messageModal .modal-content {
+    background-color: var(--surface-color);
+
+    color: #ffffff;
+
+    border: 1px solid var(--accent-color);
+}
+
+#messageModal .modal-header {
+    border-bottom: 1px solid var(--accent-color);
+}
+
+#messageModal .modal-header .modal-title {
+    /* Gold title */
+    color: var(--accent-color);
+}
+
+#messageModal .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+#messageModal .modal-body {
+    color: #f0f0f0;
+}
+
 .ratings-container {
     display: flex;
     justify-content: center;

@@ -56,6 +56,8 @@ class Status extends Model
             31 => '<span class="badge bg-danger">Voided</span>',
             32 => '<span class="badge bg-danger">Loss</span>',
             33 => '<span class="badge bg-sucess">Growth</span>',
+            34 => '<span class="badge bg-danger">Hidden</span>',
+            35 => '<span class="badge bg-sucess">Displayed</span>',
             null => '<span class="badge bg-secondary">Unknown</span>'
         ];
         return $statuses[$statusCode];
@@ -95,6 +97,8 @@ class Status extends Model
             31 => '<div class="alert alert-danger">Voided</div>',
             32 => '<div class="alert alert-danger">Loss</div>',
             33 => '<div class="alert alert-success">Growth</div>',
+            34 => '<div class="alert alert-danger">Hidden</div>',
+            35 => '<div class="alert alert-success">Displayed</div>',
             null => '<span class="badge bg-secondary">Unknown</div>'
         ];
         return $statuses[$statusCode];
