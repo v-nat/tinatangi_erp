@@ -12,6 +12,26 @@
     <div class="section p-6 mt-4">
         <h2>Customer Feedback</h2>
 
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="feedback-sort" class="form-label">Sort By</label>
+                <select id="feedback-sort" class="form-select">
+                    <option value="newest" selected>Date (Newest First)</option>
+                    <option value="oldest">Date (Oldest First)</option>
+                    <option value="rating-high">Rating (High to Low)</option>
+                    <option value="rating-low">Rating (Low to High)</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="feedback-filter" class="form-label">Filter Status</label>
+                <select id="feedback-filter" class="form-select">
+                    <option value="all" selected>Show All</option>
+                    <option value="displayed">Only Displayed (35)</option>
+                    <option value="hidden">Only Hidden (34)</option>
+                </select>
+            </div>
+        </div>
+
         <div id="feedback-container" class="row">
             <p>Loading feedback...</p>
         </div>
