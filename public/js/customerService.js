@@ -46,7 +46,7 @@ $(document).ready(function () {
                      <a href="#" class="view-photo-btn"
                         data-bs-toggle="modal"
                         data-bs-target="#imageModal"
-                        data-image-url="/storage/app/${feedback.photo}">
+                        data-image-url="/storage/app/public/${feedback.photo}">
                         View Uploaded Photo
                      </a>
                    </div>`
