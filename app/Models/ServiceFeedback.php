@@ -21,6 +21,7 @@ class ServiceFeedback extends Model
         'photo',
         'ip_address',
         'location',
+        'status',
     ];
 
 

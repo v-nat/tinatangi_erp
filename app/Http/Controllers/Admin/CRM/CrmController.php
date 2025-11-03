@@ -123,6 +123,8 @@ class CrmController extends Controller
                 imagedestroy($destImage);
             }
 
+            $validatedData['status'] = 1;
+
             ServiceFeedback::create($validatedData);
 
             return response()->json(['message' => 'Thank you for your feedback!'], 200);

@@ -25,6 +25,9 @@ return new class extends Migration
             $table->string('ip_address');
             $table->string('location');
 
+            $table->unsignedBigInteger('status')->default(1);
+            $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
+
             $table->timestamps();
             $table->softDeletes();
         });
