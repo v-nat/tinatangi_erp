@@ -107,7 +107,6 @@ $(document).ready(function () {
                         </div>
                         <div class="card-footer">
                             <strong>Location:</strong> ${feedback.location || "N/A"}<br>
-                            <strong>IP:</strong> ${feedback.ip_address || "N/A"}<br>
                             <small>Submitted on: ${submissionDate}</small>
                             <div class="mt-2 text-end" data-btn-container="1">
                                 ${buttonHtml}
