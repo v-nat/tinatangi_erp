@@ -167,13 +167,6 @@ class AttendanceController extends Controller
             $now = now();
 
             $scheduledTimeIn = Carbon::parse(today()->toDateString() . ' ' . Carbon::parse($schedule->time_in)->format('H:i:s'));
-
-            if ($now->isBefore($scheduledTimeIn)) {
-                return response()->json([
-                    'message' => 'You cannot time in before your scheduled start time of ' . $scheduledTimeIn->format('h:i A') . '.'
-                ], 422);
-            }
-
             $tardiness = 0;
             $tardiness_minutes = 0;
             $status = 7;
