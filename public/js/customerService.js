@@ -7,10 +7,10 @@ $(document).ready(function () {
     function escapeAttribute(s) {
         if (!s) return '';
         return s.toString()
-                .replace(/"/g, '&quot;')  // Escape double quotes
-                .replace(/'/g, '&#39;')  // Escape single quotes
-                .replace(/</g, '&lt;')   // Escape less-than
-                .replace(/>/g, '&gt;');  // Escape greater-than
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;') 
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
     }
 
     /**
@@ -63,14 +63,12 @@ $(document).ready(function () {
                         minute: "2-digit",
                     });
 
-                    // NEW: Logic for truncating message and adding "See More"
                     const fullMessage = feedback.message || "No comments provided.";
-                    const maxLength = 100; // Truncate after 100 chars
+                    const maxLength = 100;
                     let messageHtml = "";
 
                     if (fullMessage.length > maxLength) {
                         const truncatedMessage = fullMessage.substring(0, maxLength) + "...";
-                        // We use escapeAttribute to safely store the full message
                         const encodedMessage = escapeAttribute(fullMessage);
 
                         messageHtml = `<p><em>"${truncatedMessage}"</em>
@@ -101,7 +99,6 @@ $(document).ready(function () {
                         cardOpacityClass = "feedback-hidden";
                     }
 
-                    // NEW: Added h-100 to feedback-card for uniform height
                     const cardHtml = `
                         <div class="col-md-6 col-lg-4 ${cardOpacityClass}" data-feedback-id="${feedback.id}">
                             <div class="feedback-card h-100">
@@ -169,12 +166,9 @@ $(document).ready(function () {
         $("#modalImage").attr("src", imageUrl);
     });
 
-    // NEW: Click handler for the "See More" button
     $(document).on("click", ".see-more-btn", function (e) {
         e.preventDefault();
-        // Get the full message from the data attribute
         const fullMessage = $(this).data("full-message");
-        // Set the text of the modal's body. Using .text() is safe.
         $("#modalMessageBody").text(fullMessage);
     });
 
