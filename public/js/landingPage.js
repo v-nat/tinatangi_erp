@@ -54,6 +54,36 @@ $(document).ready(function () {
             isValid = false;
         }
 
+        const $imageInput = $("#photo");
+        if ($imageInput[0].files.length > 0) {
+            const file = $imageInput[0].files[0];
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/gif",
+                "image/jpg",
+            ];
+            const maxSize = 10 * 1024 * 1024;
+
+            if (!allowedTypes.includes(file.type)) {
+                isValid = false;
+                $imageInput.addClass("is-invalid");
+                $("#image_error").text(
+                    "Invalid file type. Please use jpg, jpeg, or png."
+                );
+            }
+
+            if (file.size > maxSize) {
+                isValid = false;
+                $imageInput.addClass("is-invalid");
+                const existingError = $("#image_error").text();
+                const sizeError = "File is too large. Maximum size is 10MB.";
+                $("#image_error").text(
+                    existingError ? `${existingError} ${sizeError}` : sizeError
+                );
+            }
+        }
+
         if (!isValid) {
             Toast.fire({
                 icon: "warning",

@@ -519,6 +519,9 @@
                                 <div class="col-md-12">
                                     <label for="photo">Upload a Photo (Optional)</label>
                                     <input class="form-control" type="file" id="photo" name="photo" accept="image/*">
+                                    <div class="invalid-feedback" id="image_error">Invalid file type. Please use jpg,
+                                        jpeg, or png.
+                                    </div>
                                 </div>
 
                                 <div class="col-md-12 ratings-container">
