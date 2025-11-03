@@ -78,6 +78,10 @@ $(document).ready(function () {
             if (!allowedTypes.includes(file.type)) {
                 isValid = false;
                 $imageInput.addClass("is-invalid");
+                Toast.fire({
+                    icon: "error",
+                    text: "Invalid file type. Please use jpg, jpeg, or png.",
+                });
                 $("#image_error").text(
                     "Invalid file type. Please use jpg, jpeg, or png."
                 );
@@ -88,6 +92,10 @@ $(document).ready(function () {
                 $imageInput.addClass("is-invalid");
                 const existingError = $("#image_error").text();
                 const sizeError = "File is too large. Maximum size is 10MB.";
+                Toast.fire({
+                    icon: "error",
+                    text: "File is too large. Maximum size is 10MB.",
+                });
                 $("#image_error").text(
                     existingError ? `${existingError} ${sizeError}` : sizeError
                 );
