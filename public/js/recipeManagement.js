@@ -138,7 +138,7 @@ $(function () {
                     text: response.message,
                     timer: 1500,
                 });
-                calculateAndSuggestPrice(productId);
+                // calculateAndSuggestPrice(productId);
                 $("#products-table").DataTable().ajax.reload();
             },
             error: function (xhr) {
