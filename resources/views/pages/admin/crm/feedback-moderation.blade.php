@@ -13,21 +13,29 @@
     <section class="section">
         <div class="card">
             <div class="card-header py-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="card-title mb-3">Customer Feedback</h4>
+                <div class="d-flex justify-content-between align-items-center">
 
-                    <div class="d-flex align-items-center" style="width: 320px;">
-                        <label for="status_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Status:</label>
-                        <select id="status_filter" class="form-select form-select-sm">
-                            <option value="">All Statuses</option>
-                            <option value="Displayed">Displayed</option>
-                            <option value="Hidden">Hidden</option>
-                        </select>
+                    <h4 class="card-title mb-0">Customer Feedback</h4>
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="d-flex align-items-center me-3">
+                            <label for="submitted_date_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by
+                                Submitted Date:</label>
+                            <input type="date" id="submitted_date_filter" class="form-control form-control-sm"
+                                style="width: 170px;">
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <label for="status_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Status:</label>
+                            <select id="status_filter" class="form-select form-select-sm" style="width: 170px;">
+                                <option value="">All Statuses</option>
+                                <option value="Displayed">Displayed</option>
+                                <option value="Hidden">Hidden</option>
+                            </select>
+                        </div>
+
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <label for="submitted_date_filter" class="form-label mb-1">Filter by Submitted Date:</label>
-                    <input type="date" id="submitted_date_filter" class="form-control form-control-sm">
                 </div>
             </div>
             <div class="card-body">
