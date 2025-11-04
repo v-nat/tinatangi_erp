@@ -116,7 +116,7 @@
                     </div>
 
                     <div class="d-flex align-items-center p-3 bg-light-info rounded-lg">
-                        <div classs="stats-icon-wrapper me-3">
+                        <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon info rounded-lg">
                                 <i class="iconly-boldActivity"></i>
                             </div>
