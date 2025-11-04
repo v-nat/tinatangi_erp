@@ -145,12 +145,11 @@
         </div>
     </section>
 
-    <section class="section row mb-4">
+    <section class="section row mt-4 mb-4">
         <div class="col-12">
             <div class="card h-100 shadow-sm border-0 rounded-lg">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Critical Stock Levels</h4>
-                    <a href="#">View All Inventory</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
