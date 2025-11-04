@@ -99,7 +99,7 @@ $(document).ready(function () {
                 className: "text-center",
                 width: "8%",
                 render: function (data, type, row) {
-                    return data === 35 ? 'Displayed' : 'Hidden';
+                    return data === 35 ? '<span class="badge bg-success">Displayed</span>' : '<span class="badge bg-danger">Hidden</span>';
                 }
             },
             {
