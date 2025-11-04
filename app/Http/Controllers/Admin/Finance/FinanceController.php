@@ -31,76 +31,151 @@ class FinanceController extends Controller
         return view("pages.admin.finance.purchase-order-approvals");
     }
 
-    public function getDashboardAnalytics(): JsonResponse
+    public function getDashboardAnalytics()
     {
-        $kpis = [
-            'pendingPayroll' => Payroll::where('status', 11)->sum('net_pay'),
-            'pendingBudgets' => BudgetRelease::where('status', 14)->sum('amount'),
-            'pendingPOs' => PurchaseRequest::where('status', 11)->sum('amount'),
-            'pendingInvoices' => Invoice::where('status', 11)->sum('total_amount'),
-        ];
+        $now = Carbon::now();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $startOfSixMonthsAgo = $now->copy()->subMonths(5)->startOfMonth(); // 6 months including current
 
+        // --- 1. KPI Cards ---
+        // Note: We'll assume a 'payrolls' table exists based on your 'finance-payroll.blade.php'
+        $totalPayroll = Payroll::whereBetween('created_at', [$startOfMonth, $now])->sum('net_pay');
+
+        $budgetReleased = BudgetRelease::whereBetween('released_at', [$startOfMonth, $now])->sum('amount');
+
+        // PO Spending is based on purchase_order_details
+        $poSpending = PurchaseOrderDetail::whereHas('purchaseOrder', function($q) use ($startOfMonth, $now) {
+            $q->whereBetween('order_date', [$startOfMonth, $now]);
+        })->sum('total_amount');
+
+        // Assuming 11 is the 'Pending' status ID from your migration default
+        $pendingPRs = PurchaseRequest::where('status', 11)->count();
+
+        // --- 2. Budget vs. Spending Chart (Last 6 Months) ---
         $budgetData = BudgetRelease::select(
-            DB::raw('COALESCE(SUM(amount), 0) as total_amount'),
-            DB::raw("DATE_FORMAT(released_at, '%Y-%m') as month_year")
-        )
-            ->where('status', '!=', 11)
-            ->where('released_at', '>=', Carbon::now()->subMonths(6))
-            ->groupBy('month_year')
-            ->orderBy('month_year', 'ASC')
+                DB::raw('SUM(amount) as total'),
+                DB::raw("DATE_FORMAT(released_at, '%Y-%m') as month")
+            )
+            ->where('released_at', '>=', $startOfSixMonthsAgo)
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
             ->get();
 
-        $payrollData = DB::table('payrolls')
-            ->join('employees', 'payrolls.employee_id', '=', 'employees.id')
-            ->join('departments', 'employees.department', '=', 'departments.id')
-            ->select('departments.name', DB::raw('COALESCE(SUM(payrolls.gross_pay), 0) as total_payroll'))
-            ->where('payrolls.status', '!=', 11)
-            ->groupBy('departments.name')
+        $spendingData = PurchaseOrderDetail::whereHas('purchaseOrder', function($q) use ($startOfSixMonthsAgo) {
+                $q->where('order_date', '>=', $startOfSixMonthsAgo);
+            })
+            ->select(
+                DB::raw('SUM(total_amount) as total'),
+                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month") // Assuming created_at is close to order_date
+            )
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
             ->get();
 
-        $charts = [
-            'budgetReleased' => [
-                'labels' => $budgetData->pluck('month_year'),
-                'data' => $budgetData->pluck('total_amount'),
-            ],
-            'payrollByDept' => [
-                'labels' => $payrollData->pluck('name'),
-                'data' => $payrollData->pluck('total_payroll'),
-            ],
-        ];
+        // Helper to format chart data for last 6 months
+        $budgetVsSpending = $this->formatMonthlyChartData(
+            ['budget' => $budgetData, 'spending' => $spendingData],
+            $startOfSixMonthsAgo
+        );
 
-        $budgetsAwaitingRelease = BudgetRelease::with(['requestedBy:id,first_name,last_name', 'department:id,name'])
+
+        // --- 3. Spending by Department (All Time) ---
+        // This is a simplified query. You might want to join POs or Budgets
+        $spendingByDept = BudgetRelease::join('departments', 'budget_releases.department', '=', 'departments.id')
+            ->select('departments.department_name', DB::raw('SUM(budget_releases.amount) as total'))
+            ->groupBy('departments.department_name')
+            ->orderBy('total', 'desc')
+            ->get();
+
+
+        // --- 4. Pending Budget Releases Table ---
+        // Assuming 14 is the 'Pending' status ID from your migration default
+        $pendingBudgets = BudgetRelease::with('requestedBy.user', 'departmentRel') // Assuming relationships
             ->where('status', 14)
-            ->latest('requested_at')
+            ->orderBy('requested_at', 'desc')
             ->take(5)
             ->get()
-            ->map(fn($budget) => [
-                'requestor' => $budget->requestedBy->full_name ?? 'N/A',
-                'department' => $budget->department->name ?? 'N/A',
-                'amount' => $budget->amount,
+            ->map(fn($item) => [
+                'type' => $item->type,
+                'amount' => $item->amount,
+                'department' => $item->departmentRel->department_name ?? 'N/A', // Adjust relationship name
             ]);
 
-        $invoicesAwaitingApproval = Invoice::with(['supplier:id,name', 'purchaseRequest:id'])
-            ->where('status', 11)
-            ->latest('created_at')
-            ->take(5)
+
+        // --- 5. Payroll Overview (Last 3 Periods) ---
+        // This requires a 'payrolls' table with pay period columns
+        $payrollOverview = Payroll::select(
+                'pay_period_label', // Assuming a label like 'Sep 1-15'
+                DB::raw('SUM(gross_pay) as gross'),
+                DB::raw('SUM(deductions) as deductions'),
+                DB::raw('SUM(net_pay) as net')
+            )
+            ->groupBy('pay_period_label')
+            ->orderBy('pay_period_start', 'desc') // Assuming a start date column
+            ->take(3)
             ->get()
-            ->map(fn($invoice) => [
-                'supplier' => $invoice->supplier->name ?? 'N/A',
-                'po_id' => $invoice->purchaseRequest->id ?? 'N/A',
-                'total_amount' => $invoice->total_amount,
-            ]);
+            ->reverse(); // Reverse to show oldest first on chart
 
-        $data = [
-            'kpis' => $kpis,
-            'charts' => $charts,
+
+        return response()->json([
+            'kpis' => [
+                'totalPayroll' => $totalPayroll,
+                'budgetReleased' => $budgetReleased,
+                'poSpending' => $poSpending,
+                'pendingPRs' => $pendingPRs,
+            ],
+            'charts' => [
+                'budgetVsSpending' => $budgetVsSpending,
+                'spendingByDepartment' => [
+                    'labels' => $spendingByDept->pluck('department_name'),
+                    'series' => $spendingByDept->pluck('total'),
+                ],
+                'payrollOverview' => [
+                    'labels' => $payrollOverview->pluck('pay_period_label'),
+                    'series' => [
+                        ['name' => 'Gross Pay', 'data' => $payrollOverview->pluck('gross')],
+                        ['name' => 'Deductions', 'data' => $payrollOverview->pluck('deductions')],
+                        ['name' => 'Net Pay', 'data' => $payrollOverview->pluck('net')],
+                    ]
+                ],
+            ],
             'tables' => [
-                'budgetsAwaitingRelease' => $budgetsAwaitingRelease,
-                'invoicesAwaitingApproval' => $invoicesAwaitingApproval,
-            ]
-        ];
+                'pendingBudgets' => $pendingBudgets,
+            ],
+        ]);
+    }
 
-        return response()->json($data);
+    /**
+     * Helper function to format monthly data for the last 6 months.
+     */
+    private function formatMonthlyChartData($datasets, $startDate)
+    {
+        $months = [];
+        $labels = [];
+        $series = [];
+
+        // Initialize last 6 months
+        for ($i = 0; $i < 6; $i++) {
+            $month = $startDate->copy()->addMonths($i)->format('Y-m');
+            $labels[] = $startDate->copy()->addMonths($i)->format('M');
+            $months[$month] = $i;
+        }
+
+        foreach ($datasets as $key => $data) {
+            $monthlyData = array_fill(0, 6, 0); // Init with zeros
+            foreach ($data as $item) {
+                if (isset($months[$item->month])) {
+                    $index = $months[$item->month];
+                    $monthlyData[$index] = (float) $item->total;
+                }
+            }
+            $series[] = [
+                'name' => ucfirst($key), // 'Budget', 'Spending'
+                'data' => $monthlyData,
+            ];
+        }
+
+        return ['labels' => $labels, 'series' => $series];
     }
 
     public function getPendingRequests()

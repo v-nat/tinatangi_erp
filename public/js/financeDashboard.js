@@ -1,152 +1,274 @@
 $(document).ready(function () {
-    if ($('#chart-budget-released').length === 0) {
+    if ($("#chart-budget-spending").length === 0) {
         return;
     }
 
-    function formatCurrency(value) {
-        return '₱ ' + parseFloat(value).toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
+    const getThemeColor = (colorName) => {
+        return getComputedStyle(document.documentElement)
+            .getPropertyValue(`--bs-${colorName}`)
+            .trim();
+    };
+
+    const formatCurrency = (val) => {
+        if (val === null || val === undefined) return "₱0";
+        return (
+            "₱" +
+            parseFloat(val).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+        );
+    };
+
+    const formatNumber = (val) => {
+        if (val === null || val === undefined) return "0";
+        return parseFloat(val).toLocaleString("en-US");
+    };
+
+    let budgetSpendingChart, payrollOverviewChart, spendingDepartmentChart;
+
+    function initCharts() {
+        const budgetSpendingChartEl = document.getElementById(
+            "chart-budget-spending"
+        );
+        if (budgetSpendingChartEl) {
+            const budgetSpendingOptions = {
+                series: [],
+                chart: {
+                    height: 350,
+                    type: "area",
+                    toolbar: { show: false },
+                    noData: { text: "Loading chart data..." },
+                },
+                colors: [getThemeColor("primary"), getThemeColor("danger")],
+                dataLabels: { enabled: false },
+                stroke: { curve: "smooth", width: 2 },
+                grid: { strokeDashArray: 5 },
+                xaxis: {
+                    categories: [],
+                },
+                yaxis: {
+                    title: { text: "Amount (PHP)" },
+                    labels: {
+                        formatter: (val) => (val / 1000).toFixed(0) + "k",
+                    },
+                },
+                tooltip: {
+                    y: { formatter: (val) => formatCurrency(val) },
+                },
+                legend: { position: "top", horizontalAlign: "right" },
+            };
+            budgetSpendingChart = new ApexCharts(
+                budgetSpendingChartEl,
+                budgetSpendingOptions
+            );
+            budgetSpendingChart.render();
+        }
+
+        const payrollOverviewChartEl = document.getElementById(
+            "chart-payroll-overview"
+        );
+        if (payrollOverviewChartEl) {
+            const payrollOverviewOptions = {
+                series: [],
+                chart: {
+                    type: "bar",
+                    height: 350,
+                    toolbar: { show: false },
+                    noData: { text: "Loading chart data..." },
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: "55%",
+                        endingShape: "rounded",
+                    },
+                },
+                dataLabels: { enabled: false },
+                colors: [
+                    getThemeColor("primary"),
+                    getThemeColor("info"),
+                    getThemeColor("success"),
+                ],
+                stroke: { show: true, width: 2, colors: ["transparent"] },
+                xaxis: {
+                    categories: [],
+                },
+                yaxis: {
+                    title: { text: "Amount (PHP)" },
+                    labels: {
+                        formatter: (val) => (val / 1000).toFixed(0) + "k",
+                    },
+                },
+                fill: { opacity: 1 },
+                tooltip: {
+                    y: { formatter: (val) => formatCurrency(val) },
+                },
+                legend: { position: "top", horizontalAlign: "right" },
+            };
+            payrollOverviewChart = new ApexCharts(
+                payrollOverviewChartEl,
+                payrollOverviewOptions
+            );
+            payrollOverviewChart.render();
+        }
+
+        const spendingDepartmentChartEl = document.getElementById(
+            "chart-spending-department"
+        );
+        if (spendingDepartmentChartEl) {
+            const spendingDepartmentOptions = {
+                series: [],
+                chart: {
+                    type: "donut",
+                    height: 380,
+                    noData: { text: "Loading chart data..." },
+                },
+                labels: [],
+                colors: [
+                    getThemeColor("primary"),
+                    getThemeColor("success"),
+                    getThemeColor("warning"),
+                    getThemeColor("danger"),
+                    getThemeColor("info"),
+                ],
+                legend: { position: "bottom" },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
+                                show: true,
+                                name: { show: true },
+                                value: {
+                                    show: true,
+                                    formatter: (val) => formatCurrency(val),
+                                },
+                                total: {
+                                    show: true,
+                                    label: "Total Spending",
+                                    formatter: (w) => {
+                                        const total =
+                                            w.globals.seriesTotals.reduce(
+                                                (a, b) => a + b,
+                                                0
+                                            );
+                                        return formatCurrency(total);
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            };
+            spendingDepartmentChart = new ApexCharts(
+                spendingDepartmentChartEl,
+                spendingDepartmentOptions
+            );
+            spendingDepartmentChart.render();
+        }
     }
-
-    const optionsBudgetReleased = {
-        chart: {
-            type: 'line',
-            height: 350,
-            zoom: { enabled: false },
-            toolbar: { show: false }
-        },
-        series: [{
-            name: 'Amount Released',
-            data: []
-        }],
-        xaxis: {
-            categories: []
-        },
-        yaxis: {
-            title: {
-                text: 'Amount (PHP)'
-            },
-            labels: {
-                formatter: (value) => { return '₱' + value.toLocaleString('en-US') }
-            }
-        },
-        tooltip: {
-            y: {
-                formatter: (value) => { return formatCurrency(value) }
-            }
-        },
-        stroke: {
-            curve: 'smooth'
-        },
-        noData: {
-            text: 'Loading chart data...'
-        }
-    };
-
-    const optionsPayrollDept = {
-        chart: {
-            type: 'donut',
-            height: 350,
-        },
-        series: [],
-        labels: [],
-        dataLabels: {
-            enabled: true,
-            formatter: function (val) {
-                return val.toFixed(1) + "%"
-            },
-        },
-        legend: {
-            position: 'bottom'
-        },
-        tooltip: {
-            y: {
-                formatter: (value) => { return formatCurrency(value) }
-            }
-        },
-        noData: {
-            text: 'Loading chart data...'
-        }
-    };
-
-    const chartBudgetReleased = new ApexCharts(document.querySelector("#chart-budget-released"), optionsBudgetReleased);
-    chartBudgetReleased.render();
-
-    const chartPayrollDept = new ApexCharts(document.querySelector("#chart-payroll-dept"), optionsPayrollDept);
-    chartPayrollDept.render();
 
     function loadDashboardData() {
+        if (typeof jQuery === "undefined") {
+            console.error("jQuery is not loaded. Make sure to include it.");
+            return;
+        }
+
         $.ajax({
-            url: '/finance/dashboard-analytics',
-            type: 'GET',
-            dataType: 'json',
+            url: "/finance/dashboard-analytics",
+            type: "GET",
+            dataType: "json",
             success: function (response) {
+                $("#kpi-total-payroll").text(
+                    formatCurrency(response.kpis.totalPayroll)
+                );
+                $("#kpi-budget-released").text(
+                    formatCurrency(response.kpis.budgetReleased)
+                );
+                $("#kpi-po-spending").text(
+                    formatCurrency(response.kpis.poSpending)
+                );
+                $("#kpi-pending-prs").text(
+                    formatNumber(response.kpis.pendingPRs)
+                );
 
-                $('#kpi-pending-payroll').text(formatCurrency(response.kpis.pendingPayroll));
-                $('#kpi-pending-budgets').text(formatCurrency(response.kpis.pendingBudgets));
-                $('#kpi-pending-pos').text(formatCurrency(response.kpis.pendingPOs));
-                $('#kpi-pending-invoices').text(formatCurrency(response.kpis.pendingInvoices));
-
-                const $budgetsTableBody = $('#table-awaiting-budgets tbody');
-                $budgetsTableBody.empty();
-                if (response.tables.budgetsAwaitingRelease.length > 0) {
-                    $.each(response.tables.budgetsAwaitingRelease, function (index, item) {
-                        const row = `
-                            <tr>
-                                <td>${item.requestor}</td>
-                                <td>${item.department}</td>
-                                <td>${formatCurrency(item.amount)}</td>
-                            </tr>
-                        `;
-                        $budgetsTableBody.append(row);
+                if (budgetSpendingChart) {
+                    budgetSpendingChart.updateOptions({
+                        xaxis: {
+                            categories: response.charts.budgetVsSpending.labels,
+                        },
                     });
-                } else {
-                    $budgetsTableBody.append('<tr><td colspan="3" class="text-center">No budgets awaiting release.</td></tr>');
+                    budgetSpendingChart.updateSeries(
+                        response.charts.budgetVsSpending.series
+                    );
                 }
 
-                const $invoicesTableBody = $('#table-awaiting-invoices tbody');
-                $invoicesTableBody.empty();
-                if (response.tables.invoicesAwaitingApproval.length > 0) {
-                    $.each(response.tables.invoicesAwaitingApproval, function (index, item) {
-                        const row = `
-                            <tr>
-                                <td>${item.supplier}</td>
-                                <td>${item.po_id}</td>
-                                <td>${formatCurrency(item.total_amount)}</td>
-                            </tr>
-                        `;
-                        $invoicesTableBody.append(row);
+                if (payrollOverviewChart) {
+                    payrollOverviewChart.updateOptions({
+                        xaxis: {
+                            categories: response.charts.payrollOverview.labels,
+                        },
                     });
-                } else {
-                    $invoicesTableBody.append('<tr><td colspan="3" class="text-center">No invoices awaiting approval.</td></tr>');
+                    payrollOverviewChart.updateSeries(
+                        response.charts.payrollOverview.series
+                    );
                 }
 
-                chartBudgetReleased.updateSeries([{ data: response.charts.budgetReleased.data }]);
-                chartBudgetReleased.updateOptions({ xaxis: { categories: response.charts.budgetReleased.labels } });
-
-                if (response.charts.payrollByDept.data.length > 0 && response.charts.payrollByDept.data.some(d => d > 0)) {
-                    chartPayrollDept.updateOptions({
-                        labels: response.charts.payrollByDept.labels,
-                        series: response.charts.payrollByDept.data
+                if (spendingDepartmentChart) {
+                    spendingDepartmentChart.updateOptions({
+                        labels: response.charts.spendingByDepartment.labels,
                     });
-                } else {
-                    chartPayrollDept.updateOptions({
-                        series: [],
-                        labels: [],
-                        noData: { text: 'No payroll data available.' }
-                    });
+                    spendingDepartmentChart.updateSeries(
+                        response.charts.spendingByDepartment.series
+                    );
                 }
 
+                const $pendingBudgetsBody = $("#table-pending-budgets tbody");
+                $pendingBudgetsBody.empty();
+                if (
+                    response.tables.pendingBudgets &&
+                    response.tables.pendingBudgets.length > 0
+                ) {
+                    $.each(
+                        response.tables.pendingBudgets,
+                        function (index, item) {
+                            const row = `
+                        <tr>
+                            <td class="col-auto"><p class="font-bold mb-0">${
+                                item.type
+                            } (${item.department})</p></td>
+                            <td class="col-auto"><p class="mb-0">${formatCurrency(
+                                item.amount
+                            )}</p></td>
+                        </tr>
+                    `;
+                            $pendingBudgetsBody.append(row);
+                        }
+                    );
+                } else {
+                    $pendingBudgetsBody.append(
+                        '<tr><td colspan="2" class="text-center">No pending budget requests.</td></tr>'
+                    );
+                }
             },
             error: function (xhr) {
-                console.error('Failed to load dashboard analytics:', xhr);
-                chartBudgetReleased.updateOptions({ noData: { text: 'Could not load chart data.' } });
-                chartPayrollDept.updateOptions({ noData: { text: 'Could not load chart data.' } });
-            }
+                console.error(
+                    "Failed to load dashboard analytics:",
+                    xhr.responseText
+                );
+                $("#kpi-total-payroll").text("Error");
+                $("#kpi-budget-released").text("Error");
+                $("#kpi-po-spending").text("Error");
+                $("#kpi-pending-prs").text("Error");
+                $("#table-pending-budgets tbody").html(
+                    '<tr><td colspan="2" class="text-center text-danger">Failed to load data.</td></tr>'
+                );
+            },
         });
     }
+
+    initCharts();
 
     loadDashboardData();
 });
+
