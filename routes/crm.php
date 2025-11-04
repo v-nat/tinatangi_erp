@@ -12,7 +12,7 @@ Route::prefix('/customer-service')->group(function () {
 });
 
 Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(function () {
-    Route::get('/service-feedbacks', [FeedbackController::class, 'serviceFeedback'])->name('crm.feedback');
+    Route::get('/service-feedbacks', [CrmController::class, 'serviceFeedback'])->name('crm.feedback');
     Route::get('/feedbacks', [FeedbackController::class, 'fetchFeedbacks']);
     Route::post('/feedbacks/update-status/{feedback}', [FeedbackController::class, 'updateStatus']);
 
