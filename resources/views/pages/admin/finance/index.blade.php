@@ -180,6 +180,5 @@
 @section('scripts')
     <script src="{{ asset('assets/vendors/dayjs/dayjs.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
-    <script src="{{ asset('assets/js/pages/ui-apexchart.js') }}"></script>
     <script type="module" src="{{ asset('js/financeDashboard.js') }}"></script>
 @endsection

@@ -41,7 +41,7 @@ class FinanceController extends Controller
         ];
 
         $budgetData = BudgetRelease::select(
-            DB::raw('SUM(amount) as total_amount'),
+            DB::raw('COALESCE(SUM(amount), 0) as total_amount'),
             DB::raw("DATE_FORMAT(released_at, '%Y-%m') as month_year")
         )
             ->where('status', '!=', 11)
@@ -52,8 +52,8 @@ class FinanceController extends Controller
 
         $payrollData = DB::table('payrolls')
             ->join('employees', 'payrolls.employee_id', '=', 'employees.id')
-            ->join('departments', 'employees.department', '=', 'departments.id')
-            ->select('departments.name', DB::raw('SUM(payrolls.gross_pay) as total_payroll'))
+            ->join('departments', 'employees.department_id', '=', 'departments.id')
+            ->select('departments.name', DB::raw('COALESCE(SUM(payrolls.gross_pay), 0) as total_payroll'))
             ->where('payrolls.status', '!=', 11)
             ->groupBy('departments.name')
             ->get();
