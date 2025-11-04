@@ -12,6 +12,8 @@ Route::prefix('/customer-service')->group(function () {
 });
 
 Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(function () {
+    Route::get('/dashboard-analytics', [CrmController::class, 'getDashboardAnalytics']);
+
     Route::get('/service-feedbacks', [CrmController::class, 'serviceFeedback'])->name('crm.feedback');
     Route::get('/feedbacks', [FeedbackController::class, 'fetchFeedbacks']);
     Route::post('/feedbacks/update-status/{feedback}', [FeedbackController::class, 'updateStatus']);
