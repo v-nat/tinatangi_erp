@@ -18,7 +18,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="stats-icon blue">
-                                    <i class="iconly-boldProfile"></i>
+                                    <i class="fa-solid fa-star"></i>
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -36,7 +36,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="stats-icon green">
-                                    <i class="iconly-boldAdd-User"></i>
+                                    <i class="fa-solid fa-comments"></i>
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -54,7 +54,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="stats-icon purple">
-                                    <i class="fa-solid fa-clock"></i>
+                                    <i class="fa-solid fa-circle-check"></i>
                                 </div>
                             </div>
                             <div class="col-md-8">
