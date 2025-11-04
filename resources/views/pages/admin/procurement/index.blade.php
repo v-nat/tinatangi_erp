@@ -5,10 +5,9 @@
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/vendors/apexcharts/apexcharts.css') }}">
 
-    <!-- 1. KPI Cards Section -->
     <section class="section row">
         <div class="col-md-3">
-            <div class="card card-statistic">
+            <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -25,7 +24,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card card-statistic">
+            <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -42,7 +41,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card card-statistic">
+            <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -59,7 +58,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card card-statistic">
+            <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -77,13 +76,12 @@
         </div>
     </section>
 
-    <!-- 2. Charts and Table Section -->
     <section class="section row">
         <div class="col-md-7">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Pending Purchase Requests</h4>
-                    <a href="#">View All</a> <!-- Update this route name as needed -->
+                    <a href="#">View All</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -96,7 +94,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Data will be populated by JS -->
+
                             </tbody>
                         </table>
                     </div>
@@ -115,7 +113,6 @@
         </div>
     </section>
 
-    <!-- 3. Top Suppliers Chart -->
     <section class="section row">
         <div class="col-12">
             <div class="card">

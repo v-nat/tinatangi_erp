@@ -69,7 +69,7 @@ class ProcurementController extends Controller
         $topSuppliers = DB::table('suppliers')
             ->join('purchase_orders', 'suppliers.id', '=', 'purchase_orders.supplier_id')
             ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
-            ->select('suppliers.name as supplier_name', DB::raw('SUM(purchase_order_details.total_amount) as total'))
+            ->select('suppliers.supplier_name as supplier_name', DB::raw('SUM(purchase_order_details.total_amount) as total'))
             ->where('purchase_orders.status', 23) // Only count 'Completed' orders
             ->groupBy('suppliers.name')
             ->orderBy('total', 'desc')
