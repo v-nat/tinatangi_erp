@@ -35,25 +35,18 @@ class FinanceController extends Controller
     {
         $now = Carbon::now();
         $startOfMonth = $now->copy()->startOfMonth();
-        $startOfSixMonthsAgo = $now->copy()->subMonths(5)->startOfMonth(); // 6 months including current
+        $startOfSixMonthsAgo = $now->copy()->subMonths(5)->startOfMonth();
 
-        // --- 1. KPI Cards ---
-
-        // Corrected to use 'end_date' from your Payroll model
         $totalPayroll = Payroll::whereBetween('end_date', [$startOfMonth, $now])->sum('net_pay');
 
-        // This query was correct
         $budgetReleased = BudgetRelease::whereBetween('released_at', [$startOfMonth, $now])->sum('amount');
 
-        // This query was correct, uses the purchaseOrder relationship
         $poSpending = PurchaseOrderDetail::whereHas('purchaseOrder', function ($q) use ($startOfMonth, $now) {
             $q->whereBetween('order_date', [$startOfMonth, $now]);
         })->sum('total_amount');
 
-        // This query was correct (status 11 is default for new PRs)
         $pendingPRs = PurchaseRequest::where('status', 11)->count();
 
-        // --- 2. Budget vs. Spending Chart (Last 6 Months) ---
         $budgetData = BudgetRelease::select(
             DB::raw('SUM(amount) as total'),
             DB::raw("DATE_FORMAT(released_at, '%Y-%m') as month")
@@ -63,13 +56,11 @@ class FinanceController extends Controller
             ->orderBy('month', 'asc')
             ->get();
 
-        // Corrected to use the 'purchaseOrder' relationship from your model
         $spendingData = PurchaseOrderDetail::whereHas('purchaseOrder', function ($q) use ($startOfSixMonthsAgo) {
             $q->where('order_date', '>=', $startOfSixMonthsAgo);
         })
             ->select(
                 DB::raw('SUM(total_amount) as total'),
-                // Use the order_date from the parent PO for grouping
                 DB::raw("DATE_FORMAT(purchase_orders.order_date, '%Y-%m') as month")
             )
             ->join('purchase_orders', 'purchase_order_details.purchase_order_id', '=', 'purchase_orders.id') // Join to get order_date
@@ -77,25 +68,17 @@ class FinanceController extends Controller
             ->orderBy('month', 'asc')
             ->get();
 
-        // This helper function remains the same
         $budgetVsSpending = $this->formatMonthlyChartData(
             ['budget' => $budgetData, 'spending' => $spendingData],
             $startOfSixMonthsAgo
         );
 
-
-        // --- 3. Spending by Department (All Time) ---
-        // Corrected to use 'name' from Department model and join correctly
         $spendingByDept = BudgetRelease::join('departments', 'budget_releases.department', '=', 'departments.id')
             ->select('departments.name as department_name', DB::raw('SUM(budget_releases.amount) as total'))
             ->groupBy('departments.name')
             ->orderBy('total', 'desc')
             ->get();
 
-
-        // --- 4. Pending Budget Releases Table ---
-        // Corrected to use the 'departmentRS' relationship from your BudgetRelease model
-        // (status 14 is default for new budget releases)
         $pendingBudgets = BudgetRelease::with('departmentRS')
             ->where('status', 14)
             ->orderBy('requested_at', 'desc')
@@ -104,24 +87,20 @@ class FinanceController extends Controller
             ->map(fn($item) => [
                 'type' => $item->type,
                 'amount' => $item->amount,
-                // Use 'name' from the related Department model
                 'department' => $item->departmentRS->name ?? 'N/A',
             ]);
 
-
-        // --- 5. Payroll Overview (Last 3 Periods) ---
-        // Corrected to build the pay period label from 'start_date' and 'end_date'
         $payrollOverview = Payroll::select(
             DB::raw("CONCAT(DATE_FORMAT(start_date, '%b %e'), ' - ', DATE_FORMAT(end_date, '%b %e')) as pay_period_label"),
             DB::raw('SUM(gross_pay) as gross'),
             DB::raw('SUM(deduction) as deductions'),
             DB::raw('SUM(net_pay) as net')
         )
-            ->groupBy('pay_period_label', 'start_date') // Group by label and start date
-            ->orderBy('start_date', 'desc') // Order by date
+            ->groupBy('pay_period_label', 'start_date')
+            ->orderBy('start_date', 'desc')
             ->take(3)
             ->get()
-            ->reverse(); // Reverse to show oldest first on chart
+            ->reverse();
 
 
         return response()->json([
@@ -158,7 +137,6 @@ class FinanceController extends Controller
         $labels = [];
         $series = [];
 
-        // Initialize last 6 months
         for ($i = 0; $i < 6; $i++) {
             $month = $startDate->copy()->addMonths($i)->format('Y-m');
             $labels[] = $startDate->copy()->addMonths($i)->format('M');
@@ -166,7 +144,7 @@ class FinanceController extends Controller
         }
 
         foreach ($datasets as $key => $data) {
-            $monthlyData = array_fill(0, 6, 0); // Init with zeros
+            $monthlyData = array_fill(0, 6, 0);
             foreach ($data as $item) {
                 if (isset($months[$item->month])) {
                     $index = $months[$item->month];
@@ -174,7 +152,7 @@ class FinanceController extends Controller
                 }
             }
             $series[] = [
-                'name' => ucfirst($key), // 'Budget', 'Spending'
+                'name' => ucfirst($key),
                 'data' => $monthlyData,
             ];
         }
