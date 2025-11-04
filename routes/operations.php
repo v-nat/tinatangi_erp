@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Operations\POSController;
 Route::get('/operations', [OperationsController::class, 'index'])->middleware('auth', 'isEmployee')->name('op.dashboard');
 
 Route::prefix('/operations')->middleware(['auth', 'isEmployee'])->group(function () {
+    Route::get('/dashboard-analytics', [OperationsController::class, 'getDashboardAnalytics']);
 
     ////////////////////////////////// NAV ROUTES //////////////////////////////////////////////
     Route::get('/pos', [OperationsController::class, 'pos'])->name('op.pos');
