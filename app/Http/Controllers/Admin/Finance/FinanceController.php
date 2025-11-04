@@ -38,41 +38,46 @@ class FinanceController extends Controller
         $startOfSixMonthsAgo = $now->copy()->subMonths(5)->startOfMonth(); // 6 months including current
 
         // --- 1. KPI Cards ---
-        // Note: We'll assume a 'payrolls' table exists based on your 'finance-payroll.blade.php'
-        $totalPayroll = Payroll::whereBetween('created_at', [$startOfMonth, $now])->sum('net_pay');
 
+        // Corrected to use 'end_date' from your Payroll model
+        $totalPayroll = Payroll::whereBetween('end_date', [$startOfMonth, $now])->sum('net_pay');
+
+        // This query was correct
         $budgetReleased = BudgetRelease::whereBetween('released_at', [$startOfMonth, $now])->sum('amount');
 
-        // PO Spending is based on purchase_order_details
-        $poSpending = PurchaseOrderDetail::whereHas('purchaseOrder', function($q) use ($startOfMonth, $now) {
+        // This query was correct, uses the purchaseOrder relationship
+        $poSpending = PurchaseOrderDetail::whereHas('purchaseOrder', function ($q) use ($startOfMonth, $now) {
             $q->whereBetween('order_date', [$startOfMonth, $now]);
         })->sum('total_amount');
 
-        // Assuming 11 is the 'Pending' status ID from your migration default
+        // This query was correct (status 11 is default for new PRs)
         $pendingPRs = PurchaseRequest::where('status', 11)->count();
 
         // --- 2. Budget vs. Spending Chart (Last 6 Months) ---
         $budgetData = BudgetRelease::select(
-                DB::raw('SUM(amount) as total'),
-                DB::raw("DATE_FORMAT(released_at, '%Y-%m') as month")
-            )
+            DB::raw('SUM(amount) as total'),
+            DB::raw("DATE_FORMAT(released_at, '%Y-%m') as month")
+        )
             ->where('released_at', '>=', $startOfSixMonthsAgo)
             ->groupBy('month')
             ->orderBy('month', 'asc')
             ->get();
 
-        $spendingData = PurchaseOrderDetail::whereHas('purchaseOrder', function($q) use ($startOfSixMonthsAgo) {
-                $q->where('order_date', '>=', $startOfSixMonthsAgo);
-            })
+        // Corrected to use the 'purchaseOrder' relationship from your model
+        $spendingData = PurchaseOrderDetail::whereHas('purchaseOrder', function ($q) use ($startOfSixMonthsAgo) {
+            $q->where('order_date', '>=', $startOfSixMonthsAgo);
+        })
             ->select(
                 DB::raw('SUM(total_amount) as total'),
-                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month") // Assuming created_at is close to order_date
+                // Use the order_date from the parent PO for grouping
+                DB::raw("DATE_FORMAT(purchase_orders.order_date, '%Y-%m') as month")
             )
+            ->join('purchase_orders', 'purchase_order_details.purchase_order_id', '=', 'purchase_orders.id') // Join to get order_date
             ->groupBy('month')
             ->orderBy('month', 'asc')
             ->get();
 
-        // Helper to format chart data for last 6 months
+        // This helper function remains the same
         $budgetVsSpending = $this->formatMonthlyChartData(
             ['budget' => $budgetData, 'spending' => $spendingData],
             $startOfSixMonthsAgo
@@ -80,17 +85,18 @@ class FinanceController extends Controller
 
 
         // --- 3. Spending by Department (All Time) ---
-        // This is a simplified query. You might want to join POs or Budgets
+        // Corrected to use 'name' from Department model and join correctly
         $spendingByDept = BudgetRelease::join('departments', 'budget_releases.department', '=', 'departments.id')
-            ->select('departments.department_name', DB::raw('SUM(budget_releases.amount) as total'))
-            ->groupBy('departments.department_name')
+            ->select('departments.name as department_name', DB::raw('SUM(budget_releases.amount) as total'))
+            ->groupBy('departments.name')
             ->orderBy('total', 'desc')
             ->get();
 
 
         // --- 4. Pending Budget Releases Table ---
-        // Assuming 14 is the 'Pending' status ID from your migration default
-        $pendingBudgets = BudgetRelease::with('requestedBy.user', 'departmentRel') // Assuming relationships
+        // Corrected to use the 'departmentRS' relationship from your BudgetRelease model
+        // (status 14 is default for new budget releases)
+        $pendingBudgets = BudgetRelease::with('departmentRS')
             ->where('status', 14)
             ->orderBy('requested_at', 'desc')
             ->take(5)
@@ -98,20 +104,21 @@ class FinanceController extends Controller
             ->map(fn($item) => [
                 'type' => $item->type,
                 'amount' => $item->amount,
-                'department' => $item->departmentRel->department_name ?? 'N/A', // Adjust relationship name
+                // Use 'name' from the related Department model
+                'department' => $item->departmentRS->name ?? 'N/A',
             ]);
 
 
         // --- 5. Payroll Overview (Last 3 Periods) ---
-        // This requires a 'payrolls' table with pay period columns
+        // Corrected to build the pay period label from 'start_date' and 'end_date'
         $payrollOverview = Payroll::select(
-                'pay_period_label', // Assuming a label like 'Sep 1-15'
-                DB::raw('SUM(gross_pay) as gross'),
-                DB::raw('SUM(deductions) as deductions'),
-                DB::raw('SUM(net_pay) as net')
-            )
-            ->groupBy('pay_period_label')
-            ->orderBy('pay_period_start', 'desc') // Assuming a start date column
+            DB::raw("CONCAT(DATE_FORMAT(start_date, '%b %e'), ' - ', DATE_FORMAT(end_date, '%b %e')) as pay_period_label"),
+            DB::raw('SUM(gross_pay) as gross'),
+            DB::raw('SUM(deductions) as deductions'),
+            DB::raw('SUM(net_pay) as net')
+        )
+            ->groupBy('pay_period_label', 'start_date') // Group by label and start date
+            ->orderBy('start_date', 'desc') // Order by date
             ->take(3)
             ->get()
             ->reverse(); // Reverse to show oldest first on chart
@@ -145,9 +152,6 @@ class FinanceController extends Controller
         ]);
     }
 
-    /**
-     * Helper function to format monthly data for the last 6 months.
-     */
     private function formatMonthlyChartData($datasets, $startDate)
     {
         $months = [];
