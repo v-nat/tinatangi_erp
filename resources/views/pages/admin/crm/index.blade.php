@@ -138,5 +138,5 @@
     </style>
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/customerService.js') }}"></script>
+    {{-- <script src="{{ asset('js/customerService.js') }}"></script> --}}
 @endsection

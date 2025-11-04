@@ -16,6 +16,10 @@ class CrmController extends Controller
     {
         return view('pages.admin.crm.index');
     }
+    public function serviceFeedback()
+    {
+        return view('pages.admin.crm.feedback-moderation');
+    }
 
     public function fetchPublicTestimonials()
     {

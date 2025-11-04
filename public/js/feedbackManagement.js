@@ -1,23 +1,28 @@
 $(document).ready(function () {
     let allFeedbacks = [];
+    // The container is now the <tbody>
     const feedbackContainer = $("#feedback-container");
 
+    // This helper function is unchanged
     function escapeAttribute(s) {
         if (!s) return '';
         return s.toString()
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
     }
 
-
+    //
+    // THIS IS THE MAIN UPDATED FUNCTION
+    //
     function renderFeedbacks() {
         const sortBy = $("#feedback-sort").val() || 'newest';
         const filterBy = $("#feedback-filter").val() || 'all';
 
         feedbackContainer.empty();
 
+        // Sorting and filtering logic is unchanged
         let processedFeedbacks = [...allFeedbacks];
         if (filterBy === 'displayed') {
             processedFeedbacks = processedFeedbacks.filter(fb => fb.status === 35);
@@ -35,12 +40,16 @@ $(document).ready(function () {
             processedFeedbacks.sort((a, b) => a.overall_rating - b.overall_rating);
         }
 
+        // Updated "no results" message for the table
         if (processedFeedbacks.length === 0) {
-            feedbackContainer.html("<p>No feedback matches your criteria.</p>");
+            feedbackContainer.html('<tr><td colspan="7" class="text-center">No feedback matches your criteria.</td></tr>');
             return;
         }
 
+        // Loop and build table rows (<tr>) instead of cards
         processedFeedbacks.forEach((feedback) => {
+
+            // This helper logic is the same as your original
             const photoHtml = feedback.photo
                 ? `<div class="card-photo mt-2">
                      <a href="#" class="view-photo-btn"
@@ -79,71 +88,82 @@ $(document).ready(function () {
             }
 
             let buttonHtml = "";
-            let cardOpacityClass = "";
+            let rowOpacityClass = ""; // Renamed from cardOpacityClass
 
             if (feedback.status === 35) {
                 buttonHtml = `<button class="btn btn-warning btn-sm hide-feedback-btn" data-id="${feedback.id}">Hide</button>`;
-                cardOpacityClass = "feedback-displayed";
+                rowOpacityClass = "feedback-displayed";
             } else if (feedback.status === 34) {
                 buttonHtml = `<button class="btn btn-success btn-sm display-feedback-btn" data-id="${feedback.id}">Display</button>`;
-                cardOpacityClass = "feedback-hidden";
+                rowOpacityClass = "feedback-hidden";
             }
 
-            const cardHtml = `
-                <div class="col-md-6 col-lg-4 ${cardOpacityClass}" data-feedback-id="${feedback.id}">
-                    <div class="feedback-card h-100">
-                        <div class="card-header">
-                            <h5>${feedback.name}</h5>
-                            <span class="card-rating">${feedback.overall_rating} ★</span>
-                        </div>
-                        <div class="card-body">
-                            ${messageHtml}
-                            <div class="rating-details mt-3">
-                                <p class="mb-1"><strong>Environment:</strong> ${feedback.environment_rating} ★</p>
-                                <p class="mb-1"><strong>Food:</strong> ${feedback.food_rating} ★</p>
-                                <p class="mb-1"><strong>Staff:</strong> ${feedback.staff_rating} ★</p>
-                            </div>
-                            ${photoHtml}
-                        </div>
-                        <div class="card-footer">
-                            <strong>Location:</strong> ${feedback.location || "N/A"}<br>
-                            <small>Submitted on: ${submissionDate}</small>
-                            <div class="mt-2 text-end" data-btn-container="1">
-                                ${buttonHtml}
-                            </div>
-                        </div>
-                    </div>
+            const statusText = feedback.status === 35 ? 'Displayed' : 'Hidden';
+
+            // HTML for the "Details" cell
+            const detailsHtml = `
+                <div class="rating-details">
+                    <small><strong>Environment:</strong> ${feedback.environment_rating} ★</small>
+                    <small><strong>Food:</strong> ${feedback.food_rating} ★</small>
+                    <small><strong>Staff:</strong> ${feedback.staff_rating} ★</small>
                 </div>
+                ${photoHtml}
             `;
-            feedbackContainer.append(cardHtml);
+
+            // The new Table Row HTML
+            const tableRowHtml = `
+                <tr class="${rowOpacityClass}" data-feedback-id="${feedback.id}">
+                    <td>${feedback.name}</td>
+                    <td><span class="card-rating">${feedback.overall_rating} ★</span></td>
+                    <td>${messageHtml}</td>
+                    <td>${detailsHtml}</td>
+                    <td>
+                        <small>
+                            ${submissionDate}
+                            <br>
+                            <strong>Location:</strong> ${feedback.location || "N/A"}
+                        </small>
+                    </td>
+                    <td>${statusText}</td>
+                    <td data-btn-container="1">
+                        ${buttonHtml}
+                    </td>
+                </tr>
+            `;
+
+            feedbackContainer.append(tableRowHtml);
         });
     }
 
+    //
+    // ALL FUNCTIONS BELOW ARE UNCHANGED FROM YOUR ORIGINAL
+    //
 
     function loadFeedbacks(page = 1) {
         $.ajax({
             url: `/customer-service/feedbacks?page=${page}`,
             method: "GET",
             beforeSend: function () {
-                feedbackContainer.html("<p>Loading feedback...</p>");
+                // Updated loading message for the table
+                feedbackContainer.html('<tr><td colspan="7" class="text-center"><p>Loading feedback...</p></td></tr>');
             },
             success: function (response) {
                 if (!response.data || response.data.length === 0) {
-                    feedbackContainer.html("<p>No feedback has been submitted yet.</p>");
+                    feedbackContainer.html('<tr><td colspan="7" class="text-center"><p>No feedback has been submitted yet.</p></td></tr>');
                     return;
                 }
                 allFeedbacks = response.data;
                 renderFeedbacks();
             },
             error: function () {
-                feedbackContainer.html("<p class='text-danger'>Failed to load feedback. Please try again later.</p>");
+                feedbackContainer.html('<tr><td colspan="7" class="text-center"><p class="text-danger">Failed to load feedback. Please try again later.</p></td></tr>');
             },
         });
     }
 
     loadFeedbacks(1);
 
-
+    // Event listeners are unchanged
     $(document).on("change", "#feedback-sort, #feedback-filter", renderFeedbacks);
 
     $(document).on("click", ".view-photo-btn", function (e) {
@@ -165,7 +185,6 @@ $(document).ready(function () {
         updateFeedbackStatus($button, feedbackId, 34);
     });
 
-
     $(document).on("click", ".display-feedback-btn", function (e) {
         e.preventDefault();
         const $button = $(this);
@@ -173,7 +192,7 @@ $(document).ready(function () {
         updateFeedbackStatus($button, feedbackId, 35);
     });
 
-
+    // Update function is unchanged
     function updateFeedbackStatus($button, feedbackId, newStatus) {
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
         const originalText = $button.text();
@@ -189,10 +208,12 @@ $(document).ready(function () {
                 $button.prop("disabled", true).text(newStatus === 34 ? "Hiding..." : "Displaying...");
             },
             success: function (response) {
+                // Update the local data
                 const feedbackToUpdate = allFeedbacks.find(fb => fb.id === feedbackId);
                 if (feedbackToUpdate) {
                     feedbackToUpdate.status = newStatus;
                 }
+                // Re-render the table with the new data
                 renderFeedbacks();
             },
             error: function (xhr) {
