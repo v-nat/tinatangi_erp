@@ -146,7 +146,6 @@ $(document).ready(function () {
         feedbackTable.draw();
     });
 
-TEST
     const tableBody = '#feedbackTable tbody';
 
     $(tableBody).on("click", ".view-photo-btn", function (e) {

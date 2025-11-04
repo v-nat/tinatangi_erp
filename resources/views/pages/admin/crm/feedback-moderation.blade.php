@@ -14,7 +14,7 @@
         <div class="card">
             <div class="card-header py-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="card-title mb-0">Customer Feedback</h4>
+                    <h4 class="card-title mb-3">Customer Feedback</h4>
 
                     <div class="d-flex align-items-center" style="width: 320px;">
                         <label for="status_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Status:</label>
@@ -25,11 +25,9 @@
                         </select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <label for="submitted_date_filter" class="form-label mb-1">Filter by Submitted Date:</label>
-                        <input type="date" id="submitted_date_filter" class="form-control form-control-sm">
-                    </div>
+                <div class="col-md-4">
+                    <label for="submitted_date_filter" class="form-label mb-1">Filter by Submitted Date:</label>
+                    <input type="date" id="submitted_date_filter" class="form-control form-control-sm">
                 </div>
             </div>
             <div class="card-body">
