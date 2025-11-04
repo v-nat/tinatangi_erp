@@ -33,17 +33,20 @@ class ProcurementController extends Controller
     public function getDashboardAnalytics()
     {
         // --- 1. KPI Card Data ---
-        $pendingPR = PurchaseRequest::where('status', 11)->count(); // 11 = Pending
-        $pendingPO = PurchaseOrder::where('status', 11)->count(); // 11 = Pending
-        $activeSuppliers = Supplier::where('status', 1)->count(); // 1 = Active
+        $pendingPR = PurchaseRequest::where('status', 11)->count();
+        $pendingPO = PurchaseOrder::where('status', 11)->count();
+        $activeSuppliers = Supplier::where('status', 1)->count();
 
-        // Total spend this month (assuming 'Completed' status is 23)
-        $totalSpend = PurchaseOrder::where('status', 23)
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->sum('total_amount'); // Assumes you have a 'total_amount' column
+        // Total spend this month (status 23 = Completed)
+        // This joins POs and their Details to sum the correct amounts
+        $totalSpend = DB::table('purchase_orders')
+            ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
+            ->where('purchase_orders.status', 23)
+            ->whereMonth('purchase_orders.created_at', Carbon::now()->month)
+            ->sum('purchase_order_details.total_amount');
 
         // --- 2. Recent Pending Purchase Requests (PRs) ---
-        $recentPendingPRs = PurchaseRequest::where('status', 11) // 11 = Pending
+        $recentPendingPRs = PurchaseRequest::where('status', 11)
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get()
@@ -57,15 +60,16 @@ class ProcurementController extends Controller
             ->groupBy('status')
             ->get()
             ->map(function ($po) {
-                // Get the text label (e.g., "Pending", "Completed")
-                // We strip tags to get clean text for the chart label
                 $po->status_label = strip_tags(Status::getStatusText($po->status));
                 return $po;
             });
 
         // --- 4. Top 5 Suppliers by PO Value (Bar Chart) ---
-        $topSuppliers = PurchaseOrder::join('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.id')
-            ->select('suppliers.name as supplier_name', DB::raw('SUM(purchase_orders.total_amount) as total'))
+        // This joins Suppliers, POs, and PO Details
+        $topSuppliers = DB::table('suppliers')
+            ->join('purchase_orders', 'suppliers.id', '=', 'purchase_orders.supplier_id')
+            ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
+            ->select('suppliers.name as supplier_name', DB::raw('SUM(purchase_order_details.total_amount) as total'))
             ->where('purchase_orders.status', 23) // Only count 'Completed' orders
             ->groupBy('suppliers.name')
             ->orderBy('total', 'desc')
@@ -215,7 +219,8 @@ class ProcurementController extends Controller
                 ];
             });
 
-            return response()->json(['success' => true,
+            return response()->json([
+                'success' => true,
                 'data' => [
                     'id'              => $purchaseRequest->id,
                     'total_amount'    => (float)$purchaseRequest->amount,
