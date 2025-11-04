@@ -106,7 +106,7 @@
         </div>
     </section>
 
-    <section class="section row">
+    <section class="section row mb-4">
         <div class="col-md-7">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
