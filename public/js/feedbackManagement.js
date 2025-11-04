@@ -21,16 +21,18 @@ $(document).ready(function () {
             }
         },
         columns: [
-            { data: "name" },
+            { data: "name", width: "15%" },
             {
                 data: "overall_rating",
                 className: "text-center",
+                width: "8%",
                 render: function (data, type, row) {
                     return `<span class="card-rating">${data} ★</span>`;
                 }
             },
             {
                 data: "message",
+                width: "25%",
                 render: function (data, type, row) {
                     const fullMessage = data || "No comments provided.";
                     const maxLength = 100;
@@ -52,6 +54,7 @@ $(document).ready(function () {
             {
                 data: null,
                 orderable: false,
+                width: "18%",
                 render: function (data, type, row) {
                     const photoHtml = row.photo
                         ? `<div class="card-photo mt-2">
@@ -76,6 +79,7 @@ $(document).ready(function () {
             },
             {
                 data: "created_at",
+                width: "18%",
                 render: function (data, type, row) {
                     const submissionDate = new Date(data).toLocaleString("en-US", {
                         year: "numeric", month: "long", day: "numeric",
@@ -93,6 +97,7 @@ $(document).ready(function () {
             {
                 data: "status",
                 className: "text-center",
+                width: "8%",
                 render: function (data, type, row) {
                     return data === 35 ? 'Displayed' : 'Hidden';
                 }
@@ -101,6 +106,7 @@ $(document).ready(function () {
                 data: "id",
                 orderable: false,
                 className: "text-center",
+                width: "8%",
                 render: function (data, type, row) {
                     if (row.status === 35) {
                         return `<button class="btn btn-warning btn-sm hide-feedback-btn" data-id="${data}">Hide</button>`;
