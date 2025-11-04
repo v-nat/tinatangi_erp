@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 Route::get('/finance', [FinanceController::class, 'finance'])->middleware('auth', 'isEmployee')->name('finance');
 
 Route::prefix('/finance')->middleware(['auth' , 'isEmployee'])->group(function () {
-    Route::get('/finance/dashboard-analytics', [FinanceController::class, 'getDashboardAnalytics']);
+    Route::get('/dashboard-analytics', [FinanceController::class, 'getDashboardAnalytics']);
     /////////////////////////////////////////////////////////// PAYROLL //////////////////////////////////////////////////////
     Route::get('/payroll', [PayrollController::class, 'indexOnFinance'])->name('finance.payroll');
     Route::get('/payroll/list', [PayrollController::class, 'getPayrollList']);
