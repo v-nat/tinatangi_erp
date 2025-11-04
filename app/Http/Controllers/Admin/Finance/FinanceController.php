@@ -52,7 +52,7 @@ class FinanceController extends Controller
 
         $payrollData = DB::table('payrolls')
             ->join('employees', 'payrolls.employee_id', '=', 'employees.id')
-            ->join('departments', 'employees.department_id', '=', 'departments.id')
+            ->join('departments', 'employees.department', '=', 'departments.id')
             ->select('departments.name', DB::raw('SUM(payrolls.gross_pay) as total_payroll'))
             ->where('payrolls.status', '!=', 11)
             ->groupBy('departments.name')
