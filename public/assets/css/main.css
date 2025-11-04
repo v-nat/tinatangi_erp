@@ -87,6 +87,53 @@ h6 {
   font-family: var(--heading-font);
 }
 
+/*--------------------------------------------------------------
+# Accordion Dark Theme
+--------------------------------------------------------------*/
+.accordion-dark .accordion-item {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 0;
+}
+
+.accordion-dark .accordion-item:first-of-type {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.accordion-dark .accordion-item:last-of-type {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.accordion-dark .accordion-button {
+    background-color: transparent;
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.accordion-dark .accordion-button:not(.collapsed) {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--accent-color);
+    box-shadow: none;
+}
+
+.accordion-dark .accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.accordion-dark .accordion-button::after {
+    /* This filter inverts the default dark icon to white */
+    filter: brightness(0) invert(1);
+}
+
+.accordion-dark .accordion-body {
+    background-color: transparent;
+    color: #e9ecef;
+}
+
 #messageModal .modal-content {
     background-color: var(--surface-color);
 

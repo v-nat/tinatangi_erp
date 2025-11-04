@@ -83,7 +83,8 @@
                 </div>
             </div>
 
-        </section><section id="about" class="about section">
+        </section>
+        <section id="about" class="about section">
 
             <div class="container" data-aos="fade-up" data-aos-delay="100">
 
@@ -115,12 +116,14 @@
 
             </div>
 
-        </section><section id="menu" class="menu section">
+        </section>
+        <section id="menu" class="menu section">
 
             <div class="container section-title" data-aos="fade-up">
                 <h2>Menu</h2>
                 <p>Check Our Tasty Menu</p>
-            </div><div class="container isotope-layout" data-default-filter="*" data-layout="masonry"
+            </div>
+            <div class="container isotope-layout" data-default-filter="*" data-layout="masonry"
                 data-sort="original-order">
 
                 <div class="row" data-aos="fade-up" data-aos-delay="100">
@@ -132,7 +135,8 @@
                             <li data-filter=".filter-specialty">Specialty</li>
                         </ul>
                     </div>
-                </div><div class="row isotope-container" data-aos="fade-up" data-aos-delay="200">
+                </div>
+                <div class="row isotope-container" data-aos="fade-up" data-aos-delay="200">
 
                     <div class="col-lg-6 menu-item isotope-item filter-starters">
                         <img src="assets/img/menu/lobster-bisque.jpg" class="menu-img" alt="">
@@ -142,7 +146,8 @@
                         <div class="menu-ingredients">
                             Lorem, deren, trataro, filede, nerada
                         </div>
-                    </div><div class="col-lg-6 menu-item isotope-item filter-specialty">
+                    </div>
+                    <div class="col-lg-6 menu-item isotope-item filter-specialty">
                         <img src="assets/img/menu/bread-barrel.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Bread Barrel</a><span>$6.95</span>
@@ -150,7 +155,8 @@
                         <div class="menu-ingredients">
                             Lorem, deren, trataro, filede, nerada
                         </div>
-                    </div><div class="col-lg-6 menu-item isotope-item filter-starters">
+                    </div>
+                    <div class="col-lg-6 menu-item isotope-item filter-starters">
                         <img src="assets/img/menu/cake.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Crab Cake</a><span>$7.95</span>
@@ -158,7 +164,8 @@
                         <div class="menu-ingredients">
                             A delicate crab cake served on a toasted roll with lettuce and tartar sauce
                         </div>
-                    </div><div class="col-lg-6 menu-item isotope-item filter-salads">
+                    </div>
+                    <div class="col-lg-6 menu-item isotope-item filter-salads">
                         <img src="assets/img/menu/caesar.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Caesar Selections</a><span>$8.95</span>
@@ -166,7 +173,8 @@
                         <div class="menu-ingredients">
                             Lorem, deren, trataro, filede, nerada
                         </div>
-                    </div><div class="col-lg-6 menu-item isotope-item filter-specialty">
+                    </div>
+                    <div class="col-lg-6 menu-item isotope-item filter-specialty">
                         <img src="assets/img/menu/tuscan-grilled.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Tuscan Grilled</a><span>$9.95</span>
@@ -174,7 +182,8 @@
                         <div class="menu-ingredients">
                             Grilled chicken with provolone, artichoke hearts, and roasted red pesto
                         </div>
-                    </div><div class="col-lg-6 menu-item isotope-item filter-starters">
+                    </div>
+                    <div class="col-lg-6 menu-item isotope-item filter-starters">
                         <img src="assets/img/menu/mozzarella.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Mozzarella Stick</a><span>$4.95</span>
@@ -182,7 +191,8 @@
                         <div class="menu-ingredients">
                             Lorem, deren, trataro, filede, nerada
                         </div>
-                    </div><div class="col-lg-6 menu-item isotope-item filter-salads">
+                    </div>
+                    <div class="col-lg-6 menu-item isotope-item filter-salads">
                         <img src="assets/img/menu/greek-salad.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Greek Salad</a><span>$9.95</span>
@@ -190,7 +200,8 @@
                         <div class="menu-ingredients">
                             Fresh spinach, crisp romaine, tomatoes, and Greek olives
                         </div>
-                    </div><div class="col-lg-6 menu-item isotope-item filter-salads">
+                    </div>
+                    <div class="col-lg-6 menu-item isotope-item filter-salads">
                         <img src="assets/img/menu/spinach-salad.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Spinach Salad</a><span>$9.95</span>
@@ -198,7 +209,8 @@
                         <div class="menu-ingredients">
                             Fresh spinach with mushrooms, hard boiled egg, and warm bacon vinaigrette
                         </div>
-                    </div><div class="col-lg-6 menu-item isotope-item filter-specialty">
+                    </div>
+                    <div class="col-lg-6 menu-item isotope-item filter-specialty">
                         <img src="assets/img/menu/lobster-roll.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Lobster Roll</a><span>$12.95</span>
@@ -206,14 +218,18 @@
                         <div class="menu-ingredients">
                             Plump lobster meat, mayo and crisp lettuce on a toasted bulky roll
                         </div>
-                    </div></div></div>
+                    </div>
+                </div>
+            </div>
 
-        </section><section id="book-a-table" class="book-a-table section">
+        </section>
+        <section id="book-a-table" class="book-a-table section">
 
             <div class="container section-title" data-aos="fade-up">
                 <h2>RESERVATION</h2>
                 <p>Book a Table</p>
-            </div><div class="container" data-aos="fade-up" data-aos-delay="100">
+            </div>
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
 
                 <form action="forms/book-a-table.php" method="post" role="form" class="php-email-form">
                     <div class="row gy-4">
@@ -254,17 +270,21 @@
                             confirm your reservation. Thank you!</div>
                         <button type="submit">Book a Table</button>
                     </div>
-                </form></div>
+                </form>
+            </div>
 
-        </section><section id="testimonials" class="testimonials section">
+        </section>
+        <section id="testimonials" class="testimonials section">
 
             <div class="container section-title" data-aos="fade-up">
                 <h2>Testimonials</h2>
                 <p>What they're saying about us</p>
-            </div><div class="container" data-aos="fade-up" data-aos-delay="100">
+            </div>
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-                <div class="swiper init-swiper" data-speed="600" data-delay="5000"
-                    data-breakpoints="{ "320": { "slidesPerView": 1, "spaceBetween": 40 }, "1200": { "slidesPerView": 3, "spaceBetween": 40 } }">
+                <div class="swiper init-swiper" data-speed="600" data-delay="5000" data-breakpoints="{ " 320":
+                    { "slidesPerView" : 1, "spaceBetween" : 40 }, "1200" : { "slidesPerView" : 3, "spaceBetween" : 40 }
+                    }">
                     <script type="application/json" class="swiper-config">
             {
               "loop": true,
@@ -299,12 +319,14 @@
 
             </div>
 
-        </section><section id="gallery" class="gallery section">
+        </section>
+        <section id="gallery" class="gallery section">
 
             <div class="container section-title" data-aos="fade-up">
                 <h2>Gallery</h2>
                 <p>Some photos from Our Restaurant</p>
-            </div><div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+            </div>
+            <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
 
                 <div class="row g-0">
 
@@ -314,59 +336,69 @@
                                 <img src="assets/img/gallery/gallery-1.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><div class="col-lg-3 col-md-4">
+                    </div>
+                    <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-2.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-2.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><div class="col-lg-3 col-md-4">
+                    </div>
+                    <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-3.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-3.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><div class="col-lg-3 col-md-4">
+                    </div>
+                    <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-4.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-4.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><div class="col-lg-3 col-md-4">
+                    </div>
+                    <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-5.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-5.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><div class="col-lg-3 col-md-4">
+                    </div>
+                    <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-6.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-6.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><div class="col-lg-3 col-md-4">
+                    </div>
+                    <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-7.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-7.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><div class="col-lg-3 col-md-4">
+                    </div>
+                    <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-8.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-8.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div></div>
+                    </div>
+                </div>
 
             </div>
 
-        </section><section id="faq" class="faq section">
+        </section>
+        <section id="faq" class="faq section">
 
             <div class="container section-title" data-aos="fade-up">
                 <h2>FAQ</h2>
                 <p>Frequently Asked Questions</p>
-            </div><div class="container">
-                <div class="accordion" id="faqAccordion" data-aos="fade-up" data-aos-delay="100">
+            </div>
+            <div class="container">
+                <div class="accordion accordion-dark" id="faqAccordion" data-aos="fade-up" data-aos-delay="100">
 
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingOne">
@@ -417,17 +449,20 @@
                 </div>
             </div>
 
-        </section><section id="contact" class="contact section">
+        </section>
+        <section id="contact" class="contact section">
 
             <div class="container section-title" data-aos="fade-up">
                 <h2>Contact</h2>
                 <p>Contact Us</p>
-            </div><div class="mb-5" data-aos="fade-up" data-aos-delay="200">
+            </div>
+            <div class="mb-5" data-aos="fade-up" data-aos-delay="200">
                 <iframe style="border:0; width: 100%; height: 400px;"
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d538.2670848350348!2d120.97375488601962!3d14.349609556423186!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d5028c89e071%3A0xd2f34ec4ee1383f5!2sTinatangi%20Cafe!5e1!3m2!1sen!2sph!4v1757308892530!5m2!1sen!2sph"
                     frameborder="0" allowfullscreen="" loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div><div class="container" data-aos="fade-up" data-aos-delay="100">
+            </div>
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
 
                 <div class="row gy-4">
 
@@ -538,11 +573,13 @@
 
                             </div>
                         </form>
-                    </div></div>
+                    </div>
+                </div>
 
             </div>
 
-        </section></main>
+        </section>
+    </main>
 
     <footer id="footer" class="footer">
 
