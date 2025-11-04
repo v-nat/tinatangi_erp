@@ -108,7 +108,7 @@
 
     <section class="section row">
         <div class="col-md-7">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Recent Feedback Awaiting Review</h4>
                     <a href="{{ route('crm.feedback') }}">View All</a>
@@ -133,7 +133,7 @@
             </div>
         </div>
         <div class="col-md-5">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header">
                     <h4>Ratings Distribution</h4>
                 </div>
@@ -143,7 +143,6 @@
             </div>
         </div>
     </section>
-
 @endsection
 
 @section('scripts')

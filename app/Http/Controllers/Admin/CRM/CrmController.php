@@ -28,7 +28,7 @@ class CrmController extends Controller
         $pendingCount = ServiceFeedback::where('status', 34)->whereColumn('created_at', 'updated_at')->count();
         $displayedCount = ServiceFeedback::where('status', 35)->count();
 
-        $recentPending = ServiceFeedback::where('status', 34)
+        $recentPending = ServiceFeedback::where('status', 34)->whereColumn('created_at', 'updated_at')
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get()
