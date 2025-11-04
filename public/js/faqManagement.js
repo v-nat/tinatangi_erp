@@ -24,7 +24,7 @@ $(document).ready(function () {
                 }
             },
             {
-                data: "status_html", // Use the accessor
+                data: "status_html",
                 width: "10%"
             },
             {
@@ -52,7 +52,7 @@ $(document).ready(function () {
         $faqForm.attr('action', '/customer-service/faqs/store');
         $('#faq_method').val('POST');
         $('#faq_id').val('');
-        $('#status').val('34'); // Default to Hidden
+        $('#status').val('34');
         $btnSave.text('Save FAQ').prop('disabled', false);
         faqModal.show();
     });
@@ -67,12 +67,12 @@ $(document).ready(function () {
             $('#faq_id').val(data.id);
             $('#question').val(data.question);
             $('#answer').val(data.answer);
-            $('#status').val(data.status); // This will be 34 or 35
+            $('#status').val(data.status);
             $('#order').val(data.order);
             $btnSave.text('Update FAQ').prop('disabled', false);
             faqModal.show();
         }).fail(function () {
-            Swal.fire('Error', 'Could not retrieve FAQ data.', 'error');
+            Toast.fire('Error', 'Could not retrieve FAQ data.', 'error');
         });
     });
 
@@ -90,7 +90,7 @@ $(document).ready(function () {
             headers: { 'X-CSRF-TOKEN': csrfToken },
             success: function (response) {
                 faqModal.hide();
-                Swal.fire('Success!', response.success, 'success');
+                Toast.fire('Success!', response.success, 'success');
                 faqTable.ajax.reload();
             },
             error: function (xhr) {
@@ -100,9 +100,9 @@ $(document).ready(function () {
                     $.each(errors, function (key, value) {
                         errorMsg += `- ${value[0]}<br>`;
                     });
-                    Swal.fire('Error', errorMsg, 'error');
+                    Toast.fire('Error', errorMsg, 'error');
                 } else {
-                    Swal.fire('Error', 'An unknown error occurred.', 'error');
+                    Toast.fire('Error', 'An unknown error occurred.', 'error');
                 }
                 $btnSave.text('Save FAQ').prop('disabled', false);
             }
@@ -127,11 +127,11 @@ $(document).ready(function () {
                     type: 'DELETE',
                     headers: { 'X-CSRF-TOKEN': csrfToken },
                     success: function (response) {
-                        Swal.fire('Deleted!', response.success, 'success');
+                        Toast.fire('Deleted!', response.success, 'success');
                         faqTable.ajax.reload();
                     },
                     error: function (xhr) {
-                        Swal.fire('Error', 'Could not delete the FAQ.', 'error');
+                        Toast.fire('Error', 'Could not delete the FAQ.', 'error');
                     }
                 });
             }

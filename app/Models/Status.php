@@ -52,12 +52,12 @@ class Status extends Model
             27 => '<span class="badge bg-warning">Pending<br>Restock</span>',
             28 => '<span class="badge bg-warning">In Queue</span>',
             29 => '<span class="badge bg-info">In Prep</span>',
-            30 => '<span class="badge bg-sucess">Ready</span>',
+            30 => '<span class="badge bg-success">Ready</span>',
             31 => '<span class="badge bg-danger">Voided</span>',
             32 => '<span class="badge bg-danger">Loss</span>',
-            33 => '<span class="badge bg-sucess">Growth</span>',
+            33 => '<span class="badge bg-success">Growth</span>',
             34 => '<span class="badge bg-danger">Hidden</span>',
-            35 => '<span class="badge bg-sucess">Displayed</span>',
+            35 => '<span class="badge bg-success">Displayed</span>',
             null => '<span class="badge bg-secondary">Unknown</span>'
         ];
         return $statuses[$statusCode];
