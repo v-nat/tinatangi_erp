@@ -7,13 +7,13 @@
 </li>
 <li class="sidebar-item @yield('crmFeedback') ">
     <a href="{{route('crm.feedback')}}" class='sidebar-link'>
-        <i class="bi bi-grid-1x2-fill"></i>
+        <i class="fa-solid fa-comments"></i>
         <span>Service Feedback</span>
     </a>
 </li>
 <li class="sidebar-item @yield('crmFaqs') ">
     <a href="{{route('crm.faqs')}}" class='sidebar-link'>
-        <i class="bi bi-grid-1x2-fill"></i>
+        <i class="fa-solid fa-circle-question"></i>
         <span>FAQ Management</span>
     </a>
 </li>
