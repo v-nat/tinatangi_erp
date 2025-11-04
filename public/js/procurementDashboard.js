@@ -1,11 +1,8 @@
 $(document).ready(function () {
-
-    // Check if we are on the dashboard page
     if ($('#chart-po-status').length === 0) {
-        return; // Stop execution if charts aren't present
+        return;
     }
 
-    // Helper to format currency
     function formatCurrency(value) {
         return '₱ ' + parseFloat(value).toLocaleString('en-US', {
             minimumFractionDigits: 2,
@@ -13,22 +10,18 @@ $(document).ready(function () {
         });
     }
 
-    // Helper to format dates
     function formatSimpleDate(dateString) {
         const options = { month: 'short', day: 'numeric', year: 'numeric' };
         return new Date(dateString).toLocaleDateString('en-US', options);
     }
 
-    // --- Chart Options ---
-
-    // 1. Doughnut Chart: PO by Status
     const optionsPoStatus = {
         chart: {
             type: 'donut',
             height: 350,
         },
-        series: [], // To be populated
-        labels: [], // To be populated
+        series: [],
+        labels: [],
         dataLabels: {
             enabled: true,
             formatter: function (val) {
@@ -43,7 +36,6 @@ $(document).ready(function () {
         }
     };
 
-    // 2. Bar Chart: Top Suppliers
     const optionsTopSuppliers = {
         chart: {
             type: 'bar',
@@ -51,10 +43,10 @@ $(document).ready(function () {
         },
         series: [{
             name: 'Total Spend',
-            data: [] // To be populated
+            data: []
         }],
         xaxis: {
-            categories: [] // To be populated
+            categories: []
         },
         yaxis: {
             title: {
@@ -86,15 +78,12 @@ $(document).ready(function () {
         }
     };
 
-    // --- Initialize Charts ---
     const chartPoStatus = new ApexCharts(document.querySelector("#chart-po-status"), optionsPoStatus);
     chartPoStatus.render();
 
     const chartTopSuppliers = new ApexCharts(document.querySelector("#chart-top-suppliers"), optionsTopSuppliers);
     chartTopSuppliers.render();
 
-
-    // --- Fetch and Populate Data ---
     function loadDashboardData() {
         $.ajax({
             url: '/procurement/dashboard-analytics',
@@ -102,14 +91,11 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (response) {
 
-                // 1. Populate KPI Cards
                 $('#kpi-pending-pr').text(response.kpis.pendingPR);
                 $('#kpi-pending-po').text(response.kpis.pendingPO);
                 $('#kpi-active-suppliers').text(response.kpis.activeSuppliers);
-                // Use the pre-formatted string from the controller
                 $('#kpi-total-spend').text('₱ ' + response.kpis.totalSpend);
 
-                // 2. Populate Recent Pending PRs Table
                 const $prTableBody = $('#table-recent-prs tbody');
                 $prTableBody.empty();
                 if (response.recentPendingPRs.length > 0) {
@@ -127,7 +113,6 @@ $(document).ready(function () {
                     $prTableBody.append('<tr><td colspan="3" class="text-center">No pending purchase requests!</td></tr>');
                 }
 
-                // 3. Update PO Status Chart
                 const poStatusLabels = response.poByStatus.map(item => item.status_label);
                 const poStatusCounts = response.poByStatus.map(item => item.count);
                 chartPoStatus.updateOptions({
@@ -135,7 +120,6 @@ $(document).ready(function () {
                     series: poStatusCounts
                 });
 
-                // 4. Update Top Suppliers Chart
                 const supplierLabels = response.topSuppliers.map(item => item.supplier_name);
                 const supplierTotals = response.topSuppliers.map(item => item.total);
                 chartTopSuppliers.updateSeries([{ data: supplierTotals }]);
@@ -148,7 +132,6 @@ $(document).ready(function () {
         });
     }
 
-    // Load data on page load
     loadDashboardData();
 });
 

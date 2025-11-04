@@ -81,7 +81,7 @@
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Pending Purchase Requests</h4>
-                    <a href="#">View All</a>
+                    <a href="{{ route('procurement.createPR') }}">View All</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

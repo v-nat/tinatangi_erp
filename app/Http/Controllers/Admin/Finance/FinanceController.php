@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers\Admin\Finance;
 
-use App\Http\Controllers\Controller;
-use App\Models\BudgetRelease;
-use Illuminate\Http\Request;
-use App\Models\Status;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Status;
+use App\Models\Invoice;
 use App\Models\Payroll;
-use App\Models\PurchaseRequest;
+use Illuminate\Http\Request;
+use App\Models\BudgetRelease;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseOrderDetail;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class FinanceController extends Controller
 {
-    public function finance(){
+    public function finance()
+    {
         return view("pages.admin.finance.index");
     }
     public function budgetsIndex()
@@ -28,13 +31,85 @@ class FinanceController extends Controller
         return view("pages.admin.finance.purchase-order-approvals");
     }
 
+    public function getDashboardAnalytics(): JsonResponse
+    {
+        $kpis = [
+            'pendingPayroll' => Payroll::where('status', 11)->sum('net_pay'),
+            'pendingBudgets' => BudgetRelease::where('status', 14)->sum('amount'),
+            'pendingPOs' => PurchaseRequest::where('status', 11)->sum('amount'),
+            'pendingInvoices' => Invoice::where('status', 11)->sum('total_amount'),
+        ];
+
+        $budgetData = BudgetRelease::select(
+            DB::raw('SUM(amount) as total_amount'),
+            DB::raw("DATE_FORMAT(released_at, '%Y-%m') as month_year")
+        )
+            ->where('status', '!=', 11)
+            ->where('released_at', '>=', Carbon::now()->subMonths(6))
+            ->groupBy('month_year')
+            ->orderBy('month_year', 'ASC')
+            ->get();
+
+        $payrollData = DB::table('payrolls')
+            ->join('employees', 'payrolls.employee_id', '=', 'employees.id')
+            ->join('departments', 'employees.department_id', '=', 'departments.id')
+            ->select('departments.name', DB::raw('SUM(payrolls.gross_pay) as total_payroll'))
+            ->where('payrolls.status', '!=', 11)
+            ->groupBy('departments.name')
+            ->get();
+
+        $charts = [
+            'budgetReleased' => [
+                'labels' => $budgetData->pluck('month_year'),
+                'data' => $budgetData->pluck('total_amount'),
+            ],
+            'payrollByDept' => [
+                'labels' => $payrollData->pluck('name'),
+                'data' => $payrollData->pluck('total_payroll'),
+            ],
+        ];
+
+        $budgetsAwaitingRelease = BudgetRelease::with(['requestedBy:id,first_name,last_name', 'department:id,name'])
+            ->where('status', 14)
+            ->latest('requested_at')
+            ->take(5)
+            ->get()
+            ->map(fn($budget) => [
+                'requestor' => $budget->requestedBy->full_name ?? 'N/A',
+                'department' => $budget->department->name ?? 'N/A',
+                'amount' => $budget->amount,
+            ]);
+
+        $invoicesAwaitingApproval = Invoice::with(['supplier:id,name', 'purchaseRequest:id'])
+            ->where('status', 11)
+            ->latest('created_at')
+            ->take(5)
+            ->get()
+            ->map(fn($invoice) => [
+                'supplier' => $invoice->supplier->name ?? 'N/A',
+                'po_id' => $invoice->purchaseRequest->id ?? 'N/A',
+                'total_amount' => $invoice->total_amount,
+            ]);
+
+        $data = [
+            'kpis' => $kpis,
+            'charts' => $charts,
+            'tables' => [
+                'budgetsAwaitingRelease' => $budgetsAwaitingRelease,
+                'invoicesAwaitingApproval' => $invoicesAwaitingApproval,
+            ]
+        ];
+
+        return response()->json($data);
+    }
+
     public function getPendingRequests()
     {
         try {
             $requests = BudgetRelease::with(['employeeRS', 'departmentRS', 'statusRS'])
                 ->where('status', 11)
                 ->orderBy('requested_at', 'desc')->get();
-      
+
             return response()->json([
                 'data' => $requests->map(function ($r) {
                     return [
