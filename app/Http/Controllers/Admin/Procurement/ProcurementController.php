@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Procurement;
 
+use Carbon\Carbon;
 use App\Models\Status;
+use App\Models\Supplier;
+use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class ProcurementController extends Controller
@@ -24,6 +28,61 @@ class ProcurementController extends Controller
     public function purchaseOrders()
     {
         return view("pages.admin.procurement.purchase-orders");
+    }
+
+    public function getDashboardAnalytics()
+    {
+        // --- 1. KPI Card Data ---
+        $pendingPR = PurchaseRequest::where('status', 11)->count(); // 11 = Pending
+        $pendingPO = PurchaseOrder::where('status', 11)->count(); // 11 = Pending
+        $activeSuppliers = Supplier::where('status', 1)->count(); // 1 = Active
+
+        // Total spend this month (assuming 'Completed' status is 23)
+        $totalSpend = PurchaseOrder::where('status', 23)
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->sum('total_amount'); // Assumes you have a 'total_amount' column
+
+        // --- 2. Recent Pending Purchase Requests (PRs) ---
+        $recentPendingPRs = PurchaseRequest::where('status', 11) // 11 = Pending
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($pr) {
+                $pr->status_html = Status::getStatusText($pr->status);
+                return $pr;
+            });
+
+        // --- 3. Purchase Orders by Status (Doughnut Chart) ---
+        $poByStatus = PurchaseOrder::select('status', DB::raw('COUNT(*) as count'))
+            ->groupBy('status')
+            ->get()
+            ->map(function ($po) {
+                // Get the text label (e.g., "Pending", "Completed")
+                // We strip tags to get clean text for the chart label
+                $po->status_label = strip_tags(Status::getStatusText($po->status));
+                return $po;
+            });
+
+        // --- 4. Top 5 Suppliers by PO Value (Bar Chart) ---
+        $topSuppliers = PurchaseOrder::join('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.id')
+            ->select('suppliers.name as supplier_name', DB::raw('SUM(purchase_orders.total_amount) as total'))
+            ->where('purchase_orders.status', 23) // Only count 'Completed' orders
+            ->groupBy('suppliers.name')
+            ->orderBy('total', 'desc')
+            ->take(5)
+            ->get();
+
+        return response()->json([
+            'kpis' => [
+                'pendingPR' => $pendingPR,
+                'pendingPO' => $pendingPO,
+                'activeSuppliers' => $activeSuppliers,
+                'totalSpend' => number_format($totalSpend, 2),
+            ],
+            'recentPendingPRs' => $recentPendingPRs,
+            'poByStatus' => $poByStatus,
+            'topSuppliers' => $topSuppliers,
+        ]);
     }
 
     public function purchaseOrdersList()

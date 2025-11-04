@@ -11,6 +11,7 @@ use App\Http\Controllers\GenerateIdController;
 Route::get('/procurement', [ProcurementController::class, 'index'])->middleware('auth', 'isEmployee')->name('procurement.index');
 
 Route::prefix('/procurement')->middleware(['auth', 'isEmployee'])->group(function () {
+    Route::get('/api/dashboard-analytics', [ProcurementController::class, 'getDashboardAnalytics']);
     //////////////////////////////////////////  to views /////////////////////////////////////
     Route::get('/create-purchase-request', [ProcurementController::class, 'createPR'])->name('procurement.createPR');
     Route::get('/purchase-orders', [ProcurementController::class, 'purchaseOrders'])->name('procurement.purchaseOrders');
