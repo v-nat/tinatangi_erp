@@ -14,7 +14,6 @@
         </ol>
     </nav>
 
-    <!-- KPI Cards -->
     <section class="section row">
         <div class="col-md-3">
             <div class="card shadow-sm border-0 rounded-lg">
@@ -88,7 +87,7 @@
 
     <section class="section row">
         <div class="col-md-7">
-            <div class="card shadow-sm border-0 rounded-lg">
+            <div class="card shadow-sm border-0 rounded-lg h-100">
                 <div class="card-header">
                     <h4>Top 5 Selling Products (Today)</h4>
                 </div>
@@ -117,7 +116,7 @@
                     </div>
 
                     <div class="d-flex align-items-center p-3 bg-light-info rounded-lg">
-                        <div class="stats-icon-wrapper me-3">
+                        <div classs="stats-icon-wrapper me-3">
                             <div class="stats-icon info rounded-lg">
                                 <i class="iconly-boldActivity"></i>
                             </div>
