@@ -35,7 +35,7 @@
                     <div class="card-body px-3 py-4-5">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="stats-icon green">
+                                <div class="stats-icon purple">
                                     <i class="fa-solid fa-comments"></i>
                                 </div>
                             </div>
@@ -53,7 +53,7 @@
                     <div class="card-body px-3 py-4-5">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="stats-icon purple">
+                                <div class="stats-icon green">
                                     <i class="fa-solid fa-circle-check"></i>
                                 </div>
                             </div>
