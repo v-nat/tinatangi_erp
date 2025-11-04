@@ -114,7 +114,7 @@ class FinanceController extends Controller
         $payrollOverview = Payroll::select(
             DB::raw("CONCAT(DATE_FORMAT(start_date, '%b %e'), ' - ', DATE_FORMAT(end_date, '%b %e')) as pay_period_label"),
             DB::raw('SUM(gross_pay) as gross'),
-            DB::raw('SUM(deductions) as deductions'),
+            DB::raw('SUM(deduction) as deductions'),
             DB::raw('SUM(net_pay) as net')
         )
             ->groupBy('pay_period_label', 'start_date') // Group by label and start date
