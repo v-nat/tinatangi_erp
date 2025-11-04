@@ -6,10 +6,6 @@ use Exception;
 use App\Models\Faq;
 use App\Models\ServiceFeedback;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-use Stevebauman\Location\Facades\Location;
-use App\Http\Requests\StoreServiceFeedbackRequest;
-use App\Http\Requests\UpdateFeedbackStatusRequest;
 
 class CrmController extends Controller
 {
@@ -24,7 +20,7 @@ class CrmController extends Controller
 
     public function getPublicFaqs()
     {
-        $faqs = Faq::where('status', 35) 
+        $faqs = Faq::where('status', 35)
                      ->orderBy('order', 'asc')
                      ->get();
 

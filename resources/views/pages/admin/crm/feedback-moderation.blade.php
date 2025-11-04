@@ -40,7 +40,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="feedbackTable" class="table table-hover align-middle" style="width:100%">
+                    <table id="feedbackTable" class="table table-sm table-hover dataTable no-footer" style="width:100%">
                         <thead>
                             <tr>
                                 <th>Customer</th>
