@@ -128,7 +128,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="card-title mb-0">Budgets Awaiting Release</h4>
-                    <a href="{{ route('finance.budgets') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                    <a href="{{ route('finance.budgets') }}">View All</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
