@@ -20,7 +20,7 @@
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon purple rounded-lg">
-                                <i class="iconly-boldShow"></i>
+                                <i class="iconly-boldWallet"></i>
                             </div>
                         </div>
                         <div>
@@ -37,7 +37,7 @@
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon blue rounded-lg">
-                                <i class="iconly-boldProfile"></i>
+                                <i class="iconly-boldUpload"></i>
                             </div>
                         </div>
                         <div>
@@ -54,7 +54,7 @@
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon green rounded-lg">
-                                <i class="iconly-boldAdd-User"></i>
+                                <i class="iconly-boldBuy"></i>
                             </div>
                         </div>
                         <div>
@@ -71,7 +71,7 @@
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon red rounded-lg">
-                                <i class="iconly-boldBookmark"></i>
+                                <i class="iconly-boldTime-Circle"></i>
                             </div>
                         </div>
                         <div>
