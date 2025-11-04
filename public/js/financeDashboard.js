@@ -4,7 +4,6 @@ $(document).ready(function () {
     }
 
     function formatCurrency(value) {
-        // Using PHP '₱' symbol as in your example
         return '₱ ' + parseFloat(value).toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -78,7 +77,6 @@ $(document).ready(function () {
     const chartPayrollDept = new ApexCharts(document.querySelector("#chart-payroll-dept"), optionsPayrollDept);
     chartPayrollDept.render();
 
-
     function loadDashboardData() {
         $.ajax({
             url: '/finance/dashboard-analytics',
@@ -128,14 +126,24 @@ $(document).ready(function () {
                 chartBudgetReleased.updateSeries([{ data: response.charts.budgetReleased.data }]);
                 chartBudgetReleased.updateOptions({ xaxis: { categories: response.charts.budgetReleased.labels } });
 
-                chartPayrollDept.updateOptions({
-                    labels: response.charts.payrollByDept.labels,
-                    series: response.charts.payrollByDept.data
-                });
+                if (response.charts.payrollByDept.data.length > 0 && response.charts.payrollByDept.data.some(d => d > 0)) {
+                    chartPayrollDept.updateOptions({
+                        labels: response.charts.payrollByDept.labels,
+                        series: response.charts.payrollByDept.data
+                    });
+                } else {
+                    chartPayrollDept.updateOptions({
+                        series: [],
+                        labels: [],
+                        noData: { text: 'No payroll data available.' }
+                    });
+                }
 
             },
             error: function (xhr) {
                 console.error('Failed to load dashboard analytics:', xhr);
+                chartBudgetReleased.updateOptions({ noData: { text: 'Could not load chart data.' } });
+                chartPayrollDept.updateOptions({ noData: { text: 'Could not load chart data.' } });
             }
         });
     }
