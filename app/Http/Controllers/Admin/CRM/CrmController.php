@@ -25,7 +25,7 @@ class CrmController extends Controller
     {
         $totalFeedback = ServiceFeedback::count();
         $averageRating = ServiceFeedback::avg('overall_rating');
-        $pendingCount = ServiceFeedback::where('status', 34)->count();
+        $pendingCount = ServiceFeedback::where('status', 34)->whereColumn('created_at', 'updated_at')->count();
         $displayedCount = ServiceFeedback::where('status', 35)->count();
 
         $recentPending = ServiceFeedback::where('status', 34)

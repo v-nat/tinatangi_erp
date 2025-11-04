@@ -12,10 +12,9 @@
         </ol>
     </nav>
 
-    <!-- 1. KPI Cards Section -->
     <section class="section row">
         <div class="col-md-3">
-            <div class="card card-statistic">
+            <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -32,7 +31,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card card-statistic">
+            <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -49,7 +48,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card card-statistic">
+            <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -66,7 +65,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card card-statistic">
+            <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -84,7 +83,6 @@
         </div>
     </section>
 
-    <!-- 2. Charts Section -->
     <section class="section row">
         <div class="col-md-8">
             <div class="card">
@@ -108,7 +106,6 @@
         </div>
     </section>
 
-    <!-- 3. Table and Distribution Chart Section -->
     <section class="section row">
         <div class="col-md-7">
             <div class="card">
