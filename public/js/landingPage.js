@@ -1,4 +1,70 @@
 $(document).ready(function () {
+    function loadFaqs() {
+        const faqContainer = $("#faqAccordion");
+        if (faqContainer.length === 0) {
+            return; 
+        }
+
+        $.ajax({
+            url: "/faqs-public",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                faqContainer.empty();
+
+                if (response.data && response.data.length > 0) {
+                    $.each(response.data, function (index, faq) {
+                        const collapseId = "collapse-" + faq.id;
+                        const headingId = "heading-" + faq.id;
+
+                        const faqHtml = `
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="${headingId}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                                        ${faq.question}
+                                    </button>
+                                </h2>
+                                <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headingId}"
+                                    data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        ${faq.answer}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        faqContainer.append(faqHtml);
+                    });
+                } else {
+                    const emptyHtml = `
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button">
+                                    No frequently asked questions are available at this time.
+                                </button>
+                            </h2>
+                        </div>
+                    `;
+                    faqContainer.append(emptyHtml);
+                }
+            },
+            error: function (xhr) {
+                console.error("Failed to load FAQs:", xhr);
+                faqContainer.html(`
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button">
+                                Error loading questions. Please try again later.
+                            </button>
+                        </h2>
+                    </div>
+                `);
+            },
+        });
+    }
+
+    loadFaqs();
+
     var food_rating = raterJs({
         starSize: 28,
         step: 0.5,
@@ -179,23 +245,22 @@ $(document).ready(function () {
             charCount.removeClass("text-danger");
         }
     });
-
 });
 
 $(document).ready(function () {
-
     /**
      * Helper function to safely escape text for a data attribute.
      * @param {string} s - The string to escape.
      * @returns {string} The escaped string.
      */
     function escapeAttribute(s) {
-        if (!s) return '';
-        return s.toString()
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
+        if (!s) return "";
+        return s
+            .toString()
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
     }
 
     const swiperContainer = $("#testimonials .init-swiper");
@@ -213,12 +278,14 @@ $(document).ready(function () {
                         ? `/storage/app/public/${feedback.photo}`
                         : "assets/img/default-avatar.png";
 
-                    const fullMessage = feedback.message || "No comments provided.";
+                    const fullMessage =
+                        feedback.message || "No comments provided.";
                     const maxLength = 100;
                     let messageHtml = "";
 
                     if (fullMessage.length > maxLength) {
-                        const truncatedMessage = fullMessage.substring(0, maxLength) + "...";
+                        const truncatedMessage =
+                            fullMessage.substring(0, maxLength) + "...";
                         const encodedMessage = escapeAttribute(fullMessage);
 
                         messageHtml = `
@@ -276,5 +343,3 @@ $(document).ready(function () {
         $("#modalMessageBody").text(fullMessage);
     });
 });
-
-

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\CRM;
 
 use Exception;
+use App\Models\Faq;
 use App\Models\ServiceFeedback;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -19,6 +20,15 @@ class CrmController extends Controller
     public function serviceFeedback()
     {
         return view('pages.admin.crm.feedback-moderation');
+    }
+
+    public function getPublicFaqs()
+    {
+        $faqs = Faq::where('status', 35) // 35 = Displayed
+                     ->orderBy('order', 'asc')
+                     ->get();
+
+        return response()->json(['data' => $faqs]);
     }
 
     public function fetchPublicTestimonials()

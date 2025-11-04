@@ -16,7 +16,7 @@ Route::get('/admintest', function () {
 })->name('test');
 
 Route::get('/testimonials', [App\Http\Controllers\Admin\CRM\CrmController::class, 'fetchPublicTestimonials']);
-
+Route::get('/faqs-public', [App\Http\Controllers\Admin\CRM\CrmController::class, 'getPublicFaqs']);
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';

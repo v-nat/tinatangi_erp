@@ -392,64 +392,24 @@
 
         </section>
         <section id="faq" class="faq section">
-
             <div class="container section-title" data-aos="fade-up">
                 <h2>FAQ</h2>
                 <p>Frequently Asked Questions</p>
-            </div>
+
             <div class="container">
                 <div class="accordion accordion-dark" id="faqAccordion" data-aos="fade-up" data-aos-delay="100">
-
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                What are your opening hours?
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button">
+                                Loading questions...
                             </button>
                         </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
-                            data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Our cafe is open Monday to Saturday from 7:00 AM to 12:00 AM.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Do you offer Wi-Fi?
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                            data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Yes, we provide free high-speed Wi-Fi for all our customers.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingThree">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Can I reserve a table?
-                            </button>
-                        </h2>
-                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                            data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Yes, you can book a table by using the "Book a Table" form on our website or by
-                                calling us at 0960-216-4109 or 0915-796-8729.
-                            </div>
-                        </div>
                     </div>
 
                 </div>
             </div>
-
         </section>
+
         <section id="contact" class="contact section">
 
             <div class="container section-title" data-aos="fade-up">

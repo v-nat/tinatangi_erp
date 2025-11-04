@@ -11,3 +11,9 @@
         <span>Service Feedback</span>
     </a>
 </li>
+<li class="sidebar-item @yield('crmFaqs') ">
+    <a href="{{route('crm.faqs')}}" class='sidebar-link'>
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>FAQ Management</span>
+    </a>
+</li>
