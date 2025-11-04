@@ -113,7 +113,7 @@
         </div>
     </section>
 
-    <section class="section row mt-2">
+    <section class="section row mt-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
