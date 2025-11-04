@@ -10,46 +10,47 @@
         </ol>
     </nav>
 
-    <div class="section p-6 mt-4">
-        <h2>Customer Feedback</h2>
+    <section class="section">
+        <div class="card">
+            <div class="card-header py-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="card-title mb-0">Customer Feedback</h4>
 
-        {{--
-          NOTE: The custom filter/sort dropdowns have been removed.
-          DataTables provides its own search box and column-based sorting.
-          If you need custom dropdown filters, they must be wired up
-          to the DataTables API (e.g., table.column(n).search(val).draw()).
-        --}}
-
-        <div class="table-responsive">
-            {{-- 1. Added id="feedbackTable" --}}
-            <table id="feedbackTable" class="table table-hover align-middle" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Customer</th>
-                        <th>Rating (Overall)</th>
-                        <th>Comment</th>
-                        <th>Details</th>
-                        <th>Submitted</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                {{-- 2. Emptied the tbody. DataTables will populate this. --}}
-                <tbody>
-                    {{-- Data will be loaded by DataTables --}}
-                </tbody>
-            </table>
+                    <div class="d-flex align-items-center" style="width: 320px;">
+                        <label for="status_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Status:</label>
+                        <select id="status_filter" class="form-select form-select-sm">
+                            <option value="">All Statuses</option>
+                            <option value="Displayed">Displayed</option>
+                            <option value="Hidden">Hidden</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="feedbackTable" class="table table-hover align-middle" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Rating (Overall)</th>
+                                <th>Comment</th>
+                                <th>Details</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+    </section>
 
-        {{-- 3. Removed the custom pagination div --}}
-
-    </div>
-
-    {{-- Modals remain the same --}}
     @include('layouts.modals.crm-modal')
 
     <style>
-        /* These styles are still valid and will be used */
         .feedback-hidden {
             opacity: 0.6;
         }
@@ -84,6 +85,5 @@
 @endsection
 
 @section('scripts')
-    {{-- Ensure you have DataTables JS loaded in your app layout --}}
-    <script src="{{ asset('js/feedbackManagement.js') }}"></script>
+    <script type="module" src="{{ asset('js/feedbackManagement.js') }}"></script>
 @endsection

@@ -1,6 +1,5 @@
 $(document).ready(function () {
 
-    // Helper function to escape HTML attributes (still needed for modals)
     function escapeAttribute(s) {
         if (!s) return '';
         return s.toString()
@@ -10,24 +9,19 @@ $(document).ready(function () {
             .replace(/>/g, '&gt;');
     }
 
-    // Initialize the DataTable
     const feedbackTable = $('#feedbackTable').DataTable({
         processing: true,
-        serverSide: false, // We will load all data client-side, like your original script
+        serverSide: false,
         ajax: {
-            url: "/customer-service/feedbacks", // URL to fetch all feedback data
+            url: "/customer-service/feedbacks",
             type: "GET",
-            dataSrc: "data", // The array of feedback objects is in the 'data' property
+            dataSrc: "data",
             error: function (xhr, error, thrown) {
                 console.error("Failed to load feedback data for DataTable.", error);
-                // You could show a more permanent error in the table
             }
         },
         columns: [
-            // 0. Customer
             { data: "name" },
-
-            // 1. Rating (Overall)
             {
                 data: "overall_rating",
                 className: "text-center",
@@ -35,8 +29,6 @@ $(document).ready(function () {
                     return `<span class="card-rating">${data} ★</span>`;
                 }
             },
-
-            // 2. Comment
             {
                 data: "message",
                 render: function (data, type, row) {
@@ -57,10 +49,8 @@ $(document).ready(function () {
                     return `<p><em>"${fullMessage}"</em></p>`;
                 }
             },
-
-            // 3. Details (Composite column)
             {
-                data: null, // No single data source
+                data: null,
                 orderable: false,
                 render: function (data, type, row) {
                     const photoHtml = row.photo
@@ -84,8 +74,6 @@ $(document).ready(function () {
                     `;
                 }
             },
-
-            // 4. Submitted (Composite column)
             {
                 data: "created_at",
                 render: function (data, type, row) {
@@ -102,8 +90,6 @@ $(document).ready(function () {
                     `;
                 }
             },
-
-            // 5. Status
             {
                 data: "status",
                 className: "text-center",
@@ -111,69 +97,61 @@ $(document).ready(function () {
                     return data === 35 ? 'Displayed' : 'Hidden';
                 }
             },
-
-            // 6. Actions
             {
-                data: "id", // Use the ID for the button
+                data: "id",
                 orderable: false,
                 className: "text-center",
                 render: function (data, type, row) {
                     if (row.status === 35) {
-                        // Status is 'Displayed', show 'Hide' button
                         return `<button class="btn btn-warning btn-sm hide-feedback-btn" data-id="${data}">Hide</button>`;
                     } else {
-                        // Status is 'Hidden', show 'Display' button
                         return `<button class="btn btn-success btn-sm display-feedback-btn" data-id="${data}">Display</button>`;
                     }
                 }
             }
         ],
-        // This function applies the opacity class to the row
         createdRow: function (row, data, dataIndex) {
-            if (data.status === 34) { // 34 = Hidden
+            if (data.status === 34) {
                 $(row).addClass('feedback-hidden');
             } else {
                 $(row).addClass('feedback-displayed');
             }
         },
-        // Default sort by submitted date (column 4), descending (newest first)
         order: [[4, 'desc']]
     });
 
-    // --- Event Listeners (Moved from document to table body for efficiency) ---
+    $('#status_filter').on('change', function () {
+        const selectedStatus = $(this).val();
+        feedbackTable.column(5).search(selectedStatus).draw();
+    });
 
     const tableBody = '#feedbackTable tbody';
 
-    // Modal listener for "View Photo"
     $(tableBody).on("click", ".view-photo-btn", function (e) {
         e.preventDefault();
         const imageUrl = $(this).data("image-url");
         $("#modalImage").attr("src", imageUrl);
     });
 
-    // Modal listener for "See More"
     $(tableBody).on("click", ".see-more-btn", function (e) {
         e.preventDefault();
         const fullMessage = $(this).data("full-message");
         $("#modalMessageBody").text(fullMessage);
     });
 
-    // Action button listeners
     $(tableBody).on("click", ".hide-feedback-btn", function (e) {
         e.preventDefault();
         const $button = $(this);
         const feedbackId = $button.data("id");
-        updateFeedbackStatus($button, feedbackId, 34); // 34 = Hide
+        updateFeedbackStatus($button, feedbackId, 34);
     });
 
     $(tableBody).on("click", ".display-feedback-btn", function (e) {
         e.preventDefault();
         const $button = $(this);
         const feedbackId = $button.data("id");
-        updateFeedbackStatus($button, feedbackId, 35); // 35 = Display
+        updateFeedbackStatus($button, feedbackId, 35);
     });
-
-    // --- AJAX Update Function (Slightly Modified) ---
 
     function updateFeedbackStatus($button, feedbackId, newStatus) {
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -190,8 +168,6 @@ $(document).ready(function () {
                 $button.prop("disabled", true).text(newStatus === 34 ? "Hiding..." : "Displaying...");
             },
             success: function (response) {
-                // SUCCESS: Reload the DataTable to show the change
-                // 'null' re-fetches the data, 'false' keeps the user on the same page
                 feedbackTable.ajax.reload(null, false);
             },
             error: function (xhr) {
