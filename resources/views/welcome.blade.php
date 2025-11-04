@@ -8,7 +8,6 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
 
-    <!-- Favicons -->
     <link rel="icon" href="{{ asset('logo.png') }} " type="image/x-icon">
     {{--
     <link href="assets/img/favicon.png" rel="icon"> --}}
@@ -18,7 +17,6 @@
     <link rel="stylesheet" href="{{ asset('css/font/playfairdisplay/stylesheet.css')}}">
     <link rel="stylesheet" href="{{ asset('css/font/roboto/stylesheet.css')}}">
 
-    <!-- Vendor CSS Files -->
     <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendor/aos/aos.css') }}" rel="stylesheet">
@@ -28,7 +26,6 @@
     <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}">
-    <!-- Main CSS File -->
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
 </head>
@@ -40,8 +37,6 @@
 
             <div class="container position-relative d-flex align-items-center justify-content-between">
                 <a href="{{ route('home') }}" class="logo d-flex align-items-center me-auto me-xl-0">
-                    <!-- Uncomment the line below if you also wish to use an image logo -->
-                    <!-- <img src="assets/img/logo.png" alt=""> -->
                     <h1 class="sitename">Tinatangi Cafe</h1>
                 </a>
 
@@ -52,6 +47,7 @@
                         <li><a href="#menu">Menu</a></li>
                         <li><a href="#events">Events</a></li>
                         <li><a href="#gallery">Gallery</a></li>
+                        <li><a href="#faq">FAQ</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                     <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -67,7 +63,6 @@
 
     <main class="main">
 
-        <!-- Hero Section -->
         <section id="hero" class="hero section dark-background">
 
             <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
@@ -88,10 +83,7 @@
                 </div>
             </div>
 
-        </section><!-- /Hero Section -->
-
-        <!-- About Section -->
-        <section id="about" class="about section">
+        </section><section id="about" class="about section">
 
             <div class="container" data-aos="fade-up" data-aos-delay="100">
 
@@ -123,18 +115,12 @@
 
             </div>
 
-        </section><!-- /About Section -->
+        </section><section id="menu" class="menu section">
 
-        <!-- Menu Section -->
-        <section id="menu" class="menu section">
-
-            <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>Menu</h2>
                 <p>Check Our Tasty Menu</p>
-            </div><!-- End Section Title -->
-
-            <div class="container isotope-layout" data-default-filter="*" data-layout="masonry"
+            </div><div class="container isotope-layout" data-default-filter="*" data-layout="masonry"
                 data-sort="original-order">
 
                 <div class="row" data-aos="fade-up" data-aos-delay="100">
@@ -146,9 +132,7 @@
                             <li data-filter=".filter-specialty">Specialty</li>
                         </ul>
                     </div>
-                </div><!-- Menu Filters -->
-
-                <div class="row isotope-container" data-aos="fade-up" data-aos-delay="200">
+                </div><div class="row isotope-container" data-aos="fade-up" data-aos-delay="200">
 
                     <div class="col-lg-6 menu-item isotope-item filter-starters">
                         <img src="assets/img/menu/lobster-bisque.jpg" class="menu-img" alt="">
@@ -158,9 +142,7 @@
                         <div class="menu-ingredients">
                             Lorem, deren, trataro, filede, nerada
                         </div>
-                    </div><!-- Menu Item -->
-
-                    <div class="col-lg-6 menu-item isotope-item filter-specialty">
+                    </div><div class="col-lg-6 menu-item isotope-item filter-specialty">
                         <img src="assets/img/menu/bread-barrel.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Bread Barrel</a><span>$6.95</span>
@@ -168,9 +150,7 @@
                         <div class="menu-ingredients">
                             Lorem, deren, trataro, filede, nerada
                         </div>
-                    </div><!-- Menu Item -->
-
-                    <div class="col-lg-6 menu-item isotope-item filter-starters">
+                    </div><div class="col-lg-6 menu-item isotope-item filter-starters">
                         <img src="assets/img/menu/cake.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Crab Cake</a><span>$7.95</span>
@@ -178,9 +158,7 @@
                         <div class="menu-ingredients">
                             A delicate crab cake served on a toasted roll with lettuce and tartar sauce
                         </div>
-                    </div><!-- Menu Item -->
-
-                    <div class="col-lg-6 menu-item isotope-item filter-salads">
+                    </div><div class="col-lg-6 menu-item isotope-item filter-salads">
                         <img src="assets/img/menu/caesar.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Caesar Selections</a><span>$8.95</span>
@@ -188,9 +166,7 @@
                         <div class="menu-ingredients">
                             Lorem, deren, trataro, filede, nerada
                         </div>
-                    </div><!-- Menu Item -->
-
-                    <div class="col-lg-6 menu-item isotope-item filter-specialty">
+                    </div><div class="col-lg-6 menu-item isotope-item filter-specialty">
                         <img src="assets/img/menu/tuscan-grilled.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Tuscan Grilled</a><span>$9.95</span>
@@ -198,9 +174,7 @@
                         <div class="menu-ingredients">
                             Grilled chicken with provolone, artichoke hearts, and roasted red pesto
                         </div>
-                    </div><!-- Menu Item -->
-
-                    <div class="col-lg-6 menu-item isotope-item filter-starters">
+                    </div><div class="col-lg-6 menu-item isotope-item filter-starters">
                         <img src="assets/img/menu/mozzarella.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Mozzarella Stick</a><span>$4.95</span>
@@ -208,9 +182,7 @@
                         <div class="menu-ingredients">
                             Lorem, deren, trataro, filede, nerada
                         </div>
-                    </div><!-- Menu Item -->
-
-                    <div class="col-lg-6 menu-item isotope-item filter-salads">
+                    </div><div class="col-lg-6 menu-item isotope-item filter-salads">
                         <img src="assets/img/menu/greek-salad.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Greek Salad</a><span>$9.95</span>
@@ -218,9 +190,7 @@
                         <div class="menu-ingredients">
                             Fresh spinach, crisp romaine, tomatoes, and Greek olives
                         </div>
-                    </div><!-- Menu Item -->
-
-                    <div class="col-lg-6 menu-item isotope-item filter-salads">
+                    </div><div class="col-lg-6 menu-item isotope-item filter-salads">
                         <img src="assets/img/menu/spinach-salad.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Spinach Salad</a><span>$9.95</span>
@@ -228,9 +198,7 @@
                         <div class="menu-ingredients">
                             Fresh spinach with mushrooms, hard boiled egg, and warm bacon vinaigrette
                         </div>
-                    </div><!-- Menu Item -->
-
-                    <div class="col-lg-6 menu-item isotope-item filter-specialty">
+                    </div><div class="col-lg-6 menu-item isotope-item filter-specialty">
                         <img src="assets/img/menu/lobster-roll.jpg" class="menu-img" alt="">
                         <div class="menu-content">
                             <a href="#">Lobster Roll</a><span>$12.95</span>
@@ -238,24 +206,14 @@
                         <div class="menu-ingredients">
                             Plump lobster meat, mayo and crisp lettuce on a toasted bulky roll
                         </div>
-                    </div><!-- Menu Item -->
+                    </div></div></div>
 
-                </div><!-- Menu Container -->
+        </section><section id="book-a-table" class="book-a-table section">
 
-            </div>
-
-        </section><!-- /Menu Section -->
-
-        <!-- Book A Table Section -->
-        <section id="book-a-table" class="book-a-table section">
-
-            <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>RESERVATION</h2>
                 <p>Book a Table</p>
-            </div><!-- End Section Title -->
-
-            <div class="container" data-aos="fade-up" data-aos-delay="100">
+            </div><div class="container" data-aos="fade-up" data-aos-delay="100">
 
                 <form action="forms/book-a-table.php" method="post" role="form" class="php-email-form">
                     <div class="row gy-4">
@@ -296,25 +254,17 @@
                             confirm your reservation. Thank you!</div>
                         <button type="submit">Book a Table</button>
                     </div>
-                </form><!-- End Reservation Form -->
+                </form></div>
 
-            </div>
+        </section><section id="testimonials" class="testimonials section">
 
-        </section><!-- /Book A Table Section -->
-
-        <!-- Testimonials Section -->
-        <section id="testimonials" class="testimonials section">
-
-            <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>Testimonials</h2>
                 <p>What they're saying about us</p>
-            </div><!-- End Section Title -->
-
-            <div class="container" data-aos="fade-up" data-aos-delay="100">
+            </div><div class="container" data-aos="fade-up" data-aos-delay="100">
 
                 <div class="swiper init-swiper" data-speed="600" data-delay="5000"
-                    data-breakpoints="{ &quot;320&quot;: { &quot;slidesPerView&quot;: 1, &quot;spaceBetween&quot;: 40 }, &quot;1200&quot;: { &quot;slidesPerView&quot;: 3, &quot;spaceBetween&quot;: 40 } }">
+                    data-breakpoints="{ "320": { "slidesPerView": 1, "spaceBetween": 40 }, "1200": { "slidesPerView": 3, "spaceBetween": 40 } }">
                     <script type="application/json" class="swiper-config">
             {
               "loop": true,
@@ -349,18 +299,12 @@
 
             </div>
 
-        </section><!-- /Testimonials Section -->
+        </section><section id="gallery" class="gallery section">
 
-        <!-- Gallery Section -->
-        <section id="gallery" class="gallery section">
-
-            <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>Gallery</h2>
                 <p>Some photos from Our Restaurant</p>
-            </div><!-- End Section Title -->
-
-            <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+            </div><div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
 
                 <div class="row g-0">
 
@@ -370,87 +314,120 @@
                                 <img src="assets/img/gallery/gallery-1.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><!-- End Gallery Item -->
-
-                    <div class="col-lg-3 col-md-4">
+                    </div><div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-2.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-2.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><!-- End Gallery Item -->
-
-                    <div class="col-lg-3 col-md-4">
+                    </div><div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-3.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-3.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><!-- End Gallery Item -->
-
-                    <div class="col-lg-3 col-md-4">
+                    </div><div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-4.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-4.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><!-- End Gallery Item -->
-
-                    <div class="col-lg-3 col-md-4">
+                    </div><div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-5.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-5.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><!-- End Gallery Item -->
-
-                    <div class="col-lg-3 col-md-4">
+                    </div><div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-6.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-6.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><!-- End Gallery Item -->
-
-                    <div class="col-lg-3 col-md-4">
+                    </div><div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-7.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-7.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><!-- End Gallery Item -->
-
-                    <div class="col-lg-3 col-md-4">
+                    </div><div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-8.jpg" class="glightbox" data-gallery="images-gallery">
                                 <img src="assets/img/gallery/gallery-8.jpg" alt="" class="img-fluid">
                             </a>
                         </div>
-                    </div><!-- End Gallery Item -->
-
-                </div>
+                    </div></div>
 
             </div>
 
-        </section><!-- /Gallery Section -->
+        </section><section id="faq" class="faq section">
 
-        <!-- Contact Section -->
-        <section id="contact" class="contact section">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>FAQ</h2>
+                <p>Frequently Asked Questions</p>
+            </div><div class="container">
+                <div class="accordion" id="faqAccordion" data-aos="fade-up" data-aos-delay="100">
 
-            <!-- Section Title -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                What are your opening hours?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Our cafe is open Monday to Saturday from 7:00 AM to 12:00 AM.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Do you offer Wi-Fi?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, we provide free high-speed Wi-Fi for all our customers.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Can I reserve a table?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, you can book a table by using the "Book a Table" form on our website or by
+                                calling us at 0960-216-4109 or 0915-796-8729.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section><section id="contact" class="contact section">
+
             <div class="container section-title" data-aos="fade-up">
                 <h2>Contact</h2>
                 <p>Contact Us</p>
-            </div><!-- End Section Title -->
-
-            <div class="mb-5" data-aos="fade-up" data-aos-delay="200">
+            </div><div class="mb-5" data-aos="fade-up" data-aos-delay="200">
                 <iframe style="border:0; width: 100%; height: 400px;"
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d538.2670848350348!2d120.97375488601962!3d14.349609556423186!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d5028c89e071%3A0xd2f34ec4ee1383f5!2sTinatangi%20Cafe!5e1!3m2!1sen!2sph!4v1757308892530!5m2!1sen!2sph"
                     frameborder="0" allowfullscreen="" loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div><!-- End Google Maps -->
-
-            <div class="container" data-aos="fade-up" data-aos-delay="100">
+            </div><div class="container" data-aos="fade-up" data-aos-delay="100">
 
                 <div class="row gy-4">
 
@@ -561,15 +538,11 @@
 
                             </div>
                         </form>
-                    </div><!-- End Contact Form -->
-
-                </div>
+                    </div></div>
 
             </div>
 
-        </section><!-- /Contact Section -->
-
-    </main>
+        </section></main>
 
     <footer id="footer" class="footer">
 
@@ -635,10 +608,6 @@
             <p>© <span>Copyright</span> <strong class="px-1 sitename">Tinatangi Cafe</strong> <span>All Rights
                     Reserved</span></p>
             {{-- <div class="credits">
-                <!-- All the links in the footer should remain intact. -->
-                <!-- You can delete the links only if you've purchased the pro version. -->
-                <!-- Licensing information: https://bootstrapmade.com/license/ -->
-                <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
                 Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a
                     href="https://themewagon.com" target="_blank">ThemeWagon</a>
             </div> --}}
@@ -650,14 +619,11 @@
     @include('layouts.toast-swal')
     @include('layouts.modals.landing-page-modal')
 
-    <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
 
-    <!-- Preloader -->
     <div id="preloader"></div>
 
-    <!-- Vendor JS Files -->
     <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
     <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
@@ -666,9 +632,7 @@
     <script src="{{ asset('assets/vendor/isotope-layout/isotope.pkgd.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
 
-    <!-- Custom JS Files -->
     <script src="{{ asset('source/rater-js-1.0.1/index.js') }}"></script>
-    <!-- Main JS File -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('js/landingPage.js') }}"></script>
 
