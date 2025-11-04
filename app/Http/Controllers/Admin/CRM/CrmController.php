@@ -24,7 +24,7 @@ class CrmController extends Controller
 
     public function getPublicFaqs()
     {
-        $faqs = Faq::where('status', 35) // 35 = Displayed
+        $faqs = Faq::where('status', 35) 
                      ->orderBy('order', 'asc')
                      ->get();
 
