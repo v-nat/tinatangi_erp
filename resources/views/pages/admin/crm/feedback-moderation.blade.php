@@ -25,6 +25,12 @@
                         </select>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="submitted_date_filter" class="form-label mb-1">Filter by Submitted Date:</label>
+                        <input type="date" id="submitted_date_filter" class="form-control form-control-sm">
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

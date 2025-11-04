@@ -120,11 +120,33 @@ $(document).ready(function () {
         order: [[4, 'desc']]
     });
 
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            let filterDate = $('#submitted_date_filter').val();
+            if (!filterDate) {
+                return true;
+            }
+
+            let rowData = feedbackTable.row(dataIndex).data();
+            let rowDate = rowData.created_at.substring(0, 10);
+
+            if (filterDate === rowDate) {
+                return true;
+            }
+            return false;
+        }
+    );
+
     $('#status_filter').on('change', function () {
         const selectedStatus = $(this).val();
         feedbackTable.column(5).search(selectedStatus).draw();
     });
 
+    $('#submitted_date_filter').on('change', function () {
+        feedbackTable.draw();
+    });
+
+TEST
     const tableBody = '#feedbackTable tbody';
 
     $(tableBody).on("click", ".view-photo-btn", function (e) {
