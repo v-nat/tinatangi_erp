@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @include('partials.crm-heading')
-@section('crmDashboard') active @endsection
+@section('crmIndex') active @endsection
 @section('headings') Customer Relationship Dashboard @endsection
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/vendors/apexcharts/apexcharts.css') }}">
