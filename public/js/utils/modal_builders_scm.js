@@ -422,16 +422,15 @@ export function printInvoice() {
     const originalTitle = document.title;
 
     // --- 1. DATA EXTRACTION ---
-    // Extract data from the modal's content
+    // Extract dynamic data that is still needed
     let invoiceNum = "N/A";
     const invoiceElement = $viewInvoiceModal.find("#view_invoice_number");
     if (invoiceElement.length) {
         invoiceNum = invoiceElement.text().replace("Invoice #: ", "").trim();
     }
 
-    const supplierName = $viewInvoiceModal.find('p:contains("Supplier:")').text().replace("Supplier: ", "").trim() || "N/A";
-    const deliveryNum = $viewInvoiceModal.find('p:contains("Delivery #:")').text().replace("Delivery #: ", "").trim() || "N/A";
     const dateApproved = $viewInvoiceModal.find('p:contains("Date Approved:")').text().replace("Date Approved: ", "").trim() || new Date().toLocaleDateString();
+    const deliveryNum = $viewInvoiceModal.find('p:contains("Delivery #:")').text().replace("Delivery #: ", "").trim() || "N/A";
     const approvedBy = $viewInvoiceModal.find('p:contains("Approved By:")').text().replace("Approved By: ", "").trim() || "N/A";
     const requestedBy = $viewInvoiceModal.find('p:contains("Requested by:")').text().replace("Requested by: ", "").trim() || "N/A";
 
@@ -466,7 +465,7 @@ export function printInvoice() {
     document.title = filename;
 
     // --- 2. HTML STRING BUILDING ---
-    // Build the item rows
+    // Build the item rows (NO EMPTY ROWS)
     let itemRowsHtml = "";
     items.forEach(item => {
         itemRowsHtml += `
@@ -480,28 +479,13 @@ export function printInvoice() {
         `;
     });
 
-    // Add empty rows to fill the page, like the example
-    const minRows = 20;
-    for (let i = items.length; i < minRows; i++) {
-        itemRowsHtml += `
-            <tr class="empty-row">
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-        `;
-    }
-
     // --- Page 1: Invoice ---
     const page1Html = `
         <div class="print-invoice-page">
             <header class="print-header">
                 <div class="header-left">
-                    <h1 class="company-name">Tinatangi Coffee Shop</h1>
-                    <p>P.O. Box 123, Imus, Cavite, Philippines</p>
-                    <p>TIN: 000-000-000-001</p>
+                    <h1 class="company-name">Tinatangi Cafe</h1>
+                    <p>Brgy 13 Jose Abad Santos Ave, Dasmariñas, 4114 Cavite</p>
                 </div>
                 <div class="header-right">
                     <h1 class="invoice-title">SALES INVOICE</h1>
@@ -514,16 +498,13 @@ export function printInvoice() {
 
             <section class="print-customer-details">
                 <div class="sold-to">
-                    <p><strong>SOLD TO:</strong> ${supplierName}</p>
-                    <p><strong>ADDRESS:</strong> _________________________</p>
-                    <p><strong>TIN:</strong> ___________________________</p>
-                    <p><strong>BUSINESS STYLE:</strong> _________________</p>
+                    <p><strong>SOLD TO:</strong> Tinatangi Cafe</p>
+                    <p><strong>ADDRESS:</strong> Brgy 13 Jose Abad Santos Ave, Dasmariñas, 4114 Cavite</p>
+                    <p><strong>BUSINESS STYLE:</strong> coffee shop</p>
                 </div>
                 <div class="invoice-meta">
                     <p><strong>DATE:</strong> ${dateApproved}</p>
-                    <p><strong>TERMS:</strong> _________________</p>
                     <p><strong>P.O. #:</strong> ${deliveryNum}</p>
-                    <p><strong>Sales Rep. Code:</strong> _______</p>
                 </div>
             </section>
 
@@ -547,24 +528,8 @@ export function printInvoice() {
             <footer class="print-footer">
                 <div class="summary-left">
                     <div class="summary-box">
-                        <div class="summary-row">
-                            <span>TOTAL SALES (VAT INCLUSIVE)</span>
-                            <span>${totalAmount}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>LESS: VAT</span>
-                            <span>__________</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>AMOUNT NET OF VAT</span>
-                            <span>__________</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>ADD: EWT</span>
-                            <span>__________</span>
-                        </div>
                         <div class="summary-row total">
-                            <span><strong>TOTAL PAYMENT</strong></span>
+                            <span><strong>TOTAL AMOUNT</strong></span>
                             <span><strong>${totalAmount}</strong></span>
                         </div>
                     </div>
@@ -606,7 +571,6 @@ export function printInvoice() {
     $("body").append(`<div id="temp-print-content">${finalPrintHtml}</div>`);
 
     // --- 3. CSS STYLING ---
-    // Note: This is a completely new set of styles
     const printStyles = `
         @media print {
             /* Hide everything else */
@@ -617,7 +581,7 @@ export function printInvoice() {
             /* Basic page setup */
             @page {
                 size: A4 portrait;
-                margin: 0.75in;
+                margin: 0.5in; /* Reduced margins */
             }
 
             body {
@@ -625,7 +589,7 @@ export function printInvoice() {
                 padding: 0 !important;
                 color: #000 !important;
                 font-family: 'Arial', sans-serif;
-                font-size: 9pt;
+                font-size: 8.5pt; /* Reduced base font size */
             }
 
             /* Make print content visible and full-width */
@@ -639,7 +603,7 @@ export function printInvoice() {
 
             .text-end { text-align: right; }
             .text-center { text-align: center; }
-            p { margin: 2px 0; }
+            p { margin: 1px 0; } /* Tightened margins */
 
             /* --- Page 1: Invoice --- */
             .print-invoice-page {
@@ -657,7 +621,7 @@ export function printInvoice() {
                 padding-bottom: 5px;
             }
             .header-left .company-name {
-                font-size: 14pt;
+                font-size: 12pt; /* Reduced */
                 font-weight: bold;
                 margin: 0;
             }
@@ -665,7 +629,7 @@ export function printInvoice() {
                 text-align: right;
             }
             .header-right .invoice-title {
-                font-size: 16pt;
+                font-size: 14pt; /* Reduced */
                 font-weight: bold;
                 margin: 0;
                 color: #333;
@@ -682,14 +646,14 @@ export function printInvoice() {
             }
             .invoice-num {
                 font-weight: bold;
-                font-size: 12pt;
+                font-size: 11pt; /* Reduced */
             }
 
             /* Customer Details */
             .print-customer-details {
                 display: flex;
-                margin-top: 15px;
-                padding-bottom: 15px;
+                margin-top: 10px; /* Reduced */
+                padding-bottom: 10px; /* Reduced */
                 border-bottom: 1px solid #000;
             }
             .sold-to { flex: 3; }
@@ -697,7 +661,7 @@ export function printInvoice() {
 
             /* Item Table */
             .print-item-table {
-                margin-top: 10px;
+                margin-top: 5px; /* Reduced */
                 flex-grow: 1; /* This makes the table fill the space */
             }
             .print-item-table table {
@@ -707,7 +671,7 @@ export function printInvoice() {
             .print-item-table th,
             .print-item-table td {
                 border: 1px solid #000;
-                padding: 4px 6px;
+                padding: 3px 5px; /* Reduced */
                 vertical-align: top;
             }
             .print-item-table th {
@@ -715,43 +679,42 @@ export function printInvoice() {
                 text-align: center;
                 font-size: 8pt;
             }
-            .print-item-table .empty-row td {
-                border-left: 1px solid #000;
-                border-right: 1px solid #000;
-                border-top: 1px dotted #ccc;
-                border-bottom: 1px dotted #ccc;
-                padding: 8px 6px; /* Give empty rows more height */
-            }
-            .print-item-table .empty-row:last-child td {
+            /* Style for the *last* row of items */
+            .print-item-table tbody tr:last-child td {
                  border-bottom: 1px solid #000;
             }
+
 
             /* Footer */
             .print-footer {
                 display: flex;
                 justify-content: space-between;
-                margin-top: 20px;
+                margin-top: 10px; /* Reduced */
                 padding-top: 10px;
                 border-top: 2px solid #000;
                 width: 100%;
             }
+
+            /* UPDATED SUMMARY */
             .summary-left {
                 flex: 1.2;
+                display: flex;
+                align-items: center; /* Vertically center the box */
             }
             .summary-box {
                 border: 1px solid #000;
                 width: 90%;
             }
-            .summary-row {
+            .summary-row.total {
                 display: flex;
                 justify-content: space-between;
-                padding: 3px 6px;
-                border-bottom: 1px solid #eee;
-            }
-            .summary-row.total {
-                border-top: 1px solid #000;
+                padding: 8px 10px;
+                font-size: 10pt;
+                font-weight: bold;
                 background-color: #eee;
             }
+            /* END UPDATED SUMMARY */
+
             .signatures-right {
                 flex: 1.5;
                 display: flex;
@@ -759,11 +722,11 @@ export function printInvoice() {
                 justify-content: space-between;
             }
             .sig-box {
-                margin-bottom: 15px;
+                margin-bottom: 10px; /* Reduced */
             }
             .sig-line {
                 border-bottom: 1px solid #000;
-                margin-top: 20px;
+                margin-top: 15px; /* Reduced */
                 margin-bottom: 2px;
             }
             .sig-name {
@@ -777,13 +740,13 @@ export function printInvoice() {
             /* --- Page 2: Delivery Proof --- */
             .delivery-proof-page {
                 page-break-before: always; /* THIS IS THE KEY */
-                padding-top: 1in;
+                padding-top: 0.5in; /* Reduced */
                 text-align: center;
             }
             .delivery-proof-page .proof-title {
-                font-size: 16pt;
+                font-size: 14pt; /* Reduced */
                 font-weight: bold;
-                margin-bottom: 20px;
+                margin-bottom: 15px;
             }
             .delivery-proof-page img {
                 max-width: 90%;
@@ -804,14 +767,12 @@ export function printInvoice() {
         $("#temp-print-content").remove();
         document.title = originalTitle;
 
-        // Remove listeners to avoid memory leaks
         window.removeEventListener("focus", cleanupAndRestore);
         if (mediaQueryList) {
             mediaQueryList.removeListener(mqlListener);
         }
     };
 
-    // Use multiple triggers for cleanup
     let cleanupCalled = false;
     const doCleanup = () => {
         if (!cleanupCalled) {
@@ -820,22 +781,17 @@ export function printInvoice() {
         }
     };
 
-    // Trigger cleanup when print dialog closes (on focus)
     window.addEventListener("focus", doCleanup);
 
-    // Trigger cleanup if user cancels print
     const mqlListener = (mql) => {
         if (!mql.matches) {
-            // This means we are back to 'screen' media
             doCleanup();
         }
     };
     const mediaQueryList = window.matchMedia("print");
     mediaQueryList.addListener(mqlListener);
 
-    // Call the print dialog
     window.print();
 
-    // Fallback cleanup in case focus event doesn't fire
     setTimeout(doCleanup, 1500);
 }
