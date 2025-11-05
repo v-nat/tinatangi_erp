@@ -49,6 +49,8 @@ class StatusSeeder extends Seeder
             33 => 'Growth',
             34 => 'Hidden',
             35 => 'Displayed',
+            36 => 'Redeliver - Supplier',
+            37 => 'Cancelled - Supplier',
 
         ];
 

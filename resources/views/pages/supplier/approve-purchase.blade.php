@@ -41,6 +41,7 @@
 
     @include('layouts.modals.supplier-modal')
     @include('layouts.modals.invoice-modal')
+    @include('layouts.modals.supplier-return-modal')
 @endsection
 @section('scripts')
     <script type="module" src="{{ asset('js/supplier.js') }}   "></script>

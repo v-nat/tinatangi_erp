@@ -89,6 +89,7 @@ $(document).ready(function () {
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
                             data-id="${data}"
+                            data-bs-toggle="tooltip"
                             title="View">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
@@ -102,18 +103,44 @@ $(document).ready(function () {
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
                             data-id="${data}"
+                            data-bs-toggle="tooltip"
                             title="View">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 approve-btn"
                                 data-id="${data}"
-                                title="Approve">
+                                data-bs-toggle="tooltip"
+                                title="Approve & Ship">
                                     <i class="fa-solid fa-truck"></i>
                             </a>
                             <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
                                 data-id="${data}"
+                                data-bs-toggle="tooltip"
                                 title="Reject">
                                     <i class="fa-solid fa-x"></i>
+                            </a>
+                        </div>
+                        `;
+                    } else if (
+                        row.status ==
+                            '<span class="badge bg-danger">Return</span>' ||
+                        row.status ==
+                            '<span class="badge bg-warning">Partial Delivered</span>'
+                    ) {
+                        // --- NEW BUTTON FOR RETURNS ---
+                        return `
+                        <div class="action-btns">
+                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
+                            data-id="${data}"
+                            data-bs-toggle="tooltip"
+                            title="View Original Order">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a href="#" class="btn icon btn-sm btn-danger btn-view-returns bs-tooltip me-2"
+                            data-id="${data}"
+                            data-bs-toggle="tooltip"
+                            title="Process Returns">
+                                <i class="fa-solid fa-person-walking-arrow-right"></i>
                             </a>
                         </div>
                         `;
@@ -123,14 +150,17 @@ $(document).ready(function () {
                         row.status ==
                             '<span class="badge bg-success">Delivered</span>' ||
                         row.status ==
-                            '<span class="badge bg-success">Accepted<br>Supplier</span>'
+                            '<span class="badge bg-success">Accepted<br>Supplier</span>' ||
+                        row.status ==
+                            '<span class="badge bg-warning">Approved<br>Pending Dispatch</span>' // Added this
                     ) {
                         return `
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-invoice bs-tooltip me-2"
                             data-id="${invoice_id}"
-                            title="Invoice">
-                                <i class="fa-solid fa-eye"></i>
+                            data-bs-toggle="tooltip"
+                            title="View Invoice">
+                                <i class="fa-solid fa-file-invoice"></i>
                             </a>
                         </div>
                         `;
@@ -139,6 +169,7 @@ $(document).ready(function () {
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
                             data-id="${data}"
+                            data-bs-toggle="tooltip"
                             title="View">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
@@ -155,6 +186,15 @@ $(document).ready(function () {
                 visible: false,
             },
         ],
+        drawCallback: function () {
+            // Re-initialize tooltips
+            var tooltipTriggerList = [].slice.call(
+                document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            );
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        },
     });
 
     $(document).on("click", ".approve-btn", function () {
@@ -307,5 +347,140 @@ $(document).ready(function () {
 
     $(document).on("click", "#print", function () {
         printInvoice();
+    });
+
+    // =================================================================
+    // NEW: '.btn-view-returns' click handler
+    // =================================================================
+    $(document).on("click", ".btn-view-returns", function () {
+        const req_id = $(this).data("id");
+        $("#LoadingScreen").fadeIn(200);
+
+        // Reset form
+        $("#processReturnForm")[0].reset();
+        $("#returnItemsList").html(
+            '<tr><td colspan="4" class="text-center">Loading items...</td></tr>'
+        );
+
+        // Fetch item details for the modal
+        $.get(`/supplier/returns/get-details/${req_id}`, function (response) {
+            const items = response.data;
+            const $itemList = $("#returnItemsList");
+            $itemList.empty();
+            $("#return_pr_id").val(req_id);
+
+            if (!items || items.length === 0) {
+                $itemList.html(
+                    '<tr><td colspan="4" class="text-center text-danger">No returned items found for this order.</td></tr>'
+                );
+                $("#LoadingScreen").fadeOut(200);
+                $("#processReturnModal").modal("show");
+                return;
+            }
+
+            items.forEach((item, index) => {
+                const photoHtml = item.photo_path
+                    ? `<a href="${item.photo_path}" target="_blank">
+                           <img src="${item.photo_path}" alt="Return Photo" style="max-width: 150px; max-height: 100px; border-radius: 5px;">
+                       </a>`
+                    : `<span class="text-muted">No photo</span>`;
+
+                const rowHtml = `
+                    <tr class="item-row" data-index="${index}">
+                        <input type="hidden" name="items[${index}][pod_id]" value="${item.pod_id}">
+
+                        <td class="align-top">
+                            <strong>${item.item_name}</strong>
+                            <br>
+                            <small class="text-muted">Qty Returned: ${item.quantity}</small>
+                        </td>
+                        <td class="align-top">
+                            ${item.reason}
+                        </td>
+                        <td class="align-top">
+                            ${photoHtml}
+                        </td>
+                        <td class="align-middle">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="items[${index}][action]" id="action_redeliver_${index}" value="redeliver" checked>
+                                <label class="form-check-label" for="action_redeliver_${index}">
+                                    Redeliver
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="items[${index}][action]" id="action_cancel_${index}" value="cancel">
+                                <label class="form-check-label" for="action_cancel_${index}">
+                                    Cancel Item
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                $itemList.append(rowHtml);
+            });
+
+            $("#LoadingScreen").fadeOut(200);
+            $("#processReturnModal").modal("show");
+        }).fail(function (xhr) {
+            $("#LoadingScreen").fadeOut(200);
+            Toast.fire(
+                "Error",
+                xhr.responseJSON?.error ||
+                    "Failed to load returned item details.",
+                "error"
+            );
+        });
+    });
+
+    // =================================================================
+    // NEW: Handler for submitting the return processing form
+    // =================================================================
+    $("#processReturnForm").on("submit", function (e) {
+        e.preventDefault();
+        $("#LoadingScreen").fadeIn(200);
+
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: "/supplier/returns/process",
+            type: "POST",
+            data: formData, // No need for FormData here since we're not uploading files
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+                $("#LoadingScreen").fadeOut(200);
+                $("#processReturnModal").modal("hide");
+                reloadTable("purchaseOrderTable");
+                Toast.fire({
+                    text: response.message,
+                    icon: "success",
+                });
+            },
+            error: function (xhr) {
+                $("#LoadingScreen").fadeOut(200);
+                if (xhr.status === 422) {
+                    // Validation errors
+                    let errorMessages =
+                        "<strong>Validation Failed:</strong><ul class='text-start'>";
+                    $.each(xhr.responseJSON.errors, function (key, value) {
+                        errorMessages += `<li>${value[0]}</li>`;
+                    });
+                    errorMessages += "</ul>";
+                    Toast.fire({
+                        title: "Error",
+                        html: errorMessages,
+                        icon: "error",
+                    });
+                } else {
+                    Toast.fire(
+                        "Error",
+                        xhr.responseJSON?.error ||
+                            "An unexpected error occurred.",
+                        "error"
+                    );
+                }
+            },
+        });
     });
 });

@@ -14,4 +14,7 @@ Route::prefix('/supplier')->middleware(['auth', 'isSupplier'])->group(function (
     Route::get('/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
     Route::get('/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
     Route::put('/orders/process/{id}/{status}', [PurchaseOrderController::class, 'processPurchaseOrders']);
+    
+    Route::get('/returns/get-details/{id}', [SupplierController::class, 'getReturnDetails']);
+    Route::post('/returns/process', [SupplierController::class, 'processReturn']);
 });
