@@ -34,8 +34,8 @@ class InvoiceController extends Controller
                     $mappedDetails = $order->purchaseOrderDetail->map(function ($detail) {
                         return [
                             'item_name'    => optional($detail->itemss)->name,
-                            'item_unit'   => optional(optional($detail->itemss)->unitRS)->abbreviation,
-                            'item_unit_name'   => optional(optional($detail->itemss)->unitRS)->name,
+                            'item_unit'  => optional(optional($detail->itemss)->unitRS)->abbreviation,
+                            'item_unit_name'  => optional(optional($detail->itemss)->unitRS)->name,
                             'quantity'     => (int)$detail->quantity,
                             'unit_price'   => (float)$detail->unit_price,
                             'total_amount' => (float)$detail->total_amount,
@@ -49,16 +49,17 @@ class InvoiceController extends Controller
                     ]);
                 });
             }
-            // --- Final Response Structure ---
             $finalResponseData = [
-                'id'             => $invoice->id,
-                'order_id'       => $invoice->order_id,
-                'total_amount'   => (float)$invoice->total_amount,
-                'delivery_no'    => $invoice->delivery_no,
-                'date_received'  => $invoice->date_received,
-                'date_approved'  => $invoice->date_approved,
+                'id'            => $invoice->id,
+                'order_id'      => $invoice->order_id,
+                'total_amount'  => (float)$invoice->total_amount,
+                'delivery_no'   => $invoice->delivery_no,
+                'date_received' => $invoice->date_received,
+                'date_approved' => $invoice->date_approved,
 
-                'supplier_name'  => optional($invoice->supplier)->supplier_name,
+                'overall_photo_path' => $invoice->overall_photo_path,
+
+                'supplier_name' => optional($invoice->supplier)->supplier_name,
                 'approved_by_id'    => optional($invoice->userRS)->full_name,
 
                 'purchase_orders' => $purchaseOrdersData->toArray(),

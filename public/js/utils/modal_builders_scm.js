@@ -13,21 +13,21 @@ export function buildInvoiceModal(data) {
                 details.forEach((item) => {
                     itemIndex++;
                     allDetailRowsHtml += `
-                    <tr>
-                        <td>${itemIndex}</td>
-                        <td>${item.item_name || "N/A"}</td>
-                        <td>${item.item_unit_name || "N/A"}</td>
-                        <td class="text-end">₱${parseFloat(
-                            item.unit_price || 0
-                        ).toFixed(2)}</td>
-                        <td class="text-end">${item.quantity || 0} ${
+                        <tr>
+                            <td>${itemIndex}</td>
+                            <td>${item.item_name || "N/A"}</td>
+                            <td>${item.item_unit_name || "N/A"}</td>
+                            <td class="text-end">₱${parseFloat(
+                                item.unit_price || 0
+                            ).toFixed(2)}</td>
+                            <td class="text-end">${item.quantity || 0} ${
                         item.item_unit || "N/A"
                     }</td>
-                        <td class="text-end">₱${parseFloat(
-                            item.total_amount || 0
-                        ).toFixed(2)}</td>
-                    </tr>
-                    `;
+                            <td class="text-end">₱${parseFloat(
+                                item.total_amount || 0
+                            ).toFixed(2)}</td>
+                        </tr>
+                        `;
                 });
             }
         });
@@ -39,16 +39,34 @@ export function buildInvoiceModal(data) {
         allDetailRowsHtml = `<tr><td colspan="8" class="text-center">No item details were found across all Purchase Orders.</td></tr>`;
     }
 
+    // --- ADDED THIS BLOCK ---
+    let proofPhotoHtml = "";
+    if (data.overall_photo_path) {
+        proofPhotoHtml = `
+        <hr>
+        <div class="row mt-3 px-3">
+            <div class="col-12">
+                <h6 class="mb-2">Delivery Proof</h6>
+                <a href="${data.overall_photo_path}" target="_blank">
+                    <img src="${data.overall_photo_path}" class="img-fluid img-thumbnail" alt="Delivery Proof" style="max-height: 350px; width: auto;">
+                </a>
+            </div>
+        </div>
+        `;
+    }
+    // -----------------------
+
     const html = `
     <div class="row mb-4 p-3">
-        <!-- Invoice Header -->
         <div class="col-md-6">
             <p class="mb-0">Requested by: ${employeeName || "N/A"}</p>
             <p class="mb-0">Supplier: ${data.supplier_name}</p>
             <p class="mb-0">Delivery #: ${data.delivery_no || "N/A"}</p>
         </div>
         <div class="col-md-6 text-md-end">
-            <p id="view_invoice_number" class="mb-0">Invoice #: ${data.id || "N/A"}</p>
+            <p id="view_invoice_number" class="mb-0">Invoice #: ${
+                data.id || "N/A"
+            }</p>
             <p class="mb-0">Date Approved: ${data.date_approved || "N/A"}</p>
             <p class="mb-0">Approved By: ${data.approved_by_id || "N/A"}</p>
         </div>
@@ -81,6 +99,8 @@ export function buildInvoiceModal(data) {
             </table>
         </div>
     </div>
+
+    ${proofPhotoHtml}
 
     <style>
     .table-sm td,

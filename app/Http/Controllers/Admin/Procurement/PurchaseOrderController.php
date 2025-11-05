@@ -372,8 +372,6 @@ class PurchaseOrderController extends Controller
             $pr = PurchaseRequest::findOrFail($pr_id);
             $invoice = Invoice::findOrFail($pr->invoice_id);
 
-            // $overallPath = $request->file('overall_delivery_photo')->store('img/delivery_proof');
-            // $invoice->overall_photo_path = Storage::url($overallPath);
             $file = $request->file('overall_delivery_photo');
             $filename = $file->hashName();
             $overallPath = 'img/delivery_proof/' . $filename;
@@ -411,12 +409,6 @@ class PurchaseOrderController extends Controller
 
                         $returnPhotoPath = '/storage/app/public/' . $path;
                     }
-
-                    // $returnPhotoPath = null;
-                    // if ($request->hasFile("items.{$index}.return_photo")) {
-                    //     $path = $request->file("items.{$index}.return_photo")->store('img/return_proof');
-                    //     $returnPhotoPath = Storage::url($path);
-                    // }
 
                     DeliveryReturn::create([
                         'purchase_order_detail_id' => $pod->id,
@@ -544,12 +536,6 @@ class PurchaseOrderController extends Controller
                         Storage::disk('public')->put($path, $file->get());
                         $returnPhotoPath = '/storage/app/public/' . $path;
                     }
-
-                    // $returnPhotoPath = null;
-                    // if ($request->hasFile("items.{$index}.return_photo")) {
-                    //     $path = $request->file("items.{$index}.return_photo")->store('img/return_proof');
-                    //     $returnPhotoPath = Storage::url($path);
-                    // }
 
                     DeliveryReturn::create([
                         'purchase_order_detail_id' => $pod->id,
