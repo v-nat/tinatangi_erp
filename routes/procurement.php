@@ -37,6 +37,11 @@ Route::prefix('/procurement')->middleware(['auth', 'isEmployee'])->group(functio
     Route::get('/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
     Route::put('/purchases/order/{id}/{status}', [PurchaseOrderController::class, 'processPurchaseOrders']);
 
+    // Routes for Initial Delivery
     Route::get('/purchases/get-delivery-details/{id}', [PurchaseOrderController::class, 'getDeliveryDetailsForModal']);
     Route::post('/purchases/receive-delivery', [PurchaseOrderController::class, 'receiveDelivery']);
+
+    // NEW: Routes for Redelivery
+    Route::get('/purchases/get-redelivery-details/{id}', [PurchaseOrderController::class, 'getRedeliveryDetailsForModal']);
+    Route::post('/purchases/receive-redelivery', [PurchaseOrderController::class, 'receiveRedelivery']);
 });

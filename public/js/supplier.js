@@ -127,7 +127,6 @@ $(document).ready(function () {
                         row.status ==
                             '<span class="badge bg-warning">Partial Delivered</span>'
                     ) {
-                        // --- NEW BUTTON FOR RETURNS ---
                         return `
                         <div class="action-btns">
                              <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
@@ -152,7 +151,11 @@ $(document).ready(function () {
                         row.status ==
                             '<span class="badge bg-success">Accepted<br>Supplier</span>' ||
                         row.status ==
-                            '<span class="badge bg-warning">Approved<br>Pending Dispatch</span>' // Added this
+                            '<span class="badge bg-danger">Cancelled<br>Supplier</span>' ||
+                        row.status ==
+                            '<span class="badge bg-success">Redeliver<br>Supplier</span>' ||
+                        row.status ==
+                            '<span class="badge bg-warning">Approved<br>Pending Dispatch</span>'
                     ) {
                         return `
                         <div class="action-btns">
@@ -187,7 +190,6 @@ $(document).ready(function () {
             },
         ],
         drawCallback: function () {
-            // Re-initialize tooltips
             var tooltipTriggerList = [].slice.call(
                 document.querySelectorAll('[data-bs-toggle="tooltip"]')
             );
@@ -349,20 +351,15 @@ $(document).ready(function () {
         printInvoice();
     });
 
-    // =================================================================
-    // NEW: '.btn-view-returns' click handler
-    // =================================================================
     $(document).on("click", ".btn-view-returns", function () {
         const req_id = $(this).data("id");
         $("#LoadingScreen").fadeIn(200);
 
-        // Reset form
         $("#processReturnForm")[0].reset();
         $("#returnItemsList").html(
             '<tr><td colspan="4" class="text-center">Loading items...</td></tr>'
         );
 
-        // Fetch item details for the modal
         $.get(`/supplier/returns/get-details/${req_id}`, function (response) {
             const items = response.data;
             const $itemList = $("#returnItemsList");
@@ -402,16 +399,23 @@ $(document).ready(function () {
                         </td>
                         <td class="align-middle">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="items[${index}][action]" id="action_redeliver_${index}" value="redeliver" checked>
+                                <input class="form-check-input supplier-return-action" type="radio" name="items[${index}][action]" id="action_redeliver_${index}" value="redeliver" data-index="${index}" checked>
                                 <label class="form-check-label" for="action_redeliver_${index}">
                                     Redeliver
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="items[${index}][action]" id="action_cancel_${index}" value="cancel">
+                                <input class="form-check-input supplier-return-action" type="radio" name="items[${index}][action]" id="action_cancel_${index}" value="cancel" data-index="${index}">
                                 <label class="form-check-label" for="action_cancel_${index}">
                                     Cancel Item
                                 </label>
+                            </div>
+
+                            <div class="cancel-reason-field" id="cancel_reason_field_${index}" style="display: none;">
+                                <textarea class="form-control form-control-sm mt-2"
+                                          name="items[${index}][cancel_reason]"
+                                          placeholder="Reason for cancellation..."
+                                          disabled></textarea>
                             </div>
                         </td>
                     </tr>
@@ -432,19 +436,53 @@ $(document).ready(function () {
         });
     });
 
-    // =================================================================
-    // NEW: Handler for submitting the return processing form
-    // =================================================================
+    $(document).on("change", ".supplier-return-action", function () {
+        const index = $(this).data("index");
+        const $reasonFieldDiv = $("#cancel_reason_field_" + index);
+        const $reasonTextarea = $reasonFieldDiv.find("textarea");
+
+        if ($(this).val() === "cancel") {
+            $reasonFieldDiv.show();
+            $reasonTextarea.prop("disabled", false).prop("required", true);
+        } else {
+            $reasonFieldDiv.hide();
+            $reasonTextarea.prop("disabled", true).prop("required", false);
+        }
+    });
+
     $("#processReturnForm").on("submit", function (e) {
         e.preventDefault();
         $("#LoadingScreen").fadeIn(200);
+
+        let hasCancelWithoutReason = false;
+        $("#returnItemsList .item-row").each(function (index) {
+            const action = $(this).find(`.supplier-return-action:checked`).val();
+            const $reasonTextarea = $(this).find(`textarea[name="items[${index}][cancel_reason]"]`);
+
+            if (action === 'cancel' && !$reasonTextarea.val()) {
+                hasCancelWithoutReason = true;
+                $reasonTextarea.addClass('is-invalid');
+            } else {
+                $reasonTextarea.removeClass('is-invalid');
+            }
+        });
+
+        if (hasCancelWithoutReason) {
+            $("#LoadingScreen").fadeOut(200);
+            Toast.fire(
+                "Error",
+                "Please provide a reason for all cancelled items.",
+                "error"
+            );
+            return;
+        }
 
         const formData = $(this).serialize();
 
         $.ajax({
             url: "/supplier/returns/process",
             type: "POST",
-            data: formData, // No need for FormData here since we're not uploading files
+            data: formData,
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
             },
@@ -460,7 +498,6 @@ $(document).ready(function () {
             error: function (xhr) {
                 $("#LoadingScreen").fadeOut(200);
                 if (xhr.status === 422) {
-                    // Validation errors
                     let errorMessages =
                         "<strong>Validation Failed:</strong><ul class='text-start'>";
                     $.each(xhr.responseJSON.errors, function (key, value) {

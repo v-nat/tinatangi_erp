@@ -324,7 +324,7 @@ class PurchaseOrderController extends Controller
 
 
     /**
-     * NEW METHOD
+     *
      * Get all purchase order detail items for a given Purchase Request ID.
      * This is used to populate the "Receive Delivery" modal.
      */
@@ -359,7 +359,7 @@ class PurchaseOrderController extends Controller
     }
 
     /**
-     * NEW METHOD
+     *
      * Process the "Receive Delivery" modal submission.
      * Handles file uploads and updates status for PR, POs, and PODs.
      */
@@ -465,6 +465,162 @@ class PurchaseOrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error in receiveDelivery: ' . $e->getMessage() . ' on line ' . $e->getLine());
+            return response()->json(['error' => 'Server Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+    /**
+     * NEW METHOD
+     * Get all purchase order detail items that are marked for redelivery.
+     * This is used to populate the "Receive Redelivery" modal.
+     */
+    public function getRedeliveryDetailsForModal($id)
+    {
+        try {
+            $pr = PurchaseRequest::findOrFail($id);
+
+            // Get only PODetail items associated with this PR that have status 36
+            $items = PurchaseOrderDetail::whereIn('purchase_order_id', $pr->purchaseOrders->pluck('id'))
+                ->where('status', 36) // 36 = Redeliver - Supplier
+                ->with('itemss.unitRS')
+                ->get();
+
+            if ($items->isEmpty()) {
+                return response()->json(['error' => 'No items found for redelivery.'], 404);
+            }
+
+            $mappedItems = $items->map(function ($detail) {
+                return [
+                    'pod_id'            => $detail->id,
+                    'item_name'         => optional($detail->itemss)->name ?? 'Unknown Item',
+                    'quantity_ordered'  => (int)$detail->quantity,
+                    'item_unit'         => optional(optional($detail->itemss)->unitRS)->abbreviation ?? 'pcs',
+                ];
+            });
+
+            return response()->json(['data' => $mappedItems]);
+        } catch (\Exception $e) {
+            Log::error('Error in getRedeliveryDetailsForModal: ' . $e->getMessage());
+            return response()->json(['error' => 'Server Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * NEW METHOD
+     * Process the "Receive Redelivery" modal submission.
+     * Handles file uploads for items that are being *returned again*.
+     */
+    public function receiveRedelivery(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'pr_id' => 'required|exists:purchase_requests,id',
+            'items' => 'required|array|min:1',
+            'items.*.pod_id' => 'required|exists:purchase_order_details,id',
+            'items.*.status' => 'required|in:received,returned_again',
+            'items.*.return_reason' => 'required_if:items.*.status,returned_again',
+            'items.*.return_photo' => 'nullable|image|max:5120', // 5MB Max
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $pr_id = $request->pr_id;
+            $pr = PurchaseRequest::findOrFail($pr_id);
+
+            $receivedCount = 0;
+            $returnedAgainCount = 0;
+
+            // 1. Loop through submitted items
+            foreach ($request->items as $index => $itemData) {
+                $pod = PurchaseOrderDetail::findOrFail($itemData['pod_id']);
+
+                // Ensure we are only processing items that were meant for redelivery
+                if ($pod->status != 36) {
+                    continue;
+                }
+
+                if ($itemData['status'] == 'received') {
+                    $pod->status = 16; // Delivered
+                    $pod->delivered_qnty = $pod->quantity;
+                    $pod->save();
+                    $receivedCount++;
+
+                } else if ($itemData['status'] == 'returned_again') {
+                    $pod->status = 22; // Back to Return status
+                    $pod->delivered_qnty = 0;
+                    $pod->save();
+                    $returnedAgainCount++;
+
+                    // Handle return photo and reason
+                    $returnPhotoPath = null;
+                    if ($request->hasFile("items.{$index}.return_photo")) {
+                        $path = $request->file("items.{$index}.return_photo")->store('public/return_proof');
+                        $returnPhotoPath = Storage::url($path); // Store public URL
+                    }
+
+                    // Create a new DeliveryReturn record for this re-return
+                    DeliveryReturn::create([
+                        'purchase_order_detail_id' => $pod->id,
+                        'reason' => $itemData['return_reason'],
+                        'photo_path' => $returnPhotoPath,
+                    ]);
+                }
+            }
+
+            // 2. Determine Overall Status after processing redeliveries
+            $allPodStatuses = PurchaseOrderDetail::whereIn('purchase_order_id', $pr->purchaseOrders->pluck('id'))
+                ->pluck('status')
+                ->all();
+
+            $newStatus = null;
+            $newRemarks = '';
+
+            if (in_array(22, $allPodStatuses) || in_array(36, $allPodStatuses)) {
+                // If any item was returned again (22) or is still pending redelivery (36)
+                $newStatus = in_array(22, $allPodStatuses) ? 22 : 36; // 22 (Return) takes precedence
+                $newRemarks = "Redelivery processed. {$receivedCount} items accepted, {$returnedAgainCount} items returned again.";
+                if(in_array(36, $allPodStatuses)) $newRemarks .= " Still awaiting redelivery for some items.";
+
+            } else {
+                 // Check if all items are either Delivered (16) or Cancelled (37)
+                $allCompleted = collect($allPodStatuses)->every(function ($status) {
+                    return in_array($status, [16, 37]);
+                });
+
+                if ($allCompleted) {
+                    $newStatus = 23; // Completed
+                    $newRemarks = 'All items, including redeliveries, have been processed. Order completed.';
+                } else {
+                    $newStatus = 17; // Partial Delivered (fallback if some items are 16 but others are in an unexpected state)
+                    $newRemarks = 'Redelivery items processed.';
+                }
+            }
+
+
+            // 3. Update PR and all associated POs
+            $pr->status = $newStatus;
+            $pr->remarks = $newRemarks;
+            $pr->save();
+
+            PurchaseOrder::where('purchase_request_id', $pr_id)
+                ->update([
+                    'status' => $newStatus,
+                    'remarks' => $newRemarks
+                    // We might update delivery_date again or have a separate 'redelivery_date'
+                    // For now, we'll just update the status/remarks
+                ]);
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Redelivery processed successfully!']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in receiveRedelivery: ' . $e->getMessage() . ' on line ' . $e->getLine());
             return response()->json(['error' => 'Server Error: ' . $e->getMessage()], 500);
         }
     }

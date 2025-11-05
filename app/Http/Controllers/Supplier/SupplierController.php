@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Supplier;
 use App\Http\Controllers\Controller;
 use App\Models\PurchaseRequest;
 use App\Models\Status;
-use App\Models\PurchaseOrderDetail; // Added
-use App\Models\DeliveryReturn; // Added
-use Illuminate\Http\Request; // Added
-use Illuminate\Support\Facades\DB; // Added
-use Illuminate\Support\Facades\Log; // Added
-use Illuminate\Support\Facades\Validator; // Added
+use App\Models\PurchaseOrderDetail;
+use App\Models\DeliveryReturn;
+use App\Models\Invoice;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class SupplierController extends Controller
 {
@@ -26,7 +27,6 @@ class SupplierController extends Controller
     public function purchaseOrdersList()
     {
         try {
-            // Added status 17 (Partial Delivered) and 22 (Return)
             $purchaseRequests = PurchaseRequest::with([
                 'purchaseOrders',
                 'purchaseOrders.supplierRS',
@@ -35,7 +35,7 @@ class SupplierController extends Controller
                 'supplierRS',
                 'deptRS',
             ])->where('supplier_id', auth('')->id())
-                ->whereIn('status', [20, 21, 16, 19, 23, 17, 22, 36]) // Added 17 and 22
+                ->whereIn('status', [20, 21, 16, 19, 23, 17, 22, 36])
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
@@ -53,14 +53,14 @@ class SupplierController extends Controller
                     });
 
                     return [
-                        'id'             => $request_data->id,
-                        'type'           => $request_data->type,
+                        'id'            => $request_data->id,
+                        'type'            => $request_data->type,
                         'requested_date' => $request_data->requested_date,
                         'requested_by_id'   => optional(optional($request_data->employeeRS)->userRS)->full_name,
-                        'remarks'        => $request_data->remarks,
-                        'status'         => Status::getStatusText($request_data->status),
-                        'total_amount'   => (float)$request_data->amount,
-                        'invoice_id'     => $request_data->invoice_id,
+                        'remarks'         => $request_data->remarks,
+                        'status'          => Status::getStatusText($request_data->status),
+                        'total_amount'    => (float)$request_data->amount,
+                        'invoice_id'      => $request_data->invoice_id,
                         'supplier_name'     => optional($request_data->supplierRS)->supplier_name,
                         'purchase_orders' => $mappedOrders,
                     ];
@@ -71,21 +71,15 @@ class SupplierController extends Controller
         }
     }
 
-    /**
-     * NEW METHOD
-     * Get all returned items for a specific Purchase Request.
-     */
     public function getReturnDetails($id)
     {
         try {
             $pr = PurchaseRequest::findOrFail($id);
 
-            // Find all PurchaseOrderDetail IDs associated with this PR that have a status of 22 (Return)
             $returnedPodIds = PurchaseOrderDetail::whereIn('purchase_order_id', $pr->purchaseOrders->pluck('id'))
                 ->where('status', 22)
                 ->pluck('id');
 
-            // Get the DeliveryReturn details for those PODs
             $returns = DeliveryReturn::whereIn('purchase_order_detail_id', $returnedPodIds)
                 ->with('purchaseOrderDetail.itemss')
                 ->get();
@@ -118,6 +112,7 @@ class SupplierController extends Controller
             'items' => 'required|array|min:1',
             'items.*.pod_id' => 'required|exists:purchase_order_details,id',
             'items.*.action' => 'required|in:redeliver,cancel',
+            'items.*.cancel_reason' => 'required_if:items.*.action,cancel|nullable|string|max:500',
         ]);
 
         if ($validator->fails()) {
@@ -129,17 +124,24 @@ class SupplierController extends Controller
 
             $pr_id = $request->pr_id;
             $pr = PurchaseRequest::findOrFail($pr_id);
+            $cancelledItemsRemarks = [];
+            $needsRecalculation = false;
 
             foreach ($request->items as $itemData) {
-                $pod = PurchaseOrderDetail::findOrFail($itemData['pod_id']);
+                $pod = PurchaseOrderDetail::with('itemss')->findOrFail($itemData['pod_id']);
                 $returnRecord = DeliveryReturn::where('purchase_order_detail_id', $pod->id)->first();
 
                 if ($itemData['action'] == 'redeliver') {
                     $pod->status = 36;
                     $pod->save();
                 } else if ($itemData['action'] == 'cancel') {
-                    $pod->status = 37;
-                    $pod->save();
+
+                    $itemName = $pod->itemss->name ?? 'Item ID ' . $pod->item_id;
+                    $reason = $itemData['cancel_reason'] ?? 'No reason provided';
+                    $cancelledItemsRemarks[] = "Item '{$itemName}' (Qty: {$pod->quantity}) was CANCELLED & REMOVED. Reason: {$reason}";
+
+                    $pod->delete();
+                    $needsRecalculation = true;
                 }
 
                 if ($returnRecord) {
@@ -147,37 +149,75 @@ class SupplierController extends Controller
                 }
             }
 
-            $allPodStatuses = PurchaseOrderDetail::whereIn('purchase_order_id', $pr->purchaseOrders->pluck('id'))
-                ->pluck('status')
-                ->all();
+            if ($needsRecalculation) {
+                Log::info("Recalculating amounts for PR ID: {$pr->id}");
+
+                $po_ids = $pr->purchaseOrders->pluck('id');
+
+                $newTotalAmount = PurchaseOrderDetail::whereIn('purchase_order_id', $po_ids)
+                                    ->sum('total_amount');
+
+                $pr->amount = $newTotalAmount;
+
+                $invoice = Invoice::where('order_id', $pr->id)->first();
+                if ($invoice) {
+                    $invoice->total_amount = $newTotalAmount;
+                    $invoice->save();
+                }
+            }
+
+            $allPods = PurchaseOrderDetail::whereIn('purchase_order_id', $pr->purchaseOrders->pluck('id'))
+                                ->withTrashed()
+                                ->get();
+
+            $allPodStatuses = $allPods->map(function($pod) {
+                if ($pod->trashed()) {
+                    return 37;
+                }
+                return $pod->status;
+            })->all();
+
 
             $newStatus = null;
             $newRemarks = '';
 
             if (in_array(36, $allPodStatuses)) {
                 $newStatus = 36;
-                $newRemarks = 'Processing returns for redelivery.';
+                $newRemarks = 'Processing returns. Some items pending redelivery.';
             } else {
                 $allCompleted = collect($allPodStatuses)->every(function ($status) {
-                    return in_array($status, [36, 37]);
+                    return in_array($status, [16, 37]);
                 });
 
                 if ($allCompleted) {
-                    $newStatus = 23;
+                    $newStatus = 16;
                     $newRemarks = 'Order completed, returns processed.';
-                } else {
+                } else if (in_array(16, $allPodStatuses) || in_array(37, $allPodStatuses)) {
                     $newStatus = 17;
+                    $newRemarks = 'Returns processed. Some items remain.';
+                } else {
+                    $newStatus = $pr->status;
                     $newRemarks = 'Returns processed.';
+
+                    if (collect($allPodStatuses)->every(fn($s) => $s == 37)) {
+                        $newStatus = 16;
+                        $newRemarks = 'All returned items have been cancelled by supplier.';
+                    }
                 }
             }
 
+            $finalRemarks = $newRemarks;
+            if (!empty($cancelledItemsRemarks)) {
+                $finalRemarks .= " \n\n[Cancelled Items]:\n" . implode("\n", $cancelledItemsRemarks);
+            }
+
             $pr->status = $newStatus;
-            $pr->remarks = $newRemarks;
+            $pr->remarks = $finalRemarks;
             $pr->save();
 
             $pr->purchaseOrders()->update([
                 'status' => $newStatus,
-                'remarks' => $newRemarks
+                'remarks' => $finalRemarks
             ]);
 
 
@@ -186,6 +226,7 @@ class SupplierController extends Controller
             return response()->json(['success' => true, 'message' => 'Return actions processed successfully!']);
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Error in processReturn: ' . $e->getMessage() . ' on line ' . $e->getLine());
             return response()->json(['error' => 'Server Error: ' . $e->getMessage()], 500);
         }
     }

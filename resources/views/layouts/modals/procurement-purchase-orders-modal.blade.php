@@ -101,3 +101,43 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="receiveRedeliveryModal" tabindex="-1" role="dialog" aria-labelledby="receiveRedeliveryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="receiveRedeliveryModalLabel">Inspect Redelivered Items</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="receiveRedeliveryForm" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" id="receive_redelivery_pr_id" name="pr_id">
+
+                        <p>Inspect each redelivered item. Uncheck any items you need to return *again* and provide a reason.</p>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" style="width: 100px;">Received?</th>
+                                        <th>Item</th>
+                                        <th style="width: 150px;">Quantity</th>
+                                        <th>Reason for Re-Return</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="redeliveryItemsList">
+                                    <!-- Items will be dynamically populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Confirm Inspection</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>

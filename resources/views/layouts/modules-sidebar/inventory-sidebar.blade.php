@@ -14,7 +14,7 @@
 <li class="sidebar-item @yield('inventoryTransactions') ">
     <a href="{{route('inventory.transactions')}}" class='sidebar-link'>
         <i class="fa-solid fa-receipt"></i>
-        <span>Stock Transactions</span>
+        <span>Inventory Movements</span>
     </a>
 </li>
 <li class="sidebar-item @yield('inventoryProducts') ">

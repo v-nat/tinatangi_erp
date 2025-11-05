@@ -1,12 +1,12 @@
 @extends('layouts.app')
 @include('partials.inventory-heading')
 @section('inventoryTransactions') active @endsection
-@section('headings') Transaction Records @endsection
+@section('headings') Inventory Movements @endsection
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{route('inventory')}}">Inventory</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Stock Transactions</li>
+            <li class="breadcrumb-item active" aria-current="page">Inventory Records</li>
         </ol>
     </nav>
 
@@ -14,7 +14,7 @@
         <div class="card">
             <div class="card-header py-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="card-title mb-0">Transactions Table</h4>
+                    <h4 class="card-title mb-0">Records Table</h4>
 
                     <div class="d-flex align-items-center" style="width: 320px;">
                         <label for="transaction_type_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by
