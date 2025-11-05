@@ -18,16 +18,16 @@ Route::prefix('/procurement')->middleware(['auth', 'isEmployee'])->group(functio
     Route::get('/supplier', [ProcurementController::class, 'supplier'])->name('procurement.supplier');
 
     /////////////////////////////////////////// SUPPLIER //////////////////////////////////////////
-    Route::post('/supplier/add-supplier', [SupplierController::class,'storeSupplier']);
-    Route::get('/supplier/get-supplier', [SupplierController::class,'getSupplier']);
+    Route::post('/supplier/add-supplier', [SupplierController::class, 'storeSupplier']);
+    Route::get('/supplier/get-supplier', [SupplierController::class, 'getSupplier']);
 
     /////////////////////////////////////////////// CREATE PR /////////////////////////////////////////////////////
-    Route::get('/generateOrderID/{type}', [GenerateIdController::class,'generateID']);
-    Route::get('/create-purchase-request/get-active-supplier', [SupplierController::class,'getActiveSupplier']);
-    Route::get('/create-purchase-request/get-categories', [PurchaseOrderController::class,'getCategories']);
-    Route::get('/create-purchase-request/get-items', [PurchaseOrderController::class,'getItems']);
-    Route::post('/create-purchase-request/submit-request', [PurchaseOrderController::class,'store']);
-    Route::post('/complete-purchase-request/submit-request', [PurchaseOrderController::class,'sendReq']);
+    Route::get('/generateOrderID/{type}', [GenerateIdController::class, 'generateID']);
+    Route::get('/create-purchase-request/get-active-supplier', [SupplierController::class, 'getActiveSupplier']);
+    Route::get('/create-purchase-request/get-categories', [PurchaseOrderController::class, 'getCategories']);
+    Route::get('/create-purchase-request/get-items', [PurchaseOrderController::class, 'getItems']);
+    Route::post('/create-purchase-request/submit-request', [PurchaseOrderController::class, 'store']);
+    Route::post('/complete-purchase-request/submit-request', [PurchaseOrderController::class, 'sendReq']);
 
     ///////////////////////////////////////// PURCHASE ORDER //////////////////////////////////////////////////
     Route::get('/purchases/get-list', [ProcurementController::class, 'purchaseOrdersList']);
@@ -37,4 +37,6 @@ Route::prefix('/procurement')->middleware(['auth', 'isEmployee'])->group(functio
     Route::get('/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
     Route::put('/purchases/order/{id}/{status}', [PurchaseOrderController::class, 'processPurchaseOrders']);
 
+    Route::get('/purchases/get-delivery-details/{id}', [PurchaseOrderController::class, 'getDeliveryDetailsForModal']);
+    Route::post('/purchases/receive-delivery', [PurchaseOrderController::class, 'receiveDelivery']);
 });

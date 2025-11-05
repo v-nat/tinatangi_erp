@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PurchaseOrderDetail extends Model
 {
@@ -42,5 +43,13 @@ class PurchaseOrderDetail extends Model
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
+    }
+
+    /**
+     * Get the return details for this purchase order item.
+     */
+    public function deliveryReturn(): HasOne
+    {
+        return $this->hasOne(DeliveryReturn::class);
     }
 }

@@ -318,65 +318,66 @@ $(document).ready(function () {
             });
         });
     });
-    $(document).on("click", ".accept-btn", function () {
-        const req_id = $(this).data("id");
-        const invoice_id = $(this).data("invoice-id");
-        console.log(invoice_id);
-        Swal.fire({
-            title: "Order Received?",
-            text: "You are about to mark this order as delivered.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm!",
-        }).then((result) => {
-            if (!result.isConfirmed) {
-                return;
-            }
-            $("#LoadingScreen").fadeIn(200);
-            $.ajax({
-                headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                        "content"
-                    ),
-                },
-                url: `/procurement/purchases/order/${req_id}/16`,
-                type: "PUT",
-                data: {
-                    invoice_id: invoice_id,
-                },
-                processData: true, // Should be true for form-encoded data, false for FormData (binary)
-                contentType: "application/x-www-form-urlencoded; charset=UTF-8", // Default for jQuery AJAX PUT/POST
 
-                success: function (response) {
-                    $("#LoadingScreen").fadeOut(200);
-                    reloadTable("purchaseOrderTable");
-                    Toast.fire({
-                        text: response.message,
-                        icon: "success",
-                    });
-                },
-                error: function (xhr) {
-                    $("#LoadingScreen").fadeOut(200);
-                    if (xhr.responseJSON?.errors) {
-                        let errorMessages = Object.values(
-                            xhr.responseJSON.errors
-                        )
-                            .flat()
-                            .join("\n");
-                        Toast.fire("Validation Error", errorMessages, "error");
-                    } else {
-                        Toast.fire(
-                            "Error",
-                            "An unexpected error occurred.",
-                            "error"
-                        );
-                    }
-                },
-            });
-        });
-    });
+    // $(document).on("click", ".accept-btn", function () {
+    //     const req_id = $(this).data("id");
+    //     const invoice_id = $(this).data("invoice-id");
+    //     console.log(invoice_id);
+    //     Swal.fire({
+    //         title: "Order Received?",
+    //         text: "You are about to mark this order as delivered.",
+    //         icon: "warning",
+    //         showCancelButton: true,
+    //         confirmButtonColor: "#3085d6",
+    //         cancelButtonColor: "#d33",
+    //         confirmButtonText: "Confirm!",
+    //     }).then((result) => {
+    //         if (!result.isConfirmed) {
+    //             return;
+    //         }
+    //         $("#LoadingScreen").fadeIn(200);
+    //         $.ajax({
+    //             headers: {
+    //                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+    //                     "content"
+    //                 ),
+    //             },
+    //             url: `/procurement/purchases/order/${req_id}/16`,
+    //             type: "PUT",
+    //             data: {
+    //                 invoice_id: invoice_id,
+    //             },
+    //             processData: true, // Should be true for form-encoded data, false for FormData (binary)
+    //             contentType: "application/x-www-form-urlencoded; charset=UTF-8", // Default for jQuery AJAX PUT/POST
+
+    //             success: function (response) {
+    //                 $("#LoadingScreen").fadeOut(200);
+    //                 reloadTable("purchaseOrderTable");
+    //                 Toast.fire({
+    //                     text: response.message,
+    //                     icon: "success",
+    //                 });
+    //             },
+    //             error: function (xhr) {
+    //                 $("#LoadingScreen").fadeOut(200);
+    //                 if (xhr.responseJSON?.errors) {
+    //                     let errorMessages = Object.values(
+    //                         xhr.responseJSON.errors
+    //                     )
+    //                         .flat()
+    //                         .join("\n");
+    //                     Toast.fire("Validation Error", errorMessages, "error");
+    //                 } else {
+    //                     Toast.fire(
+    //                         "Error",
+    //                         "An unexpected error occurred.",
+    //                         "error"
+    //                     );
+    //                 }
+    //             },
+    //         });
+    //     });
+    // });
 
     $(document).on("click", ".btn-view", function () {
         const id = $(this).data("id");
@@ -426,5 +427,180 @@ $(document).ready(function () {
 
     $(document).on("click", "#print", function () {
         printInvoice();
+    });
+
+    $(document).on("click", ".accept-btn", function () {
+        const req_id = $(this).data("id");
+        $("#LoadingScreen").fadeIn(200);
+
+        // Reset form
+        $("#receiveOrderForm")[0].reset();
+        $("#receiveItemsList").html(
+            '<tr><td colspan="4" class="text-center">Loading items...</td></tr>'
+        );
+
+        // Fetch item details for the modal
+        $.get(`/procurement/purchases/get-delivery-details/${req_id}`, function (
+            response
+        ) {
+            const items = response.data;
+            const $itemList = $("#receiveItemsList");
+            $itemList.empty();
+            $("#receive_pr_id").val(req_id);
+
+            if (!items || items.length === 0) {
+                $itemList.html(
+                    '<tr><td colspan="4" class="text-center text-danger">No items found for this order.</td></tr>'
+                );
+                $("#LoadingScreen").fadeOut(200);
+                $("#receiveOrderModal").modal("show");
+                return;
+            }
+
+            items.forEach((item, index) => {
+                const rowHtml = `
+                    <tr class="item-row" data-index="${index}">
+                        <td class="text-center align-middle">
+                            <!-- This is the visible checkbox -->
+                            <input type="checkbox" class="form-check-input item-received-check" data-index="${index}" checked>
+
+                            <!-- These are the hidden fields that will be submitted -->
+                            <input type="hidden" class="item-status-hidden" name="items[${index}][status]" value="received">
+                            <input type="hidden" name="items[${index}][pod_id]" value="${item.pod_id}">
+                        </td>
+                        <td class="align-middle">
+                            <strong>${item.item_name}</strong>
+                        </td>
+                        <td class="align-middle">
+                            ${item.quantity_ordered} ${item.item_unit}
+                        </td>
+                        <td class="align-middle">
+                            <div class="return-fields" id="return_fields_${index}">
+                                <textarea class="form-control mb-2" name="items[${index}][return_reason]" placeholder="Reason for return..." disabled></textarea>
+                                <input type="file" class="form-control" name="items[${index}][return_photo]" accept="image/*" disabled>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                $itemList.append(rowHtml);
+            });
+
+            $("#LoadingScreen").fadeOut(200);
+            $("#receiveOrderModal").modal("show");
+        }).fail(function (xhr) {
+            $("#LoadingScreen").fadeOut(200);
+            Toast.fire(
+                "Error",
+                xhr.responseJSON?.error ||
+                    "Failed to load item details for inspection.",
+                "error"
+            );
+        });
+    });
+
+    // =================================================================
+    // NEW: Handler for checking/unchecking item received
+    // =================================================================
+    $(document).on("change", ".item-received-check", function () {
+        const index = $(this).data("index");
+        const $returnFields = $("#return_fields_" + index);
+        const $hiddenStatus = $(this)
+            .closest("tr")
+            .find(".item-status-hidden");
+        const $fieldsToToggle = $returnFields.find(
+            "textarea, input[type=file]"
+        );
+
+        if ($(this).is(":checked")) {
+            // Item is received
+            $returnFields.hide();
+            $fieldsToToggle.prop("disabled", true).prop("required", false); // Disable and remove required
+            $hiddenStatus.val("received");
+            $(this).closest("tr").removeClass("table-danger");
+        } else {
+            // Item is returned
+            $returnFields.show();
+            $fieldsToToggle.prop("disabled", false);
+            $fieldsToToggle.filter("textarea").prop("required", true); // Make reason required
+            $hiddenStatus.val("returned");
+            $(this).closest("tr").addClass("table-danger");
+        }
+    });
+
+    // =================================================================
+    // NEW: Handler for submitting the inspection modal form
+    // =================================================================
+    $("#receiveOrderForm").on("submit", function (e) {
+        e.preventDefault();
+        $("#LoadingScreen").fadeIn(200);
+
+        const formData = new FormData(this);
+
+        // Optional: Client-side validation check
+        let hasUncheckedWithoutReason = false;
+        $("#receiveItemsList .item-row").each(function () {
+            const isChecked = $(this).find(".item-received-check").is(":checked");
+            const reason = $(this).find("textarea").val();
+            if (!isChecked && !reason) {
+                hasUncheckedWithoutReason = true;
+                $(this).find("textarea").addClass("is-invalid");
+            } else {
+                $(this).find("textarea").removeClass("is-invalid");
+            }
+        });
+
+        if (hasUncheckedWithoutReason) {
+            $("#LoadingScreen").fadeOut(200);
+            Toast.fire(
+                "Error",
+                "Please provide a reason for all returned items.",
+                "error"
+            );
+            return;
+        }
+
+        $.ajax({
+            url: "/procurement/purchases/receive-delivery",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+                $("#LoadingScreen").fadeOut(200);
+                $("#receiveOrderModal").modal("hide");
+                reloadTable("purchaseOrderTable");
+                Toast.fire({
+                    text: response.message,
+                    icon: "success",
+                });
+            },
+            error: function (xhr) {
+                $("#LoadingScreen").fadeOut(200);
+                if (xhr.status === 422) {
+                    // Validation errors
+                    let errorMessages =
+                        "<strong>Validation Failed:</strong><ul class='text-start'>";
+                    $.each(xhr.responseJSON.errors, function (key, value) {
+                        errorMessages += `<li>${value[0]}</li>`;
+                    });
+                    errorMessages += "</ul>";
+                    Toast.fire({
+                        title: "Error",
+                        html: errorMessages,
+                        icon: "error",
+                    });
+                } else {
+                    Toast.fire(
+                        "Error",
+                        xhr.responseJSON?.error ||
+                            "An unexpected error occurred.",
+                        "error"
+                    );
+                }
+            },
+        });
     });
 });

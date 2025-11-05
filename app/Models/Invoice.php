@@ -18,6 +18,7 @@ class Invoice extends Model
         'id',
         'order_id',
         'delivery_no',
+        'overall_photo_path', // Added this field
         'total_amount',
         'date_received',
         'date_approved',
@@ -37,7 +38,7 @@ class Invoice extends Model
     }
 
     public function purchaseRequestRS() {
-        return $this->hasOne(PurchaseRequest::class);
+        return $this->hasOne(PurchaseRequest::class, 'id', 'order_id');
     }
 
     public function purchaseOrderDetailRS(): HasMany

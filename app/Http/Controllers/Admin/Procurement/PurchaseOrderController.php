@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseOrderDetail;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\GenerateIdController;
+use App\Models\DeliveryReturn; // Added this
+use Illuminate\Support\Facades\Log; // Added for debugging
+use Illuminate\Support\Facades\Validator; // Added for validation
+use Illuminate\Support\Facades\Storage; // Added for file handling
 
 class PurchaseOrderController extends Controller
 {
@@ -158,9 +162,11 @@ class PurchaseOrderController extends Controller
                     $prpo->status = $status;
                     $prpo->save();
 
-                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
-                    $prpod->status = $status;
-                    $prpod->save();
+                    $prpod = PurchaseOrderDetail::where('purchase_order_id', $orderInstance)->get();
+                    foreach($prpod as $detail){
+                        $detail->status = $status;
+                        $detail->save();
+                    }
                 }
             } else {
                 $pr->remarks = 'requesting budget';
@@ -175,9 +181,11 @@ class PurchaseOrderController extends Controller
                     $prpo->status = $status;
                     $prpo->save();
 
-                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
-                    $prpod->status = $status;
-                    $prpod->save();
+                    $prpod = PurchaseOrderDetail::where('purchase_order_id', $orderInstance)->get();
+                    foreach($prpod as $detail){
+                        $detail->status = $status;
+                        $detail->save();
+                    }
                 }
             }
 
@@ -231,9 +239,11 @@ class PurchaseOrderController extends Controller
                     $prpo->status = $status;
                     $prpo->save();
 
-                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
-                    $prpod->status = $status;
-                    $prpod->save();
+                    $prpod = PurchaseOrderDetail::where('purchase_order_id', $orderInstance)->get();
+                    foreach($prpod as $detail){
+                        $detail->status = $status;
+                        $detail->save();
+                    }
                 }
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Sent!'], 200);
@@ -247,9 +257,11 @@ class PurchaseOrderController extends Controller
                     $prpo->status = $status;
                     $prpo->save();
 
-                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
-                    $prpod->status = $status;
-                    $prpod->save();
+                    $prpod = PurchaseOrderDetail::where('purchase_order_id', $orderInstance)->get();
+                    foreach($prpod as $detail){
+                        $detail->status = $status;
+                        $detail->save();
+                    }
 
                     if ($firstIteration) {
                         $firstIteration = false;
@@ -279,33 +291,9 @@ class PurchaseOrderController extends Controller
 
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Accepted!'], 200);
-            } else if ($status == 16) {
-                $pr->remarks = 'order received';
-                $pr->status = $status;
-                $pr->save();
-
-                $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
-
-                foreach ($orderInstances as $orderInstance) {
-                    $prpo = PurchaseOrder::where('id', $orderInstance)->first();
-                    $prpo->delivery_date = now();
-                    $prpo->remarks = 'order received';
-                    $prpo->status = $status;
-                    $prpo->save();
-
-                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
-                    $prpod->status = $status;
-                    $prpod->save();
-                }
-
-                $invoice = Invoice::findOrFail($request->invoice_id);
-                $invoice->date_received = now();
-                $invoice->delivery_no = GenerateIdController::generateID('delivery_no');
-                $invoice->save();
-
-                DB::commit();
-                return response()->json(['success' => true, 'message' => 'Purchase Order Received!'], 200);
-            } else if ($status == 19) {
+            }
+            // REMOVED STATUS 16 BLOCK - It is now handled by receiveDelivery()
+            else if ($status == 19) {
                 $pr->remarks = $request->remarks;
                 $pr->status = $status;
                 $pr->save();
@@ -319,9 +307,11 @@ class PurchaseOrderController extends Controller
                     $prpo->status = $status;
                     $prpo->save();
 
-                    $prpod = PurchaseOrderDetail::where('id', $orderInstance)->first();
-                    $prpod->status = $status;
-                    $prpod->save();
+                    $prpod = PurchaseOrderDetail::where('purchase_order_id', $orderInstance)->get();
+                    foreach($prpod as $detail){
+                        $detail->status = $status;
+                        $detail->save();
+                    }
                 }
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Purchase Order Rejected!'], 200);
@@ -329,6 +319,153 @@ class PurchaseOrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+    /**
+     * NEW METHOD
+     * Get all purchase order detail items for a given Purchase Request ID.
+     * This is used to populate the "Receive Delivery" modal.
+     */
+    public function getDeliveryDetailsForModal($id)
+    {
+        try {
+            $pr = PurchaseRequest::findOrFail($id);
+
+            // Get all PODetail items associated with this PR
+            $items = PurchaseOrderDetail::whereIn('purchase_order_id', $pr->purchaseOrders->pluck('id'))
+                ->with('itemss.unitRS')
+                ->get();
+
+            if ($items->isEmpty()) {
+                return response()->json(['error' => 'No items found for this purchase request.'], 404);
+            }
+
+            $mappedItems = $items->map(function ($detail) {
+                return [
+                    'pod_id'            => $detail->id,
+                    'item_name'         => optional($detail->itemss)->name ?? 'Unknown Item',
+                    'quantity_ordered'  => (int)$detail->quantity,
+                    'item_unit'         => optional(optional($detail->itemss)->unitRS)->abbreviation ?? 'pcs',
+                ];
+            });
+
+            return response()->json(['data' => $mappedItems]);
+        } catch (\Exception $e) {
+            Log::error('Error in getDeliveryDetailsForModal: ' . $e->getMessage());
+            return response()->json(['error' => 'Server Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * NEW METHOD
+     * Process the "Receive Delivery" modal submission.
+     * Handles file uploads and updates status for PR, POs, and PODs.
+     */
+    public function receiveDelivery(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'pr_id' => 'required|exists:purchase_requests,id',
+            'overall_delivery_photo' => 'required|image|max:5120', // 5MB Max
+            'items' => 'required|array|min:1',
+            'items.*.pod_id' => 'required|exists:purchase_order_details,id',
+            'items.*.status' => 'required|in:received,returned',
+            'items.*.return_reason' => 'required_if:items.*.status,returned',
+            'items.*.return_photo' => 'nullable|image|max:5120', // 5MB Max
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $pr_id = $request->pr_id;
+            $pr = PurchaseRequest::findOrFail($pr_id);
+            $invoice = Invoice::findOrFail($pr->invoice_id);
+
+            // 1. Handle Overall Photo
+            $overallPath = $request->file('overall_delivery_photo')->store('public/delivery_proof');
+            $invoice->overall_photo_path = Storage::url($overallPath); // Store public URL
+            $invoice->date_received = now();
+            $invoice->delivery_no = GenerateIdController::generateID('delivery_no');
+            $invoice->save();
+
+
+            $receivedCount = 0;
+            $returnedCount = 0;
+            $totalItems = count($request->items);
+
+            // 2. Loop through submitted items
+            foreach ($request->items as $index => $itemData) {
+                $pod = PurchaseOrderDetail::findOrFail($itemData['pod_id']);
+
+                if ($itemData['status'] == 'received') {
+                    $pod->status = 16; // Delivered
+                    $pod->delivered_qnty = $pod->quantity;
+                    $pod->save();
+                    $receivedCount++;
+
+                } else if ($itemData['status'] == 'returned') {
+                    $pod->status = 22; // Return
+                    $pod->delivered_qnty = 0; // None were accepted
+                    $pod->save();
+                    $returnedCount++;
+
+                    // Handle return photo and reason
+                    $returnPhotoPath = null;
+                    if ($request->hasFile("items.{$index}.return_photo")) {
+                        $path = $request->file("items.{$index}.return_photo")->store('public/return_proof');
+                        $returnPhotoPath = Storage::url($path); // Store public URL
+                    }
+
+                    DeliveryReturn::create([
+                        'purchase_order_detail_id' => $pod->id,
+                        'reason' => $itemData['return_reason'],
+                        'photo_path' => $returnPhotoPath,
+                    ]);
+                }
+            }
+
+            // 3. Determine Overall Status
+            $newStatus = null;
+            $newRemarks = '';
+
+            if ($returnedCount == 0 && $receivedCount > 0) {
+                $newStatus = 16; // Delivered
+                $newRemarks = 'All items received successfully.';
+            } else if ($receivedCount > 0 && $returnedCount > 0) {
+                $newStatus = 17; // Partial Delivered
+                $newRemarks = "Partially received. {$receivedCount} items accepted, {$returnedCount} items returned.";
+            } else if ($receivedCount == 0 && $returnedCount > 0) {
+                $newStatus = 22; // Return
+                $newRemarks = 'All items returned to supplier.';
+            } else {
+                 $newStatus = $pr->status; // Should not happen if items > 0
+                 $newRemarks = 'No items processed.';
+            }
+
+            // 4. Update PR and all associated POs
+            $pr->status = $newStatus;
+            $pr->remarks = $newRemarks;
+            $pr->save();
+
+            PurchaseOrder::where('purchase_request_id', $pr_id)
+                ->update([
+                    'status' => $newStatus,
+                    'remarks' => $newRemarks,
+                    'delivery_date' => now()
+                ]);
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Delivery processed successfully!']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in receiveDelivery: ' . $e->getMessage() . ' on line ' . $e->getLine());
+            return response()->json(['error' => 'Server Error: ' . $e->getMessage()], 500);
         }
     }
 }

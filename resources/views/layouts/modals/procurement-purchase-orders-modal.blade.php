@@ -25,3 +25,79 @@
         </div>
     </div>
 </div>
+
+<!-- Receive Order Modal -->
+<div class="modal fade text-left" id="receiveOrderModal" tabindex="-1" role="dialog"
+    aria-labelledby="receiveOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="receiveOrderModalLabel">Receive Delivery & Inspect Items</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <form id="receiveOrderForm" enctype="multipart/form-data">
+                <div class="modal-body p-4">
+                    <style>
+                        /* CSS to manage the return fields visibility */
+                        .return-fields {
+                            display: none;
+                            background-color: #fff8f8;
+                            border: 1px solid #fdd;
+                            padding: 10px;
+                            border-radius: 5px;
+                            margin-top: 10px;
+                        }
+                    </style>
+
+                    @csrf
+                    <input type="hidden" id="receive_pr_id" name="pr_id">
+
+                    <!-- Overall Photo Section -->
+                    <div class="mb-4">
+                        <label for="overall_delivery_photo" class="form-label fs-6 fw-bold">Overall Delivery Photo (Proof of Receipt)</label>
+                        <p class="text-muted small">Upload one photo showing all items received, the delivery vehicle, or the signed delivery note.</p>
+                        <input type="file" name="overall_delivery_photo" id="overall_delivery_photo" class="form-control"
+                            required accept="image/*">
+                    </div>
+
+                    <hr>
+
+                    <!-- Items Table Section -->
+                    <h5 class="mb-3">Inspect Individual Items</h5>
+                    <p class="text-muted small">Uncheck any item that is damaged, incorrect, or missing. You must provide a reason and photo for each unchecked item.</p>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 80px;">Received?</th>
+                                    <th>Item Name</th>
+                                    <th style="width: 120px;">Qty Ordered</th>
+                                    <th style="width: 40%;">Return Reason & Photo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receiveItemsList">
+                                <!-- JS will populate this section -->
+                                <tr>
+                                    <td colspan="4" class="text-center">Loading items...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                        <i class="bx bx-x d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Cancel</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary ml-1" id="submitReceiveOrder">
+                        <i class="bx bx-check d-block d-sm-none"></i>
+                        <span class="d-none d-sm-block">Submit Inspection</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
