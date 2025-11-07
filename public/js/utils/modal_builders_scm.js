@@ -39,7 +39,6 @@ export function buildInvoiceModal(data) {
         allDetailRowsHtml = `<tr><td colspan="8" class="text-center">No item details were found across all Purchase Orders.</td></tr>`;
     }
 
-    // --- ADDED THIS BLOCK ---
     let proofPhotoHtml = "";
     if (data.overall_photo_path) {
         proofPhotoHtml = `
@@ -54,7 +53,6 @@ export function buildInvoiceModal(data) {
         </div>
         `;
     }
-    // -----------------------
 
     const html = `
     <div class="row mb-4 p-3">
@@ -218,211 +216,10 @@ export function buildPOmodal(data) {
     $("#viewPO").modal("show");
 }
 
-// export function printInvoice() {
-//     const $viewInvoiceModal = $("#viewInvoice");
-//     const $modalContent = $viewInvoiceModal.find(".modal-content");
-
-//     const originalTitle = document.title;
-
-//     let invoiceNum = "Invoice";
-//     const invoiceElement = $viewInvoiceModal.find("#view_invoice_number");
-
-//     if (invoiceElement.length) {
-//         const fullText = invoiceElement.text();
-//         invoiceNum = fullText.replace("Invoice #: ", "").trim();
-//     }
-//     const now = new Date();
-//     const dateStr =
-//         now.getFullYear() +
-//         "-" +
-//         (now.getMonth() + 1).toString().padStart(2, "0") +
-//         "-" +
-//         now.getDate().toString().padStart(2, "0");
-
-//     const filename = `${dateStr}-invoice-${invoiceNum}-Tinatangi-Cafe`;
-//     document.title = filename;
-
-//     const $printContent = $modalContent.clone();
-//     $viewInvoiceModal.css("display", "none").removeClass("show");
-
-//     $printContent.attr("id", "temp-print-content");
-//     $("body").append($printContent);
-
-//     const printStyles = `
-//         @media print {
-//             /* Hide everything on the page by default, then make only the print content visible */
-//             body > *:not(#temp-print-content) {
-//                 display: none !important;
-//             }
-
-//             /* Global Body Reset for Print */
-//             body {
-//                 margin: 0 !important;
-//                 padding: 0 !important;
-//                 font-size: 10pt;
-//                 color: #000 !important;
-//             }
-
-//             /* --- CRITICAL FULL-PAGE EXPANSION --- */
-//             #temp-print-content {
-//                 display: block !important;
-//                 visibility: visible !important;
-
-//                 /* Force full width and remove all margins/padding that might center it */
-//                 width: 100% !important;
-//                 max-width: 100vw !important;
-//                 min-width: 100% !important;
-
-//                 margin: 0 !important;
-//                 padding: 0 !important;
-
-//                 box-shadow: none !important;
-//                 border: none !important;
-//                 background-color: white !important;
-//                 text-align: left !important;
-//             }
-
-//             /* Add some standard print padding (like standard printer margins) */
-//             #temp-print-content .modal-body {
-//                 padding: 1.5rem 1rem !important;
-//             }
-
-//             /* Hide modal chrome (header buttons, close, footer) which are now part of the clone */
-//             #temp-print-content .modal-header,
-//             #temp-print-content .modal-footer,
-//             #temp-print-content [data-dismiss="modal"],
-//             #temp-print-content .close {
-//                 display: none !important;
-//             }
-
-//             /* Adjust text colors */
-//             .text-primary, .text-secondary, .text-success {
-//                 color: #000 !important;
-//             }
-
-//             /* --- HEADER ALIGNMENT FIX (Aggressive Float-based 2-Column Layout) --- */
-//             /* Ensure the main row is a clearfix container */
-//             #temp-print-content > .row.mb-4.p-3 {
-//                 overflow: hidden !important; /* Contains floats */
-//                 padding: 0 0 !important;
-//                 margin: 0 !important;
-//             }
-
-//             /* Target ALL relevant Bootstrap column classes and force 50% width and float left */
-//             #temp-print-content .col-md-6,
-//             #temp-print-content .col-sm-6,
-//             #temp-print-content .col-6 {
-//                 float: left !important;
-//                 width: 50% !important;
-//                 max-width: 50% !important;
-//                 min-width: 50% !important;
-//             }
-
-//             /* Override the text-md-end class on the right column */
-//             #temp-print-content .col-md-6.text-md-end,
-//             #temp-print-content .col-md-6:nth-child(2) {
-//                 float: right !important; /* Force it to the right */
-//                 text-align: right !important;
-//             }
-
-//             /* Ensure the remarks section (col-md-12) takes full width and stacks below */
-//             #temp-print-content .col-md-12 {
-//                 clear: both !important; /* Clear floats */
-//                 width: 100% !important;
-//                 max-width: 100% !important;
-//                 margin-top: 1rem !important;
-//                 text-align: left !important;
-//             }
-//             /* --- END HEADER ALIGNMENT FIX --- */
-
-
-//             /* --- TABLE STYLING FOR COMPACTNESS --- */
-//             /* Reduce vertical padding in ALL table cells to minimum */
-//             #temp-print-content table.table-sm th,
-//             #temp-print-content table.table-sm td {
-//                 padding: 1px 0.25rem !important; /* Top/Bottom: 1px, Left/Right: 0.25rem */
-//                 line-height: 1.25 !important; /* Adjust line height for dense content */
-//             }
-//             /* --- END TABLE STYLING --- */
-
-
-//             /* --- TABLE COLUMN WIDTHS --- */
-//             #temp-print-content table.table-sm {
-//                 width: 100% !important;
-//                 table-layout: fixed;
-//                 margin-bottom: 2rem !important;
-//             }
-
-//             /* Column Width Distribution: 100% Total (Note: If columns are missing, adjust based on your final HTML) */
-//             .table-sm th:first-child, .table-sm td:first-child { width: 5% !important; text-align: center; } /* # */
-//             .table-sm th:nth-child(2), .table-sm td:nth-child(2) { width: 40% !important; } /* Item Name */
-//             .table-sm th:nth-child(3), .table-sm td:nth-child(3) { width: 10% !important; } /* Unit */
-//             .table-sm th:nth-child(4), .table-sm td:nth-child(4) { width: 20% !important; } /* Unit Price */
-//             .table-sm th:nth-child(5), .table-sm td:nth-child(5) { width: 15% !important; } /* Qty */
-//             .table-sm th:nth-child(6), .table-sm td:nth-child(6) { width: 15% !important; } /* Total Price */
-
-
-//             /* Add a title/header for the printed page */
-//             body::before {
-//                 content: "INVOICE DETAILS";
-//                 display: block;
-//                 text-align: center;
-//                 font-size: 14pt;
-//                 margin-top: 10px;
-//                 margin-bottom: 5px;
-//                 font-weight: bold;
-//                 visibility: visible !important;
-//             }
-
-//             /* Page Break handling */
-//             .table-responsive {
-//                 overflow: visible !important;
-//             }
-//         }
-//     `;
-
-//     const $printStyleElement = $(
-//         '<style type="text/css" id="print-temp-style">'
-//     ).text(printStyles);
-//     $("head").append($printStyleElement);
-
-//     const cleanupAndRestore = () => {
-//         // Prevent running if cleanup already occurred
-//         // if ($printContent.parent().length === 0) return;
-
-//         window.removeEventListener("focus", cleanupAndRestore);
-
-//         $printStyleElement.remove();
-
-//         $printContent.remove();
-
-//         $viewInvoiceModal.css("display", "block");
-//         $viewInvoiceModal.modal("show");
-//         document.title = originalTitle;
-//     };
-
-//     window.addEventListener("focus", cleanupAndRestore);
-
-//     const mediaQueryList = window.matchMedia("print");
-//     mediaQueryList.addListener((mql) => {
-//         if (!mql.matches) {
-//             cleanupAndRestore();
-//         }
-//     });
-
-//     window.print();
-
-//     setTimeout(() => {
-//         cleanupAndRestore();
-//     }, 300);
-// }
-
 export function printInvoice() {
     const $viewInvoiceModal = $("#viewInvoice");
     const originalTitle = document.title;
 
-    // --- 1. DATA EXTRACTION ---
-    // Extract dynamic data that is still needed
     let invoiceNum = "N/A";
     const invoiceElement = $viewInvoiceModal.find("#view_invoice_number");
     if (invoiceElement.length) {
@@ -436,7 +233,6 @@ export function printInvoice() {
 
     const totalAmount = $viewInvoiceModal.find('td:contains("Total Amount:")').next().text().trim() || "₱0.00";
 
-    // Extract table items
     const items = [];
     $viewInvoiceModal.find("table tbody tr").each(function () {
         const $row = $(this);
@@ -449,23 +245,19 @@ export function printInvoice() {
             name: $row.find("td:nth-child(2)").text().trim(),
             unit: $row.find("td:nth-child(3)").text().trim(),
             unitPrice: $row.find("td:nth-child(4)").text().trim(),
-            quantity: $row.find("td:nth-child(5)").text().trim().split(" ")[0], // Get just the number
+            quantity: $row.find("td:nth-child(5)").text().trim().split(" ")[0],
             total: $row.find("td:nth-child(6)").text().trim(),
         });
     });
 
-    // Extract delivery photo
     const $deliveryPhoto = $viewInvoiceModal.find('img[alt="Delivery Proof"]');
     const deliveryPhotoSrc = $deliveryPhoto.length ? $deliveryPhoto.attr("src") : null;
 
-    // Set document title for printing
     const now = new Date();
     const dateStr = now.getFullYear() + "-" + (now.getMonth() + 1).toString().padStart(2, "0") + "-" + now.getDate().toString().padStart(2, "0");
     const filename = `${dateStr}-invoice-${invoiceNum}-Tinatangi-Cafe`;
     document.title = filename;
 
-    // --- 2. HTML STRING BUILDING ---
-    // Build the item rows (NO EMPTY ROWS)
     let itemRowsHtml = "";
     items.forEach(item => {
         itemRowsHtml += `
@@ -479,7 +271,6 @@ export function printInvoice() {
         `;
     });
 
-    // --- Page 1: Invoice ---
     const page1Html = `
         <div class="print-invoice-page">
             <header class="print-header">
@@ -500,7 +291,7 @@ export function printInvoice() {
                 <div class="sold-to">
                     <p><strong>SOLD TO:</strong> Tinatangi Cafe</p>
                     <p><strong>ADDRESS:</strong> Brgy 13 Jose Abad Santos Ave, Dasmariñas, 4114 Cavite</p>
-                    <p><strong>BUSINESS STYLE:</strong> coffee shop</p>
+                    <p><strong>BUSINESS STYLE:</strong> Restaurant Coffee Shop</p>
                 </div>
                 <div class="invoice-meta">
                     <p><strong>DATE:</strong> ${dateApproved}</p>
@@ -555,7 +346,6 @@ export function printInvoice() {
         </div>
     `;
 
-    // --- Page 2: Delivery Proof ---
     let page2Html = "";
     if (deliveryPhotoSrc) {
         page2Html = `
@@ -566,22 +356,18 @@ export function printInvoice() {
         `;
     }
 
-    // Combine HTML and append to body
     const finalPrintHtml = page1Html + page2Html;
     $("body").append(`<div id="temp-print-content">${finalPrintHtml}</div>`);
 
-    // --- 3. CSS STYLING ---
     const printStyles = `
         @media print {
-            /* Hide everything else */
             body > *:not(#temp-print-content) {
                 display: none !important;
             }
 
-            /* Basic page setup */
             @page {
                 size: A4 portrait;
-                margin: 0.5in; /* Reduced margins */
+                margin: 0.5in;
             }
 
             body {
@@ -589,10 +375,9 @@ export function printInvoice() {
                 padding: 0 !important;
                 color: #000 !important;
                 font-family: 'Arial', sans-serif;
-                font-size: 8.5pt; /* Reduced base font size */
+                font-size: 8.5pt;
             }
 
-            /* Make print content visible and full-width */
             #temp-print-content {
                 display: block !important;
                 visibility: visible !important;
@@ -603,9 +388,8 @@ export function printInvoice() {
 
             .text-end { text-align: right; }
             .text-center { text-align: center; }
-            p { margin: 1px 0; } /* Tightened margins */
+            p { margin: 1px 0; }
 
-            /* --- Page 1: Invoice --- */
             .print-invoice-page {
                 width: 100%;
                 height: 100%;
@@ -613,7 +397,6 @@ export function printInvoice() {
                 flex-direction: column;
             }
 
-            /* Header */
             .print-header {
                 display: flex;
                 justify-content: space-between;
@@ -621,7 +404,7 @@ export function printInvoice() {
                 padding-bottom: 5px;
             }
             .header-left .company-name {
-                font-size: 12pt; /* Reduced */
+                font-size: 12pt;
                 font-weight: bold;
                 margin: 0;
             }
@@ -629,7 +412,7 @@ export function printInvoice() {
                 text-align: right;
             }
             .header-right .invoice-title {
-                font-size: 14pt; /* Reduced */
+                font-size: 14pt;
                 font-weight: bold;
                 margin: 0;
                 color: #333;
@@ -646,22 +429,20 @@ export function printInvoice() {
             }
             .invoice-num {
                 font-weight: bold;
-                font-size: 11pt; /* Reduced */
+                font-size: 11pt;
             }
 
-            /* Customer Details */
             .print-customer-details {
                 display: flex;
-                margin-top: 10px; /* Reduced */
-                padding-bottom: 10px; /* Reduced */
+                margin-top: 10px;
+                padding-bottom: 10px;
                 border-bottom: 1px solid #000;
             }
             .sold-to { flex: 3; }
             .invoice-meta { flex: 2; }
 
-            /* Item Table */
             .print-item-table {
-                margin-top: 5px; /* Reduced */
+                margin-top: 5px;
                 flex-grow: 1; /* This makes the table fill the space */
             }
             .print-item-table table {
@@ -671,7 +452,7 @@ export function printInvoice() {
             .print-item-table th,
             .print-item-table td {
                 border: 1px solid #000;
-                padding: 3px 5px; /* Reduced */
+                padding: 3px 5px;
                 vertical-align: top;
             }
             .print-item-table th {
@@ -679,27 +460,23 @@ export function printInvoice() {
                 text-align: center;
                 font-size: 8pt;
             }
-            /* Style for the *last* row of items */
             .print-item-table tbody tr:last-child td {
                  border-bottom: 1px solid #000;
             }
 
-
-            /* Footer */
             .print-footer {
                 display: flex;
                 justify-content: space-between;
-                margin-top: 10px; /* Reduced */
+                margin-top: 10px;
                 padding-top: 10px;
                 border-top: 2px solid #000;
                 width: 100%;
             }
 
-            /* UPDATED SUMMARY */
             .summary-left {
                 flex: 1.2;
                 display: flex;
-                align-items: center; /* Vertically center the box */
+                align-items: center;
             }
             .summary-box {
                 border: 1px solid #000;
@@ -713,7 +490,6 @@ export function printInvoice() {
                 font-weight: bold;
                 background-color: #eee;
             }
-            /* END UPDATED SUMMARY */
 
             .signatures-right {
                 flex: 1.5;
@@ -722,11 +498,11 @@ export function printInvoice() {
                 justify-content: space-between;
             }
             .sig-box {
-                margin-bottom: 10px; /* Reduced */
+                margin-bottom: 10px;
             }
             .sig-line {
                 border-bottom: 1px solid #000;
-                margin-top: 15px; /* Reduced */
+                margin-top: 15px;
                 margin-bottom: 2px;
             }
             .sig-name {
@@ -737,14 +513,13 @@ export function printInvoice() {
                 font-weight: bold;
             }
 
-            /* --- Page 2: Delivery Proof --- */
             .delivery-proof-page {
-                page-break-before: always; /* THIS IS THE KEY */
-                padding-top: 0.5in; /* Reduced */
+                page-break-before: always;
+                padding-top: 0.5in;
                 text-align: center;
             }
             .delivery-proof-page .proof-title {
-                font-size: 14pt; /* Reduced */
+                font-size: 14pt;
                 font-weight: bold;
                 margin-bottom: 15px;
             }
@@ -756,7 +531,6 @@ export function printInvoice() {
         }
     `;
 
-    // --- 4. PRINT & CLEANUP ---
     const $printStyleElement = $(
         '<style type="text/css" id="print-temp-style">'
     ).text(printStyles);
