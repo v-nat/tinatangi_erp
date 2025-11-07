@@ -1,3 +1,4 @@
+
 $(function () {
     let allInventoryItems = [];
     let allUnits = {};
@@ -12,6 +13,7 @@ $(function () {
         $("#recipe-product-name").text("Loading...");
         $("#current-ingredients-list").html("<p>Loading recipe...</p>");
         $("#ingredient-list").empty();
+        $("#servings_per_recipe").val(1);
         loadRecipeData(productId);
         $("#recipeModal").modal("show");
     });
@@ -27,6 +29,7 @@ $(function () {
                 ingredientIndex = 0;
 
                 $("#recipe-product-name").text(data.product.name);
+                $("#servings_per_recipe").val(data.product.servings || 1);
 
                 const $currentList = $("#current-ingredients-list").empty();
                 if (data.currentIngredients.length > 0) {
@@ -83,7 +86,6 @@ $(function () {
             const unitType = ingredient.item.unit_r_s.type;
 
             populateUnitDropdown($unitSelect, unitType);
-
             const baseUnit = allUnits[unitType].find((u) => u.is_base_unit);
             if (baseUnit) {
                 $unitSelect.val(baseUnit.id);
@@ -125,6 +127,34 @@ $(function () {
     $("#recipeForm").on("submit", function (e) {
         e.preventDefault();
         const form = $(this);
+        let isValid = true;
+        form.find('input[required], select[required]').each(function() {
+            if (!$(this).val() || ($(this).is('input[type="number"]') && $(this).val() <= 0)) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+             Toast.fire({
+                icon: "error",
+                title: "Error",
+                text: "Please fill out all required fields.",
+            });
+            return;
+        }
+        const ingredientCount = $("#ingredient-list .ingredient-row").length;
+        if (ingredientCount === 0) {
+            Toast.fire({
+                icon: "error",
+                title: "Empty Recipe",
+                text: "Please add at least one ingredient to the recipe.",
+            });
+            return; 
+        }
+        $("#LoadingScreen").fadeIn(200);
         const productId = form.attr("action").split("/").pop();
         $.ajax({
             url: form.attr("action"),
@@ -132,68 +162,37 @@ $(function () {
             data: form.serialize(),
             success: function (response) {
                 $("#recipeModal").modal("hide");
+                $("#LoadingScreen").fadeOut(200);
                 Toast.fire({
                     icon: "success",
                     title: "Success!",
                     text: response.message,
                     timer: 1500,
                 });
-                // calculateAndSuggestPrice(productId);
                 $("#products-table").DataTable().ajax.reload();
             },
             error: function (xhr) {
-                Toast.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Please remove the blank ingredient!",
-                });
+                $("#LoadingScreen").fadeOut(200);
+                 if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    let errorMsg = "Please check your inputs.\n";
+                    $.each(errors, function(key, value) {
+                        $(`[name="${key}"]`).addClass('is-invalid');
+                        if(key.startsWith('ingredients.')) {
+                             $(`[name^="ingredients[${key.split('.')[1]}]"]`).addClass('is-invalid');
+                        }
+                        errorMsg += value[0] + "\n";
+                    });
+                     Toast.fire({ icon: "error", title: "Validation Error", text: "Please check the form fields." });
+                } else {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "An error occurred. Please try again.",
+                    });
+                }
             },
         });
     });
 
-    function calculateAndSuggestPrice(productId) {
-        $.get(
-            `/inventory/recipes/${productId}/calculate-price`,
-            function (data) {
-                Swal.fire({
-                    title: "Update Product Price?",
-                    html: `The calculated recipe cost is <b>₱${data.total_cost}</b>.<br>
-                   Based on a 30% profit margin, the suggested price is <b>₱${data.suggested_price}</b>.<br><br>
-                   Do you want to update this product's base price?`,
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonText: "Yes, Update Price",
-                    cancelButtonText: "No, Keep Current Price",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        updateProductPrice(productId, data.suggested_price);
-                    }
-                });
-            }
-        ).fail(function () {
-            Toast.fire("Error", "Could not calculate recipe cost.", "error");
-        });
-    }
-
-    function updateProductPrice(productId, newPrice) {
-        $.ajax({
-            url: `/inventory/products/${productId}/update-price`,
-            type: "PATCH",
-            data: {
-                base_price: newPrice,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: function (response) {
-                Toast.fire("Updated!", response.message, "success");
-                $("#products-table").DataTable().ajax.reload(null, false);
-            },
-            error: function () {
-                Toast.fire(
-                    "Error",
-                    "Failed to update the product price.",
-                    "error"
-                );
-            },
-        });
-    }
 });

@@ -258,6 +258,14 @@
                         <p>Loading recipe...</p>
                     </ul>
                     <hr>
+                    <h6>Servings per Recipe</h6>
+                    <p class="text-muted" style="font-size: 0.9rem;">Define how many servings this one recipe yields.</p>
+                    <div class="form-group">
+                        <label for="servings_per_recipe" class="form-label">Servings</label>
+                        <input type="number" class="form-control" id="servings_per_recipe" name="servings_per_recipe" step="1" min="1" placeholder="e.g., 1" required>
+                        <div class="invalid-feedback">Please enter a valid number of servings (min 1).</div>
+                    </div>
+                    <hr>
                     <h6>Update Ingredients</h6>
                     <div id="ingredient-list"></div>
                     <button type="button" id="add-ingredient-btn" class="btn btn-primary mt-2">Add Ingredient</button>

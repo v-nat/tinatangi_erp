@@ -20,6 +20,7 @@ class Product extends Model
         'base_price',
         'description',
         'image',
+        'servings',
         'status'
     ];
 

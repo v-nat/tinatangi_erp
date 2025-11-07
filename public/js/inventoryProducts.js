@@ -32,6 +32,15 @@ $(function () {
             },
             { data: "category_name", title: "Category", defaultContent: "N/A" },
             {
+                data: "servings",
+                title: "Servings",
+                className: "text-center",
+                defaultContent: "N/A",
+                render: function (data, type, row) {
+                    return data ? parseInt(data) : 'N/A';
+                }
+            },
+            {
                 data: "status",
                 title: "Status",
                 className: "text-center",

@@ -37,7 +37,6 @@ Route::prefix('/inventory')->middleware(['auth', 'isEmployee'])->group(function 
     Route::post('/products/store', [ProductController::class, 'store']);
 
     Route::get('/products/{product}/servings', [ProductController::class, 'getServings']);
-    Route::patch('/products/{product}/update-price', [RecipeController::class, 'updatePrice']);
 
     Route::post('/products/batch-delete', [ProductController::class, 'batchDestroy']);
     Route::post('/products/update/{product}', [ProductController::class, 'update']);
@@ -45,7 +44,6 @@ Route::prefix('/inventory')->middleware(['auth', 'isEmployee'])->group(function 
 
     Route::post('/recipes/{product}', [RecipeController::class, 'update']);
     Route::get('/recipes/{product}/data', [RecipeController::class, 'getRecipeData']);
-    Route::get('/recipes/{product}/calculate-price', [RecipeController::class, 'calculatePrice']);
 
     Route::get('/products/{product}', [ProductController::class, 'show']);
 });

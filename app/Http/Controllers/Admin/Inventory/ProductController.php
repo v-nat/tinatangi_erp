@@ -35,6 +35,7 @@ class ProductController extends Controller
             'status'        =>(int) $product->status,
             'status_text'   => $product->status,
             'image'         => $product->image,
+            'servings'      => $product->servings,
         ];
 
         return response()->json([
@@ -55,6 +56,7 @@ class ProductController extends Controller
                         'desc'          => $product->description,
                         'base_price'    => $product->base_price,
                         'category_name' => optional($product->productCategoryRS)->name,
+                        'servings'      => $product->servings,
                         'status'        => Status::getStatusText($product->status),
                         'created_at'    => Carbon::parse($product->created_at)->format('M d, Y'),
                     ];

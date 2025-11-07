@@ -14,7 +14,7 @@ class RecipeController extends Controller
     public function getRecipeData(Product $product)
     {
         $product->load('ingredients.item.unitRS');
-        $allInventoryItems = InventoryItem::with('item.categoryRS', 'item.unitRS')->get();
+        $allInventoryItems = InventoryItem::with('item.categoryRS', 'item.unitRS', 'unit')->get(); // Eager load item unit
         $allUnits = ItemUnit::all()->groupBy('type');
         $allConversions = UnitConversion::all();
 
@@ -40,12 +40,14 @@ class RecipeController extends Controller
     public function update(Request $request, Product $product)
     {
         $request->validate([
+            'servings_per_recipe' => 'required|numeric|min:1',
             'ingredients' => 'nullable|array',
             'ingredients.*.id' => 'required|exists:inventory_items,id',
             'ingredients.*.quantity' => 'required|numeric|min:0.01',
             'ingredients.*.unit_id' => 'required|integer|exists:item_units,id',
         ]);
 
+        $servingsPerRecipe = $request->input('servings_per_recipe');
         $ingredientsData = $request->input('ingredients', []);
         $dataToSync = [];
 
@@ -74,42 +76,10 @@ class RecipeController extends Controller
 
         $product->ingredients()->sync($dataToSync);
 
-        return response()->json(['message' => 'Recipe updated successfully!']);
-    }
-
-    public function calculatePrice(Product $product)
-    {
-        $product->load('ingredients');
-
-        if ($product->ingredients->isEmpty()) {
-            return response()->json(['error' => 'Product has no recipe.'], 404);
-        }
-
-        $totalCost = 0;
-
-        foreach ($product->ingredients as $ingredient) {
-            $costPerBaseUnit = $ingredient->unit_cost;
-
-            $quantityUsedInRecipe = $ingredient->pivot->quantity_used;
-            $totalCost += $costPerBaseUnit * $quantityUsedInRecipe;
-        }
-
-        $profitMargin = 0.30;
-        $suggestedPrice = $totalCost / (1 - $profitMargin);
-
-        return response()->json([
-            'total_cost' => round($totalCost, 2),
-            'suggested_price' => round($suggestedPrice, 2),
-        ]);
-    }
-
-    public function updatePrice(Request $request, Product $product)
-    {
-        $request->validate(['base_price' => 'required|numeric|min:0']);
-
-        $product->base_price = $request->base_price;
+        $product->servings = $servingsPerRecipe;
+        $product->status = 1;
         $product->save();
 
-        return response()->json(['message' => 'Product price updated successfully!']);
+        return response()->json(['message' => 'Recipe updated successfully!']);
     }
 }

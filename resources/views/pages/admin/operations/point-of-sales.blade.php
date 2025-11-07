@@ -142,6 +142,7 @@
         }
 
         .product-card-fixed-size {
+            position: relative; /* MODIFICATION: Added for servings overlay */
             height: 250px;
             width: 250px;
         }

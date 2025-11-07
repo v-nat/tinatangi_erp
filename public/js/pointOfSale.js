@@ -52,10 +52,23 @@ $(document).ready(function () {
                         } else {
                             imageUrl = DEFAULT_PRODUCT_IMAGE;
                         }
+                        const servings = parseInt(element.servings);
+                        let servingsHtml = '';
+
+                        if (servings > 0) {
+                            servingsHtml = `<span class="position-absolute top-0 end-0 bg-primary text-white p-1 px-2 rounded-pill" style="font-size: 0.8rem; margin: 5px;">${servings} servings</span>`;
+                        } else {
+                            servingsHtml = `
+                                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background-color: rgba(220, 53, 69, 0.7); border-radius: inherit;">
+                                    <h5 class="text-white fw-bold">Out of Stock</h5>
+                                </div>
+                            `;
+                        }
 
                         productsHtml.push(`
-                        <div class="col" data-id="${element.id}">
-                            <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2">
+                        <div class="col" data-id="${element.id}" ${servings <= 0 ? 'data-disabled="true"' : ''}>
+                            <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2 ${servings <= 0 ? 'border-danger' : ''}">
+                                ${servingsHtml}
                                 <img src="${imageUrl}" class="card-img-top img-fluid prod-img" alt="Product Image">
                                 <div class="card-body p-2 flex-grow-1">
                                     <h6 class="card-title mb-1 prod-name">${
@@ -145,6 +158,19 @@ $(document).ready(function () {
 
     $(document).on("click", ".col", function () {
         const clickedColumn = $(this);
+
+        // MODIFICATION: Check if the card is disabled (out of stock)
+        if (clickedColumn.data("disabled") === true) {
+            Toast.fire({
+                icon: "error",
+                title: "Out of Stock",
+                text: "This product is currently unavailable.",
+                timer: 1500,
+            });
+            return; // Stop execution
+        }
+        // END MODIFICATION
+
         const id = clickedColumn.data("id");
         const productNameElement = clickedColumn.find(".prod-name");
         const productName = productNameElement.text().trim();
@@ -507,7 +533,6 @@ $(document).ready(function () {
             }
         });
 
-        // This is the helper function that performs the AJAX call
         function voidOrderAjax(orderId, table) {
             $.ajax({
                 url: `/operations/pos/void-order/${orderId}`,
@@ -659,9 +684,16 @@ $(function () {
                 $("#confirmSubmitOrder").addClass("d-none");
                 $("#orderList").empty();
                 $("#order-total-amount").text("₱ 0.00");
+
+                const activeTab = $('.nav-pills .nav-link.active');
+                if (activeTab.length > 0) {
+                    activeTab.trigger('shown.bs.tab');
+                } else {
+                    getAllProducts();
+                }
             },
             error: function (xhr) {
-                alert("Error: " + xhr.responseJSON.message);
+                Toast.fire("Error: " + xhr.responseJSON.message);
             },
             complete: function () {
                 $("#LoadingScreen").fadeOut(200);
