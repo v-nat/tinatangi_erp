@@ -33,4 +33,12 @@ class Booking extends Model
     protected $casts = [
         'date' => 'date',
     ];
+
+    /**
+     * Get the status associated with the booking.
+     */
+    public function statusRS()
+    {
+        return $this->belongsTo(Status::class, 'status');
+    }
 }

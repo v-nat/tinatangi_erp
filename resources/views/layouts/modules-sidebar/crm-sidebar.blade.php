@@ -5,6 +5,12 @@
         @yield('crm-dashboard')
     </a>
 </li>
+<li class="sidebar-item @yield('crmBooking') ">
+    <a href="{{route('crm.bookings')}}" class='sidebar-link'>
+        <i class="fa-solid fa-book"></i>
+        <span>Booking Management</span>
+    </a>
+</li>
 <li class="sidebar-item @yield('crmFeedback') ">
     <a href="{{route('crm.feedback')}}" class='sidebar-link'>
         <i class="fa-solid fa-comments"></i>

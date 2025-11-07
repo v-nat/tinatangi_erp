@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CRM\BookingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CRM\CrmController;
 use App\Http\Controllers\Admin\CRM\FaqController;
@@ -27,4 +28,9 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::post('/faqs/update/{id}', [FaqController::class, 'update']);
     Route::delete('/faqs/destroy/{id}', [FaqController::class, 'destroy']);
     Route::delete('/faqs/batch-destroy', [FaqController::class, 'batchDestroy']);
+
+    Route::get('/bookings', [BookingController::class, 'bookingPage'])->name('crm.bookings');
+    Route::get('/bookings/all', [BookingController::class, 'getBookings']);
+    Route::post('/bookings/update-status', [BookingController::class, 'updateBookingStatus']);
+    Route::delete('/bookings/delete/{booking}', [BookingController::class, 'destroyBooking']);
 });
