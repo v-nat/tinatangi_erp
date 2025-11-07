@@ -1,4 +1,3 @@
-<!-- view modal-->
 <div class="modal fade text-left w-100" id="viewInvoice" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
@@ -28,7 +27,6 @@
 
 {{-- ////////////////////////////////////// RESSTOCK ///////////////////////////////////////////////////// --}}
 
-<!--warning theme Modal -->
 <div class="modal fade text-left" id="stockRequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel120"
     aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
@@ -144,7 +142,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="base_price" class="form-label">Base Price</label>
-                        <input type="number" class="form-control" id="base_price" name="base_price" step="0.01"
+                        <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" min="0"
                             required>
                         <div class="invalid-feedback">Please enter a valid, non-negative price.</div>
                     </div>

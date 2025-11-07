@@ -9,8 +9,7 @@ $(function () {
             dataSrc: "data",
         },
         order: [
-            [6, "desc"],
-            [7, "asc"],
+            [1, "asc"],
         ],
         columns: [
             {
@@ -33,12 +32,6 @@ $(function () {
             },
             { data: "category_name", title: "Category", defaultContent: "N/A" },
             {
-                data: null,
-                title: "Servings Available",
-                className: "text-center",
-                defaultContent: '<i class="fas fa-spinner fa-spin"></i>',
-            },
-            {
                 data: "status",
                 title: "Status",
                 className: "text-center",
@@ -52,7 +45,6 @@ $(function () {
                 render: function (data, type, row) {
                     return (
                         '<div class="btn-group btn-group-sm" role="group">' +
-                        // Note: Using template literals `` just for the part that needs the ${row.id}
                         `<button class="btn btn-primary view-product-btn" title="View Product" data-product-id="${row.id}">` +
                         '<i class="fas fa-eye"></i>' +
                         "</button>" +
@@ -74,18 +66,11 @@ $(function () {
         drawCallback: function (settings) {
             $("#select-all-checkbox").prop("checked", false);
             toggleBatchDeleteButton();
-        },
-        createdRow: function (row, data, dataIndex) {
-            const servingsCell = $("td", row).eq(-3);
-
-            $.get(
-                `/inventory/products/${data.id}/servings`,
-                function (response) {
-                    servingsCell.text(response.servings);
-                }
-            ).fail(function () {
-                servingsCell.text("Error");
-            });
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('#products-table [title]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                tooltipTriggerEl.setAttribute('data-bs-toggle', 'tooltip');
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         },
         language: {
             emptyTable: "No products found.",
@@ -635,5 +620,35 @@ $(function () {
                 });
             }
         });
+    });
+
+    $(document).on('keydown', '#base_price, #edit_base_price', function(e) {
+        const key = e.key;
+        const value = $(this).val();
+        const selection = this.selectionStart;
+
+        if ([
+            'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+            'ArrowLeft', 'ArrowRight', 'Home', 'End'
+        ].includes(key)) {
+            return;
+        }
+        if (key === '.' && value.includes('.')) {
+            e.preventDefault();
+            return;
+        }
+
+        if (!/^[0-9.]$/.test(key)) {
+            e.preventDefault();
+            return;
+        }
+
+        if (value.includes('.') && selection > value.indexOf('.')) {
+            const decimalPart = value.substring(value.indexOf('.') + 1);
+            if (decimalPart.length >= 2 && document.getSelection().toString().length === 0) {
+                // If we are not overwriting a selection, prevent typing
+                e.preventDefault();
+            }
+        }
     });
 });
