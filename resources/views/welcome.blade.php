@@ -25,7 +25,6 @@
 
     <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Lc_hwUsAAAAAIz3G4ruHeuYV1A27ZvCDZAs3Ry0"></script>
     <link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}">
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
@@ -197,9 +196,6 @@
                         <div class="sent-message" id="sent-message">Your booking request was sent. We will call back or
                             send an Email to confirm your reservation. Thank you!</div>
                     </div>
-
-                    <div class="g-recaptcha" data-sitekey="6Lc_hwUsAAAAAIz3G4ruHeuYV1A27ZvCDZAs3Ry0"></div>
-
                     <div class="text-center">
                         <button type="submit" class="submit-button">Book a Table</button>
                     </div>
