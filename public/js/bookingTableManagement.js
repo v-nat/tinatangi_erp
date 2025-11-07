@@ -29,6 +29,9 @@ $(document).ready(function () {
             },
             {
                 data: "time",
+                render: function (data, type, row) {
+                    return data ? formatTime(data) : "N/A";
+                },
 
             },
             { data: "people" },
