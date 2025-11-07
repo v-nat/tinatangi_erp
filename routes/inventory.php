@@ -40,6 +40,7 @@ Route::prefix('/inventory')->middleware(['auth', 'isEmployee'])->group(function 
     Route::patch('/products/{product}/update-price', [RecipeController::class, 'updatePrice']);
 
     Route::post('/products/update/{product}', [ProductController::class, 'update']);
+    Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
     Route::post('/recipes/{product}', [RecipeController::class, 'update']);
     Route::get('/recipes/{product}/data', [RecipeController::class, 'getRecipeData']);

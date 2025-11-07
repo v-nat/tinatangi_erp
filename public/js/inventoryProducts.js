@@ -55,6 +55,9 @@ $(function () {
                                 <button class="btn btn-warning edit-product-btn" title="Edit Product" data-product-id="${row.id}">
                                     <i class="fas fa-edit"></i>
                                 </button>
+                                <button class="btn btn-danger delete-product-btn" title="Delete Product" data-product-id="${row.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>`;
                 },
             },
@@ -471,6 +474,50 @@ $(function () {
                     });
                 }
             },
+        });
+    });
+
+    $('#products-table tbody').on('click', '.delete-product-btn', function () {
+        const productId = $(this).data('product-id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#LoadingScreen").fadeIn(200);
+
+                $.ajax({
+                    url: `/inventory/products/${productId}`,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        $("#LoadingScreen").fadeOut(200);
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: response.message,
+                            timer: 1500,
+                        });
+                        productsTable.ajax.reload();
+                    },
+                    error: function (xhr) {
+                        $("#LoadingScreen").fadeOut(200);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong! Please try again.',
+                        });
+                    }
+                });
+            }
         });
     });
 });

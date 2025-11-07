@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 
 class ProductController extends Controller
 {
@@ -148,13 +149,11 @@ class ProductController extends Controller
         ], 201);
     }
 
-    public function update(StoreProductRequest $request, Product $product): JsonResponse
+    public function update(UpdateProductRequest $request, Product $product): JsonResponse
     {
-        // We re-use StoreProductRequest for validation
         $validatedData = $request->validated();
 
         if ($request->hasFile('image')) {
-            // --- New image was uploaded, process it ---
             $imageFile = $request->file('image');
             $sourcePath = $imageFile->getRealPath();
 
@@ -190,18 +189,16 @@ class ProductController extends Controller
             $path = 'img/products/' . $filename;
             Storage::disk('public')->put($path, $processedImage);
 
-            // --- Delete the old image if it exists ---
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
             }
 
-            $validatedData['image'] = $path; // Set the new image path
+            $validatedData['image'] = $path;
 
             imagedestroy($sourceImage);
             imagedestroy($destImage);
         }
 
-        // --- Update the product ---
         $product->update($validatedData);
 
         return response()->json([
@@ -252,5 +249,25 @@ class ProductController extends Controller
         }
 
         return response()->json(['servings' => $totalServings]);
+    }
+
+    public function destroy(Product $product): JsonResponse
+    {
+        try {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            $product->delete();
+
+            return response()->json([
+                'message' => 'Product deleted successfully!'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to delete product.'
+            ], 500);
+        }
     }
 }
