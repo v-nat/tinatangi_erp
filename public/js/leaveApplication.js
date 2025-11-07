@@ -26,7 +26,7 @@ $(document).ready(function () {
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
-                type: "date", // Ensure proper date sorting
+                type: "date",
             },
             {
                 data: "end_date",
@@ -34,7 +34,7 @@ $(document).ready(function () {
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
-                type: "date", // Ensure proper date sorting
+                type: "date",
             },
             { data: "reason", className: "dt-left" },
             {
@@ -44,7 +44,7 @@ $(document).ready(function () {
             },
         ],
     });
-    const today = new Date().toISOString().split("T")[0]; // format: YYYY-MM-DD
+    const today = new Date().toISOString().split("T")[0];
     $("#start_date, #end_date").attr("min", today);
     $("#textAreaDiv").hide();
     $("#textAreaReason").prop("required", false);

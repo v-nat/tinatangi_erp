@@ -294,12 +294,12 @@
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="schedule_time_in" class="form-label">Start Time</label>
-                                        <input type="time" class="form-control" id="schedule_time_in" name="time_in" required value="{{ old('time_in', optional($data['schedule'] ?? null)->time_in ? Carbon\Carbon::parse(optional($data['schedule'] ?? null)->time_in)->format('H:i') : '') }}">
+                                        <input type="time" class="form-control" id="schedule_time_in" name="time_in" placeholder="Time" required value="{{ old('time_in', optional($data['schedule'] ?? null)->time_in ? Carbon\Carbon::parse(optional($data['schedule'] ?? null)->time_in)->format('H:i') : '') }}">
                                         <div class="invalid-feedback" id="time_in_error"></div>
                                     </div>
                                     <div class="col">
                                         <label for="schedule_time_out" class="form-label">End Time</label>
-                                        <input type="time" class="form-control" id="schedule_time_out" name="time_out" required value="{{ old('time_out', optional($data['schedule'] ?? null)->time_out ? Carbon\Carbon::parse(optional($data['schedule'] ?? null)->time_out)->format('H:i') : '') }}">
+                                        <input type="time" class="form-control" id="schedule_time_out" name="time_out" placeholder="Time" required value="{{ old('time_out', optional($data['schedule'] ?? null)->time_out ? Carbon\Carbon::parse(optional($data['schedule'] ?? null)->time_out)->format('H:i') : '') }}">
                                         <div class="invalid-feedback" id="time_out_error"></div>
                                     </div>
                                 </div>

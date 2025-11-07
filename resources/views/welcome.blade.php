@@ -25,6 +25,7 @@
 
     <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}">
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
@@ -152,45 +153,55 @@
                 <p>Book a Table</p>
             </div>
             <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-                <form action="forms/book-a-table.php" method="post" role="form" class="php-email-form">
+                <form method="post" role="form" id="booking-form" novalidate>
+                    @csrf
                     <div class="row gy-4">
                         <div class="col-lg-4 col-md-6">
                             <input type="text" name="name" class="form-control" id="name" placeholder="Your Name"
-                                required="">
+                                required>
+                            <div class="invalid-feedback">Name is required.</div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <input type="email" class="form-control" name="email" id="email" placeholder="Your Email"
-                                required="">
+                                required>
+                            <div class="invalid-feedback">Email is required.</div>
                         </div>
                         <div class="col-lg-4 col-md-6">
-                            <input type="text" class="form-control" name="phone" id="phone" placeholder="Your Phone"
-                                required="">
+                            <input type="tel" class="form-control" name="phone" id="phone" placeholder="Your Phone"
+                                required>
+                            <div class="invalid-feedback">Phone number is required.</div>
                         </div>
                         <div class="col-lg-4 col-md-6">
-                            <input type="date" name="date" class="form-control" id="date" placeholder="Date"
-                                required="">
+                            <input type="date" name="date" class="form-control" id="date" placeholder="Date" required>
+                            <div class="invalid-feedback">Date is required.</div>
                         </div>
                         <div class="col-lg-4 col-md-6">
-                            <input type="time" class="form-control" name="time" id="time" placeholder="Time"
-                                required="">
+                            <input type="time" class="form-control" name="time" id="time" placeholder="Time" required>
+                            <div class="invalid-feedback">Time is required.</div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <input type="number" class="form-control" name="people" id="people"
-                                placeholder="# of people" required="">
+                                placeholder="# of people" required>
+                            <div class="invalid-feedback">Number of people is required.</div>
                         </div>
                     </div>
 
-                    <div class="form-group mt-3">
-                        <textarea class="form-control" name="message" rows="5" placeholder="Message"></textarea>
+                    <div class="form-group mt-4">
+                        <textarea class="form-control" name="message" rows="5"
+                            placeholder="Message (Optional)"></textarea>
                     </div>
 
-                    <div class="text-center mt-3">
-                        <div class="loading">Loading</div>
-                        <div class="error-message"></div>
-                        <div class="sent-message">Your booking request was sent. We will call back or send an Email to
-                            confirm your reservation. Thank you!</div>
-                        <button type="submit">Book a Table</button>
+                    <div class="my-3">
+                        <div class="loading" id="loading-message">Loading</div>
+                        <div class="error-message" id="error-message"></div>
+                        <div class="sent-message" id="sent-message">Your booking request was sent. We will call back or
+                            send an Email to confirm your reservation. Thank you!</div>
+                    </div>
+
+                    <div class="g-recaptcha" data-sitekey="6Lc_hwUsAAAAAIz3G4ruHeuYV1A27ZvCDZAs3Ry0"></div>
+
+                    <div class="text-center">
+                        <button type="submit" class="submit-button">Book a Table</button>
                     </div>
                 </form>
             </div>
@@ -208,30 +219,30 @@
                     { "slidesPerView" : 1, "spaceBetween" : 40 }, "1200" : { "slidesPerView" : 3, "spaceBetween" : 40 }
                     }">
                     <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "speed": 600,
-              "autoplay": {
-                "delay": 5000
-              },
-              "slidesPerView": "auto",
-              "pagination": {
-                "el": ".swiper-pagination",
-                "type": "bullets",
-                "clickable": true
-              },
-              "breakpoints": {
-                "320": {
-                  "slidesPerView": 1,
-                  "spaceBetween": 40
-                },
-                "1200": {
-                  "slidesPerView": 3,
-                  "spaceBetween": 20
-                }
-              }
-            }
-          </script>
+                        {
+                        "loop": true,
+                        "speed": 600,
+                        "autoplay": {
+                            "delay": 5000
+                        },
+                        "slidesPerView": "auto",
+                        "pagination": {
+                            "el": ".swiper-pagination",
+                            "type": "bullets",
+                            "clickable": true
+                        },
+                        "breakpoints": {
+                            "320": {
+                            "slidesPerView": 1,
+                            "spaceBetween": 40
+                            },
+                            "1200": {
+                            "slidesPerView": 3,
+                            "spaceBetween": 20
+                            }
+                        }
+                        }
+                    </script>
                     <div class="swiper-wrapper">
 
 
@@ -554,6 +565,7 @@
     <script src="{{ asset('source/rater-js-1.0.1/index.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('js/landingPage.js') }}"></script>
+    <script src="{{ asset('js/bookingTable.js') }}"></script>
 
 </body>
 
