@@ -47,6 +47,9 @@ $(function () {
                 render: function (data, type, row) {
                     const editUrl = `/inventory/products/${row.id}/edit`;
                     return `<div class="action-btns" role="group">
+                                <button class="btn btn-sm btn-primary view-product-btn" title="View Product" data-product-id="${row.id}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                                 <button class="btn btn-sm btn-info manage-recipe-btn" title="Manage Recipe" data-product-id="${row.id}">
                                     <i class="fas fa-list-alt"></i>
                                 </button>
@@ -86,7 +89,7 @@ $(function () {
             const select = $('#category_filter');
 
             column.data().unique().sort().each(function (d, j) {
-                if(d) { 
+                if(d) {
                     select.append($('<option></option>').attr('value', d).text(d));
                 }
             });
@@ -108,6 +111,52 @@ $(function () {
         $("#addProductForm")[0].reset();
         $(".form-control, .form-select").removeClass("is-invalid");
         loadDropdownsIntoModal();
+    });
+
+    $('#products-table tbody').on('click', '.view-product-btn', function () {
+        const productId = $(this).data('product-id');
+
+        $("#productViewName").text('Loading...');
+        $("#productViewCategory").text('');
+        $("#productViewDescription").text('Please wait...');
+        $("#productViewPrice").text('...');
+        $("#productViewStatus").text('').removeClass('badge-success badge-secondary');
+        $("#productViewImage").attr('src', 'https://via.placeholder.com/350x350.png?text=Loading...');
+
+        $('#viewProductModal').modal('show');
+
+        $.ajax({
+            url: `/inventory/products/${productId}`,
+            type: 'GET',
+            success: function (data) {
+                const product = data.product;
+
+                $("#productViewName").text(product.name);
+                $("#productViewCategory").text(product.category_name);
+                $("#productViewDescription").text(product.description || 'No description provided.');
+
+                const price = parseFloat(product.base_price);
+                $("#productViewPrice").text(`₱ ${price.toFixed(2)}`);
+
+                $("#productViewStatus").text(product.status_text);
+                if (product.status == 1) {
+                    $("#productViewStatus").addClass('badge-success');
+                } else {
+                    $("#productViewStatus").addClass('badge-secondary');
+                }
+
+                // Set image
+                if (product.image) {
+                    $("#productViewImage").attr('src', `/storage/app/public/${product.image}`);
+                } else {
+                    $("#productViewImage").attr('src', 'https://via.placeholder.com/350x350.png?text=No+Image');
+                }
+            },
+            error: function () {
+                $('#viewProductModal').modal('hide');
+                Swal.fire("Error", "Could not retrieve product details.", "error");
+            }
+        });
     });
 
     function loadDropdownsIntoModal() {

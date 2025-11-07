@@ -84,6 +84,46 @@
     </div>
 </div>
 
+{{-- /////////////////////////////////////////////// VIEW PRODUCT //////////////////////////////////////// --}}
+
+<div class="modal fade" id="viewProductModal" tabindex="-1" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewProductModalLabel">Product Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <img src="https://via.placeholder.com/350x350.png?text=No+Image" id="productViewImage" class="img-fluid rounded shadow-sm" alt="Product Image" style="max-height: 350px; width: 100%; object-fit: cover;">
+                    </div>
+                    <div class="col-md-7">
+                        <h3 id="productViewName"></h3>
+                        <p class="text-muted" style="font-size: 1.1rem;" id="productViewCategory"></p>
+                        <hr>
+                        <p><strong>Description:</strong><br>
+                            <span id="productViewDescription"></span>
+                        </p>
+                        <hr>
+                        <h4>Base Price: <strong id="productViewPrice"></strong></h4>
+                        <p class="mt-3">
+                            <strong>Status:</strong>
+                            <span class="badge" id="productViewStatus"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {{-- /////////////////////////////////////////////// ADD NEW PRODUCT ////////////////////////////////////// --}}
 
 <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"

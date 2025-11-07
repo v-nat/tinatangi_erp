@@ -31,6 +31,7 @@ Route::prefix('/inventory')->middleware(['auth', 'isEmployee'])->group(function 
 
     /////////////////////////////////////////// RECIPE ///////////////////////////////////////////////////////
     Route::get('/products', [ProductController::class, 'index'])->name('inventory.products');
+    Route::get('/products/{product}', [ProductController::class, 'show'])->name('inventory.products.show');
     Route::get('/products/get', [ProductController::class, 'getProductData']);
     Route::get('/products/get-categories', [ProductController::class, 'getCategories']);
     Route::post('/products/store', [ProductController::class, 'store']);

@@ -398,9 +398,7 @@ $(function() {
                             icon: "success",
                         }).then(() => {
                             if (typeof Toast !== 'undefined') {
-                                location.reload();
-                            } else if (isEditMode) {
-                                window.location.href = "{{ route('hr.employees') }}";
+                                window.location.href = "/human-resources/employees";
                             } else {
                                 location.reload();
                             }

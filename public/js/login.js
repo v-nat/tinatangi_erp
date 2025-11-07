@@ -1,12 +1,10 @@
 $(document).ready(function () {
-    // Handle form submission
     $("#login_form").on("submit", function (e) {
         e.preventDefault();
         Login();
-        return false; // Additional prevention
+        return false;
     });
 
-    // Handle login button click
     $(".login-btn").on("click", function (e) {
         e.preventDefault();
         Login();
@@ -14,7 +12,6 @@ $(document).ready(function () {
     });
 
     function Login() {
-        // Get form data including CSRF token
         let formData = $("#login_form").serialize();
         // Show loading state
         $(".login-btn")
@@ -47,9 +44,14 @@ $(document).ready(function () {
                         backdrop: true,
                     }).then(() => {
                         $("#LoadingScreen").fadeIn();
-                        console.log(response.user);
                         if (response.user == 'employee') {
-                            window.location.href = "/admin";
+                            if (response.position == 16) {
+                                window.location.href = "/operations/pos";
+                            } else if (response.position == 11 || response.position == 12 || response.position == 14 || response.position == 15) {
+                                window.location.href = "/operations/kds";
+                            } else {
+                                window.location.href = "/admin";
+                            }
                         } else if (response.user == 'supplier') {
                             window.location.href = "/supplier";
                         }

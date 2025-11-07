@@ -20,6 +20,26 @@ class ProductController extends Controller
         return view('pages.admin.inventory.products');
     }
 
+    public function show(Product $product): JsonResponse
+    {
+        $product->load('productCategoryRS');
+
+        $formattedProduct = [
+            'id'            => $product->id,
+            'name'          => $product->name,
+            'description'   => $product->description,
+            'base_price'    => (float) $product->base_price,
+            'category_name' => optional($product->productCategoryRS)->name ?? 'Uncategorized',
+            'status'        =>(int) $product->status,
+            'status_text'   => Status::getStatusText($product->status),
+            'image'         => $product->image,
+        ];
+
+        return response()->json([
+            'product' => $formattedProduct
+        ]);
+    }
+
     public function getProductData()
     {
         try {
