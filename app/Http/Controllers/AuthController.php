@@ -27,7 +27,12 @@ class AuthController extends Controller
         $request->session()->regenerate();
         $user = Auth::user();
         $userType = $user->user_type;
-        $userPosition = $user->employeeRS->empPosition->id;
+
+        if ($userType != 'employee') {
+            $userPosition = 0;
+        } else {
+            $userPosition = $user->employeeRS->empPosition->id;
+        }
 
         abort_if($user->status != 1, 401, 'Your account is deactivated. Please contact the admin.');
         return response()->json([
