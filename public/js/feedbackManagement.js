@@ -1,15 +1,15 @@
 $(document).ready(function () {
-
     function escapeAttribute(s) {
-        if (!s) return '';
-        return s.toString()
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
+        if (!s) return "";
+        return s
+            .toString()
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
     }
 
-    const feedbackTable = $('#feedbackTable').DataTable({
+    const feedbackTable = $("#feedbackTable").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
@@ -17,10 +17,22 @@ $(document).ready(function () {
             type: "GET",
             dataSrc: "data",
             error: function (xhr, error, thrown) {
-                console.error("Failed to load feedback data for DataTable.", error);
-            }
+                console.error(
+                    "Failed to load feedback data for DataTable.",
+                    error
+                );
+            },
         },
         columns: [
+            {
+                data: null,
+                orderable: false,
+                className: "text-center select-checkbox",
+                width: "1%",
+                defaultContent:
+                    '<input type="checkbox" class="form-check-input feedback-select-checkbox">',
+                title: '<input type="checkbox" class="form-check-input" id="selectAllFeedback">',
+            },
             { data: "name", width: "15%" },
             {
                 data: "overall_rating",
@@ -28,7 +40,7 @@ $(document).ready(function () {
                 width: "8%",
                 render: function (data, type, row) {
                     return `<span class="card-rating">${data} ★</span>`;
-                }
+                },
             },
             {
                 data: "message",
@@ -37,7 +49,8 @@ $(document).ready(function () {
                     const fullMessage = data || "No comments provided.";
                     const maxLength = 100;
                     if (fullMessage.length > maxLength) {
-                        const truncatedMessage = fullMessage.substring(0, maxLength) + "...";
+                        const truncatedMessage =
+                            fullMessage.substring(0, maxLength) + "...";
                         const encodedMessage = escapeAttribute(fullMessage);
                         return `<p><em>"${truncatedMessage}"</em>
                                   <a href="#" class="see-more-btn ms-1"
@@ -49,7 +62,7 @@ $(document).ready(function () {
                                 </p>`;
                     }
                     return `<p><em>"${fullMessage}"</em></p>`;
-                }
+                },
             },
             {
                 data: null,
@@ -75,16 +88,22 @@ $(document).ready(function () {
                         </div>
                         ${photoHtml}
                     `;
-                }
+                },
             },
             {
                 data: "created_at",
                 width: "18%",
                 render: function (data, type, row) {
-                    const submissionDate = new Date(data).toLocaleString("en-US", {
-                        year: "numeric", month: "long", day: "numeric",
-                        hour: "2-digit", minute: "2-digit",
-                    });
+                    const submissionDate = new Date(data).toLocaleString(
+                        "en-US",
+                        {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        }
+                    );
                     return `
                         <small>
                             ${submissionDate}
@@ -92,69 +111,74 @@ $(document).ready(function () {
                             <strong>Location:</strong> ${row.location || "N/A"}
                         </small>
                     `;
-                }
+                },
             },
             {
                 data: "status",
                 className: "text-center",
                 width: "8%",
                 render: function (data, type, row) {
-                    return data === 35 ? '<span class="badge bg-success">Displayed</span>' : '<span class="badge bg-danger">Hidden</span>';
-                }
+                    return data === 35
+                        ? '<span class="badge bg-success">Displayed</span>'
+                        : '<span class="badge bg-danger">Hidden</span>';
+                },
             },
             {
                 data: "id",
                 orderable: false,
                 className: "text-center",
-                width: "12%",
                 render: function (data, type, row) {
-                    const statusButton = (row.status === 35)
-                        ? `<button class="btn btn-warning btn-sm hide-feedback-btn" data-id="${data}">Hide</button>`
-                        : `<button class="btn btn-success btn-sm display-feedback-btn" data-id="${data}">Display</button>`;
+                    const hideButton = `<button class="btn btn-warning btn-sm hide-feedback-btn" title="Hide Feedback" data-id="${data}"><i class="fas fa-eye-slash"></i></button>`;
+                    const displayButton = `<button class="btn btn-success btn-sm display-feedback-btn" title="Display Feedback" data-id="${data}"><i class="fas fa-eye"></i></button>`;
 
-                    const deleteButton = ` <button class="btn btn-danger btn-sm delete-feedback-btn" data-id="${data}">Delete</button>`;
+                    const statusButton = (row.status === 35) ? hideButton : displayButton;
+                    const deleteButton = `<button class="btn btn-danger btn-sm delete-feedback-btn" title="Delete Feedback" data-id="${data}"><i class="fas fa-trash-alt"></i></button>`;
 
-                    return statusButton + deleteButton;
+                    return `<div class="btn-group btn-group-sm" role="group">${statusButton}${deleteButton}</div>`;
                 }
-            }
+            },
         ],
         createdRow: function (row, data, dataIndex) {
             if (data.status === 34) {
-                $(row).addClass('feedback-hidden');
+                $(row).addClass("feedback-hidden");
             } else {
-                $(row).addClass('feedback-displayed');
+                $(row).addClass("feedback-displayed");
             }
         },
-        order: [[4, 'desc']]
+        order: [[5, "desc"]],
     });
 
-    $.fn.dataTable.ext.search.push(
-        function (settings, data, dataIndex) {
-            let filterDate = $('#submitted_date_filter').val();
-            if (!filterDate) {
-                return true;
-            }
+    feedbackTable.on('draw.dt', function () {
+        $('#feedbackTable [title]').tooltip({
+            container: 'body'
+        });
+    });
 
-            let rowData = feedbackTable.row(dataIndex).data();
-            let rowDate = rowData.created_at.substring(0, 10);
-
-            if (filterDate === rowDate) {
-                return true;
-            }
-            return false;
+    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+        let filterDate = $("#submitted_date_filter").val();
+        if (!filterDate) {
+            return true;
         }
-    );
 
-    $('#status_filter').on('change', function () {
-        const selectedStatus = $(this).val();
-        feedbackTable.column(5).search(selectedStatus).draw();
+        let rowData = feedbackTable.row(dataIndex).data();
+        let rowDate = rowData.created_at.substring(0, 10);
+
+        if (filterDate === rowDate) {
+            return true;
+        }
+        return false;
     });
 
-    $('#submitted_date_filter').on('change', function () {
+    $("#status_filter").on("change", function () {
+        const selectedStatus = $(this).val();
+        feedbackTable.column(6).search(selectedStatus).draw();
+    });
+
+    $("#submitted_date_filter").on("change", function () {
         feedbackTable.draw();
     });
 
-    const tableBody = '#feedbackTable tbody';
+    const tableBody = "#feedbackTable tbody";
 
     $(tableBody).on("click", ".view-photo-btn", function (e) {
         e.preventDefault();
@@ -183,7 +207,7 @@ $(document).ready(function () {
     });
 
     function updateFeedbackStatus($button, feedbackId, newStatus) {
-        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        const csrfToken = $('meta[name="csrf-token"]').attr("content");
         const originalText = $button.text();
 
         $.ajax({
@@ -191,19 +215,21 @@ $(document).ready(function () {
             method: "POST",
             data: {
                 status: newStatus,
-                _token: csrfToken
+                _token: csrfToken,
             },
             beforeSend: function () {
-                $button.prop("disabled", true).text(newStatus === 34 ? "Hiding..." : "Displaying...");
+                $button
+                    .prop("disabled", true)
+                    .text(newStatus === 34 ? "..." : "...");
             },
             success: function (response) {
                 feedbackTable.ajax.reload(null, false);
                 Toast.fire({
-                        icon: "success",
-                        title: "Success!",
-                        text: response.message,
-                        timer: 1500,
-                    });
+                    icon: "success",
+                    title: "Success!",
+                    text: response.message,
+                    timer: 1500,
+                });
             },
             error: function (xhr) {
                 console.error("Failed to update status.", xhr.responseText);
@@ -211,7 +237,7 @@ $(document).ready(function () {
                 setTimeout(() => {
                     $button.prop("disabled", false).text(originalText);
                 }, 2000);
-            }
+            },
         });
     }
 
@@ -219,7 +245,7 @@ $(document).ready(function () {
         e.preventDefault();
         const $button = $(this);
         const feedbackId = $button.data("id");
-        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        const csrfToken = $('meta[name="csrf-token"]').attr("content");
 
         Swal.fire({
             title: "Are you sure?",
@@ -228,22 +254,22 @@ $(document).ready(function () {
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!"
+            confirmButtonText: "Yes, delete it!",
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
                     url: `/customer-service/feedbacks/destroy/${feedbackId}`,
                     method: "DELETE",
                     data: {
-                        _token: csrfToken
+                        _token: csrfToken,
                     },
                     beforeSend: function () {
                         $button.prop("disabled", true).text("Deleting...");
-                        $('#LoadingScreen').fadeIn(200);
+                        $("#LoadingScreen").fadeIn(200);
                     },
                     success: function (response) {
                         feedbackTable.ajax.reload(null, false);
-                        $('#LoadingScreen').fadeOut(200);
+                        $("#LoadingScreen").fadeOut(200);
                         Toast.fire({
                             icon: "success",
                             title: "Deleted!",
@@ -252,18 +278,150 @@ $(document).ready(function () {
                         });
                     },
                     error: function (xhr) {
-                        $('#LoadingScreen').fadeOut(200);
+                        $("#LoadingScreen").fadeOut(200);
                         $button.text("Error!");
                         setTimeout(() => {
                             $button.prop("disabled", false).text("Delete");
                         }, 2000);
 
                         Swal.fire(
-                            'Error!',
-                            'Failed to delete the feedback. Please try again.',
-                            'error'
+                            "Error!",
+                            "Failed to delete the feedback. Please try again.",
+                            "error"
                         );
-                    }
+                    },
+                });
+            }
+        });
+    });
+
+    $(document).on("change", "#selectAllFeedback", function () {
+        const isChecked = $(this).prop("checked");
+
+        $("#feedbackTable tbody input.feedback-select-checkbox").prop(
+            "checked",
+            isChecked
+        );
+
+        updateBatchDeleteButtonState();
+    });
+
+    $("#feedbackTable tbody").on(
+        "change",
+        "input.feedback-select-checkbox",
+        function () {
+            const totalCheckboxes = $(
+                "#feedbackTable tbody input.feedback-select-checkbox"
+            ).length;
+            const checkedCheckboxes = $(
+                "#feedbackTable tbody input.feedback-select-checkbox:checked"
+            ).length;
+
+            $("#selectAllFeedback").prop(
+                "checked",
+                totalCheckboxes === checkedCheckboxes
+            );
+
+            updateBatchDeleteButtonState();
+        }
+    );
+
+    function updateBatchDeleteButtonState() {
+        const selectedCount = getSelectedFeedbackIds().length;
+        const $batchBtn = $("#batchDeleteBtn");
+
+        if (selectedCount > 0) {
+            $batchBtn
+                .prop("disabled", false)
+                .show()
+                .text(`Batch Delete (${selectedCount})`);
+        } else {
+            $batchBtn
+                .prop("disabled", true)
+                .hide()
+                .text("Batch Delete Selected");
+        }
+    }
+
+    feedbackTable.on("draw.dt", function () {
+        $("#selectAllFeedback").prop("checked", false);
+        updateBatchDeleteButtonState();
+    });
+
+    function getSelectedFeedbackIds() {
+        const selectedIds = [];
+        $("#feedbackTable tbody input.feedback-select-checkbox:checked").each(
+            function () {
+                const row = $(this).closest("tr");
+                const rowData = feedbackTable.row(row).data();
+                selectedIds.push(rowData.id);
+            }
+        );
+        return selectedIds;
+    }
+
+    $(document).on("click", "#batchDeleteBtn", function (e) {
+        e.preventDefault();
+        const selectedIds = getSelectedFeedbackIds();
+        const csrfToken = $('meta[name="csrf-token"]').attr("content");
+
+        if (selectedIds.length === 0) {
+            Toast.fire({
+                icon: "warning",
+                title: "No Selection",
+                text: "Please select at least one feedback item to delete.",
+                timer: 2000,
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: "Confirm Batch Delete?",
+            text: `You are about to delete ${selectedIds.length} feedback record(s). This cannot be undone.`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, Delete All!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/customer-service/feedbacks/batch-destroy`,
+                    method: "DELETE",
+                    data: {
+                        ids: selectedIds,
+                        _token: csrfToken,
+                    },
+                    beforeSend: function () {
+                        $("LoadingScreen").fadeIn(200);
+                        $("#batchDeleteBtn")
+                            .prop("disabled", true)
+                            .text("Deleting...");
+                    },
+                    success: function (response) {
+                        feedbackTable.ajax.reload(null, false);
+                        $("#LoadingScreen").fadeOut(200);
+                        Toast.fire({
+                            icon: "success",
+                            title: "Batch Deleted!",
+                            text: response.message,
+                            timer: 1500,
+                        });
+                    },
+                    error: function (xhr) {
+                        $("#LoadingScreen").fadeOut(200);
+                        const errorMsg = xhr.responseJSON
+                            ? xhr.responseJSON.message
+                            : "An unknown error occurred.";
+
+                        Swal.fire("Error!", errorMsg, "error");
+                    },
+                    complete: function () {
+                        $("#selectAllFeedback").prop("checked", false);
+                        $("#batchDeleteBtn")
+                            .prop("disabled", false)
+                            .text("Batch Delete Selected");
+                    },
                 });
             }
         });

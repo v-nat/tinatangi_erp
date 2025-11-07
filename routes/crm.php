@@ -18,6 +18,7 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::get('/feedbacks', [FeedbackController::class, 'fetchFeedbacks']);
     Route::post('/feedbacks/update-status/{feedback}', [FeedbackController::class, 'updateStatus']);
     Route::delete('/feedbacks/destroy/{feedback}', [FeedbackController::class, 'destroy']);
+    Route::delete('/feedbacks/batch-destroy', [FeedbackController::class, 'batchDestroy']);
 
     Route::get('/faqs', [FaqController::class, 'index'])->name('crm.faqs');
     Route::get('/faqs/list', [FaqController::class, 'list']);
