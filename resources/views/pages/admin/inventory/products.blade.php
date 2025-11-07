@@ -14,6 +14,9 @@
                 </nav>
             </div>
             <div class="col-12 col-md-6 order-md-2 order-last float-end d-flex justify-content-end">
+                <button class="btn btn-danger" id="batchDeleteBtn" style="display: none; margin-right: 10px;">
+                    Delete Selected
+                </button>
                 <button id="addProductBtn" class="btn btn-primary">Add New Product</button>
             </div>
         </div>
@@ -33,7 +36,7 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <table id="products-table" class="table table-hover dataTable no-footer"
-                            style="width:100% !important; table-layout:fixed">
+                            style="width:100% !important;">
 
                         </table>
                     </div>

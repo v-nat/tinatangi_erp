@@ -39,6 +39,7 @@ Route::prefix('/inventory')->middleware(['auth', 'isEmployee'])->group(function 
     Route::get('/products/{product}/servings', [ProductController::class, 'getServings']);
     Route::patch('/products/{product}/update-price', [RecipeController::class, 'updatePrice']);
 
+    Route::post('/products/batch-delete', [ProductController::class, 'batchDestroy']);
     Route::post('/products/update/{product}', [ProductController::class, 'update']);
     Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 

@@ -1,5 +1,7 @@
 $(function () {
-    const productsTable = $("#products-table").DataTable({
+    var productsTable;
+
+    productsTable = $("#products-table").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
@@ -7,19 +9,22 @@ $(function () {
             dataSrc: "data",
         },
         order: [
-            [5, "desc"],
-            [6, "asc"],
+            [6, "desc"],
+            [7, "asc"],
         ],
         columns: [
             {
-                title: "#",
+                title: '<input type="checkbox" id="select-all-checkbox">',
                 data: null,
                 orderable: false,
-                className: "text-center",
-                width: "45px",
+                searchable: false,
+                className: "text-center dt-checkbox",
+                render: function (data, type, row) {
+                    return `<input type="checkbox" class="row-checkbox" value="${row.id}">`;
+                },
             },
-            { data: "name", title: "Name", width: "350px" },
-            { data: "desc", title: "Description", width: "280px" },
+            { data: "name", title: "Name" },
+            { data: "desc", title: "Description" },
             {
                 data: "base_price",
                 title: "Base Price",
@@ -45,32 +50,30 @@ $(function () {
                 className: "text-center",
                 orderable: false,
                 render: function (data, type, row) {
-                    return `<div class="btn-group btn-group-sm" role="group">
-                                <button class="btn btn-primary view-product-btn" title="View Product" data-product-id="${row.id}">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-info manage-recipe-btn" title="Manage Recipe" data-product-id="${row.id}">
-                                    <i class="fas fa-list-alt"></i>
-                                </button>
-                                <button class="btn btn-warning edit-product-btn" title="Edit Product" data-product-id="${row.id}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-danger delete-product-btn" title="Delete Product" data-product-id="${row.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>`;
+                    return (
+                        '<div class="btn-group btn-group-sm" role="group">' +
+                        // Note: Using template literals `` just for the part that needs the ${row.id}
+                        `<button class="btn btn-primary view-product-btn" title="View Product" data-product-id="${row.id}">` +
+                        '<i class="fas fa-eye"></i>' +
+                        "</button>" +
+                        `<button class="btn btn-info manage-recipe-btn" title="Manage Recipe" data-product-id="${row.id}">` +
+                        '<i class="fas fa-list-alt"></i>' +
+                        "</button>" +
+                        `<button class="btn btn-warning edit-product-btn" title="Edit Product" data-product-id="${row.id}">` +
+                        '<i class="fas fa-edit"></i>' +
+                        "</button>" +
+                        `<button class="btn btn-danger delete-product-btn" title="Delete Product" data-product-id="${row.id}">` +
+                        '<i class="fas fa-trash"></i>' +
+                        "</button>" +
+                        "</div>"
+                    );
                 },
             },
             { data: "id", visible: false },
         ],
         drawCallback: function (settings) {
-            const api = this.api();
-            const info = api.page.info();
-            api.column(0, { page: "current", order: "current" })
-                .nodes()
-                .each(function (cell, i) {
-                    cell.innerHTML = info.start + i + 1;
-                });
+            $("#select-all-checkbox").prop("checked", false);
+            toggleBatchDeleteButton();
         },
         createdRow: function (row, data, dataIndex) {
             const servingsCell = $("td", row).eq(-3);
@@ -89,7 +92,7 @@ $(function () {
             zeroRecords: "No matching products found.",
         },
         initComplete: function () {
-            const column = this.api().column(4);
+            const column = this.api().column(5);
             const select = $("#category_filter");
 
             column
@@ -106,17 +109,127 @@ $(function () {
         },
     });
 
+    function toggleBatchDeleteButton() {
+        if (productsTable) {
+            const selectedCount = productsTable
+                .rows()
+                .nodes()
+                .to$()
+                .find(".row-checkbox:checked").length;
+            if (selectedCount > 0) {
+                $("#batchDeleteBtn")
+                    .show()
+                    .text(`Delete (${selectedCount}) Selected`);
+            } else {
+                $("#batchDeleteBtn").hide();
+            }
+        } else {
+            $("#batchDeleteBtn").hide();
+        }
+    }
+
+    $("#products-table").on("click", "#select-all-checkbox", function () {
+        const isChecked = $(this).is(":checked");
+        productsTable
+            .rows()
+            .nodes()
+            .to$()
+            .find(".row-checkbox")
+            .prop("checked", isChecked);
+        toggleBatchDeleteButton();
+    });
+
+    $("#products-table tbody").on("click", ".row-checkbox", function () {
+        if (!$(this).is(":checked")) {
+            $("#select-all-checkbox").prop("checked", false);
+        } else {
+            if (
+                productsTable
+                    .rows()
+                    .nodes()
+                    .to$()
+                    .find(".row-checkbox:not(:checked)").length === 0
+            ) {
+                $("#select-all-checkbox").prop("checked", true);
+            }
+        }
+        toggleBatchDeleteButton();
+    });
+
     $("#category_filter").on("change", function () {
         const selectedCategory = $(this).val();
 
         productsTable
-            .column(4)
+            .column(5)
             .search(
                 selectedCategory ? "^" + selectedCategory + "$" : "",
                 true,
                 false
             )
             .draw();
+    });
+
+    $("#batchDeleteBtn").on("click", function () {
+        const selectedIds = [];
+        productsTable
+            .rows()
+            .nodes()
+            .to$()
+            .find(".row-checkbox:checked")
+            .each(function () {
+                selectedIds.push($(this).val());
+            });
+
+        if (selectedIds.length === 0) {
+            Toast.fire({ icon: "error", title: "No items selected." });
+            return;
+        }
+
+        Swal.fire({
+            title: `Are you sure?`,
+            text: `You are about to delete ${selectedIds.length} products. You won't be able to revert this!`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete them!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $("#LoadingScreen").fadeIn(200);
+                $.ajax({
+                    url: "/inventory/products/batch-delete",
+                    type: "POST",
+                    data: {
+                        ids: selectedIds,
+                    },
+                    headers: {
+                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                            "content"
+                        ),
+                    },
+                    success: function (response) {
+                        $("#LoadingScreen").fadeOut(200);
+                        Toast.fire({
+                            icon: "success",
+                            title: "Deleted!",
+                            text: response.message,
+                            timer: 1500,
+                        });
+                        productsTable.ajax.reload();
+                        toggleBatchDeleteButton();
+                    },
+                    error: function (xhr) {
+                        $("#LoadingScreen").fadeOut(200);
+                        Swal.fire(
+                            "Error",
+                            "Could not delete the selected products.",
+                            "error"
+                        );
+                    },
+                });
+                _;
+            }
+        });
     });
 
     $("#addProductBtn").on("click", function (e) {
@@ -233,6 +346,7 @@ $(function () {
                 });
 
                 $("#editProductModal").modal("show");
+                content;
             },
             error: function () {
                 Swal.fire(
@@ -477,32 +591,34 @@ $(function () {
         });
     });
 
-    $('#products-table tbody').on('click', '.delete-product-btn', function () {
-        const productId = $(this).data('product-id');
+    $("#products-table tbody").on("click", ".delete-product-btn", function () {
+        const productId = $(this).data("product-id");
 
         Swal.fire({
-            title: 'Are you sure?',
+            title: "Are you sure?",
             text: "You won't be able to revert this!",
-            icon: 'warning',
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
         }).then((result) => {
             if (result.isConfirmed) {
                 $("#LoadingScreen").fadeIn(200);
 
                 $.ajax({
                     url: `/inventory/products/${productId}`,
-                    type: 'DELETE',
+                    type: "DELETE",
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                            "content"
+                        ),
                     },
                     success: function (response) {
                         $("#LoadingScreen").fadeOut(200);
                         Toast.fire({
-                            icon: 'success',
-                            title: 'Deleted!',
+                            icon: "success",
+                            title: "Deleted!",
                             text: response.message,
                             timer: 1500,
                         });
@@ -511,11 +627,11 @@ $(function () {
                     error: function (xhr) {
                         $("#LoadingScreen").fadeOut(200);
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Something went wrong! Please try again.',
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Something went wrong! Please try again.",
                         });
-                    }
+                    },
                 });
             }
         });

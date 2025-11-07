@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Status;
 use App\Models\Product;
 use App\Models\ItemUnit;
+use Illuminate\Http\Request;
 use App\Models\UnitConversion;
 use App\Models\ProductCategory;
 use Illuminate\Http\JsonResponse;
@@ -267,6 +268,37 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to delete product.'
+            ], 500);
+        }
+    }
+
+    public function batchDestroy(Request $request): JsonResponse
+    {
+        $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'integer|exists:products,id',
+        ]);
+
+        try {
+            $productIds = $request->input('ids');
+
+            $products = Product::whereIn('id', $productIds)->get();
+
+            foreach ($products as $product) {
+                if ($product->image) {
+                    Storage::disk('public')->delete($product->image);
+                }
+            }
+
+            Product::whereIn('id', $productIds)->delete();
+
+            return response()->json([
+                'message' => 'Selected products deleted successfully!'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
             ], 500);
         }
     }
