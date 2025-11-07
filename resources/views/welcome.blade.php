@@ -25,7 +25,7 @@
 
     <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Lc_hwUsAAAAAIz3G4ruHeuYV1A27ZvCDZAs3Ry0"></script>
     <link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}">
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
