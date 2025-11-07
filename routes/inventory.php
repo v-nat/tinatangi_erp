@@ -29,15 +29,19 @@ Route::prefix('/inventory')->middleware(['auth', 'isEmployee'])->group(function 
     Route::get('/stock-transactions', [InventoryController::class, 'transactionsView'])->name('inventory.transactions');
     Route::get('/stock-transactions/list', [StockManagementController::class, 'stockTransactions']);
 
-    /////////////////////////////////////////// RECIPE ///////////////////////////////////////////////////////
+    /////////////////////////////////////////// RECIPE & PRODUCTS ///////////////////////////////////////////////////////
     Route::get('/products', [ProductController::class, 'index'])->name('inventory.products');
-    Route::get('/products/{product}', [ProductController::class, 'show'])->name('inventory.products.show');
+
     Route::get('/products/get', [ProductController::class, 'getProductData']);
     Route::get('/products/get-categories', [ProductController::class, 'getCategories']);
     Route::post('/products/store', [ProductController::class, 'store']);
-    Route::post('/recipes/{product}', [RecipeController::class, 'update'])->name('recipes.update');
+
     Route::get('/products/{product}/servings', [ProductController::class, 'getServings']);
-    Route::get('/recipes/{product}/data', [RecipeController::class, 'getRecipeData'])->name('api.recipes.data');
-    Route::get('/recipes/{product}/calculate-price', [RecipeController::class, 'calculatePrice'])->name('api.recipes.calculate_price');
-    Route::patch('/products/{product}/update-price', [RecipeController::class, 'updatePrice'])->name('api.products.update_price');
+    Route::patch('/products/{product}/update-price', [RecipeController::class, 'updatePrice']);
+
+    Route::post('/recipes/{product}', [RecipeController::class, 'update']);
+    Route::get('/recipes/{product}/data', [RecipeController::class, 'getRecipeData']);
+    Route::get('/recipes/{product}/calculate-price', [RecipeController::class, 'calculatePrice']);
+
+    Route::get('/products/{product}', [ProductController::class, 'show']);
 });
