@@ -176,6 +176,68 @@
     </div>
 </div>
 
+
+{{-- /////////////////////////////////////////////// EDIT PRODUCT /////////////////////////////////////////////////// --}}
+
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editProductForm" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" id="edit_product_id" name="product_id">
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="edit_name">Product Name</label>
+                                <input type="text" class="form-control" id="edit_name" name="name" required>
+                                <div class="invalid-feedback" id="edit_name_error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_base_price">Base Price</label>
+                                <input type="number" class="form-control" id="edit_base_price" name="base_price" step="0.01" min="0" required>
+                                <div class="invalid-feedback" id="edit_base_price_error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_product_category_id">Category</label>
+                                <select class="form-control" id="edit_product_category_id" name="product_category_id" required>
+                                    <option value="">Loading categories...</option>
+                                </select>
+                                <div class="invalid-feedback" id="edit_product_category_id_error"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Current Image</label>
+                                <img src="https://via.placeholder.com/150" id="current_image_preview" class="img-fluid rounded mb-2" alt="Current Image" style="max-height: 150px; width: 100%; object-fit: cover;">
+                                <label for="edit_image">New Image (Optional)</label>
+                                <input type="file" class="form-control-file" id="edit_image" name="image" accept="image/jpeg,image/png,image/gif">
+                                <small class="form-text text-muted">Leave blank to keep current image.</small>
+                                <div class="invalid-feedback" id="edit_image_error"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_description">Description</label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+                        <div class="invalid-feedback" id="edit_description_error"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="submitEditProduct">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {{-- /////////////////////////////////////////////// MANAGE RECIPE ////////////////////////////////////////////////////
 --}}
 

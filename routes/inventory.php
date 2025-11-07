@@ -39,6 +39,8 @@ Route::prefix('/inventory')->middleware(['auth', 'isEmployee'])->group(function 
     Route::get('/products/{product}/servings', [ProductController::class, 'getServings']);
     Route::patch('/products/{product}/update-price', [RecipeController::class, 'updatePrice']);
 
+    Route::post('/products/update/{product}', [ProductController::class, 'update']);
+
     Route::post('/recipes/{product}', [RecipeController::class, 'update']);
     Route::get('/recipes/{product}/data', [RecipeController::class, 'getRecipeData']);
     Route::get('/recipes/{product}/calculate-price', [RecipeController::class, 'calculatePrice']);

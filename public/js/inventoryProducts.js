@@ -45,15 +45,16 @@ $(function () {
                 className: "text-center",
                 orderable: false,
                 render: function (data, type, row) {
-                    const editUrl = `/inventory/products/${row.id}/edit`;
-                    return `<div class="action-btns" role="group">
-                                <button class="btn btn-sm btn-primary view-product-btn" title="View Product" data-product-id="${row.id}">
+                    return `<div class="btn-group btn-group-sm" role="group">
+                                <button class="btn btn-primary view-product-btn" title="View Product" data-product-id="${row.id}">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="btn btn-sm btn-info manage-recipe-btn" title="Manage Recipe" data-product-id="${row.id}">
+                                <button class="btn btn-info manage-recipe-btn" title="Manage Recipe" data-product-id="${row.id}">
                                     <i class="fas fa-list-alt"></i>
                                 </button>
-                                <a href="${editUrl}" class="btn btn-sm btn-warning" title="Edit Product"><i class="fas fa-edit"></i></a>
+                                <button class="btn btn-warning edit-product-btn" title="Edit Product" data-product-id="${row.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
                             </div>`;
                 },
             },
@@ -86,24 +87,33 @@ $(function () {
         },
         initComplete: function () {
             const column = this.api().column(4);
-            const select = $('#category_filter');
+            const select = $("#category_filter");
 
-            column.data().unique().sort().each(function (d, j) {
-                if(d) {
-                    select.append($('<option></option>').attr('value', d).text(d));
-                }
-            });
-        }
+            column
+                .data()
+                .unique()
+                .sort()
+                .each(function (d, j) {
+                    if (d) {
+                        select.append(
+                            $("<option></option>").attr("value", d).text(d)
+                        );
+                    }
+                });
+        },
     });
 
-    $("#category_filter").on("change", function() {
+    $("#category_filter").on("change", function () {
         const selectedCategory = $(this).val();
 
-        productsTable.column(4).search(
-            selectedCategory ? '^' + selectedCategory + '$' : '',
-            true,
-            false
-        ).draw();
+        productsTable
+            .column(4)
+            .search(
+                selectedCategory ? "^" + selectedCategory + "$" : "",
+                true,
+                false
+            )
+            .draw();
     });
 
     $("#addProductBtn").on("click", function (e) {
@@ -113,50 +123,65 @@ $(function () {
         loadDropdownsIntoModal();
     });
 
-    $('#products-table tbody').on('click', '.view-product-btn', function () {
-        const productId = $(this).data('product-id');
+    $("#products-table tbody").on("click", ".view-product-btn", function () {
+        const productId = $(this).data("product-id");
 
-        $("#productViewName").text('Loading...');
-        $("#productViewCategory").text('');
-        $("#productViewDescription").text('Please wait...');
-        $("#productViewPrice").text('...');
-        $("#productViewStatus").text('').removeClass('bg-success bg-secondary');
-        $("#productViewImage").attr('src', 'https://via.placeholder.com/350x350.png?text=Loading...');
+        $("#productViewName").text("Loading...");
+        $("#productViewCategory").text("");
+        $("#productViewDescription").text("Please wait...");
+        $("#productViewPrice").text("...");
+        $("#productViewStatus").text("").removeClass("bg-success bg-secondary");
+        $("#productViewImage").attr(
+            "src",
+            "https://via.placeholder.com/350x350.png?text=Loading..."
+        );
 
-        $('#viewProductModal').modal('show');
+        $("#viewProductModal").modal("show");
 
         $.ajax({
             url: `/inventory/products/${productId}`,
-            type: 'GET',
+            type: "GET",
             success: function (data) {
                 const product = data.product;
 
                 $("#productViewName").text(product.name);
                 $("#productViewCategory").text(product.category_name);
-                $("#productViewDescription").text(product.description || 'No description provided.');
+                $("#productViewDescription").text(
+                    product.description || "No description provided."
+                );
 
                 const price = parseFloat(product.base_price);
                 $("#productViewPrice").text(`₱ ${price.toFixed(2)}`);
 
                 $("#productViewStatus").text(product.status_text);
                 if (product.status == 1) {
-                    $("#productViewStatus").addClass('bg-success');
-                    $("#productViewStatus").text('Available');
+                    $("#productViewStatus").addClass("bg-success");
+                    $("#productViewStatus").text("Available");
                 } else {
-                    $("#productViewStatus").addClass('bg-danger');
-                    $("#productViewStatus").text('Unavailable');
+                    $("#productViewStatus").addClass("bg-danger");
+                    $("#productViewStatus").text("Unavailable");
                 }
 
                 if (product.image) {
-                    $("#productViewImage").attr('src', `/storage/app/public/${product.image}`);
+                    $("#productViewImage").attr(
+                        "src",
+                        `/storage/app/public/${product.image}`
+                    );
                 } else {
-                    $("#productViewImage").attr('src', 'https://via.placeholder.com/350x350.png?text=No+Image');
+                    $("#productViewImage").attr(
+                        "src",
+                        "https://via.placeholder.com/350x350.png?text=No+Image"
+                    );
                 }
             },
             error: function () {
-                $('#viewProductModal').modal('hide');
-                Swal.fire("Error", "Could not retrieve product details.", "error");
-            }
+                $("#viewProductModal").modal("hide");
+                Swal.fire(
+                    "Error",
+                    "Could not retrieve product details.",
+                    "error"
+                );
+            },
         });
     });
 
@@ -185,6 +210,175 @@ $(function () {
             },
         });
     }
+
+    function loadCategoriesIntoEditModal(selectedCategoryId) {
+        $.ajax({
+            url: "/inventory/products/get-categories",
+            type: "GET",
+            success: function (categories) {
+                const $select = $("#edit_product_category_id");
+                $select
+                    .empty()
+                    .append('<option value="">Select a category...</option>');
+
+                categories.forEach(function (category) {
+                    const isSelected =
+                        category.id == selectedCategoryId ? "selected" : "";
+                    $select.append(
+                        `<option value="${category.id}" ${isSelected}>${category.name}</option>`
+                    );
+                });
+
+                $("#editProductModal").modal("show");
+            },
+            error: function () {
+                Swal.fire(
+                    "Error",
+                    "Could not load categories for the edit form.",
+                    "error"
+                );
+            },
+        });
+    }
+
+    $("#products-table tbody").on("click", ".edit-product-btn", function () {
+        const productId = $(this).data("product-id");
+
+        $("#editProductForm")[0].reset();
+        $(".form-control, .form-select").removeClass("is-invalid");
+        $("#current_image_preview").attr(
+            "src",
+            "https://via.placeholder.com/150"
+        );
+
+        $.ajax({
+            url: `/inventory/products/${productId}`,
+            type: "GET",
+            success: function (data) {
+                const product = data.product;
+
+                $("#edit_product_id").val(product.id);
+                $("#edit_name").val(product.name);
+                $("#edit_base_price").val(product.base_price);
+                $("#edit_description").val(product.description || "");
+
+                if (product.image) {
+                    $("#current_image_preview").attr(
+                        "src",
+                        `/storage/app/public/${product.image}`
+                    );
+                } else {
+                    $("#current_image_preview").attr(
+                        "src",
+                        "https://via.placeholder.com/150?text=No+Image"
+                    );
+                }
+
+                loadCategoriesIntoEditModal(product.product_category_id);
+            },
+            error: function () {
+                Swal.fire(
+                    "Error",
+                    "Could not retrieve product details for editing.",
+                    "error"
+                );
+            },
+        });
+    });
+
+    $("#submitEditProduct").on("click", function (e) {
+        e.preventDefault();
+        let isValid = true;
+        const $form = $("#editProductForm");
+
+        $form.find("input[required], select[required]").each(function () {
+            const $field = $(this);
+            if (!$field.val() || ($field.is("input") && !$field.val().trim())) {
+                $field.addClass("is-invalid");
+                isValid = false;
+            } else {
+                $field.removeClass("is-invalid");
+            }
+        });
+
+        const $imageInput = $("#edit_image");
+        if ($imageInput[0].files.length > 0) {
+            const file = $imageInput[0].files[0];
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/gif",
+                "image/jpg",
+            ];
+            const maxSize = 10 * 1024 * 1024;
+
+            $("#edit_image_error").text("");
+
+            if (!allowedTypes.includes(file.type)) {
+                isValid = false;
+                $imageInput.addClass("is-invalid");
+                $("#edit_image_error").text(
+                    "Invalid file type. Please use jpg, jpeg, or png."
+                );
+            }
+            if (file.size > maxSize) {
+                isValid = false;
+                $imageInput.addClass("is-invalid");
+                const existingError = $("#edit_image_error").text();
+                const sizeError = "File is too large. Maximum size is 10MB.";
+                $("#edit_image_error").text(
+                    existingError ? `${existingError} ${sizeError}` : sizeError
+                );
+            }
+        }
+
+        if (!isValid) return;
+
+        const formData = new FormData($form[0]);
+        const productId = $("#edit_product_id").val();
+
+        $("#LoadingScreen").fadeIn(200);
+
+        $.ajax({
+            url: `/inventory/products/update/${productId}`,
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            cache: false,
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+                $("#editProductModal").modal("hide");
+                $("#LoadingScreen").fadeOut(200);
+                Toast.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: response.message,
+                    timer: 1500,
+                });
+                productsTable.ajax.reload();
+            },
+            error: function (xhr) {
+                $("#LoadingScreen").fadeOut(200);
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    for (const key in errors) {
+                        const field = $(`#edit_${key}`);
+                        field.addClass("is-invalid");
+                        $(`#edit_${key}_error`).text(errors[key][0]);
+                    }
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Something went wrong! Please try again.",
+                    });
+                }
+            },
+        });
+    });
 
     $("#submitProduct").on("click", function (e) {
         e.preventDefault();

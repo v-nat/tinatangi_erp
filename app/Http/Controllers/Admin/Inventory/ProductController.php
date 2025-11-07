@@ -148,6 +148,68 @@ class ProductController extends Controller
         ], 201);
     }
 
+    public function update(StoreProductRequest $request, Product $product): JsonResponse
+    {
+        // We re-use StoreProductRequest for validation
+        $validatedData = $request->validated();
+
+        if ($request->hasFile('image')) {
+            // --- New image was uploaded, process it ---
+            $imageFile = $request->file('image');
+            $sourcePath = $imageFile->getRealPath();
+
+            list($sourceWidth, $sourceHeight, $sourceType) = getimagesize($sourcePath);
+
+            switch ($sourceType) {
+                case IMAGETYPE_JPEG: $sourceImage = imagecreatefromjpeg($sourcePath); break;
+                case IMAGETYPE_PNG: $sourceImage = imagecreatefrompng($sourcePath); break;
+                case IMAGETYPE_GIF: $sourceImage = imagecreatefromgif($sourcePath); break;
+                default: return response()->json(['message' => 'Unsupported image type.'], 422);
+            }
+
+            $targetWidth = 250; $targetHeight = 250;
+            $sourceRatio = $sourceWidth / $sourceHeight;
+            $targetRatio = $targetWidth / $targetHeight;
+            $srcX = 0; $srcY = 0; $srcW = $sourceWidth; $srcH = $sourceHeight;
+
+            if ($sourceRatio > $targetRatio) {
+                $srcW = $sourceHeight * $targetRatio;
+                $srcX = ($sourceWidth - $srcW) / 2;
+            } else {
+                $srcH = $sourceWidth / $targetRatio;
+                $srcY = ($sourceHeight - $srcH) / 2;
+            }
+
+            $destImage = imagecreatetruecolor($targetWidth, $targetHeight);
+            imagecopyresampled($destImage, $sourceImage, 0, 0, (int)$srcX, (int)$srcY, $targetWidth, $targetHeight, (int)$srcW, (int)$srcH);
+            ob_start();
+            imagejpeg($destImage, null, 90);
+            $processedImage = ob_get_clean();
+
+            $filename = uniqid() . '.jpg';
+            $path = 'img/products/' . $filename;
+            Storage::disk('public')->put($path, $processedImage);
+
+            // --- Delete the old image if it exists ---
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            $validatedData['image'] = $path; // Set the new image path
+
+            imagedestroy($sourceImage);
+            imagedestroy($destImage);
+        }
+
+        // --- Update the product ---
+        $product->update($validatedData);
+
+        return response()->json([
+            'message' => 'Product updated successfully!',
+            'product' => $product
+        ], 200);
+    }
+
     /**
      * Calculate the number of servings a product can make based on ingredient stock.
      *
