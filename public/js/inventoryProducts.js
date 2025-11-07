@@ -141,8 +141,10 @@ $(function () {
                 $("#productViewStatus").text(product.status_text);
                 if (product.status == 1) {
                     $("#productViewStatus").addClass('badge-success');
+                    $("#productViewStatus").text('Available');
                 } else {
-                    $("#productViewStatus").addClass('badge-secondary');
+                    $("#productViewStatus").addClass('badge-danger');
+                    $("#productViewStatus").text('Unavailable');
                 }
 
                 if (product.image) {
