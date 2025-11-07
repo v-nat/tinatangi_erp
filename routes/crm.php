@@ -26,4 +26,5 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::get('/faqs/edit/{id}', [FaqController::class, 'edit']);
     Route::post('/faqs/update/{id}', [FaqController::class, 'update']);
     Route::delete('/faqs/destroy/{id}', [FaqController::class, 'destroy']);
+    Route::delete('/faqs/batch-destroy', [FaqController::class, 'batchDestroy']);
 });
