@@ -8,7 +8,7 @@
 <li class="sidebar-item @yield('crmFeedback') ">
     <a href="{{route('crm.feedback')}}" class='sidebar-link'>
         <i class="fa-solid fa-comments"></i>
-        <span>Service Feedback</span>
+        <span>Feedback Management</span>
     </a>
 </li>
 <li class="sidebar-item @yield('crmFaqs') ">
