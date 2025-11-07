@@ -87,6 +87,7 @@ class CrmController extends Controller
                 // ->where('status', 1)
                 ->with('productCategoryRS:id,name')
                 ->select('id', 'name', 'base_price', 'image', 'description', 'product_category_id')
+                ->orderBy('name', 'asc')
                 ->get();
 
             $products = $products->map(function ($product) {
