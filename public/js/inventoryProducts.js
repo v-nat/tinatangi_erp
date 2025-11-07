@@ -120,7 +120,7 @@ $(function () {
         $("#productViewCategory").text('');
         $("#productViewDescription").text('Please wait...');
         $("#productViewPrice").text('...');
-        $("#productViewStatus").text('').removeClass('badge-success badge-secondary');
+        $("#productViewStatus").text('').removeClass('bg-success bg-secondary');
         $("#productViewImage").attr('src', 'https://via.placeholder.com/350x350.png?text=Loading...');
 
         $('#viewProductModal').modal('show');
@@ -140,10 +140,10 @@ $(function () {
 
                 $("#productViewStatus").text(product.status_text);
                 if (product.status == 1) {
-                    $("#productViewStatus").addClass('badge-success');
+                    $("#productViewStatus").addClass('bg-success');
                     $("#productViewStatus").text('Available');
                 } else {
-                    $("#productViewStatus").addClass('badge-danger');
+                    $("#productViewStatus").addClass('bg-danger');
                     $("#productViewStatus").text('Unavailable');
                 }
 
