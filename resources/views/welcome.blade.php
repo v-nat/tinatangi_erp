@@ -45,6 +45,7 @@
                         <li><a href="#hero" class="active">Home<br></a></li>
                         <li><a href="#about">About</a></li>
                         <li><a href="#menu">Menu</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
                         <li><a href="#gallery">Gallery</a></li>
                         <li><a href="#faq">FAQ</a></li>
                         <li><a href="#contact">Contact</a></li>

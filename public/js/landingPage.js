@@ -346,7 +346,6 @@ $(document).ready(function () {
 
 $(document).ready(function () {
 
-    // Define your default product image path
     const DEFAULT_PRODUCT_IMAGE = '/path/to/your/default-image.jpg';
 
     const $menuContainer = $('.isotope-container');
@@ -354,7 +353,7 @@ $(document).ready(function () {
     const $loadingSpinner = $('#menu-loading');
 
     $.ajax({
-        url: '/menu/products', // The new public route
+        url: '/menu/products',
         type: 'GET',
         dataType: 'json',
         success: function (response) {
@@ -362,9 +361,7 @@ $(document).ready(function () {
                 let menuItemsHtml = [];
                 let categories = {};
 
-                // Process each product
                 response.data.forEach(product => {
-                    // 1. Build the HTML for the menu item
                     const imagePath = product.image;
                     let imageUrl = (imagePath && imagePath !== "N/A")
                                  ? "/storage/app/public/" + imagePath
@@ -384,13 +381,11 @@ $(document).ready(function () {
                         </div>
                     `);
 
-                    // 2. Collect unique categories for filtering
                     if (!categories[product.category_name]) {
                         categories[product.category_name] = product.filter_class;
                     }
                 });
 
-                // 3. Build the filter buttons
                 let filterHtml = [];
                 for (const categoryName in categories) {
                     const filterClass = categories[categoryName];
@@ -399,18 +394,15 @@ $(document).ready(function () {
                     `);
                 }
 
-                // 4. Inject filters and items into the page
-                $loadingSpinner.remove(); // Remove loading spinner
+                $loadingSpinner.remove();
                 $filterContainer.append(filterHtml.join(''));
                 $menuContainer.html(menuItemsHtml.join(''));
 
-                // 5. Initialize Isotope after items are loaded
                 let menuIsotope = new Isotope($menuContainer[0], {
                     itemSelector: '.isotope-item',
                     layoutMode: 'masonry'
                 });
 
-                // 6. Set up Isotope filter click events
                 $filterContainer.on('click', 'li', function() {
                     $filterContainer.find('.filter-active').removeClass('filter-active');
                     $(this).addClass('filter-active');

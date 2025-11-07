@@ -84,7 +84,6 @@ class CrmController extends Controller
     {
         try {
             $products = Product::where('deleted_at', null)
-                // ->where('status', 1)
                 ->with('productCategoryRS:id,name')
                 ->select('id', 'name', 'base_price', 'image', 'description', 'product_category_id')
                 ->orderBy('name', 'asc')
