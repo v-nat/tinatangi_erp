@@ -92,7 +92,7 @@ $(function () {
             zeroRecords: "No matching products found.",
         },
         initComplete: function () {
-            const column = this.api().column(5);
+            const column = this.api().column(4);
             const select = $("#category_filter");
 
             column
@@ -160,7 +160,7 @@ $(function () {
         const selectedCategory = $(this).val();
 
         productsTable
-            .column(5)
+            .column(4)
             .search(
                 selectedCategory ? "^" + selectedCategory + "$" : "",
                 true,
