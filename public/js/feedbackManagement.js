@@ -106,13 +106,15 @@ $(document).ready(function () {
                 data: "id",
                 orderable: false,
                 className: "text-center",
-                width: "8%",
+                width: "12%",
                 render: function (data, type, row) {
-                    if (row.status === 35) {
-                        return `<button class="btn btn-warning btn-sm hide-feedback-btn" data-id="${data}">Hide</button>`;
-                    } else {
-                        return `<button class="btn btn-success btn-sm display-feedback-btn" data-id="${data}">Display</button>`;
-                    }
+                    const statusButton = (row.status === 35)
+                        ? `<button class="btn btn-warning btn-sm hide-feedback-btn" data-id="${data}">Hide</button>`
+                        : `<button class="btn btn-success btn-sm display-feedback-btn" data-id="${data}">Display</button>`;
+
+                    const deleteButton = ` <button class="btn btn-danger btn-sm delete-feedback-btn" data-id="${data}">Delete</button>`;
+
+                    return statusButton + deleteButton;
                 }
             }
         ],
@@ -196,6 +198,12 @@ $(document).ready(function () {
             },
             success: function (response) {
                 feedbackTable.ajax.reload(null, false);
+                Toast.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: response.message,
+                        timer: 1500,
+                    });
             },
             error: function (xhr) {
                 console.error("Failed to update status.", xhr.responseText);
@@ -206,4 +214,58 @@ $(document).ready(function () {
             }
         });
     }
+
+    $(tableBody).on("click", ".delete-feedback-btn", function (e) {
+        e.preventDefault();
+        const $button = $(this);
+        const feedbackId = $button.data("id");
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/customer-service/feedbacks/destroy/${feedbackId}`,
+                    method: "DELETE",
+                    data: {
+                        _token: csrfToken
+                    },
+                    beforeSend: function () {
+                        $button.prop("disabled", true).text("Deleting...");
+                        $('#LoadingScreen').fadeIn(200);
+                    },
+                    success: function (response) {
+                        feedbackTable.ajax.reload(null, false);
+                        $('#LoadingScreen').fadeOut(200);
+                        Toast.fire({
+                            icon: "success",
+                            title: "Deleted!",
+                            text: response.message,
+                            timer: 1500,
+                        });
+                    },
+                    error: function (xhr) {
+                        $('#LoadingScreen').fadeOut(200);
+                        $button.text("Error!");
+                        setTimeout(() => {
+                            $button.prop("disabled", false).text("Delete");
+                        }, 2000);
+
+                        Swal.fire(
+                            'Error!',
+                            'Failed to delete the feedback. Please try again.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
 });

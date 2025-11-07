@@ -16,7 +16,7 @@ class FeedbackController extends Controller
     {
         try {
             $feedbacks = ServiceFeedback::latest()->paginate(15);
-            
+
             return response()->json($feedbacks);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -126,6 +126,25 @@ class FeedbackController extends Controller
                 'status' => 'success',
                 'message' => 'Feedback status updated successfully.',
                 'feedback' => $feedback
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroy(ServiceFeedback $feedback)
+    {
+        try {
+            if ($feedback->photo) {
+                Storage::disk('public')->delete($feedback->photo);
+            }
+
+            $feedback->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Feedback deleted successfully.'
             ]);
 
         } catch (Exception $e) {
