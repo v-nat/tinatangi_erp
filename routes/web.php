@@ -15,6 +15,7 @@ Route::get('/admintest', function () {
     return view('dashboard-test');
 })->name('test');
 
+Route::get('/menu/products', [App\Http\Controllers\Admin\CRM\CrmController::class, 'getPublicProducts']);
 Route::get('/testimonials', [App\Http\Controllers\Admin\CRM\CrmController::class, 'fetchPublicTestimonials']);
 Route::get('/faqs-public', [App\Http\Controllers\Admin\CRM\CrmController::class, 'getPublicFaqs']);
 

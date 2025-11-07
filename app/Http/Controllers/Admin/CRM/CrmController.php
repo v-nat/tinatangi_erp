@@ -6,6 +6,8 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\Faq;
 use App\Models\Status;
+use App\Models\Product;
+use Illuminate\Support\Str;
 use App\Models\ServiceFeedback;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -76,6 +78,33 @@ class CrmController extends Controller
             'categoryRatings' => $categoryRatings,
             'feedbackOverTime' => $feedbackOverTime,
         ]);
+    }
+
+    public function getPublicProducts()
+    {
+        try {
+            $products = Product::where('deleted_at', null)
+                // ->where('status', 1)
+                ->with('productCategoryRS:id,name')
+                ->select('id', 'name', 'base_price', 'image', 'description', 'product_category_id')
+                ->get();
+
+            $products = $products->map(function ($product) {
+                $categoryName = $product->productCategoryRS->name ?? 'Uncategorized';
+
+                $product->filter_class = 'filter-' . Str::slug($categoryName, '-');
+                $product->category_name = $categoryName;
+
+                $product->description = $product->description ?? 'A delicious menu item.';
+
+                unset($product->productCategoryRS);
+                return $product;
+            });
+
+            return response()->json(['data' => $products]);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function getPublicFaqs()

@@ -9,8 +9,8 @@
     <meta name="keywords" content="">
 
     <link rel="icon" href="{{ asset('logo.png') }} " type="image/x-icon">
-    {{--
-    <link href="assets/img/favicon.png" rel="icon"> --}}
+
+    <link href="assets/img/favicon.png" rel="icon">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <link rel="stylesheet" href="{{ asset('css/font/poppins/stylesheet.css')}}">
@@ -129,94 +129,16 @@
                     <div class="col-lg-12 d-flex justify-content-center">
                         <ul class="menu-filters isotope-filters">
                             <li data-filter="*" class="filter-active">All</li>
-                            <li data-filter=".filter-starters">Starters</li>
-                            <li data-filter=".filter-salads">Salads</li>
-                            <li data-filter=".filter-specialty">Specialty</li>
                         </ul>
                     </div>
                 </div>
-                <div class="row isotope-container" data-aos="fade-up" data-aos-delay="200">
 
-                    <div class="col-lg-6 menu-item isotope-item filter-starters">
-                        <img src="assets/img/menu/lobster-bisque.jpg" class="menu-img" alt="">
-                        <div class="menu-content">
-                            <a href="#">Lobster Bisque</a><span>$5.95</span>
+                <div class="row isotope-container" data-aos="fade-up" data-aos-delay="200">
+                    <div class="col-12 text-center my-5 p-5" id="menu-loading">
+                        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                        <div class="menu-ingredients">
-                            Lorem, deren, trataro, filede, nerada
-                        </div>
-                    </div>
-                    <div class="col-lg-6 menu-item isotope-item filter-specialty">
-                        <img src="assets/img/menu/bread-barrel.jpg" class="menu-img" alt="">
-                        <div class="menu-content">
-                            <a href="#">Bread Barrel</a><span>$6.95</span>
-                        </div>
-                        <div class="menu-ingredients">
-                            Lorem, deren, trataro, filede, nerada
-                        </div>
-                    </div>
-                    <div class="col-lg-6 menu-item isotope-item filter-starters">
-                        <img src="assets/img/menu/cake.jpg" class="menu-img" alt="">
-                        <div class="menu-content">
-                            <a href="#">Crab Cake</a><span>$7.95</span>
-                        </div>
-                        <div class="menu-ingredients">
-                            A delicate crab cake served on a toasted roll with lettuce and tartar sauce
-                        </div>
-                    </div>
-                    <div class="col-lg-6 menu-item isotope-item filter-salads">
-                        <img src="assets/img/menu/caesar.jpg" class="menu-img" alt="">
-                        <div class="menu-content">
-                            <a href="#">Caesar Selections</a><span>$8.95</span>
-                        </div>
-                        <div class="menu-ingredients">
-                            Lorem, deren, trataro, filede, nerada
-                        </div>
-                    </div>
-                    <div class="col-lg-6 menu-item isotope-item filter-specialty">
-                        <img src="assets/img/menu/tuscan-grilled.jpg" class="menu-img" alt="">
-                        <div class="menu-content">
-                            <a href="#">Tuscan Grilled</a><span>$9.95</span>
-                        </div>
-                        <div class="menu-ingredients">
-                            Grilled chicken with provolone, artichoke hearts, and roasted red pesto
-                        </div>
-                    </div>
-                    <div class="col-lg-6 menu-item isotope-item filter-starters">
-                        <img src="assets/img/menu/mozzarella.jpg" class="menu-img" alt="">
-                        <div class="menu-content">
-                            <a href="#">Mozzarella Stick</a><span>$4.95</span>
-                        </div>
-                        <div class="menu-ingredients">
-                            Lorem, deren, trataro, filede, nerada
-                        </div>
-                    </div>
-                    <div class="col-lg-6 menu-item isotope-item filter-salads">
-                        <img src="assets/img/menu/greek-salad.jpg" class="menu-img" alt="">
-                        <div class="menu-content">
-                            <a href="#">Greek Salad</a><span>$9.95</span>
-                        </div>
-                        <div class="menu-ingredients">
-                            Fresh spinach, crisp romaine, tomatoes, and Greek olives
-                        </div>
-                    </div>
-                    <div class="col-lg-6 menu-item isotope-item filter-salads">
-                        <img src="assets/img/menu/spinach-salad.jpg" class="menu-img" alt="">
-                        <div class="menu-content">
-                            <a href="#">Spinach Salad</a><span>$9.95</span>
-                        </div>
-                        <div class="menu-ingredients">
-                            Fresh spinach with mushrooms, hard boiled egg, and warm bacon vinaigrette
-                        </div>
-                    </div>
-                    <div class="col-lg-6 menu-item isotope-item filter-specialty">
-                        <img src="assets/img/menu/lobster-roll.jpg" class="menu-img" alt="">
-                        <div class="menu-content">
-                            <a href="#">Lobster Roll</a><span>$12.95</span>
-                        </div>
-                        <div class="menu-ingredients">
-                            Plump lobster meat, mayo and crisp lettuce on a toasted bulky roll
-                        </div>
+                        <h6 class="text-muted mt-2">Loading Menu...</h6>
                     </div>
                 </div>
             </div>
@@ -395,18 +317,18 @@
                 <h2>FAQ</h2>
                 <p>Frequently Asked Questions</p>
 
-            <div class="container">
-                <div class="accordion accordion-dark" id="faqAccordion" data-aos="fade-up" data-aos-delay="100">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button">
-                                Loading questions...
-                            </button>
-                        </h2>
-                    </div>
+                <div class="container">
+                    <div class="accordion accordion-dark" id="faqAccordion" data-aos="fade-up" data-aos-delay="100">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button">
+                                    Loading questions...
+                                </button>
+                            </h2>
+                        </div>
 
+                    </div>
                 </div>
-            </div>
         </section>
 
         <section id="contact" class="contact section">
