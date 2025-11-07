@@ -31,7 +31,7 @@ class ProductController extends Controller
             'base_price'    => (float) $product->base_price,
             'category_name' => optional($product->productCategoryRS)->name ?? 'Uncategorized',
             'status'        =>(int) $product->status,
-            'status_text'   => Status::getStatusText($product->status),
+            'status_text'   => $product->status,
             'image'         => $product->image,
         ];
 

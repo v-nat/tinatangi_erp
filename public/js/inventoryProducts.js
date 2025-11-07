@@ -145,7 +145,6 @@ $(function () {
                     $("#productViewStatus").addClass('badge-secondary');
                 }
 
-                // Set image
                 if (product.image) {
                     $("#productViewImage").attr('src', `/storage/app/public/${product.image}`);
                 } else {
