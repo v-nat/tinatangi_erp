@@ -16,9 +16,6 @@ $(document).ready(function () {
         order: [[0, "asc"]],
         columns: [
             { data: "id", width: "5%" },
-
-            // 2. The 'image' column has been REMOVED
-
             { data: "name" },
             { data: "capacity", width: "10%" },
             {
@@ -31,11 +28,10 @@ $(document).ready(function () {
             { data: "description" },
             {
                 data: null,
-                width: "15%", // Adjusted width to fit the new button
+                width: "15%",
                 orderable: false,
                 searchable: false,
                 render: function (data, type, row) {
-                    // 3. Add the 'View' button to the actions column
                     return `
                         <div class="btn-group btn-group-sm" role="group">
                             <button class="btn btn-success view-btn" data-id="${row.id}" title="View">
@@ -68,11 +64,11 @@ $(document).ready(function () {
         tableModal.show();
     });
 
-    // 4. Add the new click handler for the .view-btn
     $('#tables-table').on('click', '.view-btn', function () {
         const rowData = table.row($(this).closest('tr')).data();
 
         const imgUrl = '/storage/app/public/' + rowData.image ? rowData.image : 'https://placehold.co/600x400/EEE/31343C?text=No+Image';
+        console.log(imgUrl);
         const statusBadge = rowData.status == 1
             ? '<span class="badge bg-success">Available</span>'
             : '<span class="badge bg-danger">Unavailable</span>';
