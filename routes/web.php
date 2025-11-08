@@ -18,7 +18,11 @@ Route::get('/admintest', function () {
 Route::get('/menu/products', [App\Http\Controllers\Admin\CRM\CrmController::class, 'getPublicProducts']);
 Route::get('/testimonials', [App\Http\Controllers\Admin\CRM\CrmController::class, 'fetchPublicTestimonials']);
 Route::get('/faqs-public', [App\Http\Controllers\Admin\CRM\CrmController::class, 'getPublicFaqs']);
+
+Route::post('/book-a-table/check-availability', [App\Http\Controllers\Admin\CRM\BookingController::class, 'checkAvailability'])->name('bookings.check');
+
 Route::post('/book-a-table', [App\Http\Controllers\Admin\CRM\BookingController::class, 'store'])->name('bookings.store');
+
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';

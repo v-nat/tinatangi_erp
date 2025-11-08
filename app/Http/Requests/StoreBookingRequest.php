@@ -25,33 +25,11 @@ class StoreBookingRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
-
-            // 2. Updated date rule
-            'date' => [
-                'required',
-                'date',
-                'after_or_equal:today',
-                Rule::unique('bookings')->where(function ($query) {
-                    return $query->where('time', $this->input('time'));
-                })
-            ],
-
-            'time' => 'required|date_format:H:i',
+            'date' => 'required|date',
+            'time' => 'required',
             'people' => 'required|integer|min:1',
             'message' => 'nullable|string',
-        ];
-    }
-
-    /**
-     * Get the custom messages for validation errors.
-     *
-     * @return array
-     */
-    public function messages(): array
-    {
-        return [
-            // 3. Add a custom message for the unique rule
-            'date.unique' => 'This date and time slot is already booked. Please choose another.',
+            'table_id' => 'required|integer|exists:table_for_reservations,id'
         ];
     }
 }

@@ -88,6 +88,107 @@ h6 {
 }
 
 /*--------------------------------------------------------------
+# modal for booking
+--------------------------------------------------------------*/
+
+#tableRecommendationModal .modal-content {
+    background-color: var(--surface-color);
+    color: var(--default-color);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+}
+
+#tableRecommendationModal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#tableRecommendationModal .modal-title {
+    color: var(--heading-color);
+    font-family: var(--heading-font);
+}
+
+#tableRecommendationModal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+#tableRecommendationModal .modal-body {
+    font-family: var(--default-font);
+}
+
+#tableRecommendationModal .spinner-border {
+    color: var(--accent-color) !important;
+}
+
+#tableRecommendationModal .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#tableRecommendationModal .btn-primary {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--contrast-color);
+    font-weight: 500;
+}
+
+#tableRecommendationModal .btn-primary:hover,
+#tableRecommendationModal .btn-primary:focus {
+    background-color: #d9b379;
+    border-color: #d9b379;
+    color: var(--contrast-color);
+    box-shadow: 0 0 8px rgba(205, 164, 94, 0.5);
+}
+
+#tableRecommendationModal .btn-secondary {
+    background-color: transparent;
+    border-color: var(--default-color);
+    color: var(--default-color);
+}
+
+#tableRecommendationModal .btn-secondary:hover {
+    background-color: var(--default-color);
+    color: var(--contrast-color);
+}
+
+#tableRecommendationModal .table-choice-card .card {
+    background-color: var(--background-color);
+    color: var(--default-color);
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+#tableRecommendationModal .table-choice-card .card-title {
+    color: var(--heading-color);
+    font-family: var(--heading-font);
+}
+
+#tableRecommendationModal .table-choice-card .card-text {
+    color: var(--default-color);
+}
+
+#tableRecommendationModal .table-choice-card .card-footer {
+    background-color: #29261f;
+    color: var(--default-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+#tableRecommendationModal .table-choice-card .card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+#tableRecommendationModal .table-choice-card input[type="radio"]:checked + .card {
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 20px rgba(205, 164, 94, 0.3);
+}
+
+#tableRecommendationModal .table-choice-card input[type="radio"]:checked + .card .card-footer {
+    background-color: var(--accent-color);
+    color: var(--contrast-color);
+    font-weight: bold;
+}
+
+/*--------------------------------------------------------------
 # Accordion Dark Theme
 --------------------------------------------------------------*/
 .accordion-dark .accordion-item {

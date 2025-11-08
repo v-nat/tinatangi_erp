@@ -27,6 +27,7 @@
                                 <th>Booking Date</th>
                                 <th>Booking Time</th>
                                 <th>Guests</th>
+                                <th>Table</th>
                                 <th>Status</th>
                                 <th>Received</th>
                                 <th>Actions</th>

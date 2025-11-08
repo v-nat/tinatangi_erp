@@ -1,4 +1,3 @@
-
 import { formatDate, formatTime, formatToManilaTime } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {
@@ -10,7 +9,7 @@ $(document).ready(function () {
         ajax: "/customer-service/bookings/all",
         order: [[0, "desc"]],
         columns: [
-            { data: "id" },
+            { data: "id", width: "5%" },
             { data: "name" },
             {
                 data: null,
@@ -34,10 +33,39 @@ $(document).ready(function () {
                 },
 
             },
-            { data: "people" },
+            { data: "people", width: "5%" },
+            {
+                data: "table_for_reservation.name",
+                render: function (data, type, row) {
+                    return data ? data : '<span class="text-muted">N/A</span>';
+                },
+            },
             {
                 data: "status",
                 className: "dt-left",
+                render: function (data, type, row) {
+                    if (row.status_rs && row.status_rs.status) {
+                        let statuses = {
+                            11: 'Pending',
+                            12: 'Rejected',
+                            13: 'Approved',
+                            23: 'Completed',
+                            31: 'Voided'
+                        };
+
+                        let options = '';
+                        for (const id in statuses) {
+                            options += `<option value="${id}" ${id == row.status ? 'selected' : ''}>${statuses[id]}</option>`;
+                        }
+
+                        return `
+                            <select class="form-select form-select-sm status-dropdown" data-id="${row.id}">
+                                ${options}
+                            </select>
+                        `;
+                    }
+                    return row.status; // Fallback
+                }
             },
             {
                 data: "created_at",
@@ -74,14 +102,12 @@ $(document).ready(function () {
                 status_id: statusId,
             },
             success: function (response) {
-                Swal.fire({
+                Toast.fire({
                     icon: "success",
                     title: "Updated!",
                     text: response.success,
-                    timer: 1500,
-                    showConfirmButton: false,
                 });
-                table.ajax.reload(null, false);
+                table.ajax.reload(null, false); 
             },
             error: function (xhr) {
                 Swal.fire({
@@ -115,8 +141,6 @@ $(document).ready(function () {
                             icon: "success",
                             title: "Deleted!",
                             text: response.success,
-                            timer: 1500,
-                            showConfirmButton: false,
                         });
                         table.ajax.reload(null, false);
                     },

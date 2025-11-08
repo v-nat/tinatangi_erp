@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Tinatangi Cafe</title>
     <meta name="description" content="">
     <meta name="keywords" content="">
@@ -541,7 +542,7 @@
 
     </footer>
 
-    @include('layouts.loading-state')
+    @include('layouts.landing-page-loader')
     @include('layouts.toast-swal')
     @include('layouts.modals.landing-page-modal')
 

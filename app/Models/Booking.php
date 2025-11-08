@@ -49,4 +49,8 @@ class Booking extends Model
     {
         return $this->belongsTo(TableForReservation::class, 'table_id');
     }
+    public function table(): BelongsTo
+    {
+        return $this->belongsTo(TableForReservation::class, 'table_id');
+    }
 }

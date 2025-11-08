@@ -26,8 +26,6 @@ return new class extends Migration
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
-
-            $table->unique(['date', 'time']);
         });
     }
 
