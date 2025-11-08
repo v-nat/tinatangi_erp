@@ -18,6 +18,7 @@ class StoreTableForReservationRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'capacity' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1',
             'status' => 'required|integer|exists:status,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ];

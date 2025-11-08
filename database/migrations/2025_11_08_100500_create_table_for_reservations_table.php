@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('image');
             $table->integer('capacity');
+            $table->integer('quantity')->default(1);
             $table->unsignedBigInteger('status')->default(1);
             $table->foreign('status')->references('id')->on('status')->onDelete('cascade');
             $table->timestamps();

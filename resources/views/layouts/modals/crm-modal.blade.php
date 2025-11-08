@@ -96,6 +96,11 @@
                                 <div class="invalid-feedback" id="capacity_error"></div>
                             </div>
                             <div class="col-md-6 mb-3">
+                                <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                                <div class="invalid-feedback" id="quantity_error"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
                                 <select class="form-select" id="status" name="status" required>
                                     @foreach($statuses as $status)
@@ -148,6 +153,10 @@
                         <tr>
                             <th>Capacity</th>
                             <td id="viewCapacity"></td>
+                        </tr>
+                        <tr>
+                            <th>Quantity</th>
+                            <td id="viewQuantity"></td>
                         </tr>
                         <tr>
                             <th>Status</th>

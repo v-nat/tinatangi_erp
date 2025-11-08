@@ -1,9 +1,8 @@
 $(document).ready(function () {
     const csrfToken = $('meta[name="csrf-token"]').attr("content");
 
-    // 1. Add instances for BOTH modals
     const tableModal = new bootstrap.Modal(document.getElementById('tableModal'));
-    const viewTableModal = new bootstrap.Modal(document.getElementById('viewTableModal')); // New
+    const viewTableModal = new bootstrap.Modal(document.getElementById('viewTableModal'));
 
     const $tableForm = $('#tableForm');
     const $modalTitle = $('#tableModalLabel');
@@ -18,6 +17,8 @@ $(document).ready(function () {
             { data: "id", width: "5%" },
             { data: "name" },
             { data: "capacity", width: "10%" },
+            { data: "description" },
+            { data: "quantity" },
             {
                 data: "status",
                 width: "10%",
@@ -25,7 +26,6 @@ $(document).ready(function () {
                     return data == 1 ? '<span class="badge bg-success">Available</span>' : '<span class="badge bg-danger">Unavailable</span>';
                 }
             },
-            { data: "description" },
             {
                 data: null,
                 width: "15%",
@@ -76,6 +76,7 @@ $(document).ready(function () {
         $('#viewImage').attr('src',  '/storage/app/public/' + imgUrl).attr('alt', rowData.name);
         $('#viewName').text(rowData.name);
         $('#viewCapacity').text(rowData.capacity);
+        $('#viewQuantity').text(rowData.quantity);
         $('#viewStatus').html(statusBadge);
         $('#viewDescription').text(rowData.description);
 
@@ -95,6 +96,7 @@ $(document).ready(function () {
                 $('#table_id').val(data.id);
                 $('#name').val(data.name);
                 $('#capacity').val(data.capacity);
+                $('#quantity').val(data.quantity);
                 $('#status').val(data.status);
                 $('#description').val(data.description);
                 $('#form_method').val('POST');
@@ -140,7 +142,7 @@ $(document).ready(function () {
             success: function (response) {
                 tableModal.hide();
                 table.ajax.reload(null, false);
-                Swal.fire('Success!', response.success, 'success');
+                Toast.fire('Success!', response.success, 'success');
             },
             error: function (xhr) {
                 if (xhr.status === 422) {
@@ -151,7 +153,7 @@ $(document).ready(function () {
                         $(`#${key}_error`).text(errors[key][0]).show();
                     }
                 } else {
-                    Swal.fire('Error', 'An unexpected error occurred.', 'error');
+                    Toast.fire('Error', 'An unexpected error occurred.', 'error');
                 }
             },
             complete: function () {
@@ -179,10 +181,10 @@ $(document).ready(function () {
                     headers: { 'X-CSRF-TOKEN': csrfToken },
                     success: function (response) {
                         table.ajax.reload(null, false);
-                        Swal.fire('Deleted!', response.success, 'success');
+                        Toast.fire('Deleted!', response.success, 'success');
                     },
                     error: function (xhr) {
-                        Swal.fire('Error', xhr.responseJSON.error || 'Failed to delete table.', 'error');
+                        Toast.fire('Error', xhr.responseJSON.error || 'Failed to delete table.', 'error');
                     }
                 });
             }

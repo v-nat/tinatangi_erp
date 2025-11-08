@@ -27,8 +27,9 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Capacity</th>
-                                <th>Status</th>
                                 <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

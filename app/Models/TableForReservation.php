@@ -17,7 +17,8 @@ class TableForReservation extends Model
         'description',
         'image',
         'capacity',
+        'quantity',
         'status',
     ];
-    
+
 }
