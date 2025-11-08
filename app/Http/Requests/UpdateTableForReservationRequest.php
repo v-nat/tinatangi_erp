@@ -15,7 +15,7 @@ class UpdateTableForReservationRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'location' => 'required|string|max:255',
             'capacity' => 'required|integer|min:1',
             'quantity' => 'required|integer|min:1',

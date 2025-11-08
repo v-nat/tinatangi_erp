@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Booking extends Model
 {
@@ -16,6 +17,7 @@ class Booking extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'table_id',
         'name',
         'email',
         'phone',
@@ -41,5 +43,10 @@ class Booking extends Model
     public function statusRS()
     {
         return $this->belongsTo(Status::class, 'status');
+    }
+
+    public function tableForReservation(): BelongsTo
+    {
+        return $this->belongsTo(TableForReservation::class, 'table_id');
     }
 }
