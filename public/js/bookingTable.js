@@ -5,6 +5,7 @@ $(document).ready(function () {
     const $sent = $("#sent-message");
     const $submitButton = $form.find('button[type="submit"]');
 
+    const $nameInput = $("#name");
     const $dateInput = $("#date");
     const $timeInput = $("#time");
     const $phoneField = $("#phone");
@@ -104,6 +105,21 @@ $(document).ready(function () {
                 .val()
                 .replace(/[^\d+]/g, "")
         );
+    });
+
+    $nameInput.on("input", function () {
+        const name = $nameInput.val().trim();
+        if (name === "") {
+            $nameInput.addClass("is-invalid");
+            $nameInput
+                .siblings(".invalid-feedback")
+                .show()
+                .text("Name is required.");
+        } else {
+            $nameInput.removeClass("is-invalid");
+            $nameInput.siblings(".invalid-feedback").hide();
+        }
+        updateSubmitButtonState();
     });
 
     $phoneField.on("input", function () {
@@ -218,7 +234,7 @@ $(document).ready(function () {
         }
 
         if (!isValid) {
-            $error.html("Please fix the errors in the form.").show();
+            $error.html("Please fill in all required fields.").show();
             return;
         }
         $("#LoadingScreen").fadeIn(200);
