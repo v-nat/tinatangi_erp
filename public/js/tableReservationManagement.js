@@ -67,14 +67,13 @@ $(document).ready(function () {
     $('#tables-table').on('click', '.view-btn', function () {
         const rowData = table.row($(this).closest('tr')).data();
 
-        const imgUrl = '/storage/app/public/' + rowData.image ? rowData.image : 'https://placehold.co/600x400/EEE/31343C?text=No+Image';
-        console.log(imgUrl);
+        const imgUrl = rowData.image ? rowData.image : 'https://placehold.co/600x400/EEE/31343C?text=No+Image';
         const statusBadge = rowData.status == 1
             ? '<span class="badge bg-success">Available</span>'
             : '<span class="badge bg-danger">Unavailable</span>';
 
         $('#viewModalLabel').text('Details for ' + rowData.name);
-        $('#viewImage').attr('src', imgUrl).attr('alt', rowData.name);
+        $('#viewImage').attr('src',  '/storage/app/public/' + imgUrl).attr('alt', rowData.name);
         $('#viewName').text(rowData.name);
         $('#viewCapacity').text(rowData.capacity);
         $('#viewStatus').html(statusBadge);
