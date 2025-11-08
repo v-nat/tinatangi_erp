@@ -13,8 +13,6 @@ class UpdateBookingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // We assume authorization is already handled by the admin route middleware.
-        // If you have more specific logic (e.g., check for a permission), add it here.
         return true;
     }
 

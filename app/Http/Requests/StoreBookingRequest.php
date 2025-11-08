@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Validation\Rule;
 class StoreBookingRequest extends FormRequest
 {
     /**
@@ -26,10 +26,32 @@ class StoreBookingRequest extends FormRequest
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
 
-            'date' => 'required|date|after_or_equal:today',
+            // 2. Updated date rule
+            'date' => [
+                'required',
+                'date',
+                'after_or_equal:today',
+                Rule::unique('bookings')->where(function ($query) {
+                    return $query->where('time', $this->input('time'));
+                })
+            ],
+
             'time' => 'required|date_format:H:i',
             'people' => 'required|integer|min:1',
             'message' => 'nullable|string',
+        ];
+    }
+
+    /**
+     * Get the custom messages for validation errors.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            // 3. Add a custom message for the unique rule
+            'date.unique' => 'This date and time slot is already booked. Please choose another.',
         ];
     }
 }
