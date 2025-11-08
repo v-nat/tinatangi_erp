@@ -127,3 +127,42 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="viewTableModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewModalLabel">Table Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img id="viewImage" src="" alt="Table Image" class="img-fluid rounded" style="max-height: 300px;">
+                </div>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th style="width: 30%;">Name</th>
+                            <td id="viewName"></td>
+                        </tr>
+                        <tr>
+                            <th>Capacity</th>
+                            <td id="viewCapacity"></td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td id="viewStatus"></td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td id="viewDescription"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

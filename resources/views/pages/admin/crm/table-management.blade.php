@@ -25,7 +25,6 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Image</th>
                                 <th>Name</th>
                                 <th>Capacity</th>
                                 <th>Status</th>

@@ -1,6 +1,10 @@
 $(document).ready(function () {
     const csrfToken = $('meta[name="csrf-token"]').attr("content");
+
+    // 1. Add instances for BOTH modals
     const tableModal = new bootstrap.Modal(document.getElementById('tableModal'));
+    const viewTableModal = new bootstrap.Modal(document.getElementById('viewTableModal')); // New
+
     const $tableForm = $('#tableForm');
     const $modalTitle = $('#tableModalLabel');
     const $saveBtn = $('#saveTableBtn');
@@ -12,16 +16,9 @@ $(document).ready(function () {
         order: [[0, "asc"]],
         columns: [
             { data: "id", width: "5%" },
-            {
-                data: "image",
-                width: "10%",
-                orderable: false,
-                searchable: false,
-                render: function (data, type, row) {
-                    const imgUrl = data ? data : 'https://placehold.co/100x100/EEE/31343C?text=No+Image';
-                    return `<img src="${imgUrl}" alt="${row.name}" class="img-thumbnail" width="80">`;
-                }
-            },
+
+            // 2. The 'image' column has been REMOVED
+
             { data: "name" },
             { data: "capacity", width: "10%" },
             {
@@ -34,12 +31,16 @@ $(document).ready(function () {
             { data: "description" },
             {
                 data: null,
-                width: "10%",
+                width: "15%", // Adjusted width to fit the new button
                 orderable: false,
                 searchable: false,
                 render: function (data, type, row) {
+                    // 3. Add the 'View' button to the actions column
                     return `
                         <div class="btn-group btn-group-sm" role="group">
+                            <button class="btn btn-success view-btn" data-id="${row.id}" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
                             <button class="btn btn-info edit-btn" data-id="${row.id}" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -65,6 +66,25 @@ $(document).ready(function () {
         $('#image_preview').hide();
         $saveBtn.text('Save Table').prop('disabled', false);
         tableModal.show();
+    });
+
+    // 4. Add the new click handler for the .view-btn
+    $('#tables-table').on('click', '.view-btn', function () {
+        const rowData = table.row($(this).closest('tr')).data();
+
+        const imgUrl = rowData.image ? rowData.image : 'https://placehold.co/600x400/EEE/31343C?text=No+Image';
+        const statusBadge = rowData.status == 1
+            ? '<span class="badge bg-success">Available</span>'
+            : '<span class="badge bg-danger">Unavailable</span>';
+
+        $('#viewModalLabel').text('Details for ' + rowData.name);
+        $('#viewImage').attr('src', imgUrl).attr('alt', rowData.name);
+        $('#viewName').text(rowData.name);
+        $('#viewCapacity').text(rowData.capacity);
+        $('#viewStatus').html(statusBadge);
+        $('#viewDescription').text(rowData.description);
+
+        viewTableModal.show();
     });
 
     $('#tables-table').on('click', '.edit-btn', function () {
