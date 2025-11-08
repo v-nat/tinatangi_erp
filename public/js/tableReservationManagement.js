@@ -72,7 +72,7 @@ $(document).ready(function () {
     $('#tables-table').on('click', '.view-btn', function () {
         const rowData = table.row($(this).closest('tr')).data();
 
-        const imgUrl = rowData.image ? rowData.image : 'https://placehold.co/600x400/EEE/31343C?text=No+Image';
+        const imgUrl = '/storage/app/public/' + rowData.image ? rowData.image : 'https://placehold.co/600x400/EEE/31343C?text=No+Image';
         const statusBadge = rowData.status == 1
             ? '<span class="badge bg-success">Available</span>'
             : '<span class="badge bg-danger">Unavailable</span>';
