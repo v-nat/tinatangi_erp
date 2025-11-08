@@ -144,12 +144,12 @@ class TableForReservationController extends Controller
         $processedImage = ob_get_clean();
 
         $filename = uniqid() . '.jpg';
-        $storagePath = 'public/table_images/' . $filename;
+        $storagePath = 'public/img/table_images/' . $filename;
         Storage::put($storagePath, $processedImage);
 
         imagedestroy($sourceImage);
         imagedestroy($destImage);
 
-        return Storage::url($storagePath);
+        return $storagePath;
     }
 }
