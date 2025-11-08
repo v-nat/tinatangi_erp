@@ -20,7 +20,7 @@ class UpdateTableForReservationRequest extends FormRequest
             'capacity' => 'required|integer|min:1',
             'quantity' => 'required|integer|min:1',
             'status' => 'required|integer|exists:status,id',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ];
     }
 }
