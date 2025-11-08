@@ -2,7 +2,7 @@ $(document).ready(function () {
     function loadFaqs() {
         const faqContainer = $("#faqAccordion");
         if (faqContainer.length === 0) {
-            return; 
+            return;
         }
 
         $.ajax({
@@ -341,5 +341,83 @@ $(document).ready(function () {
         e.preventDefault();
         const fullMessage = $(this).data("full-message");
         $("#modalMessageBody").text(fullMessage);
+    });
+});
+
+$(document).ready(function () {
+
+    const DEFAULT_PRODUCT_IMAGE = '/path/to/your/default-image.jpg';
+
+    const $menuContainer = $('.isotope-container');
+    const $filterContainer = $('.menu-filters');
+    const $loadingSpinner = $('#menu-loading');
+
+    $.ajax({
+        url: '/menu/products',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.data && Array.isArray(response.data)) {
+                let menuItemsHtml = [];
+                let categories = {};
+
+                response.data.forEach(product => {
+                    const imagePath = product.image;
+                    let imageUrl = (imagePath && imagePath !== "N/A")
+                                 ? "/storage/app/public/" + imagePath
+                                 : DEFAULT_PRODUCT_IMAGE;
+
+                    const price = parseFloat(product.base_price || 0).toFixed(2);
+
+                    menuItemsHtml.push(`
+                        <div class="col-lg-6 menu-item isotope-item ${product.filter_class}">
+                            <img src="${imageUrl}" class="menu-img" alt="${product.name}">
+                            <div class="menu-content">
+                                <a href="#">${product.name}</a><span>₱${price}</span>
+                            </div>
+                            <div class="menu-ingredients">
+                                ${product.description}
+                            </div>
+                        </div>
+                    `);
+
+                    if (!categories[product.category_name]) {
+                        categories[product.category_name] = product.filter_class;
+                    }
+                });
+
+                let filterHtml = [];
+                for (const categoryName in categories) {
+                    const filterClass = categories[categoryName];
+                    filterHtml.push(`
+                        <li data-filter=".${filterClass}">${categoryName}</li>
+                    `);
+                }
+
+                $loadingSpinner.remove();
+                $filterContainer.append(filterHtml.join(''));
+                $menuContainer.html(menuItemsHtml.join(''));
+
+                let menuIsotope = new Isotope($menuContainer[0], {
+                    itemSelector: '.isotope-item',
+                    layoutMode: 'masonry'
+                });
+
+                $filterContainer.on('click', 'li', function() {
+                    $filterContainer.find('.filter-active').removeClass('filter-active');
+                    $(this).addClass('filter-active');
+                    menuIsotope.arrange({
+                        filter: $(this).data('filter')
+                    });
+                });
+
+            } else {
+                $loadingSpinner.html('<p class="text-danger">Could not load menu items.</p>');
+            }
+        },
+        error: function (xhr) {
+            console.error("Failed to load menu:", xhr.responseText);
+            $loadingSpinner.html('<p class="text-danger">Error: Could not load the menu. Please try again later.</p>');
+        }
     });
 });

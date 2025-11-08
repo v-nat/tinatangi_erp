@@ -18,7 +18,9 @@
                     <h4 class="card-title mb-0">Customer Feedback</h4>
 
                     <div class="d-flex align-items-center">
-
+                        <button id="batchDeleteBtn" class="btn btn-danger btn-sm me-4" disabled style="display: none;">
+                            <i class="fas fa-trash-alt me-1"></i> Batch Delete Selected
+                        </button>
                         <div class="d-flex align-items-center me-3">
                             <label for="submitted_date_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by
                                 Submitted Date:</label>
@@ -43,6 +45,7 @@
                     <table id="feedbackTable" class="table table-sm table-hover dataTable no-footer" style="width:100%">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Customer</th>
                                 <th>Rating (Overall)</th>
                                 <th>Comment</th>

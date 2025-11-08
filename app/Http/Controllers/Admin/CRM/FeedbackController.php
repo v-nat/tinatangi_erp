@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin\CRM;
 
 use Exception;
+use Illuminate\Http\Request;
 use App\Models\ServiceFeedback;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Stevebauman\Location\Facades\Location;
@@ -16,7 +18,7 @@ class FeedbackController extends Controller
     {
         try {
             $feedbacks = ServiceFeedback::latest()->paginate(15);
-            
+
             return response()->json($feedbacks);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -132,4 +134,59 @@ class FeedbackController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
+    public function destroy(ServiceFeedback $feedback)
+    {
+        try {
+            if ($feedback->photo) {
+                Storage::disk('public')->delete($feedback->photo);
+            }
+
+            $feedback->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Feedback deleted successfully.'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function batchDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:service_feedback,id'
+        ]);
+
+        $feedbackIds = $validated['ids'];
+        $deletedCount = 0;
+
+        DB::beginTransaction();
+        try {
+            $feedbacks = ServiceFeedback::whereIn('id', $feedbackIds)->get();
+
+            foreach ($feedbacks as $feedback) {
+                if ($feedback->photo) {
+                    Storage::disk('public')->delete($feedback->photo);
+                }
+                $feedback->delete();
+                $deletedCount++;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Successfully deleted {$deletedCount} feedback record(s).",
+            ]);
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
 }

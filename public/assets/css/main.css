@@ -159,6 +159,114 @@ h6 {
     color: #f0f0f0;
 }
 
+
+/*--------------------------------------------------------------
+# Book A Table Section
+--------------------------------------------------------------*/
+
+.book-a-table {
+    width: 100%;
+}
+
+.section-title h2 {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0;
+    line-height: 1px;
+    margin: 0 0 5px 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--default-color);
+}
+
+.section-title p {
+    font-size: 36px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    color: var(--accent-color);
+}
+
+.booking-form-wrapper {
+    background: var(--surface-color);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-top: 5px solid var(--accent-color);
+}
+
+.form-control {
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    background-color: var(--surface-color);
+    color: var(--heading-color);
+    border: 1px solid #4a463d;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+.form-control:focus {
+    border-color: var(--accent-color);
+
+    box-shadow: 0 0 0 0.25rem rgba(205, 164, 94, 0.35);
+    background-color: var(--surface-color);
+    color: var(--heading-color);
+}
+
+.form-control::placeholder {
+    color: var(--default-color);
+}
+
+.form-control[type="date"],
+.form-control[type="time"] {
+    color-scheme: dark;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    padding: 15px;
+    color: var(--default-color);
+}
+.error-message {
+    display: none;
+    color: #fff;
+    background: #dc3545;
+    text-align: left;
+    padding: 15px;
+    font-weight: 500;
+    border-radius: 8px;
+}
+.sent-message {
+    display: none;
+    color: #fff;
+    background: #198754;
+    text-align: center;
+    padding: 15px;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+.submit-button {
+    background: var(--accent-color);
+    border: 0;
+    padding: 12px 34px;
+    color: var(--contrast-color);
+    transition: 0.4s;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+.submit-button:hover {
+    background: #b99351;
+    color: var(--contrast-color);
+}
+
+
+/*--------------------------------------------------------------
+# Ratings Section
+--------------------------------------------------------------*/
+
 .ratings-container {
     display: flex;
     justify-content: center;

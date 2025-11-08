@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Admin\CRM;
 
-use App\Http\Controllers\Controller;
 use App\Models\Faq;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFaqRequest;
 use App\Http\Requests\UpdateFaqRequest;
 
@@ -57,5 +58,17 @@ class FaqController extends Controller
 
         $faq->delete();
         return response()->json(['success' => 'FAQ deleted successfully.']);
+    }
+
+    public function batchDestroy(Request $request)
+    {
+        $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'integer|exists:faqs,id',
+        ]);
+
+        Faq::whereIn('id', $request->ids)->delete();
+
+        return response()->json(['success' => 'Selected FAQs have been deleted successfully.']);
     }
 }

@@ -13,13 +13,13 @@ $(function () {
         ],
         columns: [
             {
-                title: '<input type="checkbox" id="select-all-checkbox">',
+                title: '<input type="checkbox" class="form-check-input" id="select-all-checkbox">',
                 data: null,
                 orderable: false,
                 searchable: false,
                 className: "text-center dt-checkbox",
                 render: function (data, type, row) {
-                    return `<input type="checkbox" class="row-checkbox" value="${row.id}">`;
+                    return `<input type="checkbox" class="form-check-input" value="${row.id}">`;
                 },
             },
             { data: "name", title: "Name" },
