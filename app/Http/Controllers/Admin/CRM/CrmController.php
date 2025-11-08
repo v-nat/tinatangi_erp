@@ -23,6 +23,12 @@ class CrmController extends Controller
         return view('pages.admin.crm.feedback-moderation');
     }
 
+    public function tableManagement()
+    {
+        $statuses = \App\Models\Status::whereIn('id', [1, 2])->get();
+        return view('pages.admin.crm.table-management', compact('statuses'));
+    }
+
     public function getDashboardAnalytics()
     {
         $totalFeedback = ServiceFeedback::count();

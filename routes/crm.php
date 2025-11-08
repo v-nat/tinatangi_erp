@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\Admin\CRM\BookingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CRM\CrmController;
 use App\Http\Controllers\Admin\CRM\FaqController;
+use App\Http\Controllers\Admin\CRM\BookingController;
 use App\Http\Controllers\Admin\CRM\FeedbackController;
+use App\Http\Controllers\Admin\CRM\TableForReservationController;
 
 Route::get('/customer-service', [CrmController::class, 'index'])->middleware('auth', 'isEmployee')->name('crm');
 
@@ -33,4 +34,11 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::get('/bookings/all', [BookingController::class, 'getBookings']);
     Route::post('/bookings/update-status', [BookingController::class, 'updateBookingStatus']);
     Route::delete('/bookings/delete/{booking}', [BookingController::class, 'destroyBooking']);
+
+    Route::get('/table-management', [CrmController::class, 'tableManagement'])->name('crm.tables');
+    Route::get('/tables/list', [TableForReservationController::class, 'list']);
+    Route::post('/tables/store', [TableForReservationController::class, 'store']);
+    Route::get('/tables/edit/{table}', [TableForReservationController::class, 'edit']);
+    Route::post('/tables/update/{table}', [TableForReservationController::class, 'update']);
+    Route::delete('/tables/destroy/{table}', [TableForReservationController::class, 'destroy']);
 });
