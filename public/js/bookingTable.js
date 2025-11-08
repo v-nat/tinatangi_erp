@@ -187,7 +187,6 @@ $(document).ready(function () {
 
     $form.on("submit", function (e) {
         e.preventDefault();
-        $("#LoadingScreen").fadeIn(200);
         $loading.hide();
         $error.hide();
         $sent.hide();
@@ -222,7 +221,7 @@ $(document).ready(function () {
             $error.html("Please fix the errors in the form.").show();
             return;
         }
-
+        $("#LoadingScreen").fadeIn(200);
         $loading.show();
         $submitButton.prop("disabled", true);
 
