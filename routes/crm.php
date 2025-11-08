@@ -41,4 +41,5 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::get('/tables/edit/{table}', [TableForReservationController::class, 'edit']);
     Route::post('/tables/update/{table}', [TableForReservationController::class, 'update']);
     Route::delete('/tables/destroy/{table}', [TableForReservationController::class, 'destroy']);
+    Route::delete('/tables/batch-destroy', [TableForReservationController::class, 'batchDestroy']);
 });

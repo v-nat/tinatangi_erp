@@ -12,10 +12,21 @@ $(document).ready(function () {
         processing: true,
         serverSide: false,
         ajax: "/customer-service/tables/list",
-        order: [[0, "asc"]],
+        order: [[1, "asc"]],
         columns: [
-            { data: "id", width: "5%" },
+            {
+                data: "id",
+                orderable: false,
+                searchable: false,
+                width: "1%",
+                className: "text-center",
+                title: '<input type="checkbox" class="form-check-input" id="select-all-tables">',
+                render: function (data) {
+                    return `<input type="checkbox" class="form-check-input table-checkbox" value="${data}">`;
+                },
+            },
             { data: "name" },
+            { data: "location" },
             { data: "capacity", width: "10%" },
             { data: "description" },
             { data: "quantity" },
@@ -27,20 +38,20 @@ $(document).ready(function () {
                 }
             },
             {
-                data: null,
+                data: "id",
                 width: "15%",
                 orderable: false,
                 searchable: false,
                 render: function (data, type, row) {
                     return `
                         <div class="btn-group btn-group-sm" role="group">
-                            <button class="btn btn-success view-btn" data-id="${row.id}" title="View">
+                            <button class="btn btn-success view-btn" data-id="${data}" title="View">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn btn-info edit-btn" data-id="${row.id}" title="Edit">
+                            <button class="btn btn-info edit-btn" data-id="${data}" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-danger delete-btn" data-id="${row.id}" title="Delete">
+                            <button class="btn btn-danger delete-btn" data-id="${data}" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -73,8 +84,9 @@ $(document).ready(function () {
             : '<span class="badge bg-danger">Unavailable</span>';
 
         $('#viewModalLabel').text('Details for ' + rowData.name);
-        $('#viewImage').attr('src',  '/storage/app/public/' + imgUrl).attr('alt', rowData.name);
+        $('#viewImage').attr('src', '/storage/app/public/' + imgUrl).attr('alt', rowData.name);
         $('#viewName').text(rowData.name);
+        $('#viewLocation').text(rowData.location);
         $('#viewCapacity').text(rowData.capacity);
         $('#viewQuantity').text(rowData.quantity);
         $('#viewStatus').html(statusBadge);
@@ -95,6 +107,7 @@ $(document).ready(function () {
                 $modalTitle.text('Edit Table');
                 $('#table_id').val(data.id);
                 $('#name').val(data.name);
+                $('#location').val(data.location);
                 $('#capacity').val(data.capacity);
                 $('#quantity').val(data.quantity);
                 $('#status').val(data.status);
@@ -102,7 +115,7 @@ $(document).ready(function () {
                 $('#form_method').val('POST');
 
                 if (data.image) {
-                    $('#image_preview').attr('src', data.image).show();
+                    $('#image_preview').attr('src', '/storage/app/public/' + data.image).show();
                 } else {
                     $('#image_preview').hide();
                 }
@@ -202,5 +215,75 @@ $(document).ready(function () {
         } else {
             $('#image_preview').hide();
         }
+    });
+
+    function updateDeleteButtonState() {
+        const anyChecked = $(".table-checkbox:checked").length > 0;
+        $("#btn-delete-selected-tables").toggleClass("d-none", !anyChecked);
+    }
+
+    $("#select-all-tables").on("click", function () {
+        const isChecked = $(this).is(":checked");
+        $(".table-checkbox").prop("checked", isChecked);
+        updateDeleteButtonState();
+    });
+
+    $("#tables-table tbody").on("change", ".table-checkbox", function () {
+        const totalCheckboxes = $(".table-checkbox").length;
+        const checkedCheckboxes = $(".table-checkbox:checked").length;
+        $("#select-all-tables").prop(
+            "checked",
+            totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes
+        );
+        updateDeleteButtonState();
+    });
+
+    table.on("draw", function () {
+        $("#select-all-tables").prop("checked", false);
+        updateDeleteButtonState();
+    });
+
+    $("#btn-delete-selected-tables").on("click", function () {
+        const selectedIds = $(".table-checkbox:checked")
+            .map(function () {
+                return $(this).val();
+            })
+            .get();
+
+        if (selectedIds.length === 0) {
+            Toast.fire("No Selection", "Please select tables to delete.", "info");
+            return;
+        }
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: `You are about to delete ${selectedIds.length} tables. You won't be able to revert this!`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete them!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/customer-service/tables/batch-destroy",
+                    type: "DELETE",
+                    data: { ids: selectedIds },
+                    headers: { "X-CSRF-TOKEN": csrfToken },
+                    success: function (response) {
+                        Toast.fire("Deleted!", response.success, "success");
+                        table.ajax.reload(null, false);
+                    },
+                    error: function (xhr) {
+                        Toast.fire(
+                            "Error",
+                            xhr.responseJSON.message ||
+                            "Could not delete the selected tables.",
+                            "error"
+                        );
+                    },
+                });
+            }
+        });
     });
 });

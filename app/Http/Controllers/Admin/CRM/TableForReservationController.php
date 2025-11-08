@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin\CRM;
 
-use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Models\TableForReservation;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreTableForReservationRequest;
 use App\Http\Requests\UpdateTableForReservationRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
-use Exception;
 
 class TableForReservationController extends Controller
 {
@@ -76,6 +77,26 @@ class TableForReservationController extends Controller
             return response()->json(['success' => 'Table deleted successfully.']);
         } catch (Exception $e) {
             return response()->json(['error' => 'Failed to delete table.'], 500);
+        }
+    }
+
+    public function batchDestroy(Request $request): JsonResponse
+    {
+        try {
+            $ids = $request->input('ids', []);
+            $tables = TableForReservation::whereIn('id', $ids)->get();
+
+            foreach ($tables as $table) {
+                if ($table->image) {
+                    $oldPath = str_replace('/storage', 'public', $table->image);
+                    Storage::delete($oldPath);
+                }
+                $table->delete();
+            }
+
+            return response()->json(['success' => 'Selected tables deleted successfully.']);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to delete selected tables.'], 500);
         }
     }
 

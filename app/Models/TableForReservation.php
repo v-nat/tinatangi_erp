@@ -16,6 +16,7 @@ class TableForReservation extends Model
         'name',
         'description',
         'image',
+        'location',
         'capacity',
         'quantity',
         'status',
