@@ -372,7 +372,7 @@ $(document).ready(function () {
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Log Out",
+            confirmButtonText: "Confirm",
         }).then((result) => {
             if (!result.isConfirmed) {
                 return;
