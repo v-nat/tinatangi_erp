@@ -153,6 +153,35 @@
             </div>
         </div>
     </section>
+
+    <section class="section mb-4">
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0">Top Rated Feedback</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush" id="list-top-feedback">
+                            <li class="list-group-item text-center text-muted">Loading top feedback…</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0">Recent Feedback</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush" id="list-recent-feedback">
+                            <li class="list-group-item text-center text-muted">Loading recent feedback…</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 @endsection
 
 @section('scripts')

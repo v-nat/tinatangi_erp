@@ -116,9 +116,15 @@ class CrmController extends Controller
             'environment' => (float) ServiceFeedback::avg('environment_rating'),
         ];
 
-        $recentFeedback = ServiceFeedback::where('status', 34)
-            ->whereColumn('created_at', 'updated_at')
-            ->orderBy('created_at', 'desc')
+        $topRatedFeedback = ServiceFeedback::whereNotNull('message')
+            ->where('status', 35)
+            ->orderByDesc('overall_rating')
+            ->orderByDesc('created_at')
+            ->take(5)
+            ->get(['name', 'message', 'overall_rating', 'created_at']);
+
+        $recentFeedback = ServiceFeedback::whereNotNull('message')
+            ->orderByDesc('created_at')
             ->take(5)
             ->get(['name', 'message', 'overall_rating', 'created_at']);
 
@@ -134,6 +140,7 @@ class CrmController extends Controller
             'upcomingBookings' => $upcomingBookings,
             'categoryRatings' => $categoryRatings,
             'ratingsDistribution' => $ratingsDistribution,
+            'topRatedFeedback' => $topRatedFeedback,
             'recentFeedback' => $recentFeedback,
         ]);
     }

@@ -142,6 +142,57 @@ $(document).ready(function () {
         return formatted.format(time ? 'MMM D, YYYY • h:mm A' : 'MMM D, YYYY');
     }
 
+    function escapeHtml(value) {
+        return $("<div/>").text(value ?? "").html();
+    }
+
+    function truncateText(text, limit = 100) {
+        if (!text) {
+            return "";
+        }
+        return text.length > limit ? `${text.substring(0, limit)}…` : text;
+    }
+
+    function renderFeedbackList(items, $container, emptyText) {
+        $container.empty();
+
+        if (!items || items.length === 0) {
+            $container.append(
+                `<li class="list-group-item text-muted text-center">${emptyText}</li>`
+            );
+            return;
+        }
+
+        items.forEach((item) => {
+            const name = escapeHtml(item.name || "Anonymous");
+            const rating = item.overall_rating != null ? Number(item.overall_rating).toFixed(1) : "0.0";
+            const dateText = item.created_at ? dayjs(item.created_at).format("MMM D, YYYY") : "—";
+            const messageText = truncateText(item.message?.trim() ?? "", 120);
+            const messageHtml = messageText
+                ? escapeHtml(messageText)
+                : '<span class="text-muted fst-italic">No written feedback.</span>';
+
+            const listItem = `
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="pe-3">
+                            <h6 class="mb-1">${name}</h6>
+                            <p class="mb-1 small text-muted">${messageHtml}</p>
+                            <small class="text-muted">${dateText}</small>
+                        </div>
+                        <div class="ms-2 text-nowrap">
+                            <span class="badge bg-warning text-dark">
+                                <i class="fa-solid fa-star me-1"></i>${rating}
+                            </span>
+                        </div>
+                    </div>
+                </li>
+            `;
+
+            $container.append(listItem);
+        });
+    }
+
     function loadDashboardData() {
         $.ajax({
             url: '/customer-service/dashboard-analytics',
@@ -216,6 +267,18 @@ $(document).ready(function () {
                         categories: ratingsDistribution.map((item) => item.rating_label),
                     },
                 });
+
+                renderFeedbackList(
+                    response.topRatedFeedback || [],
+                    $("#list-top-feedback"),
+                    "No top rated feedback yet."
+                );
+
+                renderFeedbackList(
+                    response.recentFeedback || [],
+                    $("#list-recent-feedback"),
+                    "No feedback submitted recently."
+                );
             },
             error: function (xhr) {
                 console.error('Failed to load dashboard analytics:', xhr);
