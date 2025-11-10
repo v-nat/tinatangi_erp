@@ -8,9 +8,7 @@ $(document).ready(function () {
             type: "GET",
             dataSrc: "data",
         },
-        order: [
-            [2, "asc"],
-        ],
+        order: [[2, "asc"]],
         columns: [
             {
                 data: null,
@@ -54,22 +52,67 @@ $(document).ready(function () {
         },
         initComplete: function () {
             const column = this.api().column(5);
-            const select = $('#category_filter');
+            const select = $("#category_filter");
 
-            column.data().unique().sort().each(function (d, j) {
-                if(d) {
-                    select.append($('<option></option>').attr('value', d).text(d));
+            column
+                .data()
+                .unique()
+                .sort()
+                .each(function (d, j) {
+                    if (d) {
+                        select.append(
+                            $("<option></option>").attr("value", d).text(d)
+                        );
+                    }
+                });
+
+            const statusColumn = this.api().column(8);
+            const statusSelect = $("#status_filter");
+            const statusSet = new Set();
+
+            statusColumn.data().each(function (d) {
+                if (d && typeof d === "object" && d.label) {
+                    statusSet.add(d.label.trim());
+                } else if (typeof d === "string") {
+                    const textValue = $("<div>").html(d).text().trim();
+                    if (textValue) {
+                        statusSet.add(textValue);
+                    }
                 }
             });
-        }
+
+            Array.from(statusSet)
+                .sort((a, b) => a.localeCompare(b))
+                .forEach(function (label) {
+                    statusSelect.append(
+                        $("<option></option>").attr("value", label).text(label)
+                    );
+                });
+        },
     });
-    $("#category_filter").on("change", function() {
+    $("#category_filter").on("change", function () {
         const selectedCategory = $(this).val();
 
-        allItems.column(5).search(
-            selectedCategory ? '^' + selectedCategory + '$' : '',
-            true,
-            false
-        ).draw();
+        allItems
+            .column(5)
+            .search(
+                selectedCategory ? "^" + selectedCategory + "$" : "",
+                true,
+                false
+            )
+            .draw();
+    });
+
+    $("#status_filter").on("change", function () {
+        const selectedStatus = $(this).val();
+        const statusColumn = allItems.column(8);
+
+        statusColumn
+            .search(
+                selectedStatus ? "^" + selectedStatus + "$" : "",
+                true,
+                false
+            )
+            .draw();
     });
 });

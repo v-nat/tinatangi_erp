@@ -43,7 +43,7 @@ $(document).ready(function () {
                     </div>`;
                     $(id).html(placeholderHtml);
                 } else {
-                    productsArray.forEach((element) => {
+                productsArray.forEach((element) => {
                         const imagePath = element.image;
                         let imageUrl;
 
@@ -52,7 +52,9 @@ $(document).ready(function () {
                         } else {
                             imageUrl = DEFAULT_PRODUCT_IMAGE;
                         }
-                        const servings = parseInt(element.servings);
+                        const rawServings = element.available_servings ?? element.servings ?? 0;
+                        const parsedServings = parseInt(rawServings, 10);
+                        const servings = Number.isNaN(parsedServings) ? 0 : parsedServings;
                         let servingsHtml = '';
 
                         if (servings > 0) {
@@ -64,9 +66,8 @@ $(document).ready(function () {
                                 </div>
                             `;
                         }
-
                         productsHtml.push(`
-                        <div class="col" data-id="${element.id}" ${servings <= 0 ? 'data-disabled="true"' : ''}>
+                        <div class="col" data-id="${element.id}" data-available-servings="${servings}" ${servings <= 0 ? 'data-disabled="true"' : ''}>
                             <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2 ${servings <= 0 ? 'border-danger' : ''}">
                                 ${servingsHtml}
                                 <img src="${imageUrl}" class="card-img-top img-fluid prod-img" alt="Product Image">
@@ -172,6 +173,25 @@ $(document).ready(function () {
         // END MODIFICATION
 
         const id = clickedColumn.data("id");
+        const availableServings =
+            parseInt(clickedColumn.data("available-servings"), 10) || 0;
+        const existingItemRow = $(
+            `#orderList .prod-name[data-id="${id}"]`
+        ).closest(".order-item-row");
+        const existingQuantity = existingItemRow.length
+            ? parseInt(existingItemRow.find(".qnty").text().trim(), 10) || 0
+            : 0;
+
+        if (availableServings > 0 && existingQuantity >= availableServings) {
+            Toast.fire({
+                icon: "warning",
+                title: "Servings Exhausted",
+                text: "No more servings available for this product.",
+                timer: 1800,
+            });
+            return;
+        }
+
         const productNameElement = clickedColumn.find(".prod-name");
         const productName = productNameElement.text().trim();
         const priceElement = clickedColumn.find(".prod-price");
@@ -182,6 +202,29 @@ $(document).ready(function () {
         $("#_item_name").text("Product Name: " + productName);
         $("#_base_price").text("Price: ₱" + price);
         $("#_base_price").data("price", price);
+        const $quantityInput = $("#quantity");
+        const remainingServings =
+            availableServings > 0
+                ? Math.max(availableServings - existingQuantity, 0)
+                : 0;
+
+        $("#addOrder")
+            .data("available-servings", availableServings)
+            .data("current-quantity", existingQuantity);
+
+        if (remainingServings > 0) {
+            $quantityInput.attr("max", remainingServings);
+            if (
+                !$quantityInput.val() ||
+                parseInt($quantityInput.val(), 10) > remainingServings
+            ) {
+                $quantityInput.val(1);
+            }
+        } else {
+            $quantityInput.removeAttr("max");
+            $quantityInput.val(1);
+        }
+
         $("#addItemOrder").modal("show");
     });
 
@@ -223,6 +266,10 @@ $(document).ready(function () {
         $("#_base_price").text("");
         $("#total_price").text("");
         $("#_base_price").removeAttr("data-price");
+        $("#quantity").removeAttr("max");
+        $("#addOrder")
+            .removeData("available-servings")
+            .removeData("current-quantity");
     }
 
     $("#addOrderBtn").click(function (e) {
@@ -247,6 +294,24 @@ $(document).ready(function () {
             const _id = $("#_item_id").val();
             const quantityInput = $("#quantity");
             const newQuantity = parseInt(quantityInput.val()) || 1;
+            const modalAvailable =
+                parseInt($("#addOrder").data("available-servings"), 10) || 0;
+            const modalExisting =
+                parseInt($("#addOrder").data("current-quantity"), 10) || 0;
+            const requestedTotal = modalExisting + newQuantity;
+
+            if (
+                modalAvailable > 0 &&
+                requestedTotal > modalAvailable
+            ) {
+                $("#LoadingScreen").fadeOut(200);
+                Toast.fire({
+                    icon: "error",
+                    title: "Not enough servings",
+                    text: "Quantity exceeds available servings.",
+                });
+                return;
+            }
 
             const productName = $("#_item_name").text().trim();
             const _name = productName.replace("Product Name: ", "").trim();
@@ -257,7 +322,7 @@ $(document).ready(function () {
 
             const $existingItem = $(
                 `#orderList .prod-name[data-id="${_id}"]`
-            ).closest(".d-flex.align-items-center.py-2.border-bottom");
+            ).closest(".order-item-row");
             let itemExists = $existingItem.length > 0;
 
             const totalElement = $("#order-total-amount");
@@ -277,16 +342,30 @@ $(document).ready(function () {
                     0;
 
                 const updatedQuantity = currentQuantity + newQuantity;
+                if (modalAvailable > 0 && updatedQuantity > modalAvailable) {
+                    $("#LoadingScreen").fadeOut(200);
+                    Toast.fire({
+                        icon: "error",
+                        title: "Not enough servings",
+                        text: "Quantity exceeds available servings.",
+                    });
+                    return;
+                }
                 const updatedItemTotal = currentItemTotal + newTotalPrice;
 
                 qntyElement.text(updatedQuantity);
                 itemTotalPriceElement.text(
                     "₱" + parseFloat(updatedItemTotal).toFixed(2)
                 );
+
+                $existingItem
+                    .addClass("order-item-row")
+                    .attr("data-available-servings", modalAvailable)
+                    .data("available-servings", modalAvailable);
             } else {
                 $("#orderList").find("#order-placeholder").remove();
                 const order = `
-                <div class="d-flex align-items-center py-2 border-bottom">
+                <div class="d-flex align-items-center py-2 border-bottom order-item-row" data-product-id="${_id}" data-available-servings="${modalAvailable}">
                     <div class="flex-grow-1 me-3">
                         <h6 class="mb-0 text-primary text-muted prod-name" data-id="${_id}">${_name}</h6>
                         <small class="text-secondary prod-price">₱${parseFloat(
@@ -316,9 +395,7 @@ $(document).ready(function () {
     $(document).on("click", ".dec-qty-btn", function () {
         const clickedButton = $(this);
 
-        const orderItemRow = clickedButton.closest(
-            ".d-flex.align-items-center.py-2.border-bottom"
-        );
+        const orderItemRow = clickedButton.closest(".order-item-row");
 
         const qntyElement = orderItemRow.find(".qnty");
         const itemTotalPriceElement = orderItemRow.find(".prod-price");
@@ -359,15 +436,28 @@ $(document).ready(function () {
     $(document).on("click", ".inc-qty-btn", function () {
         const clickedButton = $(this);
 
-        const orderItemRow = clickedButton.closest(
-            ".d-flex.align-items-center.py-2.border-bottom"
-        );
+        const orderItemRow = clickedButton.closest(".order-item-row");
 
         const qntyElement = orderItemRow.find(".qnty");
         const itemTotalPriceElement = orderItemRow.find(".prod-price");
         const totalElement = $("#order-total-amount");
 
         let currentQuantity = parseInt(qntyElement.text().trim()) || 0;
+        const availableServings =
+            parseInt(orderItemRow.data("available-servings"), 10) || 0;
+
+        if (
+            availableServings > 0 &&
+            currentQuantity >= availableServings
+        ) {
+            Toast.fire({
+                icon: "warning",
+                title: "Limit reached",
+                text: "No more servings available for this product.",
+                timer: 1800,
+            });
+            return;
+        }
 
         let itemTotalPriceTxt = itemTotalPriceElement.text().trim();
         let currentItemTotal =
@@ -567,7 +657,7 @@ $(function () {
         let isValid = true;
 
         $("#orderList")
-            .find(".d-flex.align-items-center.py-2.border-bottom")
+            .find(".order-item-row")
             .each(function () {
                 const $itemRow = $(this);
                 const productId = $itemRow.find(".prod-name").data("id");

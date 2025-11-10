@@ -13,14 +13,24 @@
     <section class="section">
         <div class="card">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h4 class="card-title">Items Table</h4>
+                <h4 class="card-title mb-0">Items Table</h4>
 
-                <div class="d-flex align-items-center" style="width: 320px;">
-                    <label for="category_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Category:</label>
-                    <select id="category_filter" class="form-select form-select-sm">
-                        <option value="">All Categories</option>
+                <div class="d-flex align-items-center gap-3">
 
-                    </select>
+                    <div class="d-flex align-items-center">
+                        <label for="category_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Category:</label>
+                        <select id="category_filter" class="form-select form-select-sm">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <label for="status_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Status:</label>
+                        <select id="status_filter" class="form-select form-select-sm">
+                            <option value="">All Statuses</option>
+                        </select>
+                    </div>
+
                 </div>
             </div>
             <div class="card-body">

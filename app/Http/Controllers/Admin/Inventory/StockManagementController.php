@@ -110,6 +110,7 @@ class StockManagementController extends Controller
 
                     $inventoryItem->status = 24;
                     $inventoryItem->save();
+                    $inventoryItem->refreshProductAvailability();
                     ////////////////////////////////////////////////////////////////////////////////////////////
                     $previousBatchModel = StockTransaction::where('reference_id', $inventoryItem->id)
                         ->orderByDesc('batch')

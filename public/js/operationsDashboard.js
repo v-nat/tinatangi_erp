@@ -10,7 +10,7 @@ $(document).ready(function () {
     };
 
     const formatCurrency = (val) => {
-        if (val === null || val === undefined) return "₱0.00";
+        if (val === null || val === undefined || isNaN(val)) return "₱0.00";
         return (
             "₱" +
             parseFloat(val).toLocaleString("en-US", {
@@ -21,8 +21,16 @@ $(document).ready(function () {
     };
 
     const formatNumber = (val) => {
-        if (val === null || val === undefined) return "0";
+        if (val === null || val === undefined || isNaN(val)) return "0";
         return parseFloat(val).toLocaleString("en-US");
+    };
+
+    const formatPercent = (value, total) => {
+        if (!total || total <= 0 || value === null || value === undefined) {
+            return "0%";
+        }
+        const percent = (Number(value) / Number(total)) * 100;
+        return `${percent.toFixed(1)}%`;
     };
 
     let topProductsChart;
@@ -74,31 +82,66 @@ $(document).ready(function () {
             type: "GET",
             dataType: "json",
             success: function (response) {
+                const kpis = response.kpis || {};
+                const charts = response.charts || {};
+                const tables = response.tables || {};
 
-                $("#kpi-sales-today").text(formatCurrency(response.kpis.salesToday));
-                $("#kpi-orders-today").text(formatNumber(response.kpis.ordersToday));
-                $("#kpi-avg-value").text(formatCurrency(response.kpis.avgOrderValue));
-                $("#kpi-pending-orders").text(formatNumber(response.kpis.pendingOrders));
+                $("#kpi-sales-today").text(formatCurrency(kpis.salesToday));
+                $("#kpi-total-orders").text(formatNumber(kpis.totalOrders));
+                $("#kpi-completed-orders").text(formatNumber(kpis.completedOrders));
+                $("#kpi-avg-value").text(formatCurrency(kpis.avgOrderValue));
+                $("#kpi-in-progress").text(formatNumber(kpis.inProgressOrders));
+                $("#kpi-voided-orders").text(formatNumber(kpis.voidedOrders));
 
+                const topProducts = charts.topProducts || { labels: [], series: [] };
                 if (topProductsChart) {
                     topProductsChart.updateOptions({
                         xaxis: {
-                            categories: response.charts.topProducts.labels,
+                            categories: topProducts.labels || [],
                         },
                     });
                     topProductsChart.updateSeries([
-                        { name: "Total Sold", data: response.charts.topProducts.series },
+                        {
+                            name: "Total Sold",
+                            data: topProducts.series || [],
+                        },
                     ]);
                 }
 
-                $("#status-in-queue").text(formatNumber(response.tables.liveStatus.in_queue));
-                $("#status-in-prep").text(formatNumber(response.tables.liveStatus.in_prep));
-                $("#status-ready").text(formatNumber(response.tables.liveStatus.ready));
+                const $orderTypeList = $("#order-type-list");
+                $orderTypeList.empty();
+                const orderTypes = charts.orderTypes || { labels: [], series: [] };
+                if (
+                    orderTypes.labels &&
+                    orderTypes.labels.length > 0 &&
+                    orderTypes.series
+                ) {
+                    orderTypes.labels.forEach(function (label, index) {
+                        const count = orderTypes.series[index] || 0;
+                        $orderTypeList.append(
+                            `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span class="text-capitalize">${label}</span>
+                                <span>
+                                    <span class="badge bg-primary me-2">${formatNumber(count)}</span>
+                                    <small class="text-muted">${formatPercent(count, kpis.totalOrders)}</small>
+                                </span>
+                             </li>`
+                        );
+                    });
+                } else {
+                    $orderTypeList.append(
+                        '<li class="list-group-item text-center text-muted">No orders placed today.</li>'
+                    );
+                }
+
+                $("#status-in-queue").text(formatNumber(tables.liveStatus?.in_queue));
+                $("#status-in-prep").text(formatNumber(tables.liveStatus?.in_prep));
+                $("#status-ready").text(formatNumber(tables.liveStatus?.ready));
 
                 const $lowStockBody = $("#table-low-stock tbody");
                 $lowStockBody.empty();
-                if (response.tables.lowStockItems && response.tables.lowStockItems.length > 0) {
-                    $.each(response.tables.lowStockItems, function (index, item) {
+                if (tables.lowStockItems && tables.lowStockItems.length > 0) {
+                    $.each(tables.lowStockItems, function (index, item) {
                         const row = `
                             <tr>
                                 <td>${item.name}</td>

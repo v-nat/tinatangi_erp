@@ -32,12 +32,16 @@ $(function () {
             },
             { data: "category_name", title: "Category", defaultContent: "N/A" },
             {
-                data: "servings",
+                data: "available_servings",
                 title: "Servings",
                 className: "text-center",
                 defaultContent: "N/A",
                 render: function (data, type, row) {
-                    return data ? parseInt(data) : 'N/A';
+                    if (data === null || data === undefined) {
+                        return 'N/A';
+                    }
+                    const parsed = parseInt(data, 10);
+                    return Number.isNaN(parsed) ? 'N/A' : parsed;
                 }
             },
             {

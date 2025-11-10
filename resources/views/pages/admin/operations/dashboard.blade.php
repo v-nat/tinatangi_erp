@@ -14,7 +14,7 @@
         </ol>
     </nav>
 
-    <section class="section row">
+    <section class="section row g-3">
         <div class="col-md-3">
             <div class="card shadow-sm border-0 rounded-lg">
                 <div class="card-body">
@@ -42,8 +42,9 @@
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted font-semibold">Orders Today</h6>
-                            <h5 class="font-extrabold mb-0" id="kpi-orders-today">Loading...</h5>
+                            <h6 class="text-muted font-semibold">Completed Orders</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-completed-orders">Loading...</h5>
+                            <span class="text-muted small d-block mt-1">Total orders today: <span class="fw-semibold" id="kpi-total-orders">0</span></span>
                         </div>
                     </div>
                 </div>
@@ -76,8 +77,9 @@
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted font-semibold">Pending Orders</h6>
-                            <h5 class="font-extrabold mb-0" id="kpi-pending-orders">Loading...</h5>
+                            <h6 class="text-muted font-semibold">Orders In Progress</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-in-progress">Loading...</h5>
+                            <span class="text-muted small d-block mt-1">Voided today: <span class="fw-semibold" id="kpi-voided-orders">0</span></span>
                         </div>
                     </div>
                 </div>
@@ -85,7 +87,7 @@
         </div>
     </section>
 
-    <section class="section row">
+    <section class="section row g-3">
         <div class="col-md-7">
             <div class="card shadow-sm border-0 rounded-lg h-100">
                 <div class="card-header">
@@ -97,7 +99,7 @@
             </div>
         </div>
         <div class="col-md-5">
-            <div class="card shadow-sm border-0 rounded-lg h-100">
+            <div class="card shadow-sm border-0 rounded-lg mb-3">
                 <div class="card-header">
                     <h4>Live Order Status</h4>
                 </div>
@@ -141,6 +143,16 @@
 
                 </div>
             </div>
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-header">
+                    <h4>Order Mix (Today)</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group" id="order-type-list">
+                        <li class="list-group-item text-center text-muted">Loading...</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -155,8 +167,8 @@
                         <table class="table table-hover" id="table-low-stock">
                             <thead>
                                 <tr>
-                                    <th>Item Name</th>
-                                    <th>Stock Level</th>
+                                    <th>Product</th>
+                                    <th>Servings Left</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -178,5 +190,5 @@
     {{-- We need these for the charts --}}
     <script src="{{ asset('assets/vendors/dayjs/dayjs.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
-    <script typeF="module" src="{{ asset('js/operationsDashboard.js') }}"></script>
+    <script type="module" src="{{ asset('js/operationsDashboard.js') }}"></script>
 @endsection

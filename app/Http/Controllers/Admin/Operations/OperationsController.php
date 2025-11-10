@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Status;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\InventoryItem;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -35,30 +36,52 @@ class OperationsController extends Controller
     {
         $today = Carbon::today();
 
+        $completedStatuses = [23];
+        $inProgressStatuses = [28, 29, 30];
+        $voidedStatuses = [31];
+        $cancelledStatuses = array_merge($voidedStatuses, [12]);
+
         $salesToday = Order::whereDate('created_at', $today)
-                           ->whereNotIn('status', [12, 31])
-                           ->sum('total_amount');
+            ->whereIn('status', $completedStatuses)
+            ->sum('total_amount');
 
-        $ordersToday = Order::whereDate('created_at', $today)
-                            ->whereNotIn('status', [12, 31])
-                            ->count();
+        $completedOrders = Order::whereDate('created_at', $today)
+            ->whereIn('status', $completedStatuses)
+            ->count();
 
-        $avgOrderValue = $ordersToday > 0 ? $salesToday / $ordersToday : 0;
+        $totalOrders = Order::whereDate('created_at', $today)
+            ->whereNotIn('status', $cancelledStatuses)
+            ->count();
 
-        $pendingOrders = Order::whereIn('status', [28, 29])->count();
+        $avgOrderValue = $completedOrders > 0 ? $salesToday / $completedOrders : 0;
 
-        $topProducts = OrderItem::join('products', 'order_items.product_id', '=', 'products.id')
-            ->whereHas('orderRS', function($q) use ($today) {
-                $q->whereDate('created_at', $today);
-            })
+        $inProgressOrders = Order::whereDate('created_at', $today)
+            ->whereIn('status', $inProgressStatuses)
+            ->count();
+
+        $voidedOrders = Order::whereDate('created_at', $today)
+            ->whereIn('status', $voidedStatuses)
+            ->count();
+
+        $topProducts = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->whereDate('orders.created_at', $today)
+            ->whereIn('orders.status', $completedStatuses)
             ->select('products.name', DB::raw('SUM(order_items.quantity) as total_sold'))
             ->groupBy('products.name')
-            ->orderBy('total_sold', 'desc')
+            ->orderByDesc('total_sold')
             ->take(5)
             ->get();
 
+        $orderTypeCounts = Order::select('order_type', DB::raw('count(*) as total'))
+            ->whereDate('created_at', $today)
+            ->whereNotIn('status', $cancelledStatuses)
+            ->groupBy('order_type')
+            ->get();
+
         $orderStatusCounts = Order::select('status', DB::raw('count(*) as total'))
-            ->whereIn('status', [28, 29, 30])
+            ->whereDate('created_at', $today)
+            ->whereIn('status', $inProgressStatuses)
             ->groupBy('status')
             ->pluck('total', 'status');
 
@@ -68,34 +91,58 @@ class OperationsController extends Controller
             'ready' => $orderStatusCounts->get(30, 0),
         ];
 
-        $lowStockItems = InventoryItem::with('item')
-            ->whereIn('status', [25, 26])
-            ->orderBy('status', 'desc')
-            ->take(10)
+        $lowStockProducts = Product::with(['ingredients' => function ($query) {
+                $query->withPivot('quantity_used');
+            }, 'ingredients.item', 'statusRS'])
+            ->withCount('ingredients')
             ->get()
-            ->map(fn($invItem) => [
-                'name' => $invItem->item->name ?? 'Unknown Item',
-                'stock_level' => $invItem->stock_level,
-                'status_html' => Status::getStatusText($invItem->status)
-            ]);
+            ->map(function (Product $product) {
+                $availableServings = $product->calculateAvailableServings();
+                return [
+                    'product' => $product,
+                    'servings' => $availableServings,
+                ];
+            })
+            ->filter(fn ($data) => $data['servings'] <= 5)
+            ->sortBy('servings')
+            ->take(10)
+            ->map(function ($data) {
+                /** @var \App\Models\Product $product */
+                $product = $data['product'];
+                $statusHtml = Status::getStatusText($product->status);
 
+                return [
+                    'name' => $product->name,
+                    'stock_level' => $data['servings'],
+                    'status_html' => $statusHtml,
+                ];
+            })
+            ->values();
 
         return response()->json([
             'kpis' => [
-                'salesToday' => $salesToday,
-                'ordersToday' => $ordersToday,
-                'avgOrderValue' => $avgOrderValue,
-                'pendingOrders' => $pendingOrders,
+                'salesToday' => round($salesToday, 2),
+                'totalOrders' => $totalOrders,
+                'completedOrders' => $completedOrders,
+                'avgOrderValue' => round($avgOrderValue, 2),
+                'inProgressOrders' => $inProgressOrders,
+                'voidedOrders' => $voidedOrders,
             ],
             'charts' => [
                 'topProducts' => [
                     'labels' => $topProducts->pluck('name'),
-                    'series' => $topProducts->pluck('total_sold'),
-                ]
+                    'series' => $topProducts->pluck('total_sold')->map(fn ($count) => (int) $count),
+                ],
+                'orderTypes' => [
+                    'labels' => $orderTypeCounts->pluck('order_type')->map(function ($type) {
+                        return ucwords(str_replace('-', ' ', $type));
+                    }),
+                    'series' => $orderTypeCounts->pluck('total')->map(fn ($count) => (int) $count),
+                ],
             ],
             'tables' => [
                 'liveStatus' => $liveStatus,
-                'lowStockItems' => $lowStockItems,
+                'lowStockItems' => $lowStockProducts,
             ],
         ]);
     }

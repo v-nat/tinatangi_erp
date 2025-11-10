@@ -47,7 +47,8 @@ class InventoryItem extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function itemss(): BelongsTo{
+    public function itemss(): BelongsTo
+    {
         return $this->belongsTo(Item::class, 'item_id');
     }
 
@@ -75,14 +76,26 @@ class InventoryItem extends Model
         return $this->belongsTo(Status::class, 'status');
     }
 
-    public function inventoryLocation(): BelongsTo {
+    public function inventoryLocation(): BelongsTo
+    {
         return $this->belongsTo(InventoryLocation::class, 'inventory_location_id');
     }
 
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'recipe_items')
-                    ->withPivot('quantity_used');
+            ->withPivot('quantity_used');
+    }
+
+    /**
+     * Recalculate availability for all products that use this inventory item.
+     */
+    public function refreshProductAvailability(): void
+    {
+        $this->loadMissing('products.ingredients');
+
+        foreach ($this->products as $product) {
+            $product->syncAvailability();
+        }
     }
 }
-

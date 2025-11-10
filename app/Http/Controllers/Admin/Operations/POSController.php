@@ -31,28 +31,20 @@ class POSController extends Controller
 
             $products = $query->with('productCategoryRS', 'ingredients')
                 ->select('id', 'name', 'base_price', 'image', 'servings', 'product_category_id')
-                ->get();
+                ->get()
+                ->map(function (Product $product) {
+                    $availableServings = $product->syncAvailability();
 
-            $products = $products->map(function ($product) {
-
-                $canMakeOne = true;
-                if ($product->ingredients->isNotEmpty()) {
-                    foreach ($product->ingredients as $ingredient) {
-                        $quantityNeededForOne = $ingredient->pivot->quantity_used;
-                        if ($ingredient->stock_level < $quantityNeededForOne) {
-                            $canMakeOne = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (!$canMakeOne) {
-                    $product->servings = 0;
-                }
-
-                unset($product->ingredients);
-                return $product;
-            });
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'base_price' => (float) $product->base_price,
+                        'image' => $product->image,
+                        'servings' => $product->servings,
+                        'available_servings' => $availableServings,
+                        'product_category_id' => $product->product_category_id,
+                    ];
+                });
 
             return response()->json(['data' => $products]);
         } catch (\Exception $e) {
@@ -106,7 +98,27 @@ class POSController extends Controller
 
         try {
             $productIds = collect($orderItems)->pluck('product_id')->unique();
-            $products = Product::whereIn('id', $productIds)->pluck('base_price', 'id');
+            $products = Product::with('ingredients')
+                ->whereIn('id', $productIds)
+                ->get()
+                ->keyBy('id');
+
+            if ($products->count() !== $productIds->count()) {
+                throw new \Exception('One or more products could not be found.');
+            }
+
+            $requestedQuantities = collect($orderItems)
+                ->groupBy('product_id')
+                ->map(fn ($items) => $items->sum('quantity'));
+
+            foreach ($requestedQuantities as $productId => $totalQuantity) {
+                $product = $products->get($productId);
+                $availableServings = $product->calculateAvailableServings();
+
+                if ($availableServings < $totalQuantity) {
+                    throw new \Exception("Insufficient servings for {$product->name}. Available: {$availableServings}, requested: {$totalQuantity}.");
+                }
+            }
 
             $calculatedGrandTotal = 0;
             $itemsToSave = [];
@@ -114,12 +126,13 @@ class POSController extends Controller
             foreach ($orderItems as $item) {
                 $productId = $item['product_id'];
                 $quantity = $item['quantity'];
-                $dbUnitPrice = $products->get($productId);
+                $product = $products->get($productId);
 
-                if (is_null($dbUnitPrice)) {
-                    throw new \Exception("Product ID {$productId} not found or price is missing.");
+                if (! $product) {
+                    throw new \Exception("Product ID {$productId} not found.");
                 }
 
+                $dbUnitPrice = (float) $product->base_price;
                 $itemTotal = $dbUnitPrice * $quantity;
                 $calculatedGrandTotal += $itemTotal;
 
@@ -149,39 +162,66 @@ class POSController extends Controller
 
             $order->items()->createMany($itemsToSave);
 
+            $affectedInventoryIds = [];
+
             foreach ($orderItems as $item) {
-                $product = Product::with('ingredients')->find($item['product_id']);
+                $product = $products->get($item['product_id']);
 
                 if ($product && $product->ingredients->isNotEmpty()) {
                     foreach ($product->ingredients as $ingredient) {
-                        $inventoryItem = InventoryItem::find($ingredient->id);
+                        $inventoryItem = InventoryItem::whereKey($ingredient->id)->lockForUpdate()->first();
 
-                        if ($inventoryItem) {
-                            $quantityUsedPerProduct = $ingredient->pivot->quantity_used;
-
-                            $totalQuantityToDeduct = $quantityUsedPerProduct * $item['quantity'];
-
-                            $oldQuantity = $inventoryItem->stock_level;
-
-                            if ($inventoryItem->stock_level < $totalQuantityToDeduct) {
-                                throw new \Exception("Insufficient stock for: " . optional($inventoryItem->itemss)->name);
-                            }
-
-                            $inventoryItem->decrement('stock_level', $totalQuantityToDeduct);
-
-                            StockTransaction::create([
-                                'transaction_type' => TransactionType::OUT,
-                                'quantity' => $totalQuantityToDeduct,
-                                'old_qnty' => $oldQuantity,
-                                'transaction_date' => now(),
-                                'reference_type' => 'Sale',
-                                'reference_id' => $inventoryItem->id,
-                                'user_id' => auth('')->id(),
-                                'status' => 23,
-                            ]);
+                        if (! $inventoryItem) {
+                            throw new \Exception('Inventory item not found for ingredient.');
                         }
+
+                        $quantityUsedPerProduct = (float) $ingredient->pivot->quantity_used;
+
+                        if ($quantityUsedPerProduct <= 0) {
+                            continue;
+                        }
+
+                        $totalQuantityToDeduct = $quantityUsedPerProduct * $item['quantity'];
+                        $availableBaseStock = $inventoryItem->base_unit_stock_level ?? $inventoryItem->stock_level ?? 0;
+
+                        if ($availableBaseStock < $totalQuantityToDeduct) {
+                            throw new \Exception("Insufficient stock for: " . optional($inventoryItem->itemss)->name);
+                        }
+
+                        $oldBaseQuantity = $inventoryItem->base_unit_stock_level ?? $inventoryItem->stock_level;
+                        $oldQuantity = $inventoryItem->stock_level;
+
+                        if (! is_null($inventoryItem->base_unit_stock_level)) {
+                            $inventoryItem->base_unit_stock_level = max(
+                                0,
+                                $inventoryItem->base_unit_stock_level - $totalQuantityToDeduct
+                            );
+                        }
+
+                        $inventoryItem->stock_level = max(0, $inventoryItem->stock_level - $totalQuantityToDeduct);
+                        $inventoryItem->save();
+
+                        $affectedInventoryIds[] = $inventoryItem->id;
+
+                        StockTransaction::create([
+                            'transaction_type' => TransactionType::OUT,
+                            'quantity' => $totalQuantityToDeduct,
+                            'old_qnty' => $oldBaseQuantity,
+                            'transaction_date' => now(),
+                            'reference_type' => 'Sale',
+                            'reference_id' => $inventoryItem->id,
+                            'user_id' => auth('')->id(),
+                            'status' => 23,
+                        ]);
                     }
                 }
+            }
+
+            if (! empty($affectedInventoryIds)) {
+                InventoryItem::whereIn('id', array_unique($affectedInventoryIds))
+                    ->get()
+                    ->each
+                    ->refreshProductAvailability();
             }
 
             DB::commit();
@@ -246,35 +286,59 @@ class POSController extends Controller
                 $order->status = 31;
                 $order->save();
 
+                $affectedInventoryIds = [];
+
                 foreach ($order->items as $item) {
                     $product = Product::with('ingredients')->find($item->product_id);
                     $orderQuantity = $item->quantity;
 
                     if ($product && $product->ingredients->isNotEmpty()) {
                         foreach ($product->ingredients as $ingredient) {
-                            $inventoryItem = InventoryItem::find($ingredient->id);
-                            if ($inventoryItem) {
-                                $quantityUsedPerProduct = $ingredient->pivot->quantity_used;
+                            $inventoryItem = InventoryItem::whereKey($ingredient->id)->lockForUpdate()->first();
 
-                                $totalQuantityToReturn = $quantityUsedPerProduct * $orderQuantity;
-
-                                $oldQuantity = $inventoryItem->stock_level;
-
-                                $inventoryItem->increment('stock_level', $totalQuantityToReturn);
-
-                                StockTransaction::create([
-                                    'transaction_type' => TransactionType::IN,
-                                    'quantity' => $totalQuantityToReturn,
-                                    'old_qnty' => $oldQuantity,
-                                    'transaction_date' => now(),
-                                    'reference_type' => 'Void Sale',
-                                    'reference_id' => $inventoryItem->id,
-                                    'user_id' => auth('')->id(),
-                                    'status' => 23,
-                                ]);
+                            if (! $inventoryItem) {
+                                continue;
                             }
+
+                            $quantityUsedPerProduct = (float) $ingredient->pivot->quantity_used;
+
+                            if ($quantityUsedPerProduct <= 0) {
+                                continue;
+                            }
+
+                            $totalQuantityToReturn = $quantityUsedPerProduct * $orderQuantity;
+
+                            $oldBaseQuantity = $inventoryItem->base_unit_stock_level ?? $inventoryItem->stock_level;
+                            $oldQuantity = $inventoryItem->stock_level;
+
+                            if (! is_null($inventoryItem->base_unit_stock_level)) {
+                                $inventoryItem->base_unit_stock_level += $totalQuantityToReturn;
+                            }
+
+                            $inventoryItem->stock_level += $totalQuantityToReturn;
+                            $inventoryItem->save();
+
+                            $affectedInventoryIds[] = $inventoryItem->id;
+
+                            StockTransaction::create([
+                                'transaction_type' => TransactionType::IN,
+                                'quantity' => $totalQuantityToReturn,
+                                'old_qnty' => $oldBaseQuantity,
+                                'transaction_date' => now(),
+                                'reference_type' => 'Void Sale',
+                                'reference_id' => $inventoryItem->id,
+                                'user_id' => auth('')->id(),
+                                'status' => 23,
+                            ]);
                         }
                     }
+                }
+
+                if (! empty($affectedInventoryIds)) {
+                    InventoryItem::whereIn('id', array_unique($affectedInventoryIds))
+                        ->get()
+                        ->each
+                        ->refreshProductAvailability();
                 }
 
                 DB::commit();

@@ -4,6 +4,18 @@ $(function () {
     let allUnits = {};
     let allConversions = [];
     let ingredientIndex = 0;
+    const $servingsField = $("#servings_per_recipe");
+    let servingsFieldName = null;
+
+    if ($servingsField.length) {
+        servingsFieldName = $servingsField.attr("name");
+        $servingsField
+            .attr("readonly", true)
+            .removeAttr("required")
+            .data("original-name", servingsFieldName)
+            .attr("name", "")
+            .addClass("bg-light");
+    }
 
     $("#products-table").on("click", ".manage-recipe-btn", function () {
         const productId = $(this).data("product-id");
@@ -13,7 +25,9 @@ $(function () {
         $("#recipe-product-name").text("Loading...");
         $("#current-ingredients-list").html("<p>Loading recipe...</p>");
         $("#ingredient-list").empty();
-        $("#servings_per_recipe").val(1);
+        if ($servingsField.length) {
+            $servingsField.val("Calculating...");
+        }
         loadRecipeData(productId);
         $("#recipeModal").modal("show");
     });
@@ -29,7 +43,13 @@ $(function () {
                 ingredientIndex = 0;
 
                 $("#recipe-product-name").text(data.product.name);
-                $("#servings_per_recipe").val(data.product.servings || 1);
+                if ($servingsField.length) {
+                    const availableServings =
+                        data.product.available_servings ??
+                        data.product.servings ??
+                        0;
+                    $servingsField.val(availableServings);
+                }
 
                 const $currentList = $("#current-ingredients-list").empty();
                 if (data.currentIngredients.length > 0) {
@@ -170,6 +190,9 @@ $(function () {
                     timer: 1500,
                 });
                 $("#products-table").DataTable().ajax.reload();
+                if ($servingsField.length && response.available_servings !== undefined) {
+                    $servingsField.val(response.available_servings);
+                }
             },
             error: function (xhr) {
                 $("#LoadingScreen").fadeOut(200);

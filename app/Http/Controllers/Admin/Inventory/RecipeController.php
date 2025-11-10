@@ -14,6 +14,7 @@ class RecipeController extends Controller
     public function getRecipeData(Product $product)
     {
         $product->load('ingredients.item.unitRS');
+        $product->setAttribute('available_servings', $product->calculateAvailableServings());
         $allInventoryItems = InventoryItem::with('item.categoryRS', 'item.unitRS', 'unit')->get(); // Eager load item unit
         $allUnits = ItemUnit::all()->groupBy('type');
         $allConversions = UnitConversion::all();
@@ -40,16 +41,15 @@ class RecipeController extends Controller
     public function update(Request $request, Product $product)
     {
         $request->validate([
-            'servings_per_recipe' => 'required|numeric|min:1',
-            'ingredients' => 'nullable|array',
+            'ingredients' => 'required|array|min:1',
             'ingredients.*.id' => 'required|exists:inventory_items,id',
             'ingredients.*.quantity' => 'required|numeric|min:0.01',
             'ingredients.*.unit_id' => 'required|integer|exists:item_units,id',
         ]);
 
-        $servingsPerRecipe = $request->input('servings_per_recipe');
         $ingredientsData = $request->input('ingredients', []);
         $dataToSync = [];
+        $previousIngredientIds = $product->ingredients()->pluck('inventory_items.id')->all();
 
         foreach ($ingredientsData as $ingredient) {
             $submittedQuantity = $ingredient['quantity'];
@@ -76,10 +76,26 @@ class RecipeController extends Controller
 
         $product->ingredients()->sync($dataToSync);
 
-        $product->servings = $servingsPerRecipe;
-        $product->status = 1;
+        $product->load('ingredients');
+        $availableServings = $product->syncAvailability();
+        $product->servings = $availableServings;
         $product->save();
 
-        return response()->json(['message' => 'Recipe updated successfully!']);
+        $affectedInventoryIds = array_unique(array_merge(
+            $previousIngredientIds,
+            array_keys($dataToSync)
+        ));
+
+        if (! empty($affectedInventoryIds)) {
+            InventoryItem::whereIn('id', $affectedInventoryIds)
+                ->get()
+                ->each
+                ->refreshProductAvailability();
+        }
+
+        return response()->json([
+            'message' => 'Recipe updated successfully!',
+            'available_servings' => $availableServings,
+        ]);
     }
 }

@@ -24,7 +24,8 @@ class ProductController extends Controller
 
     public function show(Product $product): JsonResponse
     {
-        $product->load('productCategoryRS');
+        $product->load('productCategoryRS', 'ingredients');
+        $availableServings = $product->syncAvailability();
 
         $formattedProduct = [
             'id'            => $product->id,
@@ -32,10 +33,11 @@ class ProductController extends Controller
             'description'   => $product->description,
             'base_price'    => (float) $product->base_price,
             'category_name' => optional($product->productCategoryRS)->name ?? 'Uncategorized',
-            'status'        =>(int) $product->status,
-            'status_text'   => $product->status,
+            'status'        => (int) $product->status,
+            'status_text'   => Status::getStatusText($product->status),
             'image'         => $product->image,
             'servings'      => $product->servings,
+            'available_servings' => $availableServings,
         ];
 
         return response()->json([
@@ -46,10 +48,12 @@ class ProductController extends Controller
     public function getProductData()
     {
         try {
-            $products = Product::with(['productCategoryRS'])->get();
+            $products = Product::with(['productCategoryRS', 'ingredients'])->get();
 
             return response()->json([
                 'data' => $products->map(function ($product) {
+                    $availableServings = $product->syncAvailability();
+
                     return [
                         'id'            => $product->id,
                         'name'          => $product->name,
@@ -57,6 +61,7 @@ class ProductController extends Controller
                         'base_price'    => $product->base_price,
                         'category_name' => optional($product->productCategoryRS)->name,
                         'servings'      => $product->servings,
+                        'available_servings' => $availableServings,
                         'status'        => Status::getStatusText($product->status),
                         'created_at'    => Carbon::parse($product->created_at)->format('M d, Y'),
                     ];
@@ -163,16 +168,27 @@ class ProductController extends Controller
             list($sourceWidth, $sourceHeight, $sourceType) = getimagesize($sourcePath);
 
             switch ($sourceType) {
-                case IMAGETYPE_JPEG: $sourceImage = imagecreatefromjpeg($sourcePath); break;
-                case IMAGETYPE_PNG: $sourceImage = imagecreatefrompng($sourcePath); break;
-                case IMAGETYPE_GIF: $sourceImage = imagecreatefromgif($sourcePath); break;
-                default: return response()->json(['message' => 'Unsupported image type.'], 422);
+                case IMAGETYPE_JPEG:
+                    $sourceImage = imagecreatefromjpeg($sourcePath);
+                    break;
+                case IMAGETYPE_PNG:
+                    $sourceImage = imagecreatefrompng($sourcePath);
+                    break;
+                case IMAGETYPE_GIF:
+                    $sourceImage = imagecreatefromgif($sourcePath);
+                    break;
+                default:
+                    return response()->json(['message' => 'Unsupported image type.'], 422);
             }
 
-            $targetWidth = 250; $targetHeight = 250;
+            $targetWidth = 250;
+            $targetHeight = 250;
             $sourceRatio = $sourceWidth / $sourceHeight;
             $targetRatio = $targetWidth / $targetHeight;
-            $srcX = 0; $srcY = 0; $srcW = $sourceWidth; $srcH = $sourceHeight;
+            $srcX = 0;
+            $srcY = 0;
+            $srcW = $sourceWidth;
+            $srcH = $sourceHeight;
 
             if ($sourceRatio > $targetRatio) {
                 $srcW = $sourceHeight * $targetRatio;
@@ -219,39 +235,12 @@ class ProductController extends Controller
     public function getServings(Product $product): JsonResponse
     {
         $product->load('ingredients');
+        $availableServings = $product->syncAvailability();
 
-        $totalServings = 0;
-        if ($product->ingredients->isNotEmpty()) {
-            $servingsPerIngredient = [];
-
-            foreach ($product->ingredients as $ingredient) {
-                $stockInBaseUnit = $ingredient->base_unit_stock_level ?? 0;
-                $quantityUsedInRecipe = $ingredient->pivot->quantity_used;
-
-                if ($quantityUsedInRecipe > 0) {
-                    $servingsPerIngredient[] = floor($stockInBaseUnit / $quantityUsedInRecipe);
-                } else {
-                    $servingsPerIngredient[] = INF;
-                }
-            }
-
-            if (!empty($servingsPerIngredient)) {
-                $totalServings = min($servingsPerIngredient);
-            }
-        }
-
-        if ($totalServings === INF) {
-            $totalServings = 0;
-        }
-
-        $newStatus = ($totalServings > 0) ? 1 : 2;
-
-        if ($product->status != $newStatus) {
-            $product->status = $newStatus;
-            $product->save();
-        }
-
-        return response()->json(['servings' => $totalServings]);
+        return response()->json([
+            'servings' => $availableServings,
+            'status' => Status::getStatusText($product->status),
+        ]);
     }
 
     public function destroy(Product $product): JsonResponse
@@ -266,7 +255,6 @@ class ProductController extends Controller
             return response()->json([
                 'message' => 'Product deleted successfully!'
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to delete product.'
@@ -297,7 +285,6 @@ class ProductController extends Controller
             return response()->json([
                 'message' => 'Selected products deleted successfully!'
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
