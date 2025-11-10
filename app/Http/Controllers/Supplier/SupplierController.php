@@ -11,12 +11,14 @@ use App\Models\Invoice;
 use App\Models\Item;
 use App\Models\Category;
 use App\Models\ItemUnit;
+use App\Models\PurchaseOrder;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class SupplierController extends Controller
 {
@@ -29,9 +31,14 @@ class SupplierController extends Controller
         return view('pages.supplier.index');
     }
 
+    public function productsPage()
+    {
+        return view('pages.supplier.products');
+    }
+
     public function dashboardSummary()
     {
-        $supplierId = auth()->id();
+        $supplierId = auth('')->id();
 
         $totalProducts = Item::where('supplier_id', $supplierId)->count();
 
@@ -44,10 +51,92 @@ class SupplierController extends Controller
             ->whereIn('status', [20, 21])
             ->count();
 
+        $returnsPending = PurchaseOrderDetail::whereHas('purchaseOrder', function ($query) use ($supplierId) {
+            $query->where('supplier_id', $supplierId);
+        })->where('status', 22)->count();
+
+        $redeliveryPending = PurchaseOrderDetail::whereHas('purchaseOrder', function ($query) use ($supplierId) {
+            $query->where('supplier_id', $supplierId);
+        })->where('status', 36)->count();
+
+        $statusBreakdown = PurchaseRequest::select('status', DB::raw('COUNT(*) as total'))
+            ->where('supplier_id', $supplierId)
+            ->whereIn('status', [20, 21, 22, 36, 17, 16])
+            ->groupBy('status')
+            ->get()
+            ->map(function ($row) {
+                $statusHtml = Status::getStatusText($row->status);
+                $statusPlain = trim(preg_replace('/\s+/', ' ', strip_tags(str_replace('<br>', ' ', $statusHtml))));
+                return [
+                    'status' => (int) $row->status,
+                    'label' => $statusPlain,
+                    'status_html' => $statusHtml,
+                    'count' => (int) $row->total,
+                ];
+            })
+            ->values();
+
+        $recentOrders = PurchaseRequest::with('statusRS')
+            ->where('supplier_id', $supplierId)
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($request) {
+                $statusHtml = Status::getStatusText($request->status);
+                $statusPlain = trim(preg_replace('/\s+/', ' ', strip_tags(str_replace('<br>', ' ', $statusHtml))));
+                $requestedDate = $request->requested_date
+                    ? Carbon::parse($request->requested_date)->format('M d, Y')
+                    : '—';
+                return [
+                    'purchase_request_id' => $request->id,
+                    'status_html' => $statusHtml,
+                    'status_plain' => $statusPlain,
+                    'requested_date' => $requestedDate,
+                    'updated_human' => optional($request->updated_at)->diffForHumans(),
+                    'total_amount' => (float) $request->amount,
+                ];
+            })
+            ->values();
+
+        $upcomingDeliveries = PurchaseOrder::with('purchaseRequest')
+            ->where('supplier_id', $supplierId)
+            ->whereIn('status', [18, 21, 20, 36])
+            ->orderByRaw('COALESCE(expected_delivery_date, order_date, updated_at) ASC')
+            ->take(5)
+            ->get()
+            ->map(function ($order) {
+                $statusHtml = Status::getStatusText($order->status);
+                $expectedDate = $order->expected_delivery_date
+                    ? Carbon::parse($order->expected_delivery_date)->format('M d, Y')
+                    : 'Not set';
+                return [
+                    'purchase_order_id' => $order->purchase_orderId,
+                    'status_html' => $statusHtml,
+                    'expected_date' => $expectedDate,
+                    'order_reference' => optional($order->purchaseRequest)->id,
+                ];
+            })
+            ->values();
+
+        $activityFeed = $recentOrders->map(function ($order) {
+            return [
+                'message' => "Purchase Request #{$order['purchase_request_id']} is {$order['status_plain']}",
+                'timestamp' => $order['updated_human'] ?? '—',
+            ];
+        })->values();
+
         return response()->json([
-            'totalProducts' => $totalProducts,
-            'activeOrders' => $activeOrders,
-            'pendingShipments' => $pendingShipments,
+            'kpis' => [
+                'totalProducts' => $totalProducts,
+                'activeOrders' => $activeOrders,
+                'pendingShipments' => $pendingShipments,
+                'returnsPending' => $returnsPending,
+                'redeliveryPending' => $redeliveryPending,
+            ],
+            'statusBreakdown' => $statusBreakdown,
+            'recentOrders' => $recentOrders,
+            'upcomingDeliveries' => $upcomingDeliveries,
+            'activityFeed' => $activityFeed,
         ]);
     }
 
@@ -64,7 +153,7 @@ class SupplierController extends Controller
 
     public function listItems()
     {
-        $supplierId = auth()->id();
+        $supplierId = auth('')->id();
 
         $items = Item::with(['category', 'unit'])
             ->where('supplier_id', $supplierId)
@@ -92,7 +181,7 @@ class SupplierController extends Controller
 
     public function storeItem(StoreItemRequest $request)
     {
-        $supplierId = auth()->id();
+        $supplierId = auth('')->id();
 
         $item = Item::create([
             'name' => $request->name,
@@ -145,7 +234,7 @@ class SupplierController extends Controller
 
     protected function authorizeItem(Item $item): void
     {
-        if ($item->supplier_id !== auth()->id()) {
+        if ($item->supplier_id !== auth('')->id()) {
             abort(403, 'Unauthorized action.');
         }
     }
@@ -160,7 +249,7 @@ class SupplierController extends Controller
                 'employeeRS',
                 'supplierRS',
                 'deptRS',
-            ])->where('supplier_id', auth()->id())
+            ])->where('supplier_id', auth('')->id())
                 ->whereIn('status', [20, 21, 16, 19, 23, 17, 22, 36])
                 ->orderBy('updated_at', 'desc')
                 ->get();

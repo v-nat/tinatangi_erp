@@ -1,7 +1,11 @@
 import { reloadTable } from "./utils/reloadTable.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    const $dashboardRefresh = $("#btn-refresh-supplier-dashboard");
+    if (!document.querySelector("#supplier-products-table")) {
+        return;
+    }
+
+    const $tableRefresh = $("#btn-refresh-supplier-products");
     const $addProductBtn = $("#btn-add-supplier-product");
     const $productModal = $("#supplierProductModal");
     const $productForm = $("#supplierProductForm");
@@ -72,24 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 Toast.fire({
                     title: "Error",
                     text: "Unable to load product options.",
-                    icon: "error",
-                });
-            });
-    }
-
-    function fetchDashboardSummary() {
-        $.getJSON("/supplier/dashboard-summary")
-            .done((data) => {
-                $("#summary-total-products").text(data.totalProducts ?? 0);
-                $("#summary-active-orders").text(data.activeOrders ?? 0);
-                $("#summary-pending-shipments").text(
-                    data.pendingShipments ?? 0
-                );
-            })
-            .fail(() => {
-                Toast.fire({
-                    title: "Error",
-                    text: "Unable to refresh dashboard summary.",
                     icon: "error",
                 });
             });
@@ -218,7 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
             success: function (response) {
                 $productModal.modal("hide");
                 reloadTable("supplier-products-table");
-                fetchDashboardSummary();
                 resetProductForm();
                 Toast.fire({
                     title: "Success",
@@ -255,14 +240,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    $dashboardRefresh.on("click", function () {
-        fetchDashboardSummary();
-        reloadTable("supplier-products-table");
-    });
+    if ($tableRefresh.length) {
+        $tableRefresh.on("click", function () {
+            reloadTable("supplier-products-table");
+        });
+    }
 
-    $addProductBtn.on("click", function () {
-        openCreateModal();
-    });
+    if ($addProductBtn.length) {
+        $addProductBtn.on("click", function () {
+            openCreateModal();
+        });
+    }
 
     $(document).on("click", ".btn-edit-product", function () {
         const productId = $(this).data("id");
@@ -278,7 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
         submitProductForm();
     });
 
-    fetchDashboardSummary();
     fetchOptions().then(() => {
         initDataTable();
     });

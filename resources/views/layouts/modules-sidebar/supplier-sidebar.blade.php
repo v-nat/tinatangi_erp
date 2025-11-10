@@ -4,6 +4,12 @@
         <span>Dashboard</span>
     </a>
 </li>
+<li class="sidebar-item @yield('supplierProducts') ">
+    <a href="{{ route('supplier.products') }}" class='sidebar-link'>
+        <i class="bi bi-box-seam"></i>
+        <span>My Products</span>
+    </a>
+</li>
 <li class="sidebar-item @yield('supplierApprove') ">
     <a href="{{route('supplier.approve')}}" class='sidebar-link'>
         <i class="bi bi-truck"></i>

@@ -10,6 +10,7 @@ Route::get('/supplier', [SupplierController::class, 'index'])->middleware('auth'
 
 Route::prefix('/supplier')->middleware(['auth', 'isSupplier'])->group(function () {
     Route::get('/approve-purchase', [SupplierController::class, 'approveRequest'])->name('supplier.approve');
+    Route::get('/products', [SupplierController::class, 'productsPage'])->name('supplier.products');
     Route::get('/dashboard-summary', [SupplierController::class, 'dashboardSummary']);
     Route::get('/products/options', [SupplierController::class, 'productOptions']);
     Route::get('/products/list', [SupplierController::class, 'listItems']);
