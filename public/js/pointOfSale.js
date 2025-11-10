@@ -43,7 +43,7 @@ $(document).ready(function () {
                     </div>`;
                     $(id).html(placeholderHtml);
                 } else {
-                productsArray.forEach((element) => {
+                    productsArray.forEach((element) => {
                         const imagePath = element.image;
                         let imageUrl;
 
@@ -52,10 +52,13 @@ $(document).ready(function () {
                         } else {
                             imageUrl = DEFAULT_PRODUCT_IMAGE;
                         }
-                        const rawServings = element.available_servings ?? element.servings ?? 0;
+                        const rawServings =
+                            element.available_servings ?? element.servings ?? 0;
                         const parsedServings = parseInt(rawServings, 10);
-                        const servings = Number.isNaN(parsedServings) ? 0 : parsedServings;
-                        let servingsHtml = '';
+                        const servings = Number.isNaN(parsedServings)
+                            ? 0
+                            : parsedServings;
+                        let servingsHtml = "";
 
                         if (servings > 0) {
                             servingsHtml = `<span class="position-absolute top-0 end-0 bg-primary text-white p-1 px-2 rounded-pill" style="font-size: 0.8rem; margin: 5px;">${servings} servings</span>`;
@@ -67,8 +70,14 @@ $(document).ready(function () {
                             `;
                         }
                         productsHtml.push(`
-                        <div class="col" data-id="${element.id}" data-available-servings="${servings}" ${servings <= 0 ? 'data-disabled="true"' : ''}>
-                            <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2 ${servings <= 0 ? 'border-danger' : ''}">
+                        <div class="col" data-id="${
+                            element.id
+                        }" data-available-servings="${servings}" ${
+                            servings <= 0 ? 'data-disabled="true"' : ""
+                        }>
+                            <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2 ${
+                                servings <= 0 ? "border-danger" : ""
+                            }">
                                 ${servingsHtml}
                                 <img src="${imageUrl}" class="card-img-top img-fluid prod-img" alt="Product Image">
                                 <div class="card-body p-2 flex-grow-1">
@@ -225,6 +234,7 @@ $(document).ready(function () {
             $quantityInput.val(1);
         }
 
+        updateTotalPrice();
         $("#addItemOrder").modal("show");
     });
 
@@ -292,6 +302,7 @@ $(document).ready(function () {
             $("#LoadingScreen").fadeIn(200);
 
             const _id = $("#_item_id").val();
+            const basePrice = parseFloat($("#_base_price").data("price")) || 0;
             const quantityInput = $("#quantity");
             const newQuantity = parseInt(quantityInput.val()) || 1;
             const modalAvailable =
@@ -300,10 +311,7 @@ $(document).ready(function () {
                 parseInt($("#addOrder").data("current-quantity"), 10) || 0;
             const requestedTotal = modalExisting + newQuantity;
 
-            if (
-                modalAvailable > 0 &&
-                requestedTotal > modalAvailable
-            ) {
+            if (modalAvailable > 0 && requestedTotal > modalAvailable) {
                 $("#LoadingScreen").fadeOut(200);
                 Toast.fire({
                     icon: "error",
@@ -318,7 +326,10 @@ $(document).ready(function () {
 
             const totalPriceText = $("#total_price").text().trim();
             const newTotalPrice =
-                parseFloat(totalPriceText.replace(/[^\d\.]/g, "").trim()) || 0;
+                parseFloat(totalPriceText.replace(/[^0-9.]/g, "").trim()) || 0;
+
+            const unitPrice =
+                newQuantity > 0 ? newTotalPrice / newQuantity : basePrice;
 
             const $existingItem = $(
                 `#orderList .prod-name[data-id="${_id}"]`
@@ -334,6 +345,7 @@ $(document).ready(function () {
             if (itemExists) {
                 const qntyElement = $existingItem.find(".qnty");
                 const itemTotalPriceElement = $existingItem.find(".prod-price");
+                const unitPriceElement = $existingItem.find(".unit-price");
 
                 let currentQuantity = parseInt(qntyElement.text().trim()) || 0;
                 let currentItemTotalTxt = itemTotalPriceElement.text().trim();
@@ -357,6 +369,7 @@ $(document).ready(function () {
                 itemTotalPriceElement.text(
                     "₱" + parseFloat(updatedItemTotal).toFixed(2)
                 );
+                unitPriceElement.text("₱" + parseFloat(unitPrice).toFixed(2));
 
                 $existingItem
                     .addClass("order-item-row")
@@ -368,6 +381,9 @@ $(document).ready(function () {
                 <div class="d-flex align-items-center py-2 border-bottom order-item-row" data-product-id="${_id}" data-available-servings="${modalAvailable}">
                     <div class="flex-grow-1 me-3">
                         <h6 class="mb-0 text-primary text-muted prod-name" data-id="${_id}">${_name}</h6>
+                        <small class="text-muted d-block unit-price">₱${basePrice.toFixed(
+                            2
+                        )} each</small>
                         <small class="text-secondary prod-price">₱${parseFloat(
                             newTotalPrice || 0
                         ).toFixed(2)}</small>
@@ -446,10 +462,7 @@ $(document).ready(function () {
         const availableServings =
             parseInt(orderItemRow.data("available-servings"), 10) || 0;
 
-        if (
-            availableServings > 0 &&
-            currentQuantity >= availableServings
-        ) {
+        if (availableServings > 0 && currentQuantity >= availableServings) {
             Toast.fire({
                 icon: "warning",
                 title: "Limit reached",
@@ -775,9 +788,9 @@ $(function () {
                 $("#orderList").empty();
                 $("#order-total-amount").text("₱ 0.00");
 
-                const activeTab = $('.nav-pills .nav-link.active');
+                const activeTab = $(".nav-pills .nav-link.active");
                 if (activeTab.length > 0) {
-                    activeTab.trigger('shown.bs.tab');
+                    activeTab.trigger("shown.bs.tab");
                 } else {
                     getAllProducts();
                 }

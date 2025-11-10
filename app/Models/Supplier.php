@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Item;
 
 class Supplier extends Model
 {
@@ -38,5 +40,10 @@ class Supplier extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(Item::class, 'supplier_id');
     }
 }

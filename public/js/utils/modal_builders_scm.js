@@ -12,10 +12,15 @@ export function buildInvoiceModal(data) {
             if (details.length > 0) {
                 details.forEach((item) => {
                     itemIndex++;
+                    const isReturned = Boolean(item.is_returned);
+                    const rowClass = isReturned ? " class=\"table-danger\"" : "";
+                    const statusBadge = isReturned
+                        ? '<span class="badge bg-danger ms-2">Returned</span>'
+                        : "";
                     allDetailRowsHtml += `
-                        <tr>
+                        <tr${rowClass}>
                             <td>${itemIndex}</td>
-                            <td>${item.item_name || "N/A"}</td>
+                            <td>${item.item_name || "N/A"} ${statusBadge}</td>
                             <td>${item.item_unit_name || "N/A"}</td>
                             <td class="text-end">₱${parseFloat(
                                 item.unit_price || 0
@@ -125,10 +130,15 @@ export function buildPOmodal(data) {
             if (details.length > 0) {
                 details.forEach((item) => {
                     itemIndex++;
+                    const isReturned = Boolean(item.is_returned);
+                    const rowClass = isReturned ? " class=\"table-danger\"" : "";
+                    const statusBadge = isReturned
+                        ? '<span class="badge bg-danger ms-2">Returned</span>'
+                        : "";
                     allDetailRowsHtml += `
-                        <tr>
+                        <tr${rowClass}>
                             <td>${itemIndex}</td>
-                            <td>${item.item_name || "N/A"}</td>
+                            <td>${item.item_name || "N/A"} ${statusBadge}</td>
                             <td>${item.item_unit_name || "N/A"}</td>
                             <td class="text-end">₱${parseFloat(
                                 item.unit_price || 0

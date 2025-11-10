@@ -10,6 +10,12 @@ Route::get('/supplier', [SupplierController::class, 'index'])->middleware('auth'
 
 Route::prefix('/supplier')->middleware(['auth', 'isSupplier'])->group(function () {
     Route::get('/approve-purchase', [SupplierController::class, 'approveRequest'])->name('supplier.approve');
+    Route::get('/dashboard-summary', [SupplierController::class, 'dashboardSummary']);
+    Route::get('/products/options', [SupplierController::class, 'productOptions']);
+    Route::get('/products/list', [SupplierController::class, 'listItems']);
+    Route::get('/products/{item}', [SupplierController::class, 'showItem']);
+    Route::post('/products', [SupplierController::class, 'storeItem']);
+    Route::put('/products/{item}', [SupplierController::class, 'updateItem']);
     Route::get('/orders/get-list', [SupplierController::class, 'purchaseOrdersList']);
     Route::get('/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);
     Route::get('/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);

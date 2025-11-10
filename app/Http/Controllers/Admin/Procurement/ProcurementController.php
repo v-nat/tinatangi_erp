@@ -223,8 +223,8 @@ class ProcurementController extends Controller
                 'purchaseOrders.supplierRS',
 
                 'purchaseOrders.purchaseOrderDetail.itemss',
-                'purchaseOrders.purchaseOrderDetail.itemss.categoryRS',
-                'purchaseOrders.purchaseOrderDetail.itemss.unitRS',
+                'purchaseOrders.purchaseOrderDetail.itemss.category',
+                'purchaseOrders.purchaseOrderDetail.itemss.unit',
             ])->find($id);
             if (!$purchaseRequest) {
                 return response()->json(['error' => 'Purchase Request not found.'], 404);
@@ -235,10 +235,10 @@ class ProcurementController extends Controller
                     return [
                         'item_id'       => $detail->item_id,
                         'item_name'     => optional($detail->itemss)->name,
-                        'item_unit'     => optional(optional($detail->itemss)->unitRS)->name,
+                        'item_unit'     => optional(optional($detail->itemss)->unit)->name,
                         'category_id'   => $detail->category_id,
 
-                        'category_name' => optional(optional($detail->itemss)->categoryRS)->name,
+                        'category_name' => optional(optional($detail->itemss)->category)->name,
 
                         'quantity'      => (int)$detail->quantity,
                         'unit_price'    => (float)$detail->unit_price,

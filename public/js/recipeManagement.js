@@ -81,12 +81,15 @@ $(function () {
     function addIngredientRow(ingredient = null) {
         let optionsHtml = '<option value="">Select Ingredient...</option>';
         allInventoryItems.forEach((item) => {
+            const inventoryItem = item.item || {};
+            const categoryRelation = inventoryItem.category || {};
+            const unitRelation = inventoryItem.unit || item.unit || {};
+            const unitType = unitRelation ? unitRelation.type : null;
+
             const isSelected =
                 ingredient && ingredient.id === item.id ? "selected" : "";
-            const categoryName = item.item.category_r_s
-                ? item.item.category_r_s.name
-                : "Uncategorized";
-            optionsHtml += `<option value="${item.id}" ${isSelected} data-unit-type="${item.item.unit_r_s.type}">${item.item.name} (${categoryName})</option>`;
+            const categoryName = categoryRelation.name || "Uncategorized";
+            optionsHtml += `<option value="${item.id}" ${isSelected} data-unit-type="${unitType || ""}">${inventoryItem.name || item.name || "Unnamed"} (${categoryName})</option>`;
         });
 
         const rowHtml = `
@@ -103,12 +106,15 @@ $(function () {
                 .find(".ingredient-row")
                 .last();
             const $unitSelect = $newRow.find(".unit-select");
-            const unitType = ingredient.item.unit_r_s.type;
+            const inventoryItem = ingredient.item || {};
+            const unitType = inventoryItem.unit ? inventoryItem.unit.type : null;
 
             populateUnitDropdown($unitSelect, unitType);
-            const baseUnit = allUnits[unitType].find((u) => u.is_base_unit);
-            if (baseUnit) {
-                $unitSelect.val(baseUnit.id);
+            if (unitType && allUnits[unitType]) {
+                const baseUnit = allUnits[unitType].find((u) => u.is_base_unit);
+                if (baseUnit) {
+                    $unitSelect.val(baseUnit.id);
+                }
             }
 
             $newRow.find(".quantity-input").val(ingredient.pivot.quantity_used);

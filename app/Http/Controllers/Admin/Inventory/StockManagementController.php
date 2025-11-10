@@ -49,12 +49,12 @@ class StockManagementController extends Controller
     {
         try {
             DB::beginTransaction();
-            $purchaseRequest = PurchaseRequest::with(['purchaseOrders.purchaseOrderDetail.itemss.unitRS'])->findOrFail($id);
+            $purchaseRequest = PurchaseRequest::with(['purchaseOrders.purchaseOrderDetail.itemss.unit'])->findOrFail($id);
 
             foreach ($purchaseRequest->purchaseOrders as $order) {
                 foreach ($order->purchaseOrderDetail as $detail) {
 
-                    $purchaseUnit = $detail->itemss->unitRS;
+                    $purchaseUnit = $detail->itemss->unit;
                     $pricePerPurchaseUnit = $detail->unit_price;
 
                     $baseUnit = ItemUnit::where('type', $purchaseUnit->type)->where('is_base_unit', true)->first();

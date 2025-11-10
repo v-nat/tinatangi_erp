@@ -8,6 +8,11 @@ use App\Models\Status;
 use App\Models\PurchaseOrderDetail;
 use App\Models\DeliveryReturn;
 use App\Models\Invoice;
+use App\Models\Item;
+use App\Models\Category;
+use App\Models\ItemUnit;
+use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +29,127 @@ class SupplierController extends Controller
         return view('pages.supplier.index');
     }
 
+    public function dashboardSummary()
+    {
+        $supplierId = auth()->id();
+
+        $totalProducts = Item::where('supplier_id', $supplierId)->count();
+
+        $openStatuses = [20, 21, 16, 19, 17, 22, 36];
+        $activeOrders = PurchaseRequest::where('supplier_id', $supplierId)
+            ->whereIn('status', $openStatuses)
+            ->count();
+
+        $pendingShipments = PurchaseRequest::where('supplier_id', $supplierId)
+            ->whereIn('status', [20, 21])
+            ->count();
+
+        return response()->json([
+            'totalProducts' => $totalProducts,
+            'activeOrders' => $activeOrders,
+            'pendingShipments' => $pendingShipments,
+        ]);
+    }
+
+    public function productOptions()
+    {
+        $categories = Category::select('id', 'name')->orderBy('name')->get();
+        $units = ItemUnit::select('id', 'name', 'abbreviation')->orderBy('name')->get();
+
+        return response()->json([
+            'categories' => $categories,
+            'units' => $units,
+        ]);
+    }
+
+    public function listItems()
+    {
+        $supplierId = auth()->id();
+
+        $items = Item::with(['category', 'unit'])
+            ->where('supplier_id', $supplierId)
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        $data = $items->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'category_name' => optional($item->category)->name,
+                'unit_name' => optional($item->unit)->name,
+                'unit_price' => (float) $item->unit_price,
+                'unit_price_formatted' => number_format($item->unit_price, 2),
+                'status' => $item->status,
+                'status_html' => $item->status == 1
+                    ? '<span class="badge bg-success">Active</span>'
+                    : '<span class="badge bg-secondary">Inactive</span>',
+                'updated_at' => optional($item->updated_at)->toDateTimeString(),
+            ];
+        });
+
+        return response()->json(['data' => $data]);
+    }
+
+    public function storeItem(StoreItemRequest $request)
+    {
+        $supplierId = auth()->id();
+
+        $item = Item::create([
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'unit_id' => $request->unit_id,
+            'inventory_location_id' => $request->inventory_location_id ?? null,
+            'unit_price' => $request->unit_price,
+            'status' => $request->status ?? 1,
+            'supplier_id' => $supplierId,
+        ]);
+
+        return response()->json([
+            'message' => 'Product created successfully!',
+            'data' => $item->id,
+        ], 201);
+    }
+
+    public function showItem(Item $item)
+    {
+        $this->authorizeItem($item);
+
+        return response()->json([
+            'data' => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'category_id' => $item->category_id,
+                'unit_id' => $item->unit_id,
+                'inventory_location_id' => $item->inventory_location_id,
+                'unit_price' => $item->unit_price,
+                'status' => $item->status,
+            ],
+        ]);
+    }
+
+    public function updateItem(UpdateItemRequest $request, Item $item)
+    {
+        $this->authorizeItem($item);
+
+        $item->update([
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'unit_id' => $request->unit_id,
+            'inventory_location_id' => $request->inventory_location_id ?? null,
+            'unit_price' => $request->unit_price,
+            'status' => $request->status ?? $item->status,
+        ]);
+
+        return response()->json(['message' => 'Product updated successfully!']);
+    }
+
+    protected function authorizeItem(Item $item): void
+    {
+        if ($item->supplier_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+    }
+
     public function purchaseOrdersList()
     {
         try {
@@ -34,7 +160,7 @@ class SupplierController extends Controller
                 'employeeRS',
                 'supplierRS',
                 'deptRS',
-            ])->where('supplier_id', auth('')->id())
+            ])->where('supplier_id', auth()->id())
                 ->whereIn('status', [20, 21, 16, 19, 23, 17, 22, 36])
                 ->orderBy('updated_at', 'desc')
                 ->get();

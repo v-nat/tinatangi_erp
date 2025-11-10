@@ -18,7 +18,9 @@ class Item extends Model
         'category_id',
         'unit_id',
         'unit_price',
+        'inventory_location_id',
         'status',
+        'supplier_id',
     ];
 
     /*
@@ -27,22 +29,23 @@ class Item extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function categories(): BelongsTo{
-        return $this->belongsTo(Category::class);
-    }
-    public function categoryRS(): BelongsTo{
+    public function category(): BelongsTo
+    {
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function scopeInCategory($query, $catId)
+    public function unit(): BelongsTo
     {
-        return $query->where('category_id', $catId);
-    }
-
-    public function unitRS(): BelongsTo{
         return $this->belongsTo(ItemUnit::class, 'unit_id');
     }
-    public function inventoryLocation(): BelongsTo {
+
+    public function inventoryLocation(): BelongsTo
+    {
         return $this->belongsTo(InventoryLocation::class, 'inventory_location_id');
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 }

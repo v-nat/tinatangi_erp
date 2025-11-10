@@ -27,7 +27,9 @@ class ItemSeeder extends Seeder
         $items = [];
         $idCounter = 1;
 
-        $createItem = function (int $id, string $name, int $category_id, int $unit_id, float $unit_price, int $location_id) {
+        $supplierIds = DB::table('suppliers')->pluck('id');
+
+        $createItem = function (int $id, string $name, int $category_id, int $unit_id, float $unit_price, int $location_id) use (&$supplierIds) {
             return [
                 'id' => $id,
                 'name' => $name,
@@ -35,6 +37,8 @@ class ItemSeeder extends Seeder
                 'unit_id' => $unit_id,
                 'unit_price' => $unit_price,
                 'inventory_location_id' => $location_id,
+                'supplier_id' => $supplierIds->isNotEmpty() ? $supplierIds->random() : null,
+                'status' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

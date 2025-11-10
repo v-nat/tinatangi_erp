@@ -270,7 +270,7 @@ class FinanceController extends Controller
                 'purchaseOrders.purchaseOrderDetail',
                 'purchaseOrders.supplierRS',
                 'purchaseOrders.purchaseOrderDetail.itemss',
-                'purchaseOrders.purchaseOrderDetail.itemss.unitRS',
+                'purchaseOrders.purchaseOrderDetail.itemss.unit',
                 'statusRS',
                 'employeeRS',
                 'supplierRS',
@@ -285,11 +285,14 @@ class FinanceController extends Controller
                         $mappedDetails = $order->purchaseOrderDetail->map(function ($detail) {
                             return [
                                 'item_name'   => optional($detail->itemss)->name,
-                                'item_unit'   => optional(optional($detail->itemss)->unitRS)->abbreviation,
-                                'item_unit_name'   => optional(optional($detail->itemss)->unitRS)->name,
+                                'item_unit'   => optional(optional($detail->itemss)->unit)->abbreviation,
+                                'item_unit_name'   => optional(optional($detail->itemss)->unit)->name,
                                 'quantity'    => (int)$detail->quantity,
                                 'unit_price'  => (float)$detail->unit_price,
                                 'total_amount' => (float)$detail->total_amount,
+                                'status_code' => (int)$detail->status,
+                                'status_text' => Status::getStatusText($detail->status),
+                                'is_returned' => (int)$detail->status === 22,
                             ];
                         });
 

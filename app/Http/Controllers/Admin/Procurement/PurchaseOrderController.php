@@ -23,7 +23,18 @@ class PurchaseOrderController extends Controller
     public function getCategories()
     {
         try {
-            $categories = Category::all();
+            $supplierId = request('supplier');
+
+            $categoriesQuery = Category::query();
+
+            if ($supplierId) {
+                $categoriesQuery->whereHas('items', function ($query) use ($supplierId) {
+                    $query->where('supplier_id', $supplierId);
+                });
+            }
+
+            $categories = $categoriesQuery->orderBy('name')->get();
+
             return response()->json($categories);
         } catch (\Exception $e) {
             return response()->json(['error' =>  $e->getMessage()], 500);
@@ -33,21 +44,31 @@ class PurchaseOrderController extends Controller
     public function getItems(Request $request)
     {
         $category = $request->input('category');
+        $supplierId = $request->input('supplier');
         // dd  ($category);
         if (!$category) {
             return response()->json(['error' => 'Missing Category'], 400);
         }
-        $items = Item::incategory($category)->get();
-        $items = Item::with(['unitRS'])->where('category_id', $category)
-            ->get();
+        $itemsQuery = Item::with(['unit', 'supplier'])
+            ->where('category_id', $category);
+
+        if ($supplierId) {
+            $itemsQuery->where('supplier_id', $supplierId);
+        }
+
+        $items = $itemsQuery->orderBy('name')->get();
 
         return response()->json(
             $items->map(function ($item) {
+                $unit = $item->unit;
                 return [
                     'id' => $item->id,
                     'name' => $item->name,
-                    'unit_id' => optional($item->unitRS)->abbreviation,
+                    'unit_id' => $item->unit_id,
+                    'unit_label' => $unit?->abbreviation ?? $unit?->name ?? 'N/A',
                     'unit_price' => (float)$item->unit_price,
+                    'supplier_id' => $item->supplier_id,
+                    'supplier_name' => optional($item->supplier)->supplier_name,
                 ];
             })
         );
@@ -326,7 +347,7 @@ class PurchaseOrderController extends Controller
             $pr = PurchaseRequest::findOrFail($id);
 
             $items = PurchaseOrderDetail::whereIn('purchase_order_id', $pr->purchaseOrders->pluck('id'))
-                ->with('itemss.unitRS')
+                ->with('itemss.unit')
                 ->get();
 
             if ($items->isEmpty()) {
@@ -338,7 +359,7 @@ class PurchaseOrderController extends Controller
                     'pod_id'            => $detail->id,
                     'item_name'         => optional($detail->itemss)->name ?? 'Unknown Item',
                     'quantity_ordered'  => (int)$detail->quantity,
-                    'item_unit'         => optional(optional($detail->itemss)->unitRS)->abbreviation ?? 'pcs',
+                    'item_unit'         => optional(optional($detail->itemss)->unit)->abbreviation ?? 'pcs',
                 ];
             });
 
@@ -463,7 +484,7 @@ class PurchaseOrderController extends Controller
 
             $items = PurchaseOrderDetail::whereIn('purchase_order_id', $pr->purchaseOrders->pluck('id'))
                 ->where('status', 36)
-                ->with('itemss.unitRS')
+                ->with('itemss.unit')
                 ->get();
 
             if ($items->isEmpty()) {
@@ -475,7 +496,7 @@ class PurchaseOrderController extends Controller
                     'pod_id'            => $detail->id,
                     'item_name'         => optional($detail->itemss)->name ?? 'Unknown Item',
                     'quantity_ordered'  => (int)$detail->quantity,
-                    'item_unit'         => optional(optional($detail->itemss)->unitRS)->abbreviation ?? 'pcs',
+                    'item_unit'         => optional(optional($detail->itemss)->unit)->abbreviation ?? 'pcs',
                 ];
             });
 
@@ -562,7 +583,7 @@ class PurchaseOrderController extends Controller
                 });
 
                 if ($allCompleted) {
-                    $newStatus = 23;
+                    $newStatus = 16;
                     $newRemarks = 'All items, including redeliveries, have been processed. Order completed.';
                 } else {
                     $newStatus = 17;

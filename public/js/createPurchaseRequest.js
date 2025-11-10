@@ -555,16 +555,53 @@ $(document).ready(function () {
     );
     const itemSearchList = document.getElementById("item_search_list");
     let availableItems = [];
+    let selectedSupplierId = null;
+    let previousSupplierId = null;
+
+    function loadCategories(supplierId = null) {
+        let url = `/procurement/create-purchase-request/get-categories`;
+        if (supplierId) {
+            url += `?supplier=${encodeURIComponent(supplierId)}`;
+        }
+
+        fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+                categorySelect.innerHTML =
+                    '<option value="" disabled selected>Choose Category</option>';
+                data.forEach((category) => {
+                    const option = document.createElement("option");
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    categorySelect.appendChild(option);
+                });
+                $(categorySelect).prop("disabled", data.length === 0);
+                if (data.length === 0) {
+                    Toast.fire({
+                        title: "Notice",
+                        text: "No categories available for the selected supplier.",
+                        icon: "info",
+                    });
+                }
+            })
+            .catch(() => {
+                Toast.fire({
+                    title: "Error",
+                    text: "Unable to load categories.",
+                    icon: "error",
+                });
+            });
+    }
 
     /**
      * Handles item selection from the dropdown list.
-     * @param {Object} item - The selected item object {id, name, unit_id, unit_price}.
+     * @param {Object} item - The selected item object.
      */
     function handleItemSelection(item) {
         itemSearchInput.value = item.name;
         itemHiddenInput.value = item.id;
 
-        $("#unit").val(item.unit_id);
+        $("#unit").val(item.unit_label || item.unit_id || "");
         $("#unit_price").val(item.unit_price);
 
         itemResultsContainer.classList.add("d-none");
@@ -660,10 +697,20 @@ $(document).ready(function () {
 
         const category = categorySelect.value;
         if (category) {
+            const supplierId = $("#supplier").val();
+            if (!supplierId) {
+                Toast.fire({
+                    title: "Select Supplier",
+                    text: "Please choose a supplier before selecting items.",
+                    icon: "warning",
+                });
+                $("#category").val("");
+                return;
+            }
             fetch(
                 `/procurement/create-purchase-request/get-items?category=${encodeURIComponent(
                     category
-                )}`
+                )}&supplier=${encodeURIComponent(supplierId)}`
             )
                 .then((res) => res.json())
                 .then((data) => {
@@ -671,7 +718,9 @@ $(document).ready(function () {
                         id: p.id,
                         name: p.name,
                         unit_id: p.unit_id,
+                        unit_label: p.unit_label,
                         unit_price: p.unit_price,
+                        supplier_id: p.supplier_id,
                     }));
 
                     renderItems(availableItems);
@@ -705,7 +754,26 @@ $(document).ready(function () {
             });
     }
 
+    $("#supplier").on("focus", function () {
+        previousSupplierId = $(this).val();
+    });
+
     $("#supplier").change(function () {
+        const newSupplierId = $(this).val();
+        const resetFormForSupplier = () => {
+            selectedSupplierId = newSupplierId;
+            loadCategories(selectedSupplierId);
+            $("#category").val("");
+            itemSearchInput.value = "";
+            itemHiddenInput.value = "";
+            availableItems = [];
+            itemResultsContainer.classList.add("d-none");
+            $("#unit").val("");
+            $("#unit_price").val("");
+            $("#qnty").val("");
+            orderTable.clear().draw();
+        };
+
         if (orderTable.rows().count() > 0) {
             const firstRowData = orderTable.row(0).data();
 
@@ -720,36 +788,19 @@ $(document).ready(function () {
                     confirmButtonText: "Confirm",
                 }).then((result) => {
                     if (!result.isConfirmed) {
+                        $("#supplier").val(previousSupplierId);
                         return;
                     }
-                    $("#category").val("");
-                    itemSearchInput.value = "";
-                    itemHiddenInput.value = "";
-                    availableItems = [];
-                    itemResultsContainer.classList.add("d-none");
-
-                    $("#unit").val("");
-                    $("#unit_price").val("");
-                    $("#qnty").val("");
-                    orderTable.clear().draw();
+                    resetFormForSupplier();
                 });
+                return;
             }
         }
+        resetFormForSupplier();
     });
 
     $(document).ready(function () {
-        fetch(`/procurement/create-purchase-request/get-categories`)
-            .then((response) => response.json())
-            .then((data) => {
-                categorySelect.innerHTML =
-                    '<option value="" disabled selected>Choose Category</option>';
-                data.forEach((s) => {
-                    const option = document.createElement("option");
-                    option.value = s.id;
-                    option.textContent = s.name;
-                    categorySelect.appendChild(option);
-                });
-            });
+        loadCategories();
     });
 
     $(document).ready(function () {

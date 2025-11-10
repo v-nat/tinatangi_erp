@@ -13,18 +13,18 @@ class RecipeController extends Controller
 {
     public function getRecipeData(Product $product)
     {
-        $product->load('ingredients.item.unitRS');
+        $product->load('ingredients.item.unit');
         $product->setAttribute('available_servings', $product->calculateAvailableServings());
-        $allInventoryItems = InventoryItem::with('item.categoryRS', 'item.unitRS', 'unit')->get(); // Eager load item unit
+        $allInventoryItems = InventoryItem::with('item.category', 'item.unit', 'unit')->get(); // Eager load item unit
         $allUnits = ItemUnit::all()->groupBy('type');
         $allConversions = UnitConversion::all();
 
         $formattedIngredients = $product->ingredients->map(function ($ingredient) {
-            $baseUnit = ItemUnit::where('type', $ingredient->item->unitRS->type)
+            $baseUnit = ItemUnit::where('type', $ingredient->item->unit->type)
                 ->where('is_base_unit', true)
                 ->first();
 
-            $ingredient->base_unit_name = $baseUnit ? $baseUnit->name : $ingredient->item->unitRS->name;
+            $ingredient->base_unit_name = $baseUnit ? $baseUnit->name : $ingredient->item->unit->name;
 
             return $ingredient;
         });
