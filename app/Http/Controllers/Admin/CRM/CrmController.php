@@ -6,6 +6,7 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\Faq;
 use App\Models\Status;
+use App\Models\Booking;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use App\Models\ServiceFeedback;
@@ -31,18 +32,68 @@ class CrmController extends Controller
 
     public function getDashboardAnalytics()
     {
-        $totalFeedback = ServiceFeedback::count();
-        $averageRating = ServiceFeedback::avg('overall_rating');
-        $pendingCount = ServiceFeedback::where('status', 34)->whereColumn('created_at', 'updated_at')->count();
-        $displayedCount = ServiceFeedback::where('status', 35)->count();
+        $today = Carbon::today();
+        $last30Days = $today->copy()->subDays(29);
 
-        $recentPending = ServiceFeedback::where('status', 34)->whereColumn('created_at', 'updated_at')
-            ->orderBy('created_at', 'desc')
+        $upcomingBookingsCount = Booking::whereDate('date', '>=', $today)
+            ->whereIn('status', [13, 23])
+            ->count();
+
+        $pendingBookingsCount = Booking::where('status', 11)->count();
+
+        $pendingFeedbackCount = ServiceFeedback::where('status', 34)
+            ->whereColumn('created_at', 'updated_at')
+            ->count();
+
+        $averageRating = ServiceFeedback::avg('overall_rating');
+
+        $upcomingBookings = Booking::with('tableForReservation')
+            ->whereDate('date', '>=', $today)
+            ->orderBy('date', 'asc')
+            ->orderBy('time', 'asc')
             ->take(5)
             ->get()
-            ->map(function ($feedback) {
-                $feedback->status_html = Status::getStatusText($feedback->status);
-                return $feedback;
+            ->map(function ($booking) {
+                return [
+                    'id' => $booking->id,
+                    'name' => $booking->name,
+                    'people' => (int) $booking->people,
+                    'date' => $booking->date ? Carbon::parse($booking->date)->format('Y-m-d') : null,
+                    'time' => $booking->time,
+                    'table' => $booking->tableForReservation->name ?? 'Not assigned',
+                    'status' => $booking->status,
+                    'status_badge' => Status::getStatusText($booking->status),
+                ];
+            });
+
+        $bookingsTrend = Booking::select(
+            DB::raw('date as booking_date'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->whereDate('date', '>=', $last30Days)
+            ->groupBy('booking_date')
+            ->orderBy('booking_date', 'asc')
+            ->get()
+            ->map(function ($row) {
+                return [
+                    'date' => $row->booking_date,
+                    'count' => (int) $row->count,
+                ];
+            });
+
+        $statusLabels = Status::whereIn('id', [11, 12, 13, 23, 31])
+            ->pluck('status', 'id');
+
+        $statusBreakdown = Booking::select('status', DB::raw('COUNT(*) as count'))
+            ->groupBy('status')
+            ->orderBy('count', 'desc')
+            ->get()
+            ->map(function ($row) use ($statusLabels) {
+                return [
+                    'status' => (int) $row->status,
+                    'label' => $statusLabels->get($row->status, 'Unknown'),
+                    'count' => (int) $row->count,
+                ];
             });
 
         $ratingsDistribution = ServiceFeedback::select(
@@ -53,36 +104,37 @@ class CrmController extends Controller
             ->orderBy('rating_group', 'asc')
             ->get()
             ->map(function ($item) {
-                $item->rating_label = (int)$item->rating_group . ' Star' . ($item->rating_group == 1 ? '' : 's');
-                return $item;
+                return [
+                    'rating_label' => (int) $item->rating_group . ' Star' . ($item->rating_group == 1 ? '' : 's'),
+                    'count' => (int) $item->count,
+                ];
             });
 
         $categoryRatings = [
-            'food' => ServiceFeedback::avg('food_rating'),
-            'staff' => ServiceFeedback::avg('staff_rating'),
-            'environment' => ServiceFeedback::avg('environment_rating'),
+            'food' => (float) ServiceFeedback::avg('food_rating'),
+            'staff' => (float) ServiceFeedback::avg('staff_rating'),
+            'environment' => (float) ServiceFeedback::avg('environment_rating'),
         ];
 
-        $feedbackOverTime = ServiceFeedback::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('COUNT(*) as count')
-        )
-            ->where('created_at', '>=', Carbon::now()->subDays(30))
-            ->groupBy('date')
-            ->orderBy('date', 'asc')
-            ->get();
+        $recentFeedback = ServiceFeedback::where('status', 34)
+            ->whereColumn('created_at', 'updated_at')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get(['name', 'message', 'overall_rating', 'created_at']);
 
         return response()->json([
             'kpis' => [
-                'totalFeedback' => $totalFeedback,
-                'averageRating' => number_format($averageRating, 2),
-                'pendingCount' => $pendingCount,
-                'displayedCount' => $displayedCount,
+                'upcomingBookings' => $upcomingBookingsCount,
+                'pendingBookings' => $pendingBookingsCount,
+                'pendingFeedback' => $pendingFeedbackCount,
+                'averageRating' => $averageRating ? round($averageRating, 2) : null,
             ],
-            'recentPending' => $recentPending,
-            'ratingsDistribution' => $ratingsDistribution,
+            'bookingsTrend' => $bookingsTrend,
+            'statusBreakdown' => $statusBreakdown,
+            'upcomingBookings' => $upcomingBookings,
             'categoryRatings' => $categoryRatings,
-            'feedbackOverTime' => $feedbackOverTime,
+            'ratingsDistribution' => $ratingsDistribution,
+            'recentFeedback' => $recentFeedback,
         ]);
     }
 

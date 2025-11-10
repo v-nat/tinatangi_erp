@@ -1,47 +1,70 @@
 $(document).ready(function () {
+    const numberFormatter = new Intl.NumberFormat('en-US');
 
-    function formatSimpleDate(dateString) {
-        const options = { month: 'short', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString('en-US', options);
-    }
-
-    const optionsFeedbackTrend = {
+    const bookingsTrendOptions = {
         chart: {
             type: 'area',
-            height: 350,
+            height: 340,
             toolbar: { show: false },
         },
         dataLabels: { enabled: false },
-        stroke: { curve: 'smooth' },
-        series: [{
-            name: 'Feedback',
-            data: []
-        }],
+        stroke: { curve: 'smooth', width: 2 },
+        series: [
+            {
+                name: 'Bookings',
+                data: [],
+            },
+        ],
         xaxis: {
-            type: 'category',
-            categories: []
+            categories: [],
+            labels: { rotate: -45 },
+        },
+        yaxis: {
+            min: 0,
+            forceNiceScale: true,
         },
         tooltip: {
-            x: {
-                format: 'dd MMM yyyy'
-            },
+            shared: true,
+            x: { format: 'MMM d, yyyy' },
         },
-        noData: {
-            text: 'Loading chart data...'
-        }
+        noData: { text: 'Loading booking trend...' },
+        colors: ['#7367F0'],
     };
 
-    const optionsCategoryRatings = {
+    const bookingStatusOptions = {
+        chart: {
+            type: 'donut',
+            height: 320,
+        },
+        labels: [],
+        series: [],
+        dataLabels: {
+            enabled: true,
+            formatter: function (val) {
+                return val ? `${val.toFixed(0)}%` : val;
+            },
+        },
+        legend: {
+            position: 'bottom',
+            fontSize: '14px',
+        },
+        noData: { text: 'Loading status data...' },
+        colors: ['#7367F0', '#FF9F43', '#28C76F', '#EA5455', '#1E90FF'],
+    };
+
+    const categoryRatingsOptions = {
         chart: {
             type: 'radar',
-            height: 350
+            height: 240,
         },
-        series: [{
-            name: 'Average Rating',
-            data: [],
-        }],
+        series: [
+            {
+                name: 'Average Rating',
+                data: [],
+            },
+        ],
         xaxis: {
-            categories: ['Food', 'Staff', 'Environment']
+            categories: ['Food', 'Staff', 'Environment'],
         },
         yaxis: {
             min: 0,
@@ -50,52 +73,74 @@ $(document).ready(function () {
             labels: {
                 formatter: function (val) {
                     return val.toFixed(0);
-                }
-            }
+                },
+            },
         },
         markers: {
             size: 4,
         },
-        noData: {
-            text: 'Loading chart data...'
-        }
+        noData: { text: 'Loading ratings...' },
+        colors: ['#28C76F'],
     };
 
-    const optionsRatingsDistribution = {
+    const ratingsDistributionOptions = {
         chart: {
             type: 'bar',
-            height: 350,
-            toolbar: { show: false }
+            height: 240,
+            toolbar: { show: false },
         },
         plotOptions: {
             bar: {
                 distributed: true,
                 horizontal: false,
-                columnWidth: '50%',
+                columnWidth: '55%',
+                borderRadius: 4,
             },
         },
         dataLabels: { enabled: false },
-        series: [{
-            name: 'Count',
-            data: []
-        }],
+        series: [
+            {
+                name: 'Count',
+                data: [],
+            },
+        ],
         xaxis: {
             categories: [],
         },
         legend: { show: false },
-        noData: {
-            text: 'Loading chart data...'
-        }
+        noData: { text: 'Loading distribution...' },
+        colors: ['#EA5455', '#FF9F43', '#7367F0', '#28C76F', '#00CFE8'],
     };
 
-    const chartFeedbackTrend = new ApexCharts(document.querySelector("#chart-feedback-trend"), optionsFeedbackTrend);
-    chartFeedbackTrend.render();
+    const chartBookingsTrend = new ApexCharts(document.querySelector('#chart-bookings-trend'), bookingsTrendOptions);
+    chartBookingsTrend.render();
 
-    const chartCategoryRatings = new ApexCharts(document.querySelector("#chart-category-ratings"), optionsCategoryRatings);
+    const chartBookingStatus = new ApexCharts(document.querySelector('#chart-booking-status'), bookingStatusOptions);
+    chartBookingStatus.render();
+
+    const chartCategoryRatings = new ApexCharts(document.querySelector('#chart-category-ratings'), categoryRatingsOptions);
     chartCategoryRatings.render();
 
-    const chartRatingsDistribution = new ApexCharts(document.querySelector("#chart-ratings-distribution"), optionsRatingsDistribution);
+    const chartRatingsDistribution = new ApexCharts(
+        document.querySelector('#chart-ratings-distribution'),
+        ratingsDistributionOptions
+    );
     chartRatingsDistribution.render();
+
+    function buildScheduleDisplay(date, time) {
+        if (!date) {
+            return '—';
+        }
+
+        const combined = time ? `${date} ${time}` : date;
+        const formatted = dayjs(combined);
+
+        if (!formatted.isValid()) {
+            return dayjs(date).format('MMM D, YYYY');
+        }
+
+        return formatted.format(time ? 'MMM D, YYYY • h:mm A' : 'MMM D, YYYY');
+    }
 
     function loadDashboardData() {
         $.ajax({
@@ -103,52 +148,78 @@ $(document).ready(function () {
             type: 'GET',
             dataType: 'json',
             success: function (response) {
+                const kpis = response.kpis || {};
+                const avgRatingValue = kpis.averageRating != null ? Number(kpis.averageRating).toFixed(2) : '0.00';
+                $('#kpi-average-rating').text(`${avgRatingValue} ★`);
+                $('#kpi-upcoming-bookings').text(numberFormatter.format(kpis.upcomingBookings || 0));
+                $('#kpi-pending-bookings').text(numberFormatter.format(kpis.pendingBookings || 0));
+                $('#kpi-feedback-pending').text(numberFormatter.format(kpis.pendingFeedback || 0));
 
-                $('#kpi-avg-rating').text(response.kpis.averageRating + ' ★');
-                $('#kpi-total-feedback').text(response.kpis.totalFeedback);
-                $('#kpi-displayed-count').text(response.kpis.displayedCount);
-                $('#kpi-pending-count').text(response.kpis.pendingCount);
+                const trendData = response.bookingsTrend || [];
+                const trendCategories = trendData.map((item) => {
+                    const parsed = dayjs(item.date);
+                    return parsed.isValid() ? parsed.format('MMM D') : item.date || '';
+                });
+                const trendCounts = trendData.map((item) => item.count || 0);
+                chartBookingsTrend.updateSeries([{ data: trendCounts }]);
+                chartBookingsTrend.updateOptions({ xaxis: { categories: trendCategories } });
 
-                const $pendingTableBody = $('#table-recent-pending tbody');
-                $pendingTableBody.empty();
-                if (response.recentPending.length > 0) {
-                    $.each(response.recentPending, function (index, item) {
-                        const message = item.message.length > 50 ? item.message.substring(0, 50) + '...' : item.message;
-                        const row = `
+                const statusData = response.statusBreakdown || [];
+                const statusLabels = statusData.map((item) => item.label);
+                const statusCounts = statusData.map((item) => item.count || 0);
+                chartBookingStatus.updateOptions({ labels: statusLabels });
+                chartBookingStatus.updateSeries(statusCounts);
+
+                const $bookingsTableBody = $('#table-upcoming-bookings tbody');
+                $bookingsTableBody.empty();
+                const upcomingBookings = response.upcomingBookings || [];
+                if (upcomingBookings.length === 0) {
+                    $bookingsTableBody.append(
+                        '<tr><td colspan="5" class="text-center text-muted">No upcoming bookings scheduled.</td></tr>'
+                    );
+                } else {
+                    upcomingBookings.forEach((booking) => {
+                        const schedule = buildScheduleDisplay(booking.date, booking.time);
+                        const statusDisplay = booking.status_badge || booking.status_label || '—';
+                        const rowHtml = `
                             <tr>
-                                <td>${item.name}</td>
-                                <td><em>"${message}"</em></td>
-                                <td>${formatSimpleDate(item.created_at)}</td>
-                                <td>${item.status_html}</td>
+                                <td>${booking.name || '—'}</td>
+                                <td>${numberFormatter.format(booking.people || 0)}</td>
+                                <td>${schedule}</td>
+                                <td>${booking.table || 'Not assigned'}</td>
+                                <td>${statusDisplay}</td>
                             </tr>
                         `;
-                        $pendingTableBody.append(row);
+                        $bookingsTableBody.append(rowHtml);
                     });
-                } else {
-                    $pendingTableBody.append('<tr><td colspan="4" class="text-center">No pending feedback. Good job!</td></tr>');
                 }
 
-                const trendDates = response.feedbackOverTime.map(item => formatSimpleDate(item.date));
-                const trendCounts = response.feedbackOverTime.map(item => item.count);
-                chartFeedbackTrend.updateSeries([{ data: trendCounts }]);
-                chartFeedbackTrend.updateOptions({ xaxis: { categories: trendDates } });
+                const categoryRatings = response.categoryRatings || {};
+                chartCategoryRatings.updateSeries([
+                    {
+                        data: [
+                            parseFloat(Number(categoryRatings.food || 0).toFixed(2)),
+                            parseFloat(Number(categoryRatings.staff || 0).toFixed(2)),
+                            parseFloat(Number(categoryRatings.environment || 0).toFixed(2)),
+                        ],
+                    },
+                ]);
 
-                const categoryData = [
-                    parseFloat(response.categoryRatings.food).toFixed(2),
-                    parseFloat(response.categoryRatings.staff).toFixed(2),
-                    parseFloat(response.categoryRatings.environment).toFixed(2)
-                ];
-                chartCategoryRatings.updateSeries([{ data: categoryData }]);
-
-                const distributionLabels = response.ratingsDistribution.map(item => item.rating_label);
-                const distributionCounts = response.ratingsDistribution.map(item => item.count);
-                chartRatingsDistribution.updateSeries([{ data: distributionCounts }]);
-                chartRatingsDistribution.updateOptions({ xaxis: { categories: distributionLabels } });
-
+                const ratingsDistribution = response.ratingsDistribution || [];
+                chartRatingsDistribution.updateSeries([
+                    {
+                        data: ratingsDistribution.map((item) => item.count || 0),
+                    },
+                ]);
+                chartRatingsDistribution.updateOptions({
+                    xaxis: {
+                        categories: ratingsDistribution.map((item) => item.rating_label),
+                    },
+                });
             },
             error: function (xhr) {
                 console.error('Failed to load dashboard analytics:', xhr);
-            }
+            },
         });
     }
 
