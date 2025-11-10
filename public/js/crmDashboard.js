@@ -49,7 +49,7 @@ $(document).ready(function () {
             fontSize: '14px',
         },
         noData: { text: 'Loading status data...' },
-        colors: ['#7367F0', '#FF9F43', '#28C76F', '#EA5455', '#1E90FF'],
+        colors: ['#EA5455', '#28C76F', '#FF9F43', '#7367F0', '#1E90FF'],
     };
 
     const categoryRatingsOptions = {
