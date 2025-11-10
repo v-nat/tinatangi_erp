@@ -26,6 +26,7 @@ class Booking extends Model
         'people',
         'message',
         'status',
+        'status_note',
     ];
 
     /**
@@ -36,6 +37,32 @@ class Booking extends Model
     protected $casts = [
         'date' => 'date',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'status_badge',
+        'status_label',
+    ];
+
+    /**
+     * Get a badge representation of the booking status.
+     */
+    public function getStatusBadgeAttribute(): string
+    {
+        return Status::getStatusText($this->status);
+    }
+
+    /**
+     * Get the plain-text label of the booking status.
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->statusRS?->status ?? 'Unknown';
+    }
 
     /**
      * Get the status associated with the booking.

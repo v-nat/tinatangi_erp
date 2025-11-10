@@ -34,9 +34,13 @@ class BookingStatusMail extends Mailable
 
     public function envelope(): Envelope
     {
-        $subject = $this->booking->status == 13
-            ? 'Your Booking is Confirmed!'
-            : 'Your Booking Request is Pending';
+        $subject = match ((int) $this->booking->status) {
+            13 => 'Your Booking is Confirmed!',
+            23 => 'Thank You for Dining with Us!',
+            12 => 'Your Booking Request Status',
+            31 => 'Update on Your Booking',
+            default => 'Your Booking Request is Pending',
+        };
 
         return new Envelope(
             subject: $subject,
@@ -46,8 +50,18 @@ class BookingStatusMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.booking.status',
+            view: $this->resolveView(),
         );
+    }
+
+    protected function resolveView(): string
+    {
+        return match ((int) $this->booking->status) {
+            13, 23 => 'emails.booking.status',
+            12 => 'emails.booking.rejected',
+            31 => 'emails.booking.voided',
+            default => 'emails.booking.status',
+        };
     }
 
     /**
