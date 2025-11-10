@@ -8,10 +8,10 @@ use App\Models\Booking;
 use Illuminate\Http\Request;
 use App\Mail\BookingStatusMail;
 use Illuminate\Http\JsonResponse;
-use App\Models\TableForReservation;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use App\Models\TableForReservation;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 
@@ -126,13 +126,105 @@ class BookingController extends Controller
         }
     }
 
-    public function destroyBooking(Booking $booking): JsonResponse
+    public function approve(Request $request): JsonResponse
     {
+        $validated = $request->validate([
+            'booking_id' => ['required', 'exists:bookings,id'],
+            'table_id' => ['required', 'exists:table_for_reservations,id'],
+            'note' => ['nullable', 'string', 'max:1000'],
+        ]);
+
         try {
-            $booking->delete();
-            return response()->json(['success' => 'Booking deleted successfully.']);
+            $booking = Booking::findOrFail($validated['booking_id']);
+
+            if ((int)$booking->status !== 11) {
+                return response()->json(['error' => 'Only pending bookings can be approved.'], 422);
+            }
+
+            $table = TableForReservation::findOrFail($validated['table_id']);
+
+            if ((int)$table->status !== 1) {
+                return response()->json(['error' => 'The selected table is not available.'], 422);
+            }
+
+            if ($table->capacity < $booking->people) {
+                return response()->json(['error' => 'The selected table cannot accommodate the number of guests.'], 422);
+            }
+
+            $activeStatuses = [11, 13, 23];
+            $existingCount = Booking::whereDate('date', $booking->date)
+                ->where('time', $booking->time)
+                ->where('table_id', $table->id)
+                ->where('id', '!=', $booking->id)
+                ->whereIn('status', $activeStatuses)
+                ->count();
+
+            if ($existingCount >= $table->quantity) {
+                return response()->json(['error' => 'The selected table is fully booked for the chosen schedule.'], 422);
+            }
+
+            $booking->table_id = $table->id;
+            $booking->status = 13;
+            $booking->status_note = $validated['note'];
+            $booking->save();
+
+            Mail::to($booking->email)->send(new BookingStatusMail($booking));
+
+            return response()->json(['success' => 'Booking approved successfully.']);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to delete booking.'], 500);
+            return response()->json(['error' => 'Failed to approve booking: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function reject(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'booking_id' => ['required', 'exists:bookings,id'],
+            'reason' => ['required', 'string', 'max:1000'],
+        ]);
+
+        try {
+            $booking = Booking::findOrFail($validated['booking_id']);
+
+            if ((int)$booking->status !== 11) {
+                return response()->json(['error' => 'Only pending bookings can be rejected.'], 422);
+            }
+
+            $booking->status = 12;
+            $booking->status_note = $validated['reason'];
+            $booking->save();
+
+            Mail::to($booking->email)->send(new BookingStatusMail($booking));
+
+            return response()->json(['success' => 'Booking rejected successfully.']);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to reject booking: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function void(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'booking_id' => ['required', 'exists:bookings,id'],
+            'reason' => ['required', 'string', 'max:1000'],
+        ]);
+
+        try {
+            $booking = Booking::findOrFail($validated['booking_id']);
+
+            if ((int)$booking->status !== 13) {
+                return response()->json(['error' => 'Only approved bookings can be voided.'], 422);
+            }
+
+            $booking->status = 31;
+            $booking->status_note = $validated['reason'];
+            $booking->save();
+
+            Mail::to($booking->email)->send(new BookingStatusMail($booking));
+
+            return response()->json(['success' => 'Booking voided successfully.']);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to void booking: ' . $e->getMessage()], 500);
         }
     }
 }

@@ -33,7 +33,9 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::get('/bookings', [BookingController::class, 'bookingPage'])->name('crm.bookings');
     Route::get('/bookings/all', [BookingController::class, 'getBookings']);
     Route::post('/bookings/update-status', [BookingController::class, 'updateBookingStatus']);
-    Route::delete('/bookings/delete/{booking}', [BookingController::class, 'destroyBooking']);
+    Route::post('/bookings/approve', [BookingController::class, 'approve']);
+    Route::post('/bookings/reject', [BookingController::class, 'reject']);
+    Route::post('/bookings/void', [BookingController::class, 'void']);
 
     Route::get('/table-management', [CrmController::class, 'tableManagement'])->name('crm.tables');
     Route::get('/tables/list', [TableForReservationController::class, 'list']);

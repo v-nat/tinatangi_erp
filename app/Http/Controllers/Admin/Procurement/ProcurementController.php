@@ -37,7 +37,7 @@ class ProcurementController extends Controller
         $monthEnd = Carbon::now()->endOfMonth();
 
         $completedStatuses = [23];
-        $closedStatuses = [23, 19];
+        $closedStatuses = [23, 19, 12];
 
         $pendingPRCount = PurchaseRequest::where('status', 11)->count();
 
