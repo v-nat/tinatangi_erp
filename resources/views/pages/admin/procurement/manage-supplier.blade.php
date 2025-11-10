@@ -13,20 +13,27 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-12 col-md-6 order-md-2 order-last float-end d-flex justify-content-end">
-                <button id="add_supplier" class="btn btn-lg btn-primary">Add Supplier</button>
-            </div>
         </div>
     </div>
 
     <section class="section mt-3">
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Supplier  Table</h4>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Supplier Table</h4>
+
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-primary btn-sm" id="add_supplier">
+                        <i class="fa-solid fa-plus"></i> Add New Supplier
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" id="btn-refresh-suppliers">
+                        <i class="fa-solid fa-rotate"></i> Refresh
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed" id="supplier_table">
+                    <table class="table table-hover dataTable no-footer" style="width:100% !important; table-layout:fixed"
+                        id="supplier_table">
                         <thead>
                             <tr>
                                 <th>#</th>

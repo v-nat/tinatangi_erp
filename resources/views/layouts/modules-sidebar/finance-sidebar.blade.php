@@ -23,3 +23,10 @@
         <span>Budget Releasing</span>
     </a>
 </li>
+
+<li class="sidebar-item @yield('financeSales') ">
+    <a href="{{ route('finance.sales') }}" class='sidebar-link'>
+        <i class="fa-solid fa-receipt"></i>
+        <span>Sales Transactions</span>
+    </a>
+</li>

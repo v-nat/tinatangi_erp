@@ -176,4 +176,8 @@ $(document).ready(function () {
             .search(selectedRef ? "^" + selectedRef + "$" : "", true, false)
             .draw();
     });
+
+    $("#btn-refresh-stock-transactions").on("click", function () {
+        allTransactions.ajax.reload(null, false);
+    });
 });

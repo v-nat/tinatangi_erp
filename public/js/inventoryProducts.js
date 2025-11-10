@@ -107,6 +107,12 @@ $(function () {
         },
     });
 
+    $("#btn-refresh-products").on("click", function () {
+        if (productsTable) {
+            productsTable.ajax.reload(null, false);
+        }
+    });
+
     function toggleBatchDeleteButton() {
         if (productsTable) {
             const selectedCount = productsTable

@@ -286,4 +286,8 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("#btn-refresh-tables").on("click", function () {
+        table.ajax.reload(null, false);
+    });
 });

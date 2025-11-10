@@ -171,4 +171,8 @@ $(document).ready(function () {
 
     // Refresh data every 30 seconds
     setInterval(loadDashboardData, 30000);
+
+    $("#btn-refresh-low-stock").on("click", function () {
+        loadDashboardData();
+    });
 });

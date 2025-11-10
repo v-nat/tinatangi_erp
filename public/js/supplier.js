@@ -10,7 +10,7 @@ $(document).ready(function () {
         const options = { year: "numeric", month: "long", day: "numeric" };
         return new Date(dateString).toLocaleDateString("en-US", options);
     }
-    $("#purchaseOrderTable").DataTable({
+    const supplierOrderTable = $("#purchaseOrderTable").DataTable({
         responsive: true,
         scrollX: false,
         processing: true,
@@ -519,5 +519,9 @@ $(document).ready(function () {
                 }
             },
         });
+    });
+
+    $("#btn-refresh-supplier-orders").on("click", function () {
+        supplierOrderTable.ajax.reload(null, false);
     });
 });

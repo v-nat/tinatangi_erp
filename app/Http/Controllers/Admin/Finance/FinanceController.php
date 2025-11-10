@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Status;
 use App\Models\Invoice;
 use App\Models\Payroll;
+use App\Models\SalesReport;
 use Illuminate\Http\Request;
 use App\Models\BudgetRelease;
 use App\Models\PurchaseOrder;
@@ -102,6 +103,40 @@ class FinanceController extends Controller
             ->get()
             ->reverse();
 
+        $salesStart = Carbon::today()->subDays(6);
+        $salesDaily = SalesReport::select(
+            DB::raw("DATE(reported_at) as report_date"),
+            DB::raw("SUM(total_amount) as total_reported"),
+            DB::raw("SUM(CASE WHEN status = 23 THEN total_amount ELSE 0 END) as total_approved")
+        )
+            ->whereNotNull('reported_at')
+            ->whereDate('reported_at', '>=', $salesStart)
+            ->groupBy('report_date')
+            ->orderBy('report_date')
+            ->get();
+
+        $salesLabels = [];
+        $reportedSeries = [];
+        $approvedSeries = [];
+        for ($i = 0; $i < 7; $i++) {
+            $day = $salesStart->copy()->addDays($i);
+            $salesLabels[] = $day->format('M d');
+            $match = $salesDaily->firstWhere('report_date', $day->toDateString());
+            $reportedSeries[] = $match ? (float) $match->total_reported : 0;
+            $approvedSeries[] = $match ? (float) $match->total_approved : 0;
+        }
+
+        $salesApprovedMonth = SalesReport::where('status', 23)
+            ->whereBetween('reviewed_at', [$startOfMonth, $now])
+            ->sum('total_amount');
+
+        $salesPendingCount = SalesReport::where('status', 11)->count();
+        $salesReportedToday = SalesReport::whereDate('reported_at', $now)->sum('total_amount');
+        $salesApprovedToday = SalesReport::where('status', 23)
+            ->whereDate('reviewed_at', $now)
+            ->sum('total_amount');
+
+        $budgetVariance = $budgetReleased - $poSpending;
 
         return response()->json([
             'kpis' => [
@@ -109,6 +144,11 @@ class FinanceController extends Controller
                 'budgetReleased' => $budgetReleased,
                 'poSpending' => $poSpending,
                 'pendingPRs' => $pendingPRs,
+                'salesApproved' => $salesApprovedMonth,
+                'salesPending' => $salesPendingCount,
+                'salesReportedToday' => $salesReportedToday,
+                'salesApprovedToday' => $salesApprovedToday,
+                'budgetVariance' => $budgetVariance,
             ],
             'charts' => [
                 'budgetVsSpending' => $budgetVsSpending,
@@ -123,6 +163,13 @@ class FinanceController extends Controller
                         ['name' => 'Deductions', 'data' => $payrollOverview->pluck('deductions')],
                         ['name' => 'Net Pay', 'data' => $payrollOverview->pluck('net')],
                     ]
+                ],
+                'salesActivity' => [
+                    'labels' => $salesLabels,
+                    'series' => [
+                        ['name' => 'Reported', 'data' => $reportedSeries],
+                        ['name' => 'Approved', 'data' => $approvedSeries],
+                    ],
                 ],
             ],
             'tables' => [
@@ -401,5 +448,52 @@ class FinanceController extends Controller
             DB::rollBack();
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function getBudgetSummary(): JsonResponse
+    {
+        $start = Carbon::today()->startOfMonth()->subMonths(5);
+
+        $approved = BudgetRelease::select(
+            DB::raw("DATE_FORMAT(requested_at, '%Y-%m') as month"),
+            DB::raw('SUM(amount) as total')
+        )
+            ->whereNotNull('requested_at')
+            ->where('requested_at', '>=', $start)
+            ->groupBy('month')
+            ->get();
+
+        $released = BudgetRelease::select(
+            DB::raw("DATE_FORMAT(released_at, '%Y-%m') as month"),
+            DB::raw('SUM(amount) as total')
+        )
+            ->whereNotNull('released_at')
+            ->where('released_at', '>=', $start)
+            ->groupBy('month')
+            ->get();
+
+        $labels = [];
+        $approvedSeries = [];
+        $releasedSeries = [];
+
+        for ($i = 0; $i < 6; $i++) {
+            $month = $start->copy()->addMonths($i);
+            $key = $month->format('Y-m');
+            $labels[] = $month->format('M');
+
+            $approvedMatch = $approved->firstWhere('month', $key);
+            $releasedMatch = $released->firstWhere('month', $key);
+
+            $approvedSeries[] = $approvedMatch ? (float) $approvedMatch->total : 0;
+            $releasedSeries[] = $releasedMatch ? (float) $releasedMatch->total : 0;
+        }
+
+        return response()->json([
+            'labels' => $labels,
+            'series' => [
+                ['name' => 'Approved', 'data' => $approvedSeries],
+                ['name' => 'Released', 'data' => $releasedSeries],
+            ],
+        ]);
     }
 }

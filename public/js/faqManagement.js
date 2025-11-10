@@ -228,4 +228,8 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("#btn-refresh-faqs").on("click", function () {
+        faqTable.ajax.reload(null, false);
+    });
 });

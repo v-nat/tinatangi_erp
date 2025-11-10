@@ -23,6 +23,9 @@
                     <button class="btn btn-primary btn-sm" id="addTableBtn">
                         <i class="fas fa-plus me-1"></i> Add New Table
                     </button>
+                    <button class="btn btn-outline-primary btn-sm ms-2" id="btn-refresh-tables">
+                        <i class="fa-solid fa-rotate"></i> Refresh
+                    </button>
                 </div>
             </div>
             <div class="card-body">

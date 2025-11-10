@@ -117,6 +117,10 @@ $(document).ready(function () {
         ],
     });
 
+    $("#refresh-purchase-requests").on("click", function () {
+        purchaseReqTable.ajax.reload();
+    });
+
     $(document).on("click", ".process-btn", function () {
         const req_id = $(this).data("id");
 

@@ -287,6 +287,10 @@ $(document).ready(function () {
             .draw();
     });
 
+    $("#btn-refresh-purchase-orders").on("click", function () {
+        purchaseOrderTable.ajax.reload(null, false);
+    });
+
     $(document).on("click", ".process-btn", function () {
         const req_id = $(this).data("id");
         Swal.fire({

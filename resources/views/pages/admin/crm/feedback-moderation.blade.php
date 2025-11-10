@@ -37,6 +37,10 @@
                             </select>
                         </div>
 
+                        <button class="btn btn-outline-primary btn-sm ms-3" id="btn-refresh-feedback">
+                            <i class="fa-solid fa-rotate"></i> Refresh
+                        </button>
+
                     </div>
                 </div>
             </div>

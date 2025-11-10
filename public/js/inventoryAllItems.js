@@ -115,4 +115,8 @@ $(document).ready(function () {
             )
             .draw();
     });
+
+    $("#btn-refresh-all-items").on("click", function () {
+        allItems.ajax.reload(null, false);
+    });
 });

@@ -25,7 +25,15 @@ $(document).ready(function () {
         return parseFloat(val).toLocaleString("en-US");
     };
 
-    let budgetSpendingChart, payrollOverviewChart, spendingDepartmentChart;
+    const formatCurrencySigned = (val) => {
+        const numeric = Number(val) || 0;
+        const formatted = formatCurrency(Math.abs(numeric));
+        if (numeric > 0) return "+ " + formatted;
+        if (numeric < 0) return "- " + formatted;
+        return formatted;
+    };
+
+    let budgetSpendingChart, payrollOverviewChart, spendingDepartmentChart, salesActivityChart;
 
     function initCharts() {
         const budgetSpendingChartEl = document.getElementById(
@@ -166,6 +174,42 @@ $(document).ready(function () {
             );
             spendingDepartmentChart.render();
         }
+
+        const salesActivityChartEl = document.getElementById(
+            "chart-sales-activity"
+        );
+        if (salesActivityChartEl) {
+            const salesActivityOptions = {
+                series: [],
+                chart: {
+                    type: "line",
+                    height: 320,
+                    toolbar: { show: false },
+                    noData: { text: "Loading chart data..." },
+                },
+                stroke: { curve: "smooth", width: 3 },
+                colors: [getThemeColor("primary"), getThemeColor("success")],
+                dataLabels: { enabled: false },
+                xaxis: {
+                    categories: [],
+                    title: { text: "Date" },
+                },
+                yaxis: {
+                    labels: {
+                        formatter: (val) => "₱ " + (val / 1000).toFixed(1) + "k",
+                    },
+                },
+                tooltip: {
+                    y: { formatter: (val) => formatCurrency(val) },
+                },
+                legend: { position: "top", horizontalAlign: "right" },
+            };
+            salesActivityChart = new ApexCharts(
+                salesActivityChartEl,
+                salesActivityOptions
+            );
+            salesActivityChart.render();
+        }
     }
 
     function loadDashboardData() {
@@ -179,8 +223,8 @@ $(document).ready(function () {
             type: "GET",
             dataType: "json",
             success: function (response) {
-                $("#kpi-total-payroll").text(
-                    formatCurrency(response.kpis.totalPayroll)
+                $("#kpi-sales-approved").text(
+                    formatCurrency(response.kpis.salesApproved)
                 );
                 $("#kpi-budget-released").text(
                     formatCurrency(response.kpis.budgetReleased)
@@ -188,8 +232,35 @@ $(document).ready(function () {
                 $("#kpi-po-spending").text(
                     formatCurrency(response.kpis.poSpending)
                 );
+                $("#kpi-total-payroll").text(
+                    formatCurrency(response.kpis.totalPayroll)
+                );
+                $("#kpi-sales-pending").text(
+                    formatNumber(response.kpis.salesPending)
+                );
                 $("#kpi-pending-prs").text(
                     formatNumber(response.kpis.pendingPRs)
+                );
+
+                const varianceValue = response.kpis.budgetVariance || 0;
+                const $variance = $("#kpi-budget-variance");
+                $variance
+                    .text(formatCurrencySigned(varianceValue))
+                    .removeClass("text-success text-danger")
+                    .addClass(
+                        varianceValue >= 0 ? "text-success" : "text-danger"
+                    );
+                $("#kpi-budget-variance-note").text(
+                    varianceValue >= 0
+                        ? "Under budget (released exceeds spending)"
+                        : "Over budget (spending exceeds released)"
+                );
+
+                $("#kpi-sales-reported-today").text(
+                    formatCurrency(response.kpis.salesReportedToday)
+                );
+                $("#kpi-sales-approved-today").text(
+                    formatCurrency(response.kpis.salesApprovedToday)
                 );
 
                 if (budgetSpendingChart) {
@@ -220,6 +291,22 @@ $(document).ready(function () {
                     });
                     spendingDepartmentChart.updateSeries(
                         response.charts.spendingByDepartment.series
+                    );
+                }
+
+                if (salesActivityChart) {
+                    const salesActivity =
+                        response.charts.salesActivity || {
+                            labels: [],
+                            series: [],
+                        };
+                    salesActivityChart.updateOptions({
+                        xaxis: {
+                            categories: salesActivity.labels,
+                        },
+                    });
+                    salesActivityChart.updateSeries(
+                        salesActivity.series
                     );
                 }
 
@@ -256,10 +343,18 @@ $(document).ready(function () {
                     "Failed to load dashboard analytics:",
                     xhr.responseText
                 );
-                $("#kpi-total-payroll").text("Error");
+                $("#kpi-sales-approved").text("Error");
                 $("#kpi-budget-released").text("Error");
                 $("#kpi-po-spending").text("Error");
+                $("#kpi-total-payroll").text("Error");
                 $("#kpi-pending-prs").text("Error");
+                $("#kpi-sales-pending").text("Error");
+                $("#kpi-budget-variance")
+                    .text("Error")
+                    .removeClass("text-success text-danger");
+                $("#kpi-budget-variance-note").text("Released - Spending");
+                $("#kpi-sales-reported-today").text("Error");
+                $("#kpi-sales-approved-today").text("Error");
                 $("#table-pending-budgets tbody").html(
                     '<tr><td colspan="2" class="text-center text-danger">Failed to load data.</td></tr>'
                 );

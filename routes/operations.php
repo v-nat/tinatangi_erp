@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Operations\KitchenDisplayController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Operations\OperationsController;
 use App\Http\Controllers\Admin\Operations\POSController;
+use App\Http\Controllers\Admin\Operations\SalesReportController;
 
 Route::get('/operations', [OperationsController::class, 'index'])->middleware('auth', 'isEmployee')->name('op.dashboard');
 
@@ -28,4 +29,10 @@ Route::prefix('/operations')->middleware(['auth', 'isEmployee'])->group(function
     Route::get('/kds/get-today-orders', [KitchenDisplayController::class, 'fetchTodayOrders']);
     Route::post('/kds/update-status', [KitchenDisplayController::class, 'updateStatus']);
     Route::post('/pos/void-order/{order}', [POSController::class, 'voidOrder'])->name('pos.voidOrder');
+
+    //////////////////////////////////////////// SALES REPORTING ///////////////////////////////////////////
+    Route::get('/sales/reporting', [SalesReportController::class, 'index'])->name('op.sales.reporting');
+    Route::get('/sales/reporting/orders', [SalesReportController::class, 'listEligibleOrders']);
+    Route::get('/sales/reporting/submissions', [SalesReportController::class, 'listSubmittedReports']);
+    Route::post('/sales/reporting/submit', [SalesReportController::class, 'store']);
 });

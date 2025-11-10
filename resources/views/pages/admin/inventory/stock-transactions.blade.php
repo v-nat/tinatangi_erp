@@ -13,15 +13,20 @@
     <section class="section">
         <div class="card">
             <div class="card-header py-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3">
                     <h4 class="card-title mb-0">Records Table</h4>
 
-                    <div class="d-flex align-items-center" style="width: 320px;">
-                        <label for="transaction_type_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by
-                            Type:</label>
-                        <select id="transaction_type_filter" class="form-select form-select-sm">
-                            <option value="">All Types</option>
-                        </select>
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <div class="d-flex align-items-center" style="min-width: 240px;">
+                            <label for="transaction_type_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by
+                                Type:</label>
+                            <select id="transaction_type_filter" class="form-select form-select-sm">
+                                <option value="">All Types</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" id="btn-refresh-stock-transactions">
+                            <i class="fa-solid fa-rotate"></i> Refresh
+                        </button>
                     </div>
                 </div>
 

@@ -3,7 +3,7 @@ import { printPayslip, buildPayslipModal } from "./utils/printPayslip.js";
 
 $(document).ready(function () {
     const id = $("#employee_id").data("id").toString();
-    $("#employeePayslipTable").DataTable({
+    const payslipTable = $("#employeePayslipTable").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
@@ -137,5 +137,9 @@ $(document).ready(function () {
         }).fail(function () {
             alert("Failed to load payslip.");
         });
+    });
+
+    $("#btn-refresh-employee-payslips").on("click", function () {
+        payslipTable.ajax.reload(null, false);
     });
 });

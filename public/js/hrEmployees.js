@@ -84,6 +84,10 @@ $(document).ready(function () {
         },
     });
 
+    $("#btn-refresh-employee-table").on("click", function () {
+        employeeTable.ajax.reload(null, false);
+    });
+
     $("#department_filter").on("change", function () {
         const selectedDepartment = $(this).val();
 

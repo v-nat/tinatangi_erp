@@ -17,20 +17,27 @@
                 <button class="btn btn-danger" id="batchDeleteBtn" style="display: none; margin-right: 10px;">
                     Delete Selected
                 </button>
-                <button id="addProductBtn" class="btn btn-primary">Add New Product</button>
             </div>
         </div>
         <section class="section mt-2">
             <div class="card">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <h4 class="card-title mb-0">Products</h4>
 
-                    <div class="d-flex align-items-center" style="width: 320px;">
-                        <label for="category_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Category:</label>
-                        <select id="category_filter" class="form-select form-select-sm">
-                            <option value="">All Categories</option>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center">
+                            <label for="category_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Category:</label>
+                            <select id="category_filter" class="form-select form-select-sm">
+                                <option value="">All Categories</option>
 
-                        </select>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm" id="addProductBtn">
+                            <i class="fa-solid fa-plus"></i> Add New Product
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" id="btn-refresh-products">
+                            <i class="fa-solid fa-rotate"></i> Refresh
+                        </button>
                     </div>
                 </div>
                 <div class="card-body">

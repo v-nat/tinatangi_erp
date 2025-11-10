@@ -14,13 +14,18 @@
         <div class="card">
             <div class="card-header py-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="card-title mb-3">Purchase Orders</h4>
+                    <h4 class="card-title mb-3">Purchase Orders</h4>
 
-                    <div class="d-flex align-items-center"  style="width: 320px;">
-                        <label for="status_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Status:</label>
-                        <select id="status_filter" class="form-select form-select-sm">
-                            <option value="">All Statuses</option>
-                        </select>
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <div class="d-flex align-items-center" style="min-width: 240px;">
+                            <label for="status_filter" class="form-label mb-0 me-2 flex-shrink-0">Filter by Status:</label>
+                            <select id="status_filter" class="form-select form-select-sm">
+                                <option value="">All Statuses</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" id="btn-refresh-purchase-orders">
+                            <i class="fa-solid fa-rotate"></i> Refresh
+                        </button>
                     </div>
                 </div>
                 <div class="row">

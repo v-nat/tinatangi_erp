@@ -1,136 +1,268 @@
 $(document).ready(function () {
-    if ($('#chart-po-status').length === 0) {
+    const $refreshButton = $("#btn-refresh-dashboard");
+    if ($refreshButton.length === 0) {
         return;
     }
 
+    const numberFormatter = new Intl.NumberFormat("en-US");
+    const currencyFormatter = new Intl.NumberFormat("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2,
+    });
+
+    const $recentPrBody = $("#recent-prs-body");
+    const $recentPoBody = $("#recent-pos-body");
+    const $topSuppliersList = $("#top-suppliers-list");
+    const $summaryList = $("#dashboard-summary");
+
+    function escapeHTML(value) {
+        if (value === null || value === undefined) {
+            return "";
+        }
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function formatNumber(value) {
+        const numeric = Number(value);
+        if (Number.isNaN(numeric)) {
+            return "0";
+        }
+        return numberFormatter.format(numeric);
+    }
+
     function formatCurrency(value) {
-        return '₱ ' + parseFloat(value).toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+        const numeric = Number(value);
+        if (Number.isNaN(numeric)) {
+            return currencyFormatter.format(0);
+        }
+        return currencyFormatter.format(numeric);
+    }
+
+    function formatDate(value) {
+        if (!value) {
+            return "—";
+        }
+        if (typeof dayjs === "function") {
+            const parsed = dayjs(value);
+            if (parsed.isValid()) {
+                return parsed.format("MMM D, YYYY");
+            }
+        }
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+            return "—";
+        }
+        return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
         });
     }
 
-    function formatSimpleDate(dateString) {
-        const options = { month: 'short', day: 'numeric', year: 'numeric' };
-        return new Date(dateString).toLocaleDateString('en-US', options);
+    function setKpiValue(selector, value, { format = "number" } = {}) {
+        const $target = $(selector);
+        if ($target.length === 0) {
+            return;
+        }
+        if (format === "currency") {
+            $target.text(formatCurrency(value));
+        } else {
+            $target.text(formatNumber(value));
+        }
     }
 
-    const optionsPoStatus = {
-        chart: {
-            type: 'donut',
-            height: 350,
-        },
-        series: [],
-        labels: [],
-        dataLabels: {
-            enabled: true,
-            formatter: function (val) {
-                return val.toFixed(1) + "%"
-            },
-        },
-        legend: {
-            position: 'bottom'
-        },
-        noData: {
-            text: 'Loading chart data...'
+    function setTableLoading($target, colspan) {
+        $target.html(
+            `<tr><td colspan="${colspan}" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2"></span>Loading...</td></tr>`
+        );
+    }
+
+    function setListLoading($target, text) {
+        $target.html(
+            `<li class="list-group-item text-muted"><span class="spinner-border spinner-border-sm me-2"></span>${text}</li>`
+        );
+    }
+
+    function setSummaryLoading() {
+        $summaryList.html(
+            '<li class="text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Loading snapshot...</li>'
+        );
+    }
+
+    function updateKpis(kpis) {
+        setKpiValue("#kpi-pending-pr", kpis?.pendingPR ?? 0);
+        setKpiValue("#kpi-open-po", kpis?.openPO ?? 0);
+        setKpiValue("#kpi-overdue-po", kpis?.overduePO ?? 0);
+        setKpiValue("#kpi-month-spend", kpis?.monthSpend ?? 0, { format: "currency" });
+    }
+
+    function updateRecentPRs(items) {
+        if (!items || items.length === 0) {
+            $recentPrBody.html(
+                '<tr><td colspan="4" class="text-center text-muted py-4">No purchase requests found.</td></tr>'
+            );
+            return;
         }
-    };
 
-    const optionsTopSuppliers = {
-        chart: {
-            type: 'bar',
-            height: 350
-        },
-        series: [{
-            name: 'Total Spend',
-            data: []
-        }],
-        xaxis: {
-            categories: []
-        },
-        yaxis: {
-            title: {
-                text: 'Total Spend (PHP)'
-            },
-            labels: {
-                formatter: (value) => { return value.toLocaleString('en-US') }
-            }
-        },
-        tooltip: {
-            y: {
-                formatter: (value) => { return formatCurrency(value) }
-            }
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                distributed: true,
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        legend: {
-            show: false
-        },
-        noData: {
-            text: 'Loading chart data...'
+        const rows = items
+            .map((item) => {
+                const reference = escapeHTML(item.reference ?? `PR-${item.id}`);
+                const requestedOn = formatDate(item.requested_at);
+                const requester = item.requested_by
+                    ? escapeHTML(item.requested_by)
+                    : '<span class="text-muted">—</span>';
+                const status = item.status_html ?? '<span class="badge bg-secondary">Unknown</span>';
+
+                return `
+                    <tr>
+                        <td class="fw-semibold">${reference}</td>
+                        <td>${requestedOn}</td>
+                        <td>${requester}</td>
+                        <td>${status}</td>
+                    </tr>
+                `;
+            })
+            .join("");
+
+        $recentPrBody.html(rows);
+    }
+
+    function updateRecentPOs(items) {
+        if (!items || items.length === 0) {
+            $recentPoBody.html(
+                '<tr><td colspan="4" class="text-center text-muted py-4">No purchase orders found.</td></tr>'
+            );
+            return;
         }
-    };
 
-    const chartPoStatus = new ApexCharts(document.querySelector("#chart-po-status"), optionsPoStatus);
-    chartPoStatus.render();
+        const rows = items
+            .map((item) => {
+                const reference = escapeHTML(item.reference ?? `PO-${item.id}`);
+                const supplier = item.supplier_name
+                    ? escapeHTML(item.supplier_name)
+                    : '<span class="text-muted">No supplier</span>';
+                const orderDate = formatDate(item.order_date);
+                const status = item.status_html ?? '<span class="badge bg-secondary">Unknown</span>';
+                const overdueBadge = item.is_overdue
+                    ? '<span class="badge bg-danger ms-2">Overdue</span>'
+                    : '';
 
-    const chartTopSuppliers = new ApexCharts(document.querySelector("#chart-top-suppliers"), optionsTopSuppliers);
-    chartTopSuppliers.render();
+                return `
+                    <tr>
+                        <td class="fw-semibold">${reference}</td>
+                        <td>${supplier}</td>
+                        <td>${orderDate}</td>
+                        <td>${status}${overdueBadge}</td>
+                    </tr>
+                `;
+            })
+            .join("");
+
+        $recentPoBody.html(rows);
+    }
+
+    function updateTopSuppliers(suppliers) {
+        if (!suppliers || suppliers.length === 0) {
+            $topSuppliersList.html(
+                '<li class="list-group-item text-muted">No supplier spend recorded this month.</li>'
+            );
+            return;
+        }
+
+        const items = suppliers
+            .map((supplier) => {
+                const name = escapeHTML(supplier.supplier_name ?? "Unknown supplier");
+                const total = formatCurrency(supplier.total ?? 0);
+                return `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>${name}</span>
+                        <span class="fw-semibold">${total}</span>
+                    </li>
+                `;
+            })
+            .join("");
+
+        $topSuppliersList.html(items);
+    }
+
+    function updateSnapshot(kpis, suppliers) {
+        const items = [];
+
+        const pendingPR = kpis?.pendingPR ?? 0;
+        const openPO = kpis?.openPO ?? 0;
+        const overduePO = kpis?.overduePO ?? 0;
+        const monthSpend = kpis?.monthSpend ?? 0;
+
+        items.push(`Pending purchase requests: <strong>${formatNumber(pendingPR)}</strong>`);
+        items.push(`Open purchase orders: <strong>${formatNumber(openPO)}</strong>`);
+        items.push(`Overdue deliveries: <strong>${formatNumber(overduePO)}</strong>`);
+        items.push(`Spend this month: <strong>${formatCurrency(monthSpend)}</strong>`);
+
+        if (Array.isArray(suppliers) && suppliers.length > 0) {
+            const top = suppliers[0];
+            items.push(
+                `Top supplier: <strong>${escapeHTML(top.supplier_name ?? 'Unknown')}</strong> (${formatCurrency(
+                    top.total ?? 0
+                )})`
+            );
+        }
+
+        if (overduePO > 0) {
+            items.push('<span class="text-danger">Action required: follow up on overdue deliveries.</span>');
+        }
+
+        $summaryList.html(items.map((item) => `<li class="mb-2">${item}</li>`).join(""));
+    }
 
     function loadDashboardData() {
+        setTableLoading($recentPrBody, 4);
+        setTableLoading($recentPoBody, 4);
+        setListLoading($topSuppliersList, "Loading suppliers...");
+        setSummaryLoading();
+        updateKpis({ pendingPR: 0, openPO: 0, overduePO: 0, monthSpend: 0 });
+
         $.ajax({
-            url: '/procurement/dashboard-analytics',
-            type: 'GET',
-            dataType: 'json',
+            url: "/procurement/dashboard-analytics",
+            type: "GET",
+            dataType: "json",
             success: function (response) {
+                const kpis = response?.kpis ?? {};
+                const recentPRs = response?.recentPRs ?? [];
+                const recentPOs = response?.recentPOs ?? [];
+                const topSuppliers = response?.topSuppliers ?? [];
 
-                $('#kpi-pending-pr').text(response.kpis.pendingPR);
-                $('#kpi-pending-po').text(response.kpis.pendingPO);
-                $('#kpi-active-suppliers').text(response.kpis.activeSuppliers);
-                $('#kpi-total-spend').text('₱ ' + response.kpis.totalSpend);
-
-                const $prTableBody = $('#table-recent-prs tbody');
-                $prTableBody.empty();
-                if (response.recentPendingPRs.length > 0) {
-                    $.each(response.recentPendingPRs, function (index, item) {
-                        const row = `
-                            <tr>
-                                <td>PR-${item.id}</td>
-                                <td>${formatSimpleDate(item.created_at)}</td>
-                                <td>${item.status_html}</td>
-                            </tr>
-                        `;
-                        $prTableBody.append(row);
-                    });
-                } else {
-                    $prTableBody.append('<tr><td colspan="3" class="text-center">No pending purchase requests!</td></tr>');
-                }
-
-                const poStatusLabels = response.poByStatus.map(item => item.status_label);
-                const poStatusCounts = response.poByStatus.map(item => item.count);
-                chartPoStatus.updateOptions({
-                    labels: poStatusLabels,
-                    series: poStatusCounts
-                });
-
-                const supplierLabels = response.topSuppliers.map(item => item.supplier_name);
-                const supplierTotals = response.topSuppliers.map(item => item.total);
-                chartTopSuppliers.updateSeries([{ data: supplierTotals }]);
-                chartTopSuppliers.updateOptions({ xaxis: { categories: supplierLabels } });
-
+                updateKpis(kpis);
+                updateRecentPRs(recentPRs);
+                updateRecentPOs(recentPOs);
+                updateTopSuppliers(topSuppliers);
+                updateSnapshot(kpis, topSuppliers);
             },
-            error: function (xhr) {
-                console.error('Failed to load dashboard analytics:', xhr);
-            }
+            error: function () {
+                $recentPrBody.html(
+                    '<tr><td colspan="4" class="text-center text-danger py-4">Failed to load purchase requests.</td></tr>'
+                );
+                $recentPoBody.html(
+                    '<tr><td colspan="4" class="text-center text-danger py-4">Failed to load purchase orders.</td></tr>'
+                );
+                $topSuppliersList.html(
+                    '<li class="list-group-item text-danger">Unable to retrieve supplier data.</li>'
+                );
+                $summaryList.html(
+                    '<li class="text-danger">Unable to load dashboard summary. Please try again.</li>'
+                );
+            },
         });
     }
+
+    $refreshButton.on("click", function () {
+        loadDashboardData();
+    });
 
     loadDashboardData();
 });

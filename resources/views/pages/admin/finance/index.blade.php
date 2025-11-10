@@ -13,19 +13,19 @@
         </ol>
     </nav>
 
-    <section class="section row">
+    <section class="section row g-3">
         <div class="col-md-3">
             <div class="card shadow-sm border-0 rounded-lg">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
-                            <div class="stats-icon purple rounded-lg">
-                                <i class="iconly-boldWallet"></i>
+                            <div class="stats-icon green rounded-lg">
+                                <i class="fa-solid fa-receipt"></i>
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted font-semibold">Total Payroll (Month)</h6>
-                            <h5 class="font-extrabold mb-0" id="kpi-total-payroll">Loading...</h5>
+                            <h6 class="text-muted font-semibold">Approved Sales (Month)</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-sales-approved">Loading...</h5>
                         </div>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
-                            <div class="stats-icon blue rounded-lg">
+                            <div class="stats-icon purple rounded-lg">
                                 <i class="iconly-boldUpload"></i>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
-                            <div class="stats-icon green rounded-lg">
+                            <div class="stats-icon info rounded-lg">
                                 <i class="iconly-boldBuy"></i>
                             </div>
                         </div>
@@ -70,13 +70,105 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
+                            <div class="stats-icon blue rounded-lg">
+                                <i class="iconly-boldWallet"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold">Payroll Disbursed (Month)</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-total-payroll">Loading...</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section row g-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stats-icon-wrapper me-3">
+                            <div class="stats-icon info rounded-lg">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold">Budget Variance</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-budget-variance">Loading...</h5>
+                            <small id="kpi-budget-variance-note" class="text-muted">Released - Spending</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stats-icon-wrapper me-3">
+                            <div class="stats-icon warning rounded-lg">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold">Pending Sales Reports</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-sales-pending">Loading...</h5>
+                            <small class="text-muted">Awaiting finance review</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon red rounded-lg">
                                 <i class="iconly-boldTime-Circle"></i>
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted font-semibold">Pending PRs</h6>
+                            <h6 class="text-muted font-semibold">Pending Purchase Requests</h6>
                             <h5 class="font-extrabold mb-0" id="kpi-pending-prs">Loading...</h5>
+                            <small class="text-muted">PRs awaiting approval</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section row g-3">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-header">
+                    <h4 class="mb-0">Sales Intake (Reported vs Approved)</h4>
+                </div>
+                <div class="card-body">
+                    <div id="chart-sales-activity"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-lg h-100">
+                <div class="card-header">
+                    <h4 class="mb-0">Today's Sales Snapshot</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Reported Today</span>
+                            <span class="fw-semibold" id="kpi-sales-reported-today">₱ 0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Approved Today</span>
+                            <span class="fw-semibold" id="kpi-sales-approved-today">₱ 0.00</span>
+                        </div>
+                        <div class="alert alert-info mb-0" role="alert">
+                            Align operations submissions with finance approvals to keep balances current.
                         </div>
                     </div>
                 </div>

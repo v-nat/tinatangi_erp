@@ -7,8 +7,10 @@ use App\Models\Supplier;
 use App\Helpers\Sanitizer;
 use App\Helpers\MailSender;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSupplierRequest;
+use App\Http\Requests\UpdateSupplierRequest;
 use App\Http\Controllers\GenerateIdController;
 use Illuminate\Validation\ValidationException;
 
@@ -26,7 +28,7 @@ class SupplierController extends Controller
                         'name'              => $e->supplier_name ?? 'N/A',
                         'email'             => $e->email ?? 'N/A',
                         'phone_number'      => $e->phone_number ?? 'N/A',
-                        'status'            => $e->statusRS->status ?? 'N/A',
+                        'status'            => optional($e->statusRS)->status ?? 'inactive',
                     ];
                 })
             ]);
@@ -92,6 +94,53 @@ class SupplierController extends Controller
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             DB::rollBack();
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function show(Supplier $supplier)
+    {
+        return response()->json([
+            'data' => [
+                'supplier_id' => $supplier->id,
+                'supplier_name' => $supplier->supplier_name,
+                'email' => $supplier->email,
+                'phone_number' => $supplier->phone_number,
+                'status' => optional($supplier->statusRS)->status,
+            ],
+        ]);
+    }
+
+    public function update(UpdateSupplierRequest $request, Supplier $supplier)
+    {
+        try {
+            DB::beginTransaction();
+
+            $validated = $request->validated();
+
+            $supplier->update([
+                'supplier_name' => $validated['supplier_name'],
+                'email' => $validated['email'],
+                'phone_number' => $validated['phone_number'],
+            ]);
+
+            if ($supplier->user) {
+                $supplier->user->update([
+                    'first_name' => $validated['supplier_name'],
+                    'email' => $validated['email'],
+                    'phone_number' => $validated['phone_number'],
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json(['message' => 'Supplier updated successfully!']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to update supplier', [
+                'supplier_id' => $supplier->id,
+                'error' => $e->getMessage(),
+            ]);
             return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
         }
     }

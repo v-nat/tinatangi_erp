@@ -3,62 +3,74 @@
 @section('procurementIndex') active @endsection
 @section('headings') Procurement Dashboard @endsection
 @section('content')
-    <link rel="stylesheet" href="{{ asset('assets/vendors/apexcharts/apexcharts.css') }}">
 
-    <section class="section row">
-        <div class="col-md-3">
-            <div class="card">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('procurement.index') }}">Procurement</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-end align-items-center mb-3">
+        <button class="btn btn-outline-primary btn-sm" id="btn-refresh-dashboard">
+            <i class="fa-solid fa-rotate"></i> Refresh Dashboard
+        </button>
+    </div>
+
+    <section class="section row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card h-100 shadow-sm border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon red">
-                                <i class="fa-solid fa-file-invoice"></i>
+                                <i class="fa-solid fa-file-circle-question"></i>
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted font-semibold">Pending PRs</h6>
-                            <h5 class="font-extrabold mb-0" id="kpi-pending-pr">...</h5>
+                            <h6 class="text-muted text-uppercase mb-1">Pending Purchase Requests</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-pending-pr">—</h5>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card h-100 shadow-sm border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon orange">
-                                <i class="fa-solid fa-cart-shopping"></i>
+                                <i class="fa-solid fa-boxes-stacked"></i>
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted font-semibold">Pending POs</h6>
-                            <h5 class="font-extrabold mb-0" id="kpi-pending-po">...</h5>
+                            <h6 class="text-muted text-uppercase mb-1">Open Purchase Orders</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-open-po">—</h5>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card h-100 shadow-sm border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon blue">
-                                <i class="fa-solid fa-truck-field"></i>
+                                <i class="fa-solid fa-truck-ramp-box"></i>
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted font-semibold">Active Suppliers</h6>
-                            <h5 class="font-extrabold mb-0" id="kpi-active-suppliers">...</h5>
+                            <h6 class="text-muted text-uppercase mb-1">Overdue Deliveries</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-overdue-po">—</h5>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card h-100 shadow-sm border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -67,8 +79,9 @@
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted font-semibold">Spend (This Month)</h6>
-                            <h5 class="font-extrabold mb-0" id="kpi-total-spend">...</h5>
+                            <h6 class="text-muted text-uppercase mb-1">Spend This Month</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-month-spend">—</h5>
+                            <span class="text-muted small">Completed purchase orders</span>
                         </div>
                     </div>
                 </div>
@@ -76,60 +89,91 @@
         </div>
     </section>
 
-    <section class="section row">
-        <div class="col-md-7">
-            <div class="card h-100">
+    <section class="section row g-3 mb-4">
+        <div class="col-12 col-xl-7">
+            <div class="card h-100 shadow-sm border-0">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">Pending Purchase Requests</h4>
-                    <a href="{{ route('procurement.createPR') }}">View All</a>
+                    <h4 class="mb-0">Latest Purchase Requests</h4>
+                    <a href="{{ route('procurement.createPR') }}" class="text-decoration-none">View All</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover" id="table-recent-prs">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Order No.</th>
-                                    <th>Created Date</th>
+                                    <th>Request #</th>
+                                    <th>Requested On</th>
+                                    <th>Requester</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
-
+                            <tbody id="recent-prs-body">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">Loading...</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-5">
-            <div class="card h-100">
+        <div class="col-12 col-xl-5">
+            <div class="card h-100 shadow-sm border-0">
                 <div class="card-header">
-                    <h4>Purchase Orders by Status</h4>
+                    <h4 class="mb-0">Open Purchase Orders</h4>
                 </div>
                 <div class="card-body">
-                    <div id="chart-po-status"></div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>PO #</th>
+                                    <th>Supplier</th>
+                                    <th>Order Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-pos-body">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section row mt-4">
-        <div class="col-12">
-            <div class="card">
+    <section class="section row g-3 mb-4">
+        <div class="col-12 col-xl-6">
+            <div class="card h-100 shadow-sm border-0">
                 <div class="card-header">
-                    <h4>Top 5 Suppliers by Spend (Completed POs)</h4>
+                    <h4 class="mb-0">Top Suppliers (This Month)</h4>
                 </div>
                 <div class="card-body">
-                    <div id="chart-top-suppliers"></div>
+                    <ul class="list-group list-group-flush" id="top-suppliers-list">
+                        <li class="list-group-item text-muted">Loading...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-xl-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header">
+                    <h4 class="mb-0">Procurement Snapshot</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0" id="dashboard-summary">
+                        <li class="text-muted">Dashboard summary will appear here.</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
-
 @endsection
 
 @section('scripts')
     <script src="{{ asset('assets/vendors/dayjs/dayjs.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
     <script src="{{ asset('js/procurementDashboard.js') }}"></script>
 @endsection

@@ -14,18 +14,18 @@
 
     <section class="section row">
         <div class="card col-12">
-            <div class="card-header row py-3 d-flex justify-content-between align-items-center">
-                <div class="col-6 d-flex justify-content-start align-items-center">
-                    <h4 class="card-title mb-0 me-2">Employee List</h4>
-                    <label for="department_filter">Filter by Department:</label>
-                    <select id="department_filter" class="form-select form-select-sm ml-2 w-25">
+            <div class="card-header row gy-2 px-3 py-3 align-items-center">
+                <div class="col-12 col-lg-6 d-flex flex-wrap align-items-center">
+                    <h4 class="card-title mb-0 me-3">Employee List</h4>
+                    <label for="department_filter" class="mb-0 me-2">Filter by Department:</label>
+                    <select id="department_filter" class="form-select form-select-sm w-auto">
                         <option value="">All Departments</option>
 
                     </select>
                 </div>
 
-                <div class="col-6 d-flex justify-content-end">
-                    <div class="d-flex align-items-cente me-2" style="gap: 0.5rem;">
+                <div class="col-12 col-lg-6 d-flex justify-content-lg-end align-items-center gap-2">
+                    <div class="d-flex align-items-center" style="gap: 0.5rem;">
                         <div class="d-flex align-items-center">
                             <label for="payroll_start_date" class="payroll-date-label">Start:</label>
                             <input type="date" id="payroll_start_date" class="form-control form-control-sm"
@@ -41,6 +41,9 @@
                     <button id="batch_payroll_btn" class="btn btn-sm btn-primary">
                         <i class="fa-solid fa-money-check-dollar me-1"></i>
                         Generate Batch Payroll
+                    </button>
+                    <button id="btn-refresh-employee-table" class="btn btn-outline-primary btn-sm">
+                        <i class="fa-solid fa-rotate"></i> Refresh
                     </button>
                 </div>
 

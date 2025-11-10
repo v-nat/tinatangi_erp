@@ -20,6 +20,8 @@ Route::prefix('/procurement')->middleware(['auth', 'isEmployee'])->group(functio
     /////////////////////////////////////////// SUPPLIER //////////////////////////////////////////
     Route::post('/supplier/add-supplier', [SupplierController::class, 'storeSupplier']);
     Route::get('/supplier/get-supplier', [SupplierController::class, 'getSupplier']);
+    Route::get('/supplier/{supplier}', [SupplierController::class, 'show']);
+    Route::put('/supplier/{supplier}', [SupplierController::class, 'update']);
 
     /////////////////////////////////////////////// CREATE PR /////////////////////////////////////////////////////
     Route::get('/generateOrderID/{type}', [GenerateIdController::class, 'generateID']);

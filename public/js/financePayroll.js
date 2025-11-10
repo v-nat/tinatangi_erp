@@ -148,6 +148,10 @@ $(document).ready(function () {
         }
     });
 
+    $("#refresh-payrolls").on("click", function () {
+        payrollsTable.ajax.reload();
+    });
+
     $("#payroll_department_filter").on("change", function() {
         const selectedDept = $(this).val();
         payrollsTable.column(2).search(

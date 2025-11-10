@@ -23,11 +23,11 @@
     </div>
     <section class="section">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex flex-wrap gap-3 justify-content-between align-items-center">
 
                 <h4 class="card-title mb-0">Payroll Table</h4>
 
-                <div class="d-flex align-items-center">
+                <div class="d-flex flex-wrap align-items-center gap-3">
                     <div class="me-2">
                         <label for="departmentFilter" class="form-label mb-0 me-1">Department:</label>
                         <select id="departmentFilter" class="form-select form-select-sm" style="width: auto;">
@@ -41,6 +41,9 @@
                             <option value="">All</option>
                         </select>
                     </div>
+                    <button class="btn btn-outline-primary btn-sm" id="btn-refresh-payrolls">
+                        <i class="fa-solid fa-rotate"></i> Refresh
+                    </button>
                 </div>
 
             </div>

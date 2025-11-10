@@ -480,6 +480,10 @@ $(document).ready(function () {
             .draw();
     });
 
+    $("#btn-refresh-purchase-requests").on("click", function () {
+        purchaseRequestTable.ajax.reload(null, false);
+    });
+
     var orderTable = $("#orderRequest").DataTable({
         columns: [
             {

@@ -12,8 +12,11 @@
 
     <div class="section">
         <div class="card mb-4">
-            <div class="card-header py-3">
-                <h6 class="card-title">All Bookings</h6>
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">All Bookings</h6>
+                <button class="btn btn-outline-primary btn-sm" id="btn-refresh-bookings">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

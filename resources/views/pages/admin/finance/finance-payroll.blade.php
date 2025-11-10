@@ -13,10 +13,10 @@
     <section class="section">
         <div class="card">
             <div class="card-header py-3">
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center gap-3">
                     <h4 class="card-title mb-0">Payroll Table</h4>
 
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center gap-3">
                         <div class="me-2">
                             <label for="payroll_department_filter" class="form-label mb-1">Department:</label>
                             <select id="payroll_department_filter" class="form-select form-select-sm" style="width: 200px;">
@@ -32,6 +32,10 @@
                                 <!-- Auto-populated -->
                             </select>
                         </div>
+
+                        <button class="btn btn-outline-primary btn-sm" id="refresh-payrolls">
+                            <i class="fa-solid fa-rotate me-1"></i> Refresh
+                        </button>
                     </div>
                 </div>
             </div>

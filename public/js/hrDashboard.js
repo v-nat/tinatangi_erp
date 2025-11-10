@@ -13,7 +13,7 @@ $(document).ready(function () {
     });
     calendar.render();
 
-    $("#attendanceTable").DataTable({
+    const attendanceTable = $("#attendanceTable").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
@@ -72,5 +72,9 @@ $(document).ready(function () {
                 width: "150px",
             },
         ],
+    });
+
+    $("#btn-refresh-dashboard-attendance").on("click", function () {
+        attendanceTable.ajax.reload(null, false);
     });
 });

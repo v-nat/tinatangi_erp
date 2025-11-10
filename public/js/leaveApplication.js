@@ -44,6 +44,9 @@ $(document).ready(function () {
             },
         ],
     });
+    $("#btn-refresh-leave-requests").on("click", function () {
+        reloadTable("leaveRequests");
+    });
     const today = new Date().toISOString().split("T")[0];
     $("#start_date, #end_date").attr("min", today);
     $("#textAreaDiv").hide();

@@ -155,4 +155,8 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("#btn-refresh-bookings").on("click", function () {
+        table.ajax.reload(null, false);
+    });
 });

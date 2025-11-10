@@ -80,6 +80,10 @@ $(document).ready(function () {
         ],
     });
 
+    $("#btn-refresh-leaves").on("click", function () {
+        reloadTable("leaves_table");
+    });
+
     $(".modal").on("hidden.bs.modal", function () {
         $(this).find("form").trigger("reset");
     });

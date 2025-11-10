@@ -11,8 +11,11 @@
     </nav>
     <section class="section">
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Purchase Order Request Table</h4>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Purchase Order Request Table</h4>
+                <button class="btn btn-outline-primary btn-sm" id="refresh-purchase-requests">
+                    <i class="fa-solid fa-rotate me-1"></i> Refresh
+                </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

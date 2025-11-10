@@ -24,6 +24,9 @@
                         <button class="btn btn-primary btn-sm" id="btn-add-faq">
                             <i class="fa-solid fa-plus"></i> Add New FAQ
                         </button>
+                        <button class="btn btn-outline-primary btn-sm" id="btn-refresh-faqs">
+                            <i class="fa-solid fa-rotate"></i> Refresh
+                        </button>
                     </div>
 
                 </div>

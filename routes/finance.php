@@ -4,11 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HR\PayrollController;
 use App\Http\Controllers\Admin\Finance\FinanceController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
+use App\Http\Controllers\Admin\Finance\SalesTransactionController;
 use App\Http\Controllers\Admin\Procurement\PurchaseOrderController;
 
 Route::get('/finance', [FinanceController::class, 'finance'])->middleware('auth', 'isEmployee')->name('finance');
 
-Route::prefix('/finance')->middleware(['auth' , 'isEmployee'])->group(function () {
+Route::prefix('/finance')->middleware(['auth', 'isEmployee'])->group(function () {
     Route::get('/dashboard-analytics', [FinanceController::class, 'getDashboardAnalytics']);
     /////////////////////////////////////////////////////////// PAYROLL //////////////////////////////////////////////////////
     Route::get('/payroll', [PayrollController::class, 'indexOnFinance'])->name('finance.payroll');
@@ -20,8 +21,9 @@ Route::prefix('/finance')->middleware(['auth' , 'isEmployee'])->group(function (
     Route::get('/budgets', [FinanceController::class, 'budgetsIndex'])->name('finance.budgets');
     Route::get('/budgets/requests', [FinanceController::class, 'getPendingRequests']);
     Route::get('/budgets/history', [FinanceController::class, 'getRequestsHistory']);
-    Route::put('/budgets/requests/approve/{id}/{req_id}', [FinanceController::class,'approveRequest']);
-    Route::put('/budgets/requests/reject/{id}', [FinanceController::class,'rejectRequest']);
+    Route::put('/budgets/requests/approve/{id}/{req_id}', [FinanceController::class, 'approveRequest']);
+    Route::put('/budgets/requests/reject/{id}', [FinanceController::class, 'rejectRequest']);
+    Route::get('/budgets/summary', [FinanceController::class, 'getBudgetSummary']);
 
     /////////////////////////////////////////////////////////// PR / PO //////////////////////////////////////////////////////
     Route::get('/purchases', [FinanceController::class, 'purchasesIndex'])->name('finance.purchases');
@@ -29,4 +31,11 @@ Route::prefix('/finance')->middleware(['auth' , 'isEmployee'])->group(function (
     Route::get('/purchases/get-invoice/{id}', [InvoiceController::class, 'getInvoiceForViewing']);
     Route::get('/purchases/get-requests', [FinanceController::class, 'purchaseRequests']);
     Route::put('/purchases/process/{id}/{status}', [PurchaseOrderController::class, 'putOnProcess']);
+
+
+    /////////////////////////////////////////////////////////// SALES //////////////////////////////////////////////////////
+    Route::get('/sales-transactions', [SalesTransactionController::class, 'index'])->name('finance.sales');
+    Route::get('/sales-transactions/list', [SalesTransactionController::class, 'list']);
+    Route::get('/sales-transactions/analytics', [SalesTransactionController::class, 'analytics']);
+    Route::post('/sales-transactions/review', [SalesTransactionController::class, 'review']);
 });

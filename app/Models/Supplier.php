@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
 
 class Supplier extends Model
 {
@@ -32,5 +33,10 @@ class Supplier extends Model
     public function statusRS(): BelongsTo
     {
         return $this->belongsTo(Status::class, 'status');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

@@ -12,8 +12,11 @@
 
     <section class="section">
         <div class="card">
-            <div class="card-header">
-                My Attendance Records
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">My Attendance Records</h4>
+                <button class="btn btn-outline-primary btn-sm" id="btn-refresh-employee-attendance">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
             </div>
             <a class="d-none" id="employee_id" href="">{{$id}}</a>
             <div class="card-body">

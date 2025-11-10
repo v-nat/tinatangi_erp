@@ -19,3 +19,10 @@
         <span>Kitchen Display</span>
     </a>
 </li>
+
+<li class="sidebar-item @yield('operationsSalesReports') ">
+    <a href="{{ route('op.sales.reporting') }}" class='sidebar-link'>
+        <i class="fa-solid fa-file-circle-plus"></i>
+        <span>Sales Reporting</span>
+    </a>
+</li>

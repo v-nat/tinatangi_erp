@@ -214,7 +214,7 @@ $(document).ready(function () {
 
     const id = $("#employee_id").text().trim();
 
-    $("#employeeAttendanceTable").DataTable({
+    const attendanceTable = $("#employeeAttendanceTable").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
@@ -281,5 +281,9 @@ $(document).ready(function () {
                 width: "150px",
             },
         ],
+    });
+
+    $("#btn-refresh-employee-attendance").on("click", function () {
+        attendanceTable.ajax.reload(null, false);
     });
 });

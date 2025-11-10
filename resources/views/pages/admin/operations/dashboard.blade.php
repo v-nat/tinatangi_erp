@@ -161,6 +161,9 @@
             <div class="card h-100 shadow-sm border-0 rounded-lg">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Critical Stock Levels</h4>
+                    <button class="btn btn-outline-primary btn-sm" id="btn-refresh-low-stock">
+                        <i class="fa-solid fa-rotate"></i> Refresh
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

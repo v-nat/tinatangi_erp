@@ -1,7 +1,7 @@
 import { reloadTable } from "./utils/reloadTable.js";
 
 $(document).ready(function () {
-    $("#recentItems").DataTable({
+    const recentItemsTable = $("#recentItems").DataTable({
         autoWidth: false,
         processing: true,
         serverSide: false,
@@ -517,6 +517,13 @@ $(document).ready(function () {
 
     getToReceiveRequests();
     getToRestockItems();
+
+    $("#btn-refresh-recent-items").on("click", function () {
+        fetchAndUpdateCounts();
+        getToReceiveRequests();
+        getToRestockItems();
+        recentItemsTable.ajax.reload(null, false);
+    });
 
     function buildInvoiceModal(data, req_id) {
         const po = new Set();

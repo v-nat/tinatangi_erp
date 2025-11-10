@@ -87,6 +87,10 @@ $(document).ready(function () {
         ],
     });
 
+    $("#btn-refresh-overtimes").on("click", function () {
+        reloadTable("overtime_table");
+    });
+
     $(".modal").on("hidden.bs.modal", function () {
         $(this).find("form").trigger("reset");
     });

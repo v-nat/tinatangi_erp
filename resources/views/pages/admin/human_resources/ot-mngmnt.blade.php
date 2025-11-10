@@ -14,8 +14,11 @@
     </nav>
     <section class="section">
         <div class="card">
-            <div class="card-header">
-                Overtimes Table
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Overtimes Table</h4>
+                <button class="btn btn-outline-primary btn-sm" id="btn-refresh-overtimes">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

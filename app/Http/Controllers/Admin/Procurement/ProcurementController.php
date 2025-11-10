@@ -32,59 +32,92 @@ class ProcurementController extends Controller
 
     public function getDashboardAnalytics()
     {
-        // --- 1. KPI Card Data ---
-        $pendingPR = PurchaseRequest::where('status', 11)->count();
-        $pendingPO = PurchaseOrder::where('status', 11)->count();
-        $activeSuppliers = Supplier::where('status', 1)->count();
+        $today = Carbon::today();
+        $monthStart = Carbon::now()->startOfMonth();
+        $monthEnd = Carbon::now()->endOfMonth();
 
-        // Total spend this month (status 23 = Completed)
-        // This joins POs and their Details to sum the correct amounts
-        $totalSpend = DB::table('purchase_orders')
+        $completedStatuses = [23];
+        $closedStatuses = [23, 19];
+
+        $pendingPRCount = PurchaseRequest::where('status', 11)->count();
+
+        $openPOCount = PurchaseOrder::whereNotIn('status', $closedStatuses)->count();
+
+        $overduePOCount = PurchaseOrder::whereNotIn('status', $closedStatuses)
+            ->whereNotNull('delivery_date')
+            ->whereDate('delivery_date', '<', $today)
+            ->count();
+
+        $monthSpend = DB::table('purchase_orders')
             ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
-            ->where('purchase_orders.status', 23)
-            ->whereMonth('purchase_orders.created_at', Carbon::now()->month)
+            ->whereIn('purchase_orders.status', $completedStatuses)
+            ->whereBetween('purchase_orders.created_at', [$monthStart, $monthEnd])
             ->sum('purchase_order_details.total_amount');
 
-        // --- 2. Recent Pending Purchase Requests (PRs) ---
-        $recentPendingPRs = PurchaseRequest::where('status', 11)
+        $recentPRs = PurchaseRequest::with(['employeeRS.userRS'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get()
             ->map(function ($pr) {
-                $pr->status_html = Status::getStatusText($pr->status);
-                return $pr;
-            });
+                return [
+                    'id' => $pr->id,
+                    'reference' => $pr->order_id ?? ('PR-' . str_pad($pr->id, 5, '0', STR_PAD_LEFT)),
+                    'requested_at' => optional($pr->created_at)->toDateTimeString(),
+                    'requested_by' => optional(optional($pr->employeeRS)->userRS)->full_name,
+                    'status_html' => Status::getStatusText($pr->status),
+                ];
+            })
+            ->values();
 
-        // --- 3. Purchase Orders by Status (Doughnut Chart) ---
-        $poByStatus = PurchaseOrder::select('status', DB::raw('COUNT(*) as count'))
-            ->groupBy('status')
+        $recentPOs = PurchaseOrder::with(['supplierRS', 'purchaseOrderDetail'])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
             ->get()
-            ->map(function ($po) {
-                $po->status_label = strip_tags(Status::getStatusText($po->status));
-                return $po;
-            });
+            ->map(function ($po) use ($closedStatuses) {
+                $totalAmount = $po->purchaseOrderDetail->sum('total_amount');
+                $isOpen = !in_array($po->status, $closedStatuses, true);
+                $isOverdue = $isOpen && $po->delivery_date && Carbon::parse($po->delivery_date)->isPast();
 
-        // --- 4. Top 5 Suppliers by PO Value (Bar Chart) ---
-        // This joins Suppliers, POs, and PO Details
+                return [
+                    'id' => $po->id,
+                    'reference' => $po->purchase_orderId ?? ('PO-' . str_pad($po->id, 5, '0', STR_PAD_LEFT)),
+                    'order_date' => $po->order_date,
+                    'delivery_date' => $po->delivery_date,
+                    'supplier_name' => optional($po->supplierRS)->supplier_name,
+                    'status_html' => Status::getStatusText($po->status),
+                    'total_amount' => (float) $totalAmount,
+                    'is_overdue' => $isOverdue,
+                ];
+            })
+            ->values();
+
         $topSuppliers = DB::table('suppliers')
             ->join('purchase_orders', 'suppliers.id', '=', 'purchase_orders.supplier_id')
             ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
+            ->whereIn('purchase_orders.status', $completedStatuses)
+            ->whereBetween('purchase_orders.created_at', [$monthStart, $monthEnd])
             ->select('suppliers.supplier_name as supplier_name', DB::raw('SUM(purchase_order_details.total_amount) as total'))
-            ->where('purchase_orders.status', 23) // Only count 'Completed' orders
             ->groupBy('suppliers.supplier_name')
-            ->orderBy('total', 'desc')
+            ->orderByDesc('total')
             ->take(5)
-            ->get();
+            ->get()
+            ->map(function ($row) {
+                return [
+                    'supplier_name' => $row->supplier_name,
+                    'total' => (float) $row->total,
+                ];
+            })
+            ->values();
 
         return response()->json([
             'kpis' => [
-                'pendingPR' => $pendingPR,
-                'pendingPO' => $pendingPO,
-                'activeSuppliers' => $activeSuppliers,
-                'totalSpend' => number_format($totalSpend, 2),
+                'pendingPR' => $pendingPRCount,
+                'openPO' => $openPOCount,
+                'overduePO' => $overduePOCount,
+                'monthSpend' => (float) $monthSpend,
             ],
-            'recentPendingPRs' => $recentPendingPRs,
-            'poByStatus' => $poByStatus,
+            'recentPRs' => $recentPRs,
+            'recentPOs' => $recentPOs,
             'topSuppliers' => $topSuppliers,
         ]);
     }

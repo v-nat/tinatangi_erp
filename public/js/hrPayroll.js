@@ -499,6 +499,10 @@ $(document).ready(function () {
         },
     });
 
+    $("#btn-refresh-payrolls").on("click", function () {
+        table.ajax.reload(null, false);
+    });
+
     $("#departmentFilter").on("change", function () {
         const selectedDepartment = $(this).val();
         table

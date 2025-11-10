@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Order extends Model
@@ -47,5 +48,10 @@ class Order extends Model
     public function statusRS(): BelongsTo
     {
         return $this->belongsTo(Status::class, 'status');
+    }
+
+    public function salesReport(): HasOne
+    {
+        return $this->hasOne(SalesReport::class, 'order_id');
     }
 }

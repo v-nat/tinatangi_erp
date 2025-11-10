@@ -1,6 +1,102 @@
 import { reloadTable } from "./utils/reloadTable.js";
 
 $(document).ready(function () {
+    const getThemeColor = (colorName) =>
+        getComputedStyle(document.documentElement)
+            .getPropertyValue(`--bs-${colorName}`)
+            .trim();
+
+    const formatCurrency = (val) => {
+        if (val === null || val === undefined || isNaN(val)) return "₱ 0.00";
+        return (
+            "₱ " +
+            parseFloat(val).toLocaleString("en-PH", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+        );
+    };
+
+    let budgetChart = null;
+
+    function initChart() {
+        const chartEl = document.getElementById("budget-release-chart");
+        if (!chartEl) return;
+
+        const options = {
+            series: [],
+            chart: {
+                type: "bar",
+                height: 320,
+                toolbar: { show: false },
+                noData: { text: "Loading chart data..." },
+            },
+            plotOptions: {
+                bar: {
+                    columnWidth: "55%",
+                    endingShape: "rounded",
+                },
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ["transparent"],
+            },
+            dataLabels: { enabled: false },
+            colors: [getThemeColor("primary"), getThemeColor("success")],
+            xaxis: {
+                categories: [],
+            },
+            yaxis: {
+                labels: {
+                    formatter: (value) => (value / 1000).toFixed(1) + "k",
+                },
+            },
+            tooltip: {
+                y: {
+                    formatter: (value) => formatCurrency(value),
+                },
+            },
+            legend: {
+                position: "top",
+                horizontalAlign: "right",
+            },
+        };
+
+        budgetChart = new ApexCharts(chartEl, options);
+        budgetChart.render();
+    }
+
+    function loadChart() {
+        if (!budgetChart) return;
+        $.ajax({
+            url: "/finance/budgets/summary",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                const safeResponse = response || {};
+
+                budgetChart.updateOptions({
+                    xaxis: { categories: response.labels || [] },
+                });
+                budgetChart.updateSeries(response.series || []);
+            },
+            error: function (xhr) {
+                console.error(
+                    "Failed to load budget summary:",
+                    xhr.responseText
+                );
+            },
+        });
+    }
+
+    initChart();
+    loadChart();
+
+    $("#refresh-approvals").on("click", function () {
+        reloadTable("approvalTable");
+    });
+
     $("#approvalTable").DataTable({
         autoWidth: false,
         processing: true,
@@ -125,6 +221,7 @@ $(document).ready(function () {
                     $("#LoadingScreen").fadeOut(200);
                     reloadTable("approvalTable");
                     reloadTable("historyTable");
+                    loadChart();
                     Toast.fire({
                         text: response.message,
                         icon: "success",
@@ -174,6 +271,7 @@ $(document).ready(function () {
                         $("#LoadingScreen").fadeOut(200);
                         reloadTable("approvalTable");
                         reloadTable("historyTable");
+                        loadChart();
                         Toast.fire("Rejected!", response.message, "success");
                     } else {
                         Toast.fire("Error", response.message, "error");
@@ -318,6 +416,8 @@ $(document).ready(function () {
                         );
                     }
                 });
+
+            loadChart();
         },
     });
 });

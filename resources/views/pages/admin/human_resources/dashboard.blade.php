@@ -86,8 +86,11 @@
         </div>
 
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Employees Today's Attendance</h4>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Employees Today's Attendance</h4>
+                <button class="btn btn-outline-primary btn-sm" id="btn-refresh-dashboard-attendance">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

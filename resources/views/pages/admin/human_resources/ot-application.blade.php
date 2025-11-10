@@ -72,8 +72,11 @@
 
     <section class="section">
         <div class="card">
-            <div class="card-header">
-                My Overtime Requests
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">My Overtime Requests</h4>
+                <button class="btn btn-outline-primary btn-sm" id="btn-refresh-ot-requests">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

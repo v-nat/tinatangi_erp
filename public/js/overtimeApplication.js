@@ -64,6 +64,9 @@ $(document).ready(function () {
             },
         ],
     });
+    $("#btn-refresh-ot-requests").on("click", function () {
+        reloadTable("otRequests");
+    });
 
     $("#time_start, #time_end").on("change", function () {
         const start = $("#time_start").val();
