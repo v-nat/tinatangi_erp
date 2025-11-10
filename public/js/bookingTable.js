@@ -378,7 +378,6 @@ $(document).ready(function () {
                 return;
             }
             $("#LoadingScreen").fadeIn(200);
-
             const tableId = $selectedTable.val();
             const finalBookingData = bookingData + `&table_id=${tableId}`;
 
