@@ -3,6 +3,17 @@
 @section('topTitle') Tinatangi Cafe | Point of Sale @endsection
 @section('screen') POS @endsection
 @section('posTopNav') active @endsection
+@section('navSearch')
+    <div class="pos-search-wrapper mx-auto">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+                <i class="fa fa-search text-muted"></i>
+            </span>
+            <input type="text" id="product-search-input" class="form-control border-start-0"
+                placeholder="Search products...">
+        </div>
+    </div>
+@endsection
 @section('content')
     <div class="container-fluid p-0">
 
@@ -16,74 +27,19 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-2">
-                                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
-                                    aria-orientation="vertical">
-                                    <a class="nav-link active" id="v-pills-all-tab" data-bs-toggle="pill"
-                                        href="#v-pills-all" role="tab" aria-controls="v-pills-all"
-                                        aria-selected="true">All</a>
-                                    <a class="nav-link" id="v-pills-pastries-tab" data-bs-toggle="pill"
-                                        href="#v-pills-pastries" role="tab" aria-controls="v-pills-pastries"
-                                        aria-selected="false">Pastries</a>
-                                    <a class="nav-link" id="v-pills-beverages-tab" data-bs-toggle="pill"
-                                        href="#v-pills-beverages" role="tab" aria-controls="v-pills-beverages"
-                                        aria-selected="false">Beverages</a>
-                                    <a class="nav-link" id="v-pills-meals-tab" data-bs-toggle="pill" href="#v-pills-meals"
-                                        role="tab" aria-controls="v-pills-meals" aria-selected="false">Meals</a>
-                                    <a class="nav-link" id="v-pills-snacks-tab" data-bs-toggle="pill" href="#v-pills-snacks"
-                                        role="tab" aria-controls="v-pills-snacks" aria-selected="false">Snacks & Sides</a>
+                                <div class="pos-category-nav shadow-sm p-2 rounded">
+                                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
+                                        aria-orientation="vertical">
+                                        <div class="text-center py-3 text-muted" id="category-placeholder">
+                                            Loading categories...
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-10 overflow-y-auto vh-80">
                                 <div class="tab-content" id="v-pills-tabContent">
-                                    <div class="tab-pane fade show active" id="v-pills-all" role="tabpanel"
-                                        aria-labelledby="v-pills-all-tab">
-
-                                        <div class="tab-pane fade show active py-4" id="v-pills-all" role="tabpanel"
-                                            aria-labelledby="v-pills-all-tab">
-
-                                            <div id="allProducts" class="row row-cols-auto g-3 justify-content-start">
-
-                                                {{-- WILL POPULATED BY JS --}}
-
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane fade py-4" id="v-pills-pastries" role="tabpanel"
-                                        aria-labelledby="v-pills-pastries-tab">
-
-                                        <div id="pastriesProducts" class="row row-cols-auto g-3 justify-content-start">
-
-                                            {{-- WILL POPULATED BY JS --}}
-
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane fade py-4" id="v-pills-beverages" role="tabpanel"
-                                        aria-labelledby="v-pills-beverages-tab">
-
-                                        <div id="beveragesProducts" class="row row-cols-auto g-3 justify-content-start">
-
-                                            {{-- WILL POPULATED BY JS --}}
-
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane fade py-4" id="v-pills-meals" role="tabpanel"
-                                        aria-labelledby="v-pills-meals-tab">
-
-                                        <div id="mealsProducts" class="row row-cols-auto g-3 justify-content-start">
-
-                                            {{-- WILL POPULATED BY JS --}}
-
-                                        </div>
-                                    </div>
-
-                                    <div class="tab-pane fade py-4" id="v-pills-snacks" role="tabpanel"
-                                        aria-labelledby="v-pills-snacks-tab">
-
-                                        <div id="snacksProducts" class="row row-cols-auto g-3 justify-content-start">
-                                            {{-- WILL POPULATED BY JS --}}
-
-                                        </div>
+                                    <div class="text-center py-5 text-muted" id="products-placeholder">
+                                        Select a category to view products.
                                     </div>
                                 </div>
                             </div>
@@ -139,6 +95,21 @@
 
         .vh-80 {
             height: 77vh;
+        }
+
+        .pos-category-nav {
+            max-height: 77vh;
+            overflow-y: auto;
+            background-color: #ffffff;
+        }
+
+        .pos-search-wrapper {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .pos-search-wrapper .form-control:focus {
+            box-shadow: none;
         }
 
         .product-card-fixed-size {

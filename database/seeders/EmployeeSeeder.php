@@ -177,5 +177,59 @@ class EmployeeSeeder extends Seeder
                 'updated_at'    => '2025-09-08 12:00:00',
             ],
         ]);
+        DB::table('employees')->insert([
+            [
+                'id'            => 7,
+                'user_id'       => 7,
+                'address'       => 'Cavite',
+                'postal_code'   => 4107,
+                'gender'        => 'Male',
+                'birth_date'    => '2003-08-21',
+                'age'           => Carbon::parse('2003-08-21')->age,
+                'phone_number'  => '09070959723',
+                'citizenship'   => 'Filipino',
+
+                'department'    => 7,
+                'supervisor_id' => 2,
+                'level'         => 'staff',
+                'position_id'   => 16,
+
+                'sss'           => 600.00,
+                'pagibig'       => 100.00,
+                'philhealth'    => 450.00,
+                'base_salary'   => 14560.00,
+
+                'status'        => 1,
+                'created_at'    => '2025-09-08 12:00:00',
+                'updated_at'    => '2025-09-08 12:00:00',
+            ],
+        ]);
+        DB::table('employees')->insert([
+            [
+                'id'            => 8,
+                'user_id'       => 8,
+                'address'       => 'Cavite',
+                'postal_code'   => 4107,
+                'gender'        => 'Male',
+                'birth_date'    => '2003-08-21',
+                'age'           => Carbon::parse('2003-08-21')->age,
+                'phone_number'  => '09070959723',
+                'citizenship'   => 'Filipino',
+
+                'department'    => 9,
+                'supervisor_id' => 2,
+                'level'         => 'staff',
+                'position_id'   => 12,
+
+                'sss'           => 600.00,
+                'pagibig'       => 100.00,
+                'philhealth'    => 450.00,
+                'base_salary'   => 13520.00,
+
+                'status'        => 1,
+                'created_at'    => '2025-09-08 12:00:00',
+                'updated_at'    => '2025-09-08 12:00:00',
+            ],
+        ]);
     }
 }

@@ -18,6 +18,184 @@ $(document).ready(function () {
         });
     });
 
+    const categoriesNavContainer = $("#v-pills-tab");
+    const tabContentContainer = $("#v-pills-tabContent");
+    const categoriesLoadingHtml =
+        '<div class="text-center py-3 text-muted">Loading categories...</div>';
+    const productsIdleHtml =
+        '<div class="text-center py-5 text-muted">Select a category to view products.</div>';
+    const categoriesErrorHtml =
+        '<div class="text-center py-3 text-danger">Failed to load categories.</div>';
+
+    let posCategories = [];
+
+    function slugify(text) {
+        if (!text) {
+            return "category";
+        }
+        const slug = text
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/[\s\W-]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+        return slug || "category";
+    }
+
+    function renderCategoryNavigation(categories) {
+        if (!Array.isArray(categories) || categories.length === 0) {
+            categoriesNavContainer.html(
+                '<div class="text-center py-3 text-muted">No categories available.</div>'
+            );
+            tabContentContainer.html(
+                '<div class="text-center py-5 text-muted">No products to display.</div>'
+            );
+            return;
+        }
+
+        const navLinks = [];
+        const tabPanes = [];
+
+        posCategories = categories.map((category, index) => {
+            const slug = category.slug || slugify(category.name || "category");
+            const isAll =
+                category.isAll === true ||
+                slug === "all" ||
+                (category.name || "").toLowerCase() === "all";
+            const navId = `v-pills-${slug}-tab`;
+            const paneId = `v-pills-${slug}`;
+            const productsContainerId = `${slug}Products`;
+            const isActive = index === 0;
+
+            navLinks.push(
+                `<a class="nav-link ${
+                    isActive ? "active" : ""
+                }" id="${navId}" data-bs-toggle="pill" href="#${paneId}" role="tab" aria-controls="${paneId}" aria-selected="${isActive}" data-category-index="${index}">${
+                    category.name
+                }</a>`
+            );
+
+            tabPanes.push(
+                `<div class="tab-pane fade ${
+                    isActive ? "show active" : ""
+                } py-4" id="${paneId}" role="tabpanel" aria-labelledby="${navId}">
+                    <div id="${productsContainerId}" class="row row-cols-auto g-3 justify-content-start"></div>
+                </div>`
+            );
+
+            return {
+                id: category.id ?? null,
+                name: category.name,
+                slug,
+                isAll,
+                navId,
+                paneId,
+                productsContainerId,
+            };
+        });
+
+        categoriesNavContainer.html(navLinks.join(""));
+        tabContentContainer.html(tabPanes.join(""));
+    }
+
+    function loadProductsForCategory(category) {
+        if (!category) {
+            return;
+        }
+
+        const containerSelector = `#${category.productsContainerId}`;
+        let url = "/operations/pos/products";
+
+        if (!category.isAll) {
+            url += `?category=${encodeURIComponent(category.name)}`;
+        }
+
+        getProducts(url, containerSelector);
+    }
+
+    function loadPosCategories() {
+        categoriesNavContainer.html(categoriesLoadingHtml);
+        tabContentContainer.html(productsIdleHtml);
+
+        $.get("/operations/pos/categories", function (response) {
+            const categoryData = Array.isArray(response.data)
+                ? response.data
+                : [];
+            const categories = [
+                { id: null, name: "All", slug: "all", isAll: true },
+                ...categoryData.map((item) => ({
+                    id: item.id ?? null,
+                    name: item.name ?? "Unnamed",
+                    slug: item.slug ?? slugify(item.name ?? "category"),
+                })),
+            ];
+
+            renderCategoryNavigation(categories);
+
+            if (posCategories.length > 0) {
+                loadProductsForCategory(posCategories[0]);
+            }
+        }).fail(function () {
+            categoriesNavContainer.html(categoriesErrorHtml);
+            tabContentContainer.html(
+                '<div class="text-center py-5 text-danger">Unable to load products.</div>'
+            );
+        });
+    }
+
+    function applySearchFilter() {
+        const query = ($("#product-search-input").val() || "")
+            .toLowerCase()
+            .trim();
+
+        const activePane = $("#v-pills-tabContent .tab-pane.show.active");
+        if (activePane.length === 0) {
+            return;
+        }
+
+        const productContainer = activePane.find(".row.row-cols-auto.g-3");
+        if (productContainer.length === 0) {
+            return;
+        }
+
+        const productColumns = productContainer.children(".col[data-name]");
+        const noResultsClass = "no-product-search-results";
+        productContainer.find(`.${noResultsClass}`).remove();
+
+        if (productColumns.length === 0) {
+            return;
+        }
+
+        if (!query) {
+            productColumns.removeClass("d-none");
+            return;
+        }
+
+        let visibleCount = 0;
+
+        productColumns.each(function () {
+            const $col = $(this);
+            const productName = ($col.data("name") || "").toString();
+
+            if (productName.includes(query)) {
+                $col.removeClass("d-none");
+                visibleCount += 1;
+            } else {
+                $col.addClass("d-none");
+            }
+        });
+
+        if (visibleCount === 0) {
+            const safeQuery = $("<div>").text(query).html();
+            const emptyState = `
+                <div class="col-12 text-center my-5 p-5 text-muted ${noResultsClass}">
+                    <h5>No products match "${safeQuery}".</h5>
+                    <p>Try adjusting your search.</p>
+                </div>`;
+            productContainer.append(emptyState);
+        }
+    }
+
     function getProducts(url, id) {
         const loading_items = `
              <div class="col-12 text-center my-5 p-5 d-flex flex-column align-items-center">
@@ -46,6 +224,8 @@ $(document).ready(function () {
                     productsArray.forEach((element) => {
                         const imagePath = element.image;
                         let imageUrl;
+                        const productName = element.name || "";
+                        const productNameLower = productName.toLowerCase();
 
                         if (imagePath && imagePath !== "N/A") {
                             imageUrl = "/storage/app/public/" + imagePath;
@@ -72,18 +252,17 @@ $(document).ready(function () {
                         productsHtml.push(`
                         <div class="col" data-id="${
                             element.id
-                        }" data-available-servings="${servings}" ${
-                            servings <= 0 ? 'data-disabled="true"' : ""
-                        }>
+                        }" data-available-servings="${servings}" data-name="${productNameLower.replace(
+                            /"/g,
+                            "&quot;"
+                        )}" ${servings <= 0 ? 'data-disabled="true"' : ""}>
                             <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2 ${
                                 servings <= 0 ? "border-danger" : ""
                             }">
                                 ${servingsHtml}
                                 <img src="${imageUrl}" class="card-img-top img-fluid prod-img" alt="Product Image">
                                 <div class="card-body p-2 flex-grow-1">
-                                    <h6 class="card-title mb-1 prod-name">${
-                                        element.name
-                                    }</h6>
+                                    <h6 class="card-title mb-1 prod-name">${productName}</h6>
                                     <h6 class="text-success mb-0 prod-price">₱${parseFloat(
                                         element.base_price || 0
                                     ).toFixed(2)}</h6>
@@ -116,54 +295,28 @@ $(document).ready(function () {
             })
             .always(function () {
                 $("#LoadingScreen").fadeOut(200);
+                applySearchFilter();
             });
     }
 
-    function getAllProducts() {
-        getProducts(`/operations/pos/get-all-products`, "#allProducts");
-    }
+    loadPosCategories();
 
-    function getPastriesProducts() {
-        getProducts(
-            `/operations/pos/get-pastries-products`,
-            "#pastriesProducts"
-        );
-    }
+    $(document).on(
+        "shown.bs.tab",
+        "#v-pills-tab a[data-category-index]",
+        function () {
+            const index = parseInt($(this).data("category-index"), 10);
 
-    function getBeveragesProducts() {
-        getProducts(
-            `/operations/pos/get-beverages-products`,
-            "#beveragesProducts"
-        );
-    }
+            if (Number.isNaN(index) || !posCategories[index]) {
+                return;
+            }
 
-    function getMealsProducts() {
-        getProducts(`/operations/pos/get-meals-products`, "#mealsProducts");
-    }
+            loadProductsForCategory(posCategories[index]);
+        }
+    );
 
-    function getSnacksAndSidesProducts() {
-        getProducts(
-            `/operations/pos/get-snacks-sides-products`,
-            "#snacksProducts"
-        );
-    }
-
-    getAllProducts();
-
-    $(document).on("shown.bs.tab", "#v-pills-all-tab", function (e) {
-        getAllProducts();
-    });
-    $(document).on("shown.bs.tab", "#v-pills-pastries-tab", function (e) {
-        getPastriesProducts();
-    });
-    $(document).on("shown.bs.tab", "#v-pills-beverages-tab", function (e) {
-        getBeveragesProducts();
-    });
-    $(document).on("shown.bs.tab", "#v-pills-meals-tab", function (e) {
-        getMealsProducts();
-    });
-    $(document).on("shown.bs.tab", "#v-pills-snacks-tab", function (e) {
-        getSnacksAndSidesProducts();
+    $(document).on("input", "#product-search-input", function () {
+        applySearchFilter();
     });
 
     $(document).on("click", ".col", function () {
@@ -791,8 +944,8 @@ $(function () {
                 const activeTab = $(".nav-pills .nav-link.active");
                 if (activeTab.length > 0) {
                     activeTab.trigger("shown.bs.tab");
-                } else {
-                    getAllProducts();
+                } else if (posCategories.length > 0) {
+                    loadProductsForCategory(posCategories[0]);
                 }
             },
             error: function (xhr) {

@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use App\Models\InventoryItem;
 use App\Models\StockTransaction;
 use App\Enums\TransactionType;
+use Illuminate\Support\Str;
 
 class POSController extends Controller
 {
@@ -76,6 +77,37 @@ class POSController extends Controller
     public function getSnacksAndSidesProducts()
     {
          return $this->getProductsByCategory('Snacks & Sides');
+    }
+
+    public function getProductCategories()
+    {
+        try {
+            $categories = ProductCategory::orderBy('name')
+                ->get(['id', 'name'])
+                ->map(function (ProductCategory $category) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'slug' => Str::slug($category->name),
+                    ];
+                });
+
+            return response()->json(['data' => $categories]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching product categories for POS: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load product categories.'], 500);
+        }
+    }
+
+    public function getProducts(Request $request)
+    {
+        $categoryName = $request->query('category');
+
+        if (is_null($categoryName) || strtolower($categoryName) === 'all') {
+            return $this->getProductsByCategory(null);
+        }
+
+        return $this->getProductsByCategory($categoryName);
     }
 
     public function submitOrder(Request $request)
