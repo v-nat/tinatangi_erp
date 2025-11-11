@@ -27,9 +27,9 @@
 </div>
 
 <!-- Receive Order Modal -->
-<div class="modal fade text-left" id="receiveOrderModal" tabindex="-1" role="dialog"
+<div class="modal fade text-left w-100" id="receiveOrderModal" tabindex="-1" role="dialog"
     aria-labelledby="receiveOrderModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="receiveOrderModalLabel">Receive Delivery & Inspect Items</h4>
@@ -37,20 +37,20 @@
                     <i data-feather="x"></i>
                 </button>
             </div>
-            <form id="receiveOrderForm" enctype="multipart/form-data">
-                <div class="modal-body p-4">
-                    <style>
-                        /* CSS to manage the return fields visibility */
-                        .return-fields {
-                            display: none;
-                            background-color: #fff8f8;
-                            border: 1px solid #fdd;
-                            padding: 10px;
-                            border-radius: 5px;
-                            margin-top: 10px;
-                        }
-                    </style>
+            <div class="modal-body p-4">
+                <style>
+                    /* CSS to manage the return fields visibility */
+                    .return-fields {
+                        display: none;
+                        background-color: #fff8f8;
+                        border: 1px solid #fdd;
+                        padding: 10px;
+                        border-radius: 5px;
+                        margin-top: 10px;
+                    }
+                </style>
 
+                <form id="receiveOrderForm" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" id="receive_pr_id" name="pr_id">
 
@@ -85,19 +85,18 @@
                             </tbody>
                         </table>
                     </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                        <i class="bx bx-x d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Cancel</span>
-                    </button>
-                    <button type="submit" class="btn btn-primary ml-1" id="submitReceiveOrder">
-                        <i class="bx bx-check d-block d-sm-none"></i>
-                        <span class="d-none d-sm-block">Submit Inspection</span>
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                    <i class="bx bx-x d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Cancel</span>
+                </button>
+                <button type="submit" class="btn btn-primary ml-1" id="submitReceiveOrder" form="receiveOrderForm">
+                    <i class="bx bx-check d-block d-sm-none"></i>
+                    <span class="d-none d-sm-block">Submit Inspection</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
