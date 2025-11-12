@@ -1,7 +1,7 @@
 @if (auth()->user()->employeeRS?->department == 1)
 
     @section('title')Tinatangi Cafe ERP Management System @endsection
-    @section('sidebar-title') Administrator @endsection
+    @section('sidebar-title') Executives @endsection
     @section('hr-executives') Human Resources Management @endsection
     @section('finance-executives') Finance and Accounting Management @endsection
     @section('procurement-executives') Procurement Management @endsection
