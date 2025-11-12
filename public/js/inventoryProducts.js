@@ -8,9 +8,7 @@ $(function () {
             url: "/inventory/products/get",
             dataSrc: "data",
         },
-        order: [
-            [1, "asc"],
-        ],
+        order: [[1, "asc"]],
         columns: [
             {
                 title: '<input type="checkbox" class="form-check-input" id="select-all-checkbox">',
@@ -38,11 +36,11 @@ $(function () {
                 defaultContent: "N/A",
                 render: function (data, type, row) {
                     if (data === null || data === undefined) {
-                        return 'N/A';
+                        return "N/A";
                     }
                     const parsed = parseInt(data, 10);
-                    return Number.isNaN(parsed) ? 'N/A' : parsed;
-                }
+                    return Number.isNaN(parsed) ? "N/A" : parsed;
+                },
             },
             {
                 data: "status",
@@ -79,11 +77,13 @@ $(function () {
         drawCallback: function (settings) {
             $("#select-all-checkbox").prop("checked", false);
             toggleBatchDeleteButton();
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('#products-table [title]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                tooltipTriggerEl.setAttribute('data-bs-toggle', 'tooltip');
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
+            var tooltipTriggerList = [].slice.call(
+                document.querySelectorAll("#products-table [title]")
+            );
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                tooltipTriggerEl.setAttribute("data-bs-toggle", "tooltip");
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         },
         language: {
             emptyTable: "No products found.",
@@ -579,13 +579,23 @@ $(function () {
                 $("#LoadingScreen").fadeOut(200);
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
+                    let errorHtml =
+                        '<ul class="mb-0 text-start list-unstyled">';
+
                     for (const key in errors) {
-                        const field = $(`#${key}`);
-                        field.addClass("is-invalid");
-                        $(`#${key}_error`).text(errors[key][0]);
+                        if (errors.hasOwnProperty(key)) {
+                            errorHtml += `<li>${errors[key][0]}</li>`;
+                        }
                     }
+                    errorHtml += "</ul>";
+
+                    Toast.fire({
+                        icon: "error",
+                        title: "Validation Failed",
+                        html: errorHtml,
+                    });
                 } else {
-                    Swal.fire({
+                    Toast.fire({
                         icon: "error",
                         title: "Oops...",
                         text: "Something went wrong! Please try again.",
@@ -641,18 +651,27 @@ $(function () {
         });
     });
 
-    $(document).on('keydown', '#base_price, #edit_base_price', function(e) {
+    $(document).on("keydown", "#base_price, #edit_base_price", function (e) {
         const key = e.key;
         const value = $(this).val();
         const selection = this.selectionStart;
 
-        if ([
-            'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
-            'ArrowLeft', 'ArrowRight', 'Home', 'End'
-        ].includes(key)) {
+        if (
+            [
+                "Backspace",
+                "Delete",
+                "Tab",
+                "Escape",
+                "Enter",
+                "ArrowLeft",
+                "ArrowRight",
+                "Home",
+                "End",
+            ].includes(key)
+        ) {
             return;
         }
-        if (key === '.' && value.includes('.')) {
+        if (key === "." && value.includes(".")) {
             e.preventDefault();
             return;
         }
@@ -662,9 +681,12 @@ $(function () {
             return;
         }
 
-        if (value.includes('.') && selection > value.indexOf('.')) {
-            const decimalPart = value.substring(value.indexOf('.') + 1);
-            if (decimalPart.length >= 2 && document.getSelection().toString().length === 0) {
+        if (value.includes(".") && selection > value.indexOf(".")) {
+            const decimalPart = value.substring(value.indexOf(".") + 1);
+            if (
+                decimalPart.length >= 2 &&
+                document.getSelection().toString().length === 0
+            ) {
                 // If we are not overwriting a selection, prevent typing
                 e.preventDefault();
             }
