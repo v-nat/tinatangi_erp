@@ -50,7 +50,7 @@ $(document).ready(function () {
                             } else if (response.position == 11 || response.position == 12 || response.position == 14 || response.position == 15) {
                                 window.location.href = "/operations/kds";
                             } else {
-                                window.location.href = "/admin";
+                                window.location.href = "/executives";
                             }
                         } else if (response.user == 'supplier') {
                             window.location.href = "/supplier";
