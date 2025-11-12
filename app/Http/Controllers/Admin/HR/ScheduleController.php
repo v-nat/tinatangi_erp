@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Admin\HR;
 
+use App\Helpers\MailSender;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\Schedule;
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Throwable;
 
 class ScheduleController extends Controller
 {
@@ -181,6 +186,12 @@ class ScheduleController extends Controller
 
         $schedule = $employee->schedule()->updateOrCreate([], $attributes);
 
+        $this->sendScheduleChangeNotification(
+            $employee,
+            $schedule,
+            $schedule->wasRecentlyCreated ? 'created' : 'updated'
+        );
+
         return response()->json([
             'message' => $schedule->wasRecentlyCreated ? 'Schedule created successfully.' : 'Schedule updated successfully.',
             'schedule' => $this->formatScheduleResponse($schedule),
@@ -195,7 +206,13 @@ class ScheduleController extends Controller
             abort(404);
         }
 
+        $employee = $schedule->employee;
+
         $schedule->delete();
+
+        if ($employee) {
+            $this->sendScheduleChangeNotification($employee, $schedule, 'removed');
+        }
 
         return response()->json([
             'message' => 'Schedule removed successfully.',
@@ -245,5 +262,160 @@ class ScheduleController extends Controller
 
         return in_array((int) $departmentId, [0, 1], true)
             || in_array($departmentName, ['administration', 'executives'], true);
+    }
+
+    protected function sendScheduleChangeNotification(Employee $employee, Schedule $schedule, string $changeType): void
+    {
+        if (!$employee->relationLoaded('user')) {
+            $employee->load('user');
+        }
+
+        $content = $this->buildScheduleEmailContent($employee, $schedule, $changeType);
+
+        if (empty($content['email'])) {
+            return;
+        }
+
+        try {
+            MailSender::sendEmployeeEmail($content);
+        } catch (Throwable $exception) {
+            Log::warning('Failed to send schedule change email', [
+                'employee_id' => $employee->id,
+                'schedule_id' => $schedule->id,
+                'change_type' => $changeType,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
+    protected function buildScheduleEmailContent(Employee $employee, Schedule $schedule, string $changeType): array
+    {
+        $user = $employee->user;
+        $email = $user?->email;
+
+        if (!$email) {
+            return [];
+        }
+
+        $titles = [
+            'created' => 'New Work Schedule Assigned',
+            'updated' => 'Work Schedule Updated',
+            'removed' => 'Work Schedule Removed',
+        ];
+
+        $headlines = [
+            'created' => 'You have been assigned a new work schedule.',
+            'updated' => 'Your work schedule has been updated.',
+            'removed' => 'Your work schedule has been removed.',
+        ];
+
+        return [
+            'email' => $email,
+            'title' => $titles[$changeType] ?? $titles['updated'],
+            'name' => trim($user?->full_name ?? trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? ''))),
+            'headline' => $headlines[$changeType] ?? $headlines['updated'],
+            'changeType' => $changeType,
+            'scheduleTitle' => $schedule->title ?: 'Scheduled Shift',
+            'daySummary' => $this->formatDaySummary($schedule->days_of_week ?? []),
+            'timeRange' => $this->formatTimeRange($schedule->time_in, $schedule->time_out),
+            'description' => $schedule->description,
+            'actionUrl' => route('hr.employee-schedule', $employee->id),
+            'blade_file' => 'emails.schedule-updated',
+        ];
+    }
+
+    protected function formatDaySummary($days): string
+    {
+        $dayMap = [
+            0 => 'Sunday',
+            1 => 'Monday',
+            2 => 'Tuesday',
+            3 => 'Wednesday',
+            4 => 'Thursday',
+            5 => 'Friday',
+            6 => 'Saturday',
+        ];
+
+        $days = is_array($days) ? $days : (array) $days;
+        $names = [];
+
+        foreach ($days as $day) {
+            $index = is_numeric($day) ? (int) $day : null;
+            if ($index !== null && array_key_exists($index, $dayMap)) {
+                $names[] = $dayMap[$index];
+            }
+        }
+
+        $names = array_values(array_unique($names));
+
+        if (empty($names)) {
+            return 'No working days specified.';
+        }
+
+        if (count($names) === 7) {
+            return 'Sunday through Saturday';
+        }
+
+        if (count($names) === 1) {
+            return $names[0];
+        }
+
+        $last = array_pop($names);
+
+        return implode(', ', $names) . ' and ' . $last;
+    }
+
+    protected function formatTimeRange(?string $start, ?string $end): string
+    {
+        $startFormatted = $this->formatTime($start);
+        $endFormatted = $this->formatTime($end);
+
+        if ($startFormatted && $endFormatted) {
+            return $startFormatted . ' - ' . $endFormatted;
+        }
+
+        if ($startFormatted) {
+            return $startFormatted;
+        }
+
+        if ($endFormatted) {
+            return $endFormatted;
+        }
+
+        return 'No timeframe specified.';
+    }
+
+    protected function formatTime(?string $time): ?string
+    {
+        if ($time instanceof CarbonInterface) {
+            return $time->format('g:i A');
+        }
+
+        if ($time instanceof \DateTimeInterface) {
+            return Carbon::instance($time)->format('g:i A');
+        }
+
+        if (is_string($time)) {
+            $time = trim($time);
+            if ($time === '') {
+                return null;
+            }
+
+            foreach (['H:i:s', 'H:i'] as $format) {
+                try {
+                    return Carbon::createFromFormat($format, $time)->format('g:i A');
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
+
+            try {
+                return Carbon::parse($time)->format('g:i A');
+            } catch (\Exception $e) {
+                return null;
+            }
+        }
+
+        return null;
     }
 }

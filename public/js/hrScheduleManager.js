@@ -412,7 +412,7 @@ $(function () {
         if (!validateTimeFields()) {
             return;
         }
-
+        $("#LoadingScreen").fadeIn(200);
         setStatusBadge("Saving…", "badge bg-warning text-dark");
         setFormDisabled(true);
 
@@ -429,6 +429,7 @@ $(function () {
             }
         )
             .then((response) => {
+                $("#LoadingScreen").fadeOut(200);
                 showToast(
                     "Schedule saved",
                     response.message || "The schedule has been updated.",
@@ -447,6 +448,7 @@ $(function () {
                 fetchEmployees($employeeSearch.val());
             })
             .catch((error) => {
+                $("#LoadingScreen").fadeOut(200);
                 console.error(error);
                 setStatusBadge(
                     "Error saving schedule",
@@ -480,7 +482,7 @@ $(function () {
             confirmText: "Yes, remove it",
         }).then((confirmed) => {
             if (!confirmed) return;
-
+            $("#LoadingScreen").fadeIn(200);
             setStatusBadge("Removing…", "badge bg-warning text-dark");
             setFormDisabled(true);
             requestJson(
@@ -493,6 +495,7 @@ $(function () {
                 }
             )
                 .then((response) => {
+                    $("#LoadingScreen").fadeOut(200);
                     showToast(
                         "Schedule removed",
                         response.message || "The schedule was removed.",
@@ -511,6 +514,7 @@ $(function () {
                     fetchEmployees($employeeSearch.val());
                 })
                 .catch((error) => {
+                    $("#LoadingScreen").fadeOut(200);
                     console.error(error);
                     setFormDisabled(false);
                     setStatusBadge(
