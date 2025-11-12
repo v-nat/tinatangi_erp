@@ -402,6 +402,7 @@ $(document).ready(function () {
                     }, 5000);
                 },
                 error: function (xhr) {
+                    $("#LoadingScreen").fadeOut(200);
                     const serverError =
                         xhr.responseJSON?.error ||
                         xhr.responseText ||

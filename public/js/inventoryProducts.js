@@ -593,6 +593,7 @@ $(function () {
                         icon: "error",
                         title: "Validation Failed",
                         html: errorHtml,
+                        timer: 2000,
                     });
                 } else {
                     Toast.fire({
