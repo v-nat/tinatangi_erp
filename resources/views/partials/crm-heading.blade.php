@@ -1,4 +1,4 @@
-@include('partials.admin-heading')
+@include('partials.executives-heading')
 
 @section('crm-dashboard')
     <i class="bi bi-grid-1x2-fill"></i>
@@ -7,7 +7,7 @@
 
 @section('title') Customer Relationship Management @endsection
 @section('sidebar-title') Customer Relationship Management @endsection
-@section('admin') d-none @endsection
+@section('executives') d-none @endsection
 @section('human_resources') d-none @endsection
 @section('finance') d-none @endsection
 @section('procurement') d-none @endsection

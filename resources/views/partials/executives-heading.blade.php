@@ -2,13 +2,13 @@
 
     @section('title')Tinatangi Cafe ERP Management System @endsection
     @section('sidebar-title') Administrator @endsection
-    @section('hr-admin') Human Resources Management @endsection
-    @section('finance-admin') Finance and Accounting Management @endsection
-    @section('procurement-admin') Procurement Management @endsection
-    @section('inventory-admin') Inventory Management @endsection
-    @section('operations-admin') Service Operations @endsection
-    @section('crm-admin') Customer Relationship Management @endsection
-    @section('admin') d-block @endsection
+    @section('hr-executives') Human Resources Management @endsection
+    @section('finance-executives') Finance and Accounting Management @endsection
+    @section('procurement-executives') Procurement Management @endsection
+    @section('inventory-executives') Inventory Management @endsection
+    @section('operations-executives') Service Operations @endsection
+    @section('crm-executives') Customer Relationship Management @endsection
+    @section('executives') d-block @endsection
     @section('human_resources') d-block @endsection
     @section('finance') d-block @endsection
     @section('procurement') d-block @endsection
@@ -18,7 +18,7 @@
     @section('supplierPage') d-none @endsection
     @section('general_employee') d-none @endsection
 
-    @section('human_resources-admin')
+    @section('human_resources-executives')
         <i class="bi bi-person-lines-fill"></i>
         <span>Human Resources Dashboard</span>
     @endsection

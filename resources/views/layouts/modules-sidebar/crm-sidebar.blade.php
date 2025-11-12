@@ -1,4 +1,4 @@
-<li class="sidebar-title">@yield('crm-admin')</li>
+<li class="sidebar-title">@yield('crm-executives')</li>
 
 <li class="sidebar-item @yield('crmIndex') ">
     <a href="{{route('crm')}}" class='sidebar-link'>

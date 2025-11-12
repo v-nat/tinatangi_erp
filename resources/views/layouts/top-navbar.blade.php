@@ -93,7 +93,7 @@
                     </div>
 
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i>
-                            Prpfile</a></li>
+                            Profile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i>
                             Settings</a></li>
                     <hr class="dropdown-divider">

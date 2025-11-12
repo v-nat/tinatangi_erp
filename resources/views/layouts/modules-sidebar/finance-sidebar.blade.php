@@ -1,4 +1,4 @@
-<li class="sidebar-title">@yield('finance-admin')</li>
+<li class="sidebar-title">@yield('finance-executives')</li>
 
 <li class="sidebar-item @yield('financeIndex') ">
     <a href="{{route('finance')}}" class='sidebar-link'>

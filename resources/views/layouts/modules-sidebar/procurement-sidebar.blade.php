@@ -1,4 +1,4 @@
-<li class="sidebar-title">@yield('procurement-admin')</li>
+<li class="sidebar-title">@yield('procurement-executives')</li>
 
 <li class="sidebar-item @yield('procurementIndex') ">
     <a href="{{route('procurement.index')}}" class='sidebar-link'>

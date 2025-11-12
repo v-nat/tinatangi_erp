@@ -1,4 +1,4 @@
-<li class="sidebar-title">@yield('inventory-admin')</li>
+<li class="sidebar-title">@yield('inventory-executives')</li>
 
 <li class="sidebar-item @yield('inventoryIndex') ">
     <a href="{{route('inventory')}}" class='sidebar-link'>
