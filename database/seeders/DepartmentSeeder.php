@@ -4,10 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB; // Import the DB facade
-// App\Models\Department is no longer needed if using DB::table()
-// use App\Models\Department;
-
+use Illuminate\Support\Facades\DB;
 class DepartmentSeeder extends Seeder
 {
     /**
@@ -15,8 +12,6 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('departments')->truncate();
-
         $departments = [
             ['id' => 0, 'name' => 'Administration'],
             ['id' => 1, 'name' => 'Executives'],
