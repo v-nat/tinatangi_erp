@@ -17,6 +17,9 @@
         <li class="submenu-item @yield('sbi2') ">
             <a href="{{ route('hr.manage') }}">Manage Emloyee</a>
         </li>
+        <li class="submenu-item @yield('sbi5') ">
+            <a href="{{ route('hr.schedules.manage') }}">Schedule Management</a>
+        </li>
     </ul>
 </li>
 <li class="sidebar-item @yield('appMngt') has-sub">

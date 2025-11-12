@@ -1,16 +1,15 @@
-const getInitialView = () => (window.innerWidth < 768 ? "listWeek" : "dayGridMonth");
+const getInitialView = () =>
+    window.innerWidth < 768 ? "listWeek" : "dayGridMonth";
 
-document.addEventListener("DOMContentLoaded", () => {
-    const calendarEl = document.getElementById("employeeScheduleCalendar");
-    if (!calendarEl) {
-        return;
-    }
+$(function () {
+    const $calendarEl = $("#employeeScheduleCalendar");
+    if (!$calendarEl.length) return;
 
-    const eventsUrl = calendarEl.dataset.eventsUrl;
-    const emptyStateEl = document.getElementById("scheduleEmptyState");
-    const loadingOverlay = document.getElementById("LoadingScreen");
+    const eventsUrl = $calendarEl.data("eventsUrl");
+    const $emptyState = $("#scheduleEmptyState");
+    const $loadingOverlay = $("#LoadingScreen");
 
-    const calendar = new FullCalendar.Calendar(calendarEl, {
+    const calendar = new FullCalendar.Calendar($calendarEl[0], {
         height: "auto",
         initialView: getInitialView(),
         themeSystem: "bootstrap5",
@@ -40,9 +39,17 @@ document.addEventListener("DOMContentLoaded", () => {
             url: eventsUrl,
             failure() {
                 if (typeof Toast !== "undefined") {
-                    Toast.fire("Failed to load schedule", "Please try again later.", "error");
+                    Toast.fire(
+                        "Failed to load schedule",
+                        "Please try again later.",
+                        "error"
+                    );
                 } else {
-                    Swal.fire("Failed to load schedule", "Please try again later.", "error");
+                    Swal.fire(
+                        "Failed to load schedule",
+                        "Please try again later.",
+                        "error"
+                    );
                 }
             },
         },
@@ -54,31 +61,30 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         },
         eventsSet(events) {
-            if (!emptyStateEl) return;
+            if (!$emptyState.length) return;
 
             if (!events.length) {
-                emptyStateEl.classList.remove("d-none");
+                $emptyState.removeClass("d-none");
             } else {
-                emptyStateEl.classList.add("d-none");
+                $emptyState.addClass("d-none");
             }
         },
         loading(isLoading) {
-            if (!loadingOverlay) return;
+            if (!$loadingOverlay.length) return;
             if (isLoading) {
-                $(loadingOverlay).stop(true, true).fadeIn(150);
+                $loadingOverlay.stop(true, true).fadeIn(150);
             } else {
-                $(loadingOverlay).stop(true, true).fadeOut(150);
+                $loadingOverlay.stop(true, true).fadeOut(150);
             }
         },
     });
 
     calendar.render();
 
-    window.addEventListener("resize", () => {
+    $(window).on("resize", () => {
         const newView = getInitialView();
         if (calendar.view.type !== newView) {
             calendar.changeView(newView);
         }
     });
 });
-

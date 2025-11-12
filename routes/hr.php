@@ -61,6 +61,12 @@ Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(fun
     Route::get('/edit-employee/{id}', [EmployeeController::class, 'editEmployee'])->name('edit.employee');
     Route::put('/update-employee/{id}', [EmployeeController::class, 'updateEmployee'])->name('update.employee');
 
+    Route::get('/schedules/manage', [ScheduleController::class, 'manage'])->name('hr.schedules.manage');
+    Route::get('/schedules/manage/employees', [ScheduleController::class, 'employeesWithSchedules']);
+    Route::get('/schedules/manage/employees/{employee}', [ScheduleController::class, 'showEmployeeSchedule']);
+    Route::post('/schedules/manage/employees/{employee}', [ScheduleController::class, 'upsertEmployeeSchedule']);
+    Route::delete('/schedules/manage/schedule/{schedule}', [ScheduleController::class, 'destroySchedule'])->whereNumber('schedule');
+
     Route::get('/manage', [EmployeeController::class, 'manage'])->name('hr.manage');
     Route::get('/supervisors-by-department-and-position', [EmployeeController::class, 'getSupervisorForPosition']);
     Route::get('/positions-by-department', [EmployeeController::class, 'getPositions']);
