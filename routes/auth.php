@@ -9,3 +9,6 @@ Route::get("/login", function () {
 
 Route::post('/login-account', [AuthController::class, 'adminLogin']);
 Route::post('/logout-account', [AuthController::class, 'logout'])->name('logout');
+Route::post('/force-update-password', [AuthController::class, 'forceUpdatePassword'])
+    ->middleware('auth')
+    ->name('auth.force-update-password');

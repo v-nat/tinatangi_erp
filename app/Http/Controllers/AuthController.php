@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -28,10 +29,9 @@ class AuthController extends Controller
         $user = Auth::user();
         $userType = $user->user_type;
 
-        if ($userType != 'employee') {
-            $userPosition = 0;
-        } else {
-            $userPosition = $user->employeeRS->empPosition->id;
+        $userPosition = 0;
+        if ($userType === 'employee') {
+            $userPosition = (int) optional(optional($user->employeeRS)->empPosition)->id;
         }
 
         abort_if($user->status != 1, 401, 'Your account is deactivated. Please contact the admin.');
@@ -39,6 +39,8 @@ class AuthController extends Controller
             'message' => 'Login successful!',
             'user' => $userType,
             'position' => (int) $userPosition,
+            'must_change_password' => (bool) $user->must_change_password,
+            'csrfToken' => csrf_token(),
         ], 200);
     }
 
@@ -80,5 +82,37 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/login');
+    }
+
+    public function forceUpdatePassword(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            abort(401);
+        }
+
+        Validator::make($request->all(), [
+            'new_password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:64',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/',
+                'confirmed',
+            ],
+        ], [
+            'new_password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+        ])->validate();
+
+        $user->forceFill([
+            'password' => Hash::make($request->input('new_password')),
+            'must_change_password' => false,
+        ])->save();
+
+        return response()->json([
+            'message' => 'Password updated successfully.',
+            'csrfToken' => csrf_token(),
+        ]);
     }
 }

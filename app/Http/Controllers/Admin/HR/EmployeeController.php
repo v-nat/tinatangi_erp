@@ -186,6 +186,7 @@ class EmployeeController extends Controller
                 'password' => $password,
                 'phone_number' => $validated['phone_number'],
                 'user_type' => 'employee',
+                'must_change_password' => true,
             ]);
 
             $employee = Employee::create([

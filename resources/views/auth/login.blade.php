@@ -73,6 +73,48 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="forcePasswordModal" tabindex="-1" aria-labelledby="forcePasswordModalLabel"
+            aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-semibold" id="forcePasswordModalLabel">Update Your Password</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning border-0">
+                            For security reasons, please create a new password before accessing your account.
+                        </div>
+                        <form id="forcePasswordForm">
+                            <div class="mb-3">
+                                <label for="force_new_password" class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="force_new_password"
+                                    name="new_password" autocomplete="new-password" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="force_confirm_password" class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="force_confirm_password"
+                                    name="new_password_confirmation" autocomplete="new-password" required>
+                            </div>
+                            <ul class="list-unstyled small mb-2" id="forcePasswordChecklist">
+                                <li data-rule="length" class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>At least 8 characters</li>
+                                <li data-rule="uppercase" class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>Contains uppercase letter</li>
+                                <li data-rule="lowercase" class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>Contains lowercase letter</li>
+                                <li data-rule="number" class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>Contains number</li>
+                                <li data-rule="special" class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>Contains special character</li>
+                                <li data-rule="match" class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>Passwords match</li>
+                            </ul>
+                            <div class="text-danger small d-none" id="forcePasswordError"></div>
+                        </form>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-primary w-100" id="forcePasswordSubmit">
+                            Update Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="forcePasswordBackdrop" class="modal-backdrop fade d-none"></div>
     </div>
     <script>
         const Toast = Swal.mixin({

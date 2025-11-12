@@ -64,6 +64,7 @@ class SupplierController extends Controller
                 'password' => bcrypt($supplier_id . '@' . Sanitizer::clean($_POST["supplier_name"])),
                 'phone_number' => $validated['phone_number'],
                 'user_type' => 'supplier',
+                'must_change_password' => true,
             ]);
 
             $user->save();
