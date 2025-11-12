@@ -271,26 +271,59 @@
             var pct = Math.min(Math.max(Number(crm.percentage || 0), 0), 100);
             var ratingValue = Number(crm.value || 0);
 
-            renderChart('#chart-crm-average-rating', {
-                chart: { type: 'radialBar', height: 260 },
-                series: [pct],
-                labels: ['Satisfaction'],
-                plotOptions: {
-                    radialBar: {
-                        hollow: { size: '60%' },
-                        dataLabels: {
-                            name: { offsetY: -5 },
-                            value: {
-                                formatter: function () {
-                                    return ratingValue ? ratingValue.toFixed(2) : '0.00';
+            renderChart('#chart-crm-average-rating', (function () {
+                var docStyle = getComputedStyle(document.documentElement);
+                var theme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+                var bodyColor = docStyle.getPropertyValue('--bs-body-color') || '#6c757d';
+                var trackColor = docStyle.getPropertyValue('--bs-border-color') || (theme === 'dark' ? '#3a3f44' : '#e9ecef');
+                var seriesColor = theme === 'dark' ? '#5c7cfa' : '#435ebe';
+
+                return {
+                    chart: {
+                        type: 'radialBar',
+                        height: 260,
+                        foreColor: bodyColor.trim(),
+                        toolbar: { show: false },
+                    },
+                    series: [pct],
+                    labels: ['Satisfaction'],
+                    plotOptions: {
+                        radialBar: {
+                            hollow: {
+                                size: '60%',
+                                background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : '#f8f9fa',
+                            },
+                            track: {
+                                background: trackColor.trim(),
+                                strokeWidth: '100%',
+                                opacity: theme === 'dark' ? 0.4 : 1,
+                            },
+                            dataLabels: {
+                                name: {
+                                    offsetY: -5,
                                 },
-                                fontSize: '20px',
+                                value: {
+                                    formatter: function () {
+                                        return ratingValue ? ratingValue.toFixed(2) : '0.00';
+                                    },
+                                    fontSize: '20px',
+                                },
                             },
                         },
                     },
-                },
-                colors: ['#435ebe'],
-            });
+                    colors: [seriesColor],
+                    fill: {
+                        type: 'solid',
+                        colors: [seriesColor],
+                    },
+                    stroke: {
+                        lineCap: 'round',
+                    },
+                    grid: {
+                        borderColor: 'rgba(0,0,0,0)',
+                    },
+                };
+            })());
         } else {
             renderChart('#chart-crm-average-rating', null, 'No feedback data yet.');
         }

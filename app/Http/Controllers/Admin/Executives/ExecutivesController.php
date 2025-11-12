@@ -100,7 +100,7 @@ class ExecutivesController extends Controller
                 ->where('created_at', '>=', $now->copy()->subDays(30))
                 ->count(),
             'pendingLeaves'  => Leave::where('status', $pendingStatus)->count(),
-            'pendingOvertime'=> Overtime::where('status', $pendingStatus)->count(),
+            'pendingOvertime' => Overtime::where('status', $pendingStatus)->count(),
         ];
 
         $salesToday = Order::whereDate('created_at', $today)
@@ -120,7 +120,7 @@ class ExecutivesController extends Controller
             ->orderByDesc('total_sold')
             ->take(5)
             ->get()
-            ->map(fn ($row) => [
+            ->map(fn($row) => [
                 'name'  => $row->name,
                 'total' => (int) $row->total_sold,
             ])
@@ -144,7 +144,7 @@ class ExecutivesController extends Controller
             ->orderBy('stock_level')
             ->take(5)
             ->get()
-            ->map(fn ($item) => [
+            ->map(fn($item) => [
                 'name'       => optional($item->itemss)->name ?? 'Unnamed Item',
                 'stock'      => (int) $item->stock_level,
                 'unit'       => optional($item->unit)->abbreviation ?? '',
@@ -187,7 +187,7 @@ class ExecutivesController extends Controller
             ->orderByDesc('total')
             ->take(5)
             ->get()
-            ->map(fn ($row) => [
+            ->map(fn($row) => [
                 'supplier' => $row->supplier_name,
                 'total'    => (float) $row->total,
             ])
@@ -201,10 +201,10 @@ class ExecutivesController extends Controller
                 ->whereDate('delivery_date', '<', $today)
                 ->count(),
             'monthSpend'  => PurchaseOrderDetail::whereHas('purchaseOrder', function ($query) use ($startOfMonth, $now, $completedStatuses) {
-                    $query->whereIn('status', $completedStatuses)
-                        ->whereBetween('created_at', [$startOfMonth, $now]);
-                })->sum('total_amount'),
-            'topSuppliers'=> $procurementTopSuppliers,
+                $query->whereIn('status', $completedStatuses)
+                    ->whereBetween('created_at', [$startOfMonth, $now]);
+            })->sum('total_amount'),
+            'topSuppliers' => $procurementTopSuppliers,
         ];
 
         $crmAverageRating = ServiceFeedback::avg('overall_rating');
@@ -215,7 +215,7 @@ class ExecutivesController extends Controller
             ->orderBy('time', 'asc')
             ->take(5)
             ->get()
-            ->map(fn ($booking) => [
+            ->map(fn($booking) => [
                 'name'   => $booking->name,
                 'date'   => optional($booking->date) ? Carbon::parse($booking->date)->format('M d, Y') : null,
                 'time'   => $booking->time,
@@ -251,7 +251,7 @@ class ExecutivesController extends Controller
                 'series' => [
                     [
                         'name' => 'Units Sold',
-                        'data' => $operationsTopProducts->pluck('total')->map(fn ($value) => (int) $value)->all(),
+                        'data' => $operationsTopProducts->pluck('total')->map(fn($value) => (int) $value)->all(),
                     ],
                 ],
             ],
@@ -273,7 +273,7 @@ class ExecutivesController extends Controller
                 'series' => [
                     [
                         'name' => 'Total Spend',
-                        'data' => $procurementTopSuppliers->pluck('total')->map(fn ($value) => round($value, 2))->all(),
+                        'data' => $procurementTopSuppliers->pluck('total')->map(fn($value) => round($value, 2))->all(),
                     ],
                 ],
             ],
