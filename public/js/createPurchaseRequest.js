@@ -911,12 +911,41 @@ $(document).ready(function () {
         fetch(`/procurement/create-purchase-request/get-active-supplier`)
             .then((response) => response.json())
             .then((data) => {
-                const {
+                let {
                     allowedIds,
                     allowedNames,
                     defaultValue,
                     disableWhenSingle,
                 } = supplierOptionsConfig;
+
+                const isRestockMode = formMode === FORM_MODES.COMPLETE_REQUEST;
+
+                if (isRestockMode && typeof orderTable !== "undefined") {
+                    const tableSupplierIds = new Set();
+                    orderTable
+                        .rows()
+                        .data()
+                        .toArray()
+                        .forEach((row) => {
+                            if (
+                                row &&
+                                row.supplier_id !== null &&
+                                row.supplier_id !== undefined &&
+                                row.supplier_id !== ""
+                            ) {
+                                tableSupplierIds.add(String(row.supplier_id));
+                            }
+                        });
+
+                    if (tableSupplierIds.size > 0) {
+                        allowedIds = tableSupplierIds;
+                        allowedNames = null;
+                        if (tableSupplierIds.size === 1) {
+                            defaultValue = Array.from(tableSupplierIds)[0];
+                            disableWhenSingle = true;
+                        }
+                    }
+                }
 
                 const allowedIdSet = allowedIds
                     ? new Set(Array.from(allowedIds).map(String))
@@ -952,7 +981,7 @@ $(document).ready(function () {
                     appendedCount += 1;
                 });
 
-                if (appendedCount === 0) {
+                if (!isRestockMode && appendedCount === 0) {
                     data.forEach((s) => {
                         const option = document.createElement("option");
                         option.value = String(s.id);
