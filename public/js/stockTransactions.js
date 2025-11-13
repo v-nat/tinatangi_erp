@@ -115,17 +115,14 @@ $(document).ready(function () {
                 width: "12%",
                 render: function (data, type, row) {
                     if (type === "display" || type === "filter") {
-                        if (row.quantity_display) {
-                            return row.quantity_display;
-                        }
-                        const formatted =
-                            row.quantity_formatted ??
-                            Number(data || 0).toLocaleString("en-PH", {
-                                minimumFractionDigits: 6,
-                                maximumFractionDigits: 6,
-                            });
+                        const rawValue =
+                            row.quantity_raw ?? row.quantity ?? data ?? "";
+                        const valueString =
+                            rawValue !== null && rawValue !== undefined
+                                ? String(rawValue)
+                                : "";
                         const unitLabel = row.unit ? ` ${row.unit}` : "";
-                        return `${formatted}${unitLabel}`.trim();
+                        return `${valueString}${unitLabel}`.trim();
                     }
                     return data;
                 },
