@@ -84,7 +84,8 @@ class InventoryController extends Controller
 
             return response()->json([
                 'data' => $items->map(function ($item) {
-                    $availableBaseQuantity = $item->getAvailableBaseUnits();
+                    $displayQuantity = $item->getDisplayQuantity();
+                    $baseQuantity = $item->getAvailableBaseUnits();
                     $unitLabel = $item->getDisplayUnitLabel();
                     return [
                         'id'                => $item->id,
@@ -92,7 +93,8 @@ class InventoryController extends Controller
                         'item_name'         => optional($item->itemss)->name,
                         'category'          => optional($item->category)->name,
                         'unit'              => $unitLabel,
-                        'stock_level'       => $availableBaseQuantity,
+                        'stock_level'       => $displayQuantity,
+                        'stock_level_base'  => $baseQuantity,
                         'stock_level_formatted' => $item->formatStockQuantity(),
                         'stock_display'     => $item->formatStockDisplay(),
                         'cost_price'        => (float)$item->cost_price,
@@ -112,7 +114,8 @@ class InventoryController extends Controller
 
             return response()->json([
                 'data' => $items->map(function ($item) {
-                    $availableBaseQuantity = $item->getAvailableBaseUnits();
+                    $displayQuantity = $item->getDisplayQuantity();
+                    $baseQuantity = $item->getAvailableBaseUnits();
                     $unitLabel = $item->getDisplayUnitLabel();
                     return [
                         'id'                => $item->id,
@@ -121,7 +124,8 @@ class InventoryController extends Controller
                         'inventory_location' => optional(optional($item->itemss)->inventoryLocation)->name,
                         'category'          => optional($item->category)->name,
                         'unit'              => $unitLabel,
-                        'stock_level'       => $availableBaseQuantity,
+                        'stock_level'       => $displayQuantity,
+                        'stock_level_base'  => $baseQuantity,
                         'stock_level_formatted' => $item->formatStockQuantity(),
                         'stock_display'     => $item->formatStockDisplay(),
                         'cost_price'        => (float)$item->cost_price,
@@ -205,7 +209,8 @@ class InventoryController extends Controller
 
             return response()->json([
                 'data' => $forRestock->map(function ($item) {
-                    $availableBaseQuantity = $item->getAvailableBaseUnits();
+                    $displayQuantity = $item->getDisplayQuantity();
+                    $baseQuantity = $item->getAvailableBaseUnits();
                     $unitLabel = $item->getDisplayUnitLabel();
                     return [
                         'id'                => $item->id,
@@ -214,7 +219,8 @@ class InventoryController extends Controller
                         'item_id'           => $item->item_id,
                         'category'          => optional($item->category)->name,
                         'unit'              => $unitLabel,
-                        'stock_level'       => $availableBaseQuantity,
+                        'stock_level'       => $displayQuantity,
+                        'stock_level_base'  => $baseQuantity,
                         'stock_level_formatted' => $item->formatStockQuantity(),
                         'stock_display'     => $item->formatStockDisplay(),
                         'cost_price'        => (float)$item->cost_price,

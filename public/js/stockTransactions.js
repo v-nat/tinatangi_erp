@@ -113,20 +113,27 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "8%",
                 render: function (data, type, row) {
-                    if (type === "display" || type === "filter") {
-                        if (row.quantity_display) {
-                            return row.quantity_display;
-                        }
-                        const formatted =
-                            row.quantity_formatted ??
-                            Number(data || 0).toLocaleString("en-PH", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            });
-                        const unitLabel = row.unit ? ` ${row.unit}` : "";
-                        return `${formatted}${unitLabel}`.trim();
+                    const quantityValue =
+                        typeof row.quantity === "number" ? row.quantity : Number(data || 0);
+                    const formatted =
+                        row.quantity_formatted ??
+                        Number(quantityValue || 0).toLocaleString("en-PH", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        });
+                    const unitBadge = row.unit
+                        ? `<span class="badge bg-light text-dark ms-2">${row.unit}</span>`
+                        : "";
+
+                    if (type === "display") {
+                        return `<span class="fw-semibold">${formatted}</span>${unitBadge}`;
                     }
-                    return data;
+
+                    if (type === "filter") {
+                        return `${formatted} ${row.unit || ""}`.trim();
+                    }
+
+                    return quantityValue;
                 },
             },
             { data: "item", className: "dt-left", width: "22%" },

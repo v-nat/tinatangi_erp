@@ -30,7 +30,18 @@ class StockManagementController extends Controller
                     $inventoryItem = $data->inventoryItemRS;
                     $unitLabel = $inventoryItem ? $inventoryItem->getDisplayUnitLabel() : '';
                     $quantityRaw = (float) $data->quantity;
-                    $quantityFormatted = number_format($quantityRaw, 2);
+                    $quantityDisplayValue = $quantityRaw;
+
+                    if ($inventoryItem) {
+                        $shouldConvertToDisplay = in_array($data->reference_type, ['Sale', 'Void Sale'], true)
+                            || $data->transaction_type === TransactionType::OUT->value;
+
+                        if ($shouldConvertToDisplay) {
+                            $quantityDisplayValue = $inventoryItem->convertBaseToDisplayQuantity($quantityRaw);
+                        }
+                    }
+
+                    $quantityFormatted = number_format($quantityDisplayValue, 2);
                     $quantityDisplay = trim($quantityFormatted . ($unitLabel ? ' ' . $unitLabel : ''));
                     return [
                         'id'                => $data->id,
@@ -38,7 +49,8 @@ class StockManagementController extends Controller
                         'batch'             => $data->batch,
                         'date'              => $data->transaction_date->setTimezone('Asia/Manila')->format('Y-m-d\TH:i:s\Z'),
                         'reference'         => $data->reference_type,
-                        'quantity'          => $quantityRaw,
+                        'quantity_raw'      => $quantityRaw,
+                        'quantity'          => $quantityDisplayValue,
                         'quantity_formatted'=> $quantityFormatted,
                         'quantity_display'  => $quantityDisplay,
                         'unit'              => $unitLabel,

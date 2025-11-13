@@ -94,12 +94,12 @@ class InventoryItem extends Model
      */
     public function getDisplayUnitModel(): ?ItemUnit
     {
-        if ($this->relationLoaded('baseUnit') || $this->base_unit_id) {
-            return $this->baseUnit ?? $this->baseUnit()->first();
-        }
-
         if ($this->relationLoaded('unit') || $this->unit_id) {
             return $this->unit ?? $this->unit()->first();
+        }
+
+        if ($this->relationLoaded('baseUnit') || $this->base_unit_id) {
+            return $this->baseUnit ?? $this->baseUnit()->first();
         }
 
         return null;
@@ -124,7 +124,7 @@ class InventoryItem extends Model
      */
     public function formatStockQuantity(int $decimals = 2): string
     {
-        return number_format($this->getAvailableBaseUnits(), $decimals);
+        return number_format($this->getDisplayQuantity(), $decimals);
     }
 
     /**
@@ -136,6 +136,38 @@ class InventoryItem extends Model
         $unitLabel = $this->getDisplayUnitLabel();
 
         return trim($quantity . ($unitLabel ? ' ' . $unitLabel : ''));
+    }
+
+    /**
+     * Get the quantity expressed in the item's original unit if available.
+     */
+    public function getDisplayQuantity(): float
+    {
+        if (! is_null($this->stock_level)) {
+            return (float) $this->stock_level;
+        }
+
+        $conversionFactor = $this->getBaseConversionFactor();
+
+        if ($conversionFactor && $conversionFactor > 0) {
+            return (float) $this->getAvailableBaseUnits() / $conversionFactor;
+        }
+
+        return $this->convertBaseToDisplayQuantity($this->getAvailableBaseUnits());
+    }
+
+    /**
+     * Convert a base-unit quantity into the item's display unit quantity.
+     */
+    public function convertBaseToDisplayQuantity(float $baseQuantity): float
+    {
+        $conversionFactor = $this->getBaseConversionFactor();
+
+        if ($conversionFactor && $conversionFactor > 0 && $this->unit_id !== $this->base_unit_id) {
+            return $baseQuantity / $conversionFactor;
+        }
+
+        return $baseQuantity;
     }
 
     /**
