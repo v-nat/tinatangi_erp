@@ -114,11 +114,7 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "12%",
                 render: function (data, type, row) {
-                    const quantityValue =
-                        typeof row.quantity === "number"
-                            ? row.quantity
-                            : Number(data || 0);
-
+                    const quantityValue = Number(row.quantity || 0);
                     let formatted;
 
                     if (row.quantity_formatted) {
