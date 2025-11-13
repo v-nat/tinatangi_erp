@@ -149,22 +149,36 @@ class PurchaseOrderController extends Controller
                 return response()->json(['error' => 'Purchase Request not found.'], 404);
             }
 
+            $purchaseOrders = PurchaseOrder::where('purchase_request_id', $id)->get();
+            $purchaseOrderIds = $purchaseOrders->pluck('id');
+
             $supplier = $request->supplier;
             if (!$supplier) {
                 $supplier = $purchase_req->supplier_id;
             }
             if (!$supplier) {
-                $supplier = PurchaseOrder::where('purchase_request_id', $id)
-                    ->whereNotNull('supplier_id')
-                    ->value('supplier_id');
-            }
-            if (!$supplier) {
-                $supplier = PurchaseOrder::where('purchase_request_id', $id)
-                    ->with('supplierRS')
-                    ->get()
+                $supplier = $purchaseOrders
                     ->pluck('supplier_id')
                     ->filter()
                     ->first();
+            }
+
+            if (!$supplier && $purchaseOrderIds->isNotEmpty()) {
+                $detailSupplierIds = PurchaseOrderDetail::whereIn('purchase_order_id', $purchaseOrderIds)
+                    ->with('itemss')
+                    ->get()
+                    ->map(function ($detail) {
+                        return optional($detail->itemss)->supplier_id;
+                    })
+                    ->filter()
+                    ->unique();
+
+                if ($detailSupplierIds->count() === 1) {
+                    $supplier = $detailSupplierIds->first();
+                } elseif ($detailSupplierIds->count() > 1) {
+                    DB::rollBack();
+                    return response()->json(['error' => 'Unable to determine supplier for this request. Multiple suppliers found.'], 422);
+                }
             }
 
             if (!$supplier) {
@@ -177,17 +191,18 @@ class PurchaseOrderController extends Controller
             $purchase_req->status = 11;
             $purchase_req->save();
 
-            $purchase_order = PurchaseOrder::where('purchase_request_id', $id)->first();
-            if ($purchase_order) {
-                $purchase_order->supplier_id = $supplier;
-                $purchase_order->remarks = 'pending request';
-                $purchase_order->status = 11;
-                $purchase_order->save();
+            if ($purchaseOrders->isNotEmpty()) {
+                foreach ($purchaseOrders as $purchase_order) {
+                    $purchase_order->supplier_id = $supplier;
+                    $purchase_order->remarks = 'pending request';
+                    $purchase_order->status = 11;
+                    $purchase_order->save();
 
-                $purchase_order_detail = PurchaseOrderDetail::where('purchase_order_id', $purchase_order->id)->first();
-                if ($purchase_order_detail) {
-                    $purchase_order_detail->status = 11;
-                    $purchase_order_detail->save();
+                    $purchase_order_details = PurchaseOrderDetail::where('purchase_order_id', $purchase_order->id)->get();
+                    foreach ($purchase_order_details as $detail) {
+                        $detail->status = 11;
+                        $detail->save();
+                    }
                 }
             }
 
