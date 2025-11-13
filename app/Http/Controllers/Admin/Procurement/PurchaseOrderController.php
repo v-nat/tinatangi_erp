@@ -140,21 +140,57 @@ class PurchaseOrderController extends Controller
     {
         try {
             $id = $request->order_id;
-            $supplier = $request->supplier;
             DB::beginTransaction();
+
+            /** @var PurchaseRequest|null $purchase_req */
             $purchase_req = PurchaseRequest::where('id', $id)->first();
+            if (!$purchase_req) {
+                DB::rollBack();
+                return response()->json(['error' => 'Purchase Request not found.'], 404);
+            }
+
+            $supplier = $request->supplier;
+            if (!$supplier) {
+                $supplier = $purchase_req->supplier_id;
+            }
+            if (!$supplier) {
+                $supplier = PurchaseOrder::where('purchase_request_id', $id)
+                    ->whereNotNull('supplier_id')
+                    ->value('supplier_id');
+            }
+            if (!$supplier) {
+                $supplier = PurchaseOrder::where('purchase_request_id', $id)
+                    ->with('supplierRS')
+                    ->get()
+                    ->pluck('supplier_id')
+                    ->filter()
+                    ->first();
+            }
+
+            if (!$supplier) {
+                DB::rollBack();
+                return response()->json(['error' => 'Unable to determine supplier for this request.'], 422);
+            }
+
             $purchase_req->type = 'Purchase Order Request';
             $purchase_req->supplier_id = $supplier;
             $purchase_req->status = 11;
             $purchase_req->save();
+
             $purchase_order = PurchaseOrder::where('purchase_request_id', $id)->first();
-            $purchase_order->supplier_id = $supplier;
-            $purchase_order->remarks = 'pending request';
-            $purchase_order->status = 11;
-            $purchase_order->save();
-            $purchase_order_detail = PurchaseOrderDetail::where('purchase_order_id', $purchase_order->id)->first();
-            $purchase_order_detail->status = 11;
-            $purchase_order_detail->save();
+            if ($purchase_order) {
+                $purchase_order->supplier_id = $supplier;
+                $purchase_order->remarks = 'pending request';
+                $purchase_order->status = 11;
+                $purchase_order->save();
+
+                $purchase_order_detail = PurchaseOrderDetail::where('purchase_order_id', $purchase_order->id)->first();
+                if ($purchase_order_detail) {
+                    $purchase_order_detail->status = 11;
+                    $purchase_order_detail->save();
+                }
+            }
+
             DB::commit();
 
             return response()->json(['message' => 'Purchase Request submitted successfully!'], 201);
