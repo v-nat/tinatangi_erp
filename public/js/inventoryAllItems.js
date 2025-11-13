@@ -19,7 +19,6 @@ $(document).ready(function () {
             { data: "sku", className: "dt-left" },
             { data: "item_name", className: "dt-left" },
             { data: "unit", className: "dt-left" },
-            { data: "inventory_location", className: "dt-left" },
             { data: "category", className: "dt-left" },
             {
                 data: "stock_level",

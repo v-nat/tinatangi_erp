@@ -919,6 +919,7 @@ $(document).ready(function () {
                 } = supplierOptionsConfig;
 
                 const isRestockMode = formMode === FORM_MODES.COMPLETE_REQUEST;
+                let restockSupplierId = null;
 
                 if (isRestockMode && typeof orderTable !== "undefined") {
                     const tableSupplierIds = new Set();
@@ -933,17 +934,19 @@ $(document).ready(function () {
                                 row.supplier_id !== undefined &&
                                 row.supplier_id !== ""
                             ) {
-                                tableSupplierIds.add(String(row.supplier_id));
+                                const supplierId = String(row.supplier_id);
+                                tableSupplierIds.add(supplierId);
+                                if (!restockSupplierId) {
+                                    restockSupplierId = supplierId;
+                                }
                             }
                         });
 
                     if (tableSupplierIds.size > 0) {
                         allowedIds = tableSupplierIds;
                         allowedNames = null;
-                        if (tableSupplierIds.size === 1) {
-                            defaultValue = Array.from(tableSupplierIds)[0];
-                            disableWhenSingle = true;
-                        }
+                        defaultValue = restockSupplierId ?? defaultValue;
+                        disableWhenSingle = true;
                     }
                 }
 
@@ -1034,7 +1037,9 @@ $(document).ready(function () {
                 }
                 suppressSupplierChange = false;
 
-                if (disableWhenSingle && appendedCount === 1) {
+                if (isRestockMode) {
+                    $("#supplier").prop("disabled", true);
+                } else if (disableWhenSingle && appendedCount === 1) {
                     $("#supplier").prop("disabled", true);
                 } else {
                     $("#supplier").prop("disabled", false);
