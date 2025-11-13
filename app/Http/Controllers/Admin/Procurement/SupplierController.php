@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Supplier;
 use App\Helpers\Sanitizer;
 use App\Helpers\MailSender;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -37,17 +38,38 @@ class SupplierController extends Controller
         }
     }
 
-    public function getActiveSupplier()
+    public function getActiveSupplier(Request $request)
     {
-        $suppliers = Supplier::where('status', 1)
-            ->select('id', 'supplier_name')
-            ->get();
+        $suppliersQuery = Supplier::where('status', 1)
+            ->select('id', 'supplier_name');
+
+        $supplierIds = $request->input('supplier_ids');
+        if ($supplierIds) {
+            $ids = array_filter(explode(',', $supplierIds), static function ($value) {
+                return $value !== null && $value !== '';
+            });
+            if (!empty($ids)) {
+                $suppliersQuery->whereIn('id', $ids);
+            }
+        }
+
+        $supplierNames = $request->input('supplier_names');
+        if ($supplierNames) {
+            $names = array_filter(explode(',', $supplierNames), static function ($value) {
+                return $value !== null && $value !== '';
+            });
+            if (!empty($names)) {
+                $suppliersQuery->whereIn('supplier_name', $names);
+            }
+        }
+
+        $suppliers = $suppliersQuery->orderBy('supplier_name')->get();
 
         return response()->json($suppliers);
     }
     public function storeSupplier(StoreSupplierRequest $request)
     {
-         try {
+        try {
             DB::beginTransaction();
 
             $validated = $request->validated();

@@ -908,55 +908,66 @@ $(document).ready(function () {
     function getSuppliers() {
         const supplierSelect = document.getElementById("supplier");
 
-        fetch(`/procurement/create-purchase-request/get-active-supplier`)
+        let {
+            allowedIds,
+            allowedNames,
+            defaultValue,
+            disableWhenSingle,
+        } = supplierOptionsConfig;
+
+        const isRestockMode = formMode === FORM_MODES.COMPLETE_REQUEST;
+        let restockSupplierId = null;
+
+        if (isRestockMode && typeof orderTable !== "undefined") {
+            const tableSupplierIds = new Set();
+            orderTable
+                .rows()
+                .data()
+                .toArray()
+                .forEach((row) => {
+                    if (
+                        row &&
+                        row.supplier_id !== null &&
+                        row.supplier_id !== undefined &&
+                        row.supplier_id !== ""
+                    ) {
+                        const supplierId = String(row.supplier_id);
+                        tableSupplierIds.add(supplierId);
+                        if (!restockSupplierId) {
+                            restockSupplierId = supplierId;
+                        }
+                    }
+                });
+
+            if (tableSupplierIds.size > 0) {
+                allowedIds = tableSupplierIds;
+                allowedNames = null;
+                defaultValue = restockSupplierId ?? defaultValue;
+                disableWhenSingle = true;
+            }
+        }
+
+        const allowedIdSet = allowedIds
+            ? new Set(Array.from(allowedIds).map(String))
+            : null;
+        const allowedNameSet = allowedNames
+            ? new Set(Array.from(allowedNames))
+            : null;
+
+        let url = `/procurement/create-purchase-request/get-active-supplier`;
+        const params = new URLSearchParams();
+        if (allowedIdSet && allowedIdSet.size > 0) {
+            params.set("supplier_ids", Array.from(allowedIdSet).join(","));
+        } else if (allowedNameSet && allowedNameSet.size > 0) {
+            params.set("supplier_names", Array.from(allowedNameSet).join(","));
+        }
+        if (params.toString()) {
+            url += `?${params.toString()}`;
+        }
+
+        fetch(url)
             .then((response) => response.json())
             .then((data) => {
-                let {
-                    allowedIds,
-                    allowedNames,
-                    defaultValue,
-                    disableWhenSingle,
-                } = supplierOptionsConfig;
-
-                const isRestockMode = formMode === FORM_MODES.COMPLETE_REQUEST;
-                let restockSupplierId = null;
-
-                if (isRestockMode && typeof orderTable !== "undefined") {
-                    const tableSupplierIds = new Set();
-                    orderTable
-                        .rows()
-                        .data()
-                        .toArray()
-                        .forEach((row) => {
-                            if (
-                                row &&
-                                row.supplier_id !== null &&
-                                row.supplier_id !== undefined &&
-                                row.supplier_id !== ""
-                            ) {
-                                const supplierId = String(row.supplier_id);
-                                tableSupplierIds.add(supplierId);
-                                if (!restockSupplierId) {
-                                    restockSupplierId = supplierId;
-                                }
-                            }
-                        });
-
-                    if (tableSupplierIds.size > 0) {
-                        allowedIds = tableSupplierIds;
-                        allowedNames = null;
-                        defaultValue = restockSupplierId ?? defaultValue;
-                        disableWhenSingle = true;
-                    }
-                }
-
-                const allowedIdSet = allowedIds
-                    ? new Set(Array.from(allowedIds).map(String))
-                    : null;
-                const allowedNameSet = allowedNames
-                    ? new Set(Array.from(allowedNames))
-                    : null;
-
                 supplierSelect.innerHTML = "";
 
                 const placeholderOption = document.createElement("option");
@@ -971,10 +982,10 @@ $(document).ready(function () {
                 data.forEach((s) => {
                     const id = String(s.id);
                     const name = s.supplier_name || s.name || "";
-                    if (allowedIdSet && !allowedIdSet.has(id)) {
+                    if (allowedIdSet && allowedIdSet.size > 0 && !allowedIdSet.has(id)) {
                         return;
                     }
-                    if (allowedNameSet && !allowedNameSet.has(name)) {
+                    if (allowedNameSet && allowedNameSet.size > 0 && !allowedNameSet.has(name)) {
                         return;
                     }
                     const option = document.createElement("option");
@@ -1012,7 +1023,7 @@ $(document).ready(function () {
                 ) {
                     nextValue = Array.from(allowedIdSet)[0];
                 } else if (
-                    !allowedIdSet &&
+                    (!allowedIdSet || allowedIdSet.size === 0) &&
                     allowedNameSet &&
                     allowedNameSet.size === 1
                 ) {

@@ -221,10 +221,11 @@ class ProcurementController extends Controller
                 'purchaseOrders',
                 'purchaseOrders.purchaseOrderDetail',
                 'purchaseOrders.supplierRS',
-
                 'purchaseOrders.purchaseOrderDetail.itemss',
                 'purchaseOrders.purchaseOrderDetail.itemss.category',
                 'purchaseOrders.purchaseOrderDetail.itemss.unit',
+                'purchaseOrders.purchaseOrderDetail.itemss.supplier',
+                'supplierRS',
             ])->find($id);
             if (!$purchaseRequest) {
                 return response()->json(['error' => 'Purchase Request not found.'], 404);
@@ -237,9 +238,9 @@ class ProcurementController extends Controller
                         'item_name'     => optional($detail->itemss)->name,
                         'item_unit'     => optional(optional($detail->itemss)->unit)->name,
                         'category_id'   => $detail->category_id,
-
+                        'supplier_id'   => optional($detail->itemss)->supplier_id,
+                        'supplier_name' => optional(optional($detail->itemss)->supplier)->supplier_name,
                         'category_name' => optional(optional($detail->itemss)->category)->name,
-
                         'quantity'      => (int)$detail->quantity,
                         'unit_price'    => (float)$detail->unit_price,
                         'total_amount'  => (float)$detail->total_amount,
@@ -248,6 +249,8 @@ class ProcurementController extends Controller
 
                 return [
                     'purchase_order_id' => $order->purchase_orderId,
+                    'supplier_id'       => $order->supplier_id,
+                    'supplier_name'     => optional($order->supplierRS)->supplier_name,
                     'details'           => $mappedDetails,
                 ];
             });
@@ -257,6 +260,8 @@ class ProcurementController extends Controller
                 'data' => [
                     'id'              => $purchaseRequest->id,
                     'total_amount'    => (float)$purchaseRequest->amount,
+                    'supplier_id'     => $purchaseRequest->supplier_id,
+                    'supplier_name'   => optional($purchaseRequest->supplierRS)->supplier_name,
                     'purchase_orders' => $mappedOrders,
                 ]
             ]);
