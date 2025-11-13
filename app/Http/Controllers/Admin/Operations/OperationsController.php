@@ -11,9 +11,18 @@ use App\Models\InventoryItem;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use App\Services\BestSellerService;
 
 class OperationsController extends Controller
 {
+    protected BestSellerService $bestSellerService;
+
+    public function __construct(BestSellerService $bestSellerService)
+    {
+        $this->bestSellerService = $bestSellerService;
+    }
+
     public function index() {
         return view("pages.admin.operations.dashboard");
     }
@@ -32,7 +41,7 @@ class OperationsController extends Controller
         return view('pages.admin.operations.kitchen-display');
     }
 
-    public function getDashboardAnalytics()
+    public function getDashboardAnalytics(Request $request)
     {
         $today = Carbon::today();
 
@@ -119,6 +128,27 @@ class OperationsController extends Controller
             })
             ->values();
 
+        $bestSellerLimit = (int) $request->query('best_seller_limit', 3);
+        if ($bestSellerLimit <= 0) {
+            $bestSellerLimit = 3;
+        }
+        $bestSellerLimit = min($bestSellerLimit, 10);
+
+        $weeklyBestSellers = $this->bestSellerService->getWeeklyBestSellers($bestSellerLimit);
+        $monthlyBestSellers = $this->bestSellerService->getMonthlyBestSellers($bestSellerLimit);
+
+        $featuredProductIds = collect([$weeklyBestSellers, $monthlyBestSellers])
+            ->flatMap(function ($period) {
+                return collect($period['categories'] ?? [])
+                    ->flatMap(fn ($category) => collect($category['items'] ?? [])->pluck('product_id'));
+            })
+            ->unique()
+            ->values()
+            ->all();
+
+        $weeklyTrend = $this->bestSellerService->getProductTrend($featuredProductIds, 'weekly', 8);
+        $monthlyTrend = $this->bestSellerService->getProductTrend($featuredProductIds, 'monthly', 6);
+
         return response()->json([
             'kpis' => [
                 'salesToday' => round($salesToday, 2),
@@ -144,6 +174,15 @@ class OperationsController extends Controller
                 'liveStatus' => $liveStatus,
                 'lowStockItems' => $lowStockProducts,
             ],
+            'bestSellers' => [
+                'weekly' => $weeklyBestSellers,
+                'monthly' => $monthlyBestSellers,
+            ],
+            'trends' => [
+                'weekly' => $weeklyTrend,
+                'monthly' => $monthlyTrend,
+            ],
+            'generated_at' => Carbon::now()->toIso8601String(),
         ]);
     }
 }

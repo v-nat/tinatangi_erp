@@ -20,6 +20,7 @@ Route::prefix('/inventory')->middleware(['auth', 'isEmployee'])->group(function 
     Route::get('/recent-items', [InventoryController::class, 'getRecentItems']);
     Route::get('/get-all-items', [InventoryController::class, 'getAllItems']);
     Route::post('/send-restock-request', [StockManagementController::class, 'restockRequest']);
+    Route::get('/best-sellers', [InventoryController::class, 'bestSellers']);
 
     ///////////////////////////////////// ALL ITEMS ///////////////////////////////////
     Route::get('/all-items', [InventoryController::class, 'all'])->name('inventory.all-items');

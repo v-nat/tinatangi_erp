@@ -21,8 +21,16 @@
 
             <div class="col-12 col-md-9 d-flex">
                 <div class="card w-100">
-                    <div class="card-header">
-                        <h4 class="card-title"></h4>
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h4 class="card-title mb-0"></h4>
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="pos-sort-select" class="mb-0 text-muted small fw-semibold">Sort by</label>
+                            <select id="pos-sort-select" class="form-select form-select-sm w-auto">
+                                <option value="default" selected>Default</option>
+                                <option value="alphabetical">Alphabetical (A-Z)</option>
+                                <option value="servings">Servings (High-Low)</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -90,7 +98,7 @@
         }
 
         .vh-90 {
-            height: 89vh;
+            height: 91.5vh;
         }
 
         .vh-80 {

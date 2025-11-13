@@ -2,14 +2,23 @@
 
 namespace App\Http\Controllers\Admin\Inventory;
 
-use App\Models\Status;
+use App\Http\Controllers\Controller;
 use App\Models\InventoryItem;
 use App\Models\PurchaseRequest;
+use App\Models\Status;
 use App\Models\StockTransaction;
-use App\Http\Controllers\Controller;
+use App\Services\BestSellerService;
+use Illuminate\Http\Request;
 
 class InventoryController extends Controller
 {
+    protected BestSellerService $bestSellerService;
+
+    public function __construct(BestSellerService $bestSellerService)
+    {
+        $this->bestSellerService = $bestSellerService;
+    }
+
     public function index()
     {
         return view("pages.admin.inventory.index",);
@@ -71,6 +80,24 @@ class InventoryController extends Controller
             'total_stocks' => $itemsInStock,
             'low_stocks' => $lowStockCount,
             'out_of_stock' => $outOfStockCount,
+        ]);
+    }
+
+    public function bestSellers(Request $request)
+    {
+        $limit = (int) $request->query('limit', 4);
+        if ($limit <= 0) {
+            $limit = 4;
+        }
+        $limit = min($limit, 10);
+
+        $weekly = $this->bestSellerService->getWeeklyBestSellers($limit);
+        $monthly = $this->bestSellerService->getMonthlyBestSellers($limit);
+
+        return response()->json([
+            'weekly' => $weekly,
+            'monthly' => $monthly,
+            'generated_at' => now()->toIso8601String(),
         ]);
     }
 

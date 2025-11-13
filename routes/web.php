@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BestSellerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +15,8 @@ Route::get('/home', function () {
 Route::get('/admintest', function () {
     return view('dashboard-test');
 })->name('test');
+
+Route::get('/best-sellers/highlights', [BestSellerController::class, 'publicHighlights']);
 
 Route::get('/menu/products', [App\Http\Controllers\Admin\CRM\CrmController::class, 'getPublicProducts']);
 Route::get('/testimonials', [App\Http\Controllers\Admin\CRM\CrmController::class, 'fetchPublicTestimonials']);

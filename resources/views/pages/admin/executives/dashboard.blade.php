@@ -44,7 +44,8 @@
         </ol>
     </nav>
 
-    <section class="section" id="executives-dashboard" data-endpoint="{{ route('executives.analytics') }}">
+    <section class="section" id="executives-dashboard" data-endpoint="{{ route('executives.analytics') }}"></section>
+
         <div class="row g-4 mb-4">
             <div class="col-12 col-xl-4 col-md-6">
                 <div class="card card-surface border-0 shadow-sm h-100">
@@ -97,6 +98,39 @@
                         <small class="text-uppercase text-muted fw-semibold">Customer Satisfaction</small>
                         <h3 class="my-2" id="summary-customer-satisfaction">Loading...</h3>
                         <span class="badge bg-secondary-subtle text-secondary">CRM feedback</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card card-surface border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 d-flex flex-wrap gap-3 justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-0">Best Sellers Trend</h5>
+                            <small class="text-muted">Category champions over time</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-muted small" id="exec-best-sellers-range">Loading...</span>
+                            <div class="btn-group btn-group-sm flex-wrap" role="group" aria-label="Toggle best seller period">
+                                <button type="button" class="btn btn-outline-primary active" data-best-seller-toggle="weekly">
+                                    Weekly
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-best-seller-toggle="monthly">
+                                    Monthly
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-best-seller-toggle="sixMonths">
+                                    Last 6 Months
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" data-best-seller-toggle="yearly">
+                                    Yearly
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="chart-exec-best-sellers" style="min-height: 300px;"></div>
                     </div>
                 </div>
             </div>

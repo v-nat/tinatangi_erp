@@ -44,7 +44,8 @@
                         <div>
                             <h6 class="text-muted font-semibold">Completed Orders</h6>
                             <h5 class="font-extrabold mb-0" id="kpi-completed-orders">Loading...</h5>
-                            <span class="text-muted small d-block mt-1">Total orders today: <span class="fw-semibold" id="kpi-total-orders">0</span></span>
+                            <span class="text-muted small d-block mt-1">Total orders today: <span class="fw-semibold"
+                                    id="kpi-total-orders">0</span></span>
                         </div>
                     </div>
                 </div>
@@ -79,7 +80,8 @@
                         <div>
                             <h6 class="text-muted font-semibold">Orders In Progress</h6>
                             <h5 class="font-extrabold mb-0" id="kpi-in-progress">Loading...</h5>
-                            <span class="text-muted small d-block mt-1">Voided today: <span class="fw-semibold" id="kpi-voided-orders">0</span></span>
+                            <span class="text-muted small d-block mt-1">Voided today: <span class="fw-semibold"
+                                    id="kpi-voided-orders">0</span></span>
                         </div>
                     </div>
                 </div>
@@ -156,7 +158,24 @@
         </div>
     </section>
 
-    <section class="section row mt-4 mb-4">
+    <section class="section row g-3 mt-4 mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-lg h-100">
+                <div class="card-header">
+                    <h4 class="mb-0">Best Sellers Overview</h4>
+                    <small class="text-muted">Weekly vs Monthly leaders across categories</small>
+                </div>
+                <div class="card-body">
+                    <div id="chart-best-sellers-trend" style="min-height: 340px;"></div>
+                    <div id="best-sellers-trend-empty" class="text-center text-muted py-4 d-none">
+                        No best seller data available yet.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section row mt-2 mb-4">
         <div class="col-12">
             <div class="card h-100 shadow-sm border-0 rounded-lg">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -190,7 +209,6 @@
 @endsection
 
 @section('scripts')
-    {{-- We need these for the charts --}}
     <script src="{{ asset('assets/vendors/dayjs/dayjs.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
     <script type="module" src="{{ asset('js/operationsDashboard.js') }}"></script>

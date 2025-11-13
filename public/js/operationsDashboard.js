@@ -34,6 +34,7 @@ $(document).ready(function () {
     };
 
     let topProductsChart;
+    let bestSellerTrendChart;
 
     function initCharts() {
         const topProductsOptions = {
@@ -74,6 +75,112 @@ $(document).ready(function () {
             topProductsOptions
         );
         topProductsChart.render();
+
+        if ($("#chart-best-sellers-trend").length > 0) {
+            const multiYAxisOptions = {
+                chart: {
+                    type: "line",
+                    height: 340,
+                    toolbar: { show: false },
+                },
+                series: [],
+                xaxis: {
+                    categories: [],
+                    tickPlacement: "on",
+                    labels: {
+                        rotate: -35,
+                        rotateAlways: false,
+                        style: {
+                            fontSize: "11px",
+                        },
+                        minHeight: 60,
+                        maxHeight: 100,
+                        formatter: function (value) {
+                            if (typeof value !== "string" || value.length <= 20) {
+                                return value;
+                            }
+                            const words = value.split(" ");
+                            const lines = [];
+                            let currentLine = "";
+
+                            words.forEach((word) => {
+                                const trialLine = currentLine ? currentLine + " " + word : word;
+                                if (trialLine.length > 20) {
+                                    if (currentLine) {
+                                        lines.push(currentLine);
+                                    }
+                                    currentLine = word;
+                                } else {
+                                    currentLine = trialLine;
+                                }
+                            });
+
+                            if (currentLine) {
+                                lines.push(currentLine);
+                            }
+
+                            return lines.join("\n");
+                        },
+                    },
+                },
+                stroke: {
+                    curve: "smooth",
+                    width: 3,
+                },
+                markers: {
+                    size: 5,
+                    strokeWidth: 2,
+                    hover: { sizeOffset: 2 },
+                },
+                dataLabels: {
+                    enabled: false,
+                },
+                yaxis: [
+                    {
+                        seriesName: "Weekly Units",
+                        title: {
+                            text: "Weekly Units Sold",
+                        },
+                        labels: {
+                            formatter: (val) => formatNumber(val),
+                        },
+                    },
+                    {
+                        seriesName: "Monthly Units",
+                        opposite: true,
+                        title: {
+                            text: "Monthly Units Sold",
+                        },
+                        labels: {
+                            formatter: (val) => formatNumber(val),
+                        },
+                    },
+                ],
+                legend: {
+                    position: "top",
+                },
+                tooltip: {
+                    shared: true,
+                    intersect: false,
+                    y: {
+                        formatter: (val) => formatNumber(val) + " units",
+                    },
+                },
+                colors: [
+                    getThemeColor("primary"),
+                    getThemeColor("success"),
+                ],
+                noData: {
+                    text: "Loading best seller data...",
+                },
+            };
+
+            bestSellerTrendChart = new ApexCharts(
+                document.querySelector("#chart-best-sellers-trend"),
+                multiYAxisOptions
+            );
+            bestSellerTrendChart.render();
+        }
     }
 
     function loadDashboardData() {
@@ -155,6 +262,94 @@ $(document).ready(function () {
                     $lowStockBody.append(
                         '<tr><td colspan="3" class="text-center">All items are well-stocked!</td></tr>'
                     );
+                }
+
+                if (bestSellerTrendChart) {
+                    const bestSellers = response.bestSellers || {};
+                    const weeklyBest = bestSellers.weekly || {};
+                    const monthlyBest = bestSellers.monthly || {};
+
+                    const buildLineData = (periodData) => {
+                        const categories = periodData.categories || [];
+                        const seriesData = [];
+                        const labels = [];
+
+                        categories.forEach((category) => {
+                            const topItem = (category.items || []).find(
+                                (item) => Number(item.total_units || 0) > 0
+                            );
+                            if (topItem) {
+                                seriesData.push(Number(topItem.total_units || 0));
+                                labels.push(
+                                    (topItem.product_name || "Product") +
+                                        ` (${category.category_name || "Category"})`
+                                );
+                            }
+                        });
+
+                        return { series: seriesData, labels };
+                    };
+
+                    const weeklyData = buildLineData(weeklyBest);
+                    const monthlyData = buildLineData(monthlyBest);
+
+                    const allLabels = Array.from(
+                        new Set([...(weeklyData.labels || []), ...(monthlyData.labels || [])])
+                    );
+
+                    const weeklySeriesData = allLabels.map((label) => {
+                        const idx = (weeklyData.labels || []).indexOf(label);
+                        return idx >= 0 ? weeklyData.series[idx] : 0;
+                    });
+
+                    const monthlySeriesData = allLabels.map((label) => {
+                        const idx = (monthlyData.labels || []).indexOf(label);
+                        return idx >= 0 ? monthlyData.series[idx] : 0;
+                    });
+
+                    const hasData =
+                        weeklySeriesData.some((value) => value > 0) ||
+                        monthlySeriesData.some((value) => value > 0);
+
+                    if (hasData) {
+                        bestSellerTrendChart.updateOptions({
+                            xaxis: {
+                                categories: allLabels,
+                            },
+                        });
+                        bestSellerTrendChart.updateSeries([
+                            {
+                                name: "Weekly Units",
+                                data: weeklySeriesData,
+                                yAxisIndex: 0,
+                            },
+                            {
+                                name: "Monthly Units",
+                                data: monthlySeriesData,
+                                yAxisIndex: 1,
+                            },
+                        ]);
+                        $("#best-sellers-trend-empty").addClass("d-none");
+                    } else {
+                        bestSellerTrendChart.updateSeries([
+                            {
+                                name: "Weekly Units",
+                                data: [],
+                                yAxisIndex: 0,
+                            },
+                            {
+                                name: "Monthly Units",
+                                data: [],
+                                yAxisIndex: 1,
+                            },
+                        ]);
+                        bestSellerTrendChart.updateOptions({
+                            xaxis: {
+                                categories: [],
+                            },
+                        });
+                        $("#best-sellers-trend-empty").removeClass("d-none");
+                    }
                 }
             },
             error: function (xhr) {

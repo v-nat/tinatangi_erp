@@ -113,6 +113,8 @@
             '#crm-pending-bookings',
             '#crm-pending-feedback',
             '#crm-average-rating',
+            '#exec-best-sellers-weekly-range',
+            '#exec-best-sellers-monthly-range',
         ];
 
         $.each(fields, function (_, selector) {
@@ -129,9 +131,13 @@
         setHtmlMessage('#chart-proc-top-suppliers', 'Unable to load chart.');
         setHtmlMessage('#chart-inventory-alerts', 'Unable to load chart.');
         setHtmlMessage('#chart-crm-average-rating', 'Unable to load chart.');
+        setHtmlMessage('#chart-exec-best-sellers-weekly', 'Unable to load chart.');
+        setHtmlMessage('#chart-exec-best-sellers-monthly', 'Unable to load chart.');
     }
 
     var chartsInstances = {};
+    var bestSellerChartData = null;
+    var activeBestSellerMode = 'weekly';
 
     function destroyChart(selector) {
         if (chartsInstances[selector]) {
@@ -175,6 +181,101 @@
         }
 
         return false;
+    }
+
+    function updateBestSellerToggleButtons() {
+        var $buttons = $('[data-best-seller-toggle]');
+        $buttons.each(function () {
+            var $button = $(this);
+            var mode = $button.data('best-seller-toggle');
+            var hasData =
+                bestSellerChartData &&
+                bestSellerChartData[mode] &&
+                hasSeriesData(bestSellerChartData[mode].series);
+
+            $button.toggleClass('active', mode === activeBestSellerMode);
+            $button.prop('disabled', !hasData);
+        });
+    }
+
+    function renderActiveBestSellerChart() {
+        var chartSelector = '#chart-exec-best-sellers';
+        var $range = $('#exec-best-sellers-range');
+
+        if (!bestSellerChartData) {
+            renderChart(chartSelector, null, 'No best seller data yet.');
+            if ($range.length) {
+                $range.text('No data yet');
+            }
+            updateBestSellerToggleButtons();
+            return;
+        }
+
+        var chartInfo = bestSellerChartData[activeBestSellerMode];
+
+        if (!chartInfo) {
+            renderChart(chartSelector, null, 'No best seller data yet.');
+            if ($range.length) {
+                $range.text('No data for this period');
+            }
+            updateBestSellerToggleButtons();
+            return;
+        }
+
+        if ($range.length) {
+            if (chartInfo.label) {
+                $range.text(chartInfo.label);
+            } else {
+                $range.text('No data yet');
+            }
+        }
+
+        if (chartInfo.labels && hasSeriesData(chartInfo.series)) {
+            renderChart(chartSelector, {
+                chart: { type: 'line', height: 300, toolbar: { show: false } },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3,
+                },
+                markers: {
+                    size: 4,
+                    strokeWidth: 2,
+                },
+                dataLabels: { enabled: false },
+                series: chartInfo.series,
+                xaxis: {
+                    categories: chartInfo.labels,
+                    labels: { style: { fontSize: '12px' } },
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (val) {
+                            return formatCurrency(val);
+                        },
+                    },
+                    title: {
+                        text: 'Total Revenue (₱)',
+                    },
+                },
+                tooltip: {
+                    shared: true,
+                    intersect: false,
+                    y: {
+                        formatter: function (val) {
+                            return formatCurrency(val);
+                        },
+                    },
+                },
+                legend: {
+                    position: 'top',
+                },
+                colors: ['#435ebe', '#5c7cfa', '#69db7c', '#ffa94d', '#ff6b6b', '#5c940d'],
+            });
+        } else {
+            renderChart(chartSelector, null, 'No best seller data yet.');
+        }
+
+        updateBestSellerToggleButtons();
     }
 
     function renderCharts(chartData) {
@@ -266,6 +367,38 @@
             renderChart('#chart-inventory-alerts', null, 'Inventory levels are stable.');
         }
 
+        var bestSellers = chartData && chartData.bestSellers;
+        bestSellerChartData = bestSellers || null;
+
+        if (
+            bestSellerChartData &&
+            !bestSellerChartData[activeBestSellerMode]
+        ) {
+            var fallbackOrder = ['weekly', 'monthly', 'sixMonths', 'yearly'];
+            for (var i = 0; i < fallbackOrder.length; i += 1) {
+                var candidate = fallbackOrder[i];
+                if (
+                    bestSellerChartData[candidate] &&
+                    hasSeriesData(bestSellerChartData[candidate].series)
+                ) {
+                    activeBestSellerMode = candidate;
+                    break;
+                }
+            }
+
+            if (!bestSellerChartData[activeBestSellerMode]) {
+                for (var j = 0; j < fallbackOrder.length; j += 1) {
+                    var fallbackCandidate = fallbackOrder[j];
+                    if (bestSellerChartData[fallbackCandidate]) {
+                        activeBestSellerMode = fallbackCandidate;
+                        break;
+                    }
+                }
+            }
+        }
+
+        renderActiveBestSellerChart();
+
         var crm = chartData && chartData.crmAverageRating;
         if (crm && !isNil(crm.percentage)) {
             var pct = Math.min(Math.max(Number(crm.percentage || 0), 0), 100);
@@ -332,6 +465,16 @@
     function init() {
         var $dashboard = $('#executives-dashboard');
         if (!$dashboard.length) return;
+
+        $(document).on('click', '[data-best-seller-toggle]', function (event) {
+            event.preventDefault();
+            var mode = $(this).data('best-seller-toggle');
+            if (!mode || mode === activeBestSellerMode) {
+                return;
+            }
+            activeBestSellerMode = mode;
+            renderActiveBestSellerChart();
+        });
 
         var endpoint = $dashboard.data('endpoint');
         if (!endpoint) {

@@ -89,10 +89,10 @@
                                 Payslip</a></li>
                     </div>
 
-                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i>
+                    {{-- <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i>
                             Profile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i>
-                            Settings</a></li>
+                            Settings</a></li> --}}
                     <hr class="dropdown-divider">
                     </li>
                     <li id="logout-btn"><a class="dropdown-item" href="#">

@@ -27,6 +27,52 @@
     <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}">
+    <style>
+        .best-seller-panel {
+            background-color: #1e1b16;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.28);
+            color: #f8f5f0;
+            position: relative;
+        }
+
+        .best-seller-panel h4 {
+            color: #fdf8f2;
+        }
+
+        .best-seller-panel .range-label {
+            color: rgba(248, 245, 240, 0.65);
+        }
+
+        .best-seller-panel .text-muted {
+            color: rgba(248, 245, 240, 0.6) !important;
+        }
+
+        .best-seller-panel .text-danger {
+            color: #f28a7a !important;
+        }
+
+        .best-seller-panel .swiper-pagination-bullet {
+            background: rgba(255, 255, 255, 0.45);
+            opacity: 1;
+        }
+
+        .best-seller-panel .swiper-pagination-bullet-active {
+            background: #cda45e;
+        }
+
+        .best-seller-panel .best-seller-slide h5 {
+            color: var(--accent-color);
+        }
+
+        .best-seller-panel .sold-badge {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--accent-color);
+            border: 1px solid rgba(205, 164, 94, 0.35);
+            font-size: 0.9rem;
+        }
+    </style>
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
 </head>
@@ -81,6 +127,52 @@
                     {{-- <div class="col-lg-4 d-flex align-items-center justify-content-center mt-5 mt-lg-0">
                         <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
                     </div> --}}
+                </div>
+            </div>
+
+        </section>
+        <section id="best-sellers" class="best-sellers section">
+
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Best Sellers</h2>
+                <p>Discover the crowd favorites this week and month</p>
+            </div>
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
+                <div class="row gy-4">
+                    <div class="col-lg-6">
+                        <div class="best-seller-panel h-100 p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">Weekly Favorites</h4>
+                                <span class="small range-label" id="public-weekly-range">Loading...</span>
+                            </div>
+                            <div class="swiper best-seller-swiper" id="weekly-best-seller-swiper">
+                                <div class="swiper-wrapper" id="weekly-best-seller-wrapper">
+                                    <div class="swiper-slide">
+                                        <div class="py-5 text-center text-muted">Gathering this week's popular picks...
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-pagination" id="weekly-best-seller-pagination"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="best-seller-panel h-100 p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">Monthly Favorites</h4>
+                                <span class="small range-label" id="public-monthly-range">Loading...</span>
+                            </div>
+                            <div class="swiper best-seller-swiper" id="monthly-best-seller-swiper">
+                                <div class="swiper-wrapper" id="monthly-best-seller-wrapper">
+                                    <div class="swiper-slide">
+                                        <div class="py-5 text-center text-muted">Checking our monthly best sellers...
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-pagination" id="monthly-best-seller-pagination"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -504,14 +596,11 @@
                 </div>
 
                 <div class="col-lg-2 col-md-3 footer-links">
-                    {{-- <h4>Our Services</h4>
+                    <h4>Login</h4>
                     <ul>
-                        <li><a href="#">Web Design</a></li>
-                        <li><a href="#">Web Development</a></li>
-                        <li><a href="#">Product Management</a></li>
-                        <li><a href="#">Marketing</a></li>
-                        <li><a href="#">Graphic Design</a></li>
-                    </ul> --}}
+                        <li><a href="{{ route('login')  }}">Login as Employee</a></li>
+                        <li><a href="{{ route('login')  }}">Login as Supplier</a></li>
+                    </ul>
                 </div>
 
                 <div class="col-lg-4 col-md-12 d-flex justify-content-end">

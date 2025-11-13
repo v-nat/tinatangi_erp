@@ -20,9 +20,17 @@ use App\Models\PurchaseOrderDetail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Status;
+use App\Services\BestSellerService;
 
 class ExecutivesController extends Controller
 {
+    protected BestSellerService $bestSellerService;
+
+    public function __construct(BestSellerService $bestSellerService)
+    {
+        $this->bestSellerService = $bestSellerService;
+    }
+
     public function index()
     {
         return view('pages.admin.executives.dashboard');
@@ -245,6 +253,35 @@ class ExecutivesController extends Controller
             'customerSatisfaction' => $crm['averageRating'],
         ];
 
+        $weeklyBestSellers = $this->bestSellerService->getWeeklyBestSellers(1);
+        $monthlyBestSellers = $this->bestSellerService->getMonthlyBestSellers(1);
+
+        $now = Carbon::now();
+        $sixMonthStart = $now->copy()->subMonths(5)->startOfMonth();
+        $sixMonthEnd = $now->copy()->endOfMonth();
+        $yearStart = $now->copy()->startOfYear();
+        $yearEnd = $now->copy()->endOfMonth();
+
+        $sixMonthBestSellers = $this->bestSellerService->getBestSellersForRange($sixMonthStart, $sixMonthEnd, 1);
+        $yearlyBestSellers = $this->bestSellerService->getBestSellersForRange($yearStart, $yearEnd, 1);
+
+        $weeklyProductIds = $this->extractCategoryBestSellerProductIds($weeklyBestSellers);
+        $monthlyProductIds = $this->extractCategoryBestSellerProductIds($monthlyBestSellers);
+        $sixMonthProductIds = $this->extractCategoryBestSellerProductIds($sixMonthBestSellers);
+        $yearlyProductIds = $this->extractCategoryBestSellerProductIds($yearlyBestSellers);
+
+        $weeklyTrend = $this->bestSellerService->getProductTrend($weeklyProductIds, 'weekly', 8, 'revenue');
+        $monthlyTrend = $this->bestSellerService->getProductTrend($monthlyProductIds, 'monthly', 6, 'revenue');
+        $sixMonthTrend = $this->bestSellerService->getProductTrend($sixMonthProductIds, 'monthly', 6, 'revenue');
+        $yearlyTrend = $this->bestSellerService->getProductTrend($yearlyProductIds, 'monthly', 12, 'revenue');
+
+        $bestSellerCharts = [
+            'weekly' => $this->transformBestSellerTrendChart($weeklyBestSellers, $weeklyTrend),
+            'monthly' => $this->transformBestSellerTrendChart($monthlyBestSellers, $monthlyTrend),
+            'sixMonths' => $this->transformBestSellerTrendChart($sixMonthBestSellers, $sixMonthTrend),
+            'yearly' => $this->transformBestSellerTrendChart($yearlyBestSellers, $yearlyTrend),
+        ];
+
         $charts = [
             'operationsTopProducts' => [
                 'labels' => $operationsTopProducts->pluck('name')->all(),
@@ -288,6 +325,7 @@ class ExecutivesController extends Controller
                     (int) ($inventory['outOfStock'] ?? 0),
                 ],
             ],
+            'bestSellers' => $bestSellerCharts,
         ];
 
         $operations['topProducts'] = $operationsTopProducts->toArray();
@@ -305,5 +343,51 @@ class ExecutivesController extends Controller
             'crm',
             'charts'
         );
+    }
+
+    private function extractCategoryBestSellerProductIds(?array $bestSellerData): array
+    {
+        return collect($bestSellerData['categories'] ?? [])
+            ->map(function ($category) {
+                $topItem = collect($category['items'] ?? [])
+                    ->filter(function ($item) {
+                        return !empty($item['product_id']) && (int) ($item['total_units'] ?? 0) > 0;
+                    })
+                    ->first();
+
+                return $topItem['product_id'] ?? null;
+            })
+            ->filter(fn ($productId) => !is_null($productId))
+            ->unique()
+            ->values()
+            ->map(fn ($id) => (int) $id)
+            ->all();
+    }
+
+    private function transformBestSellerTrendChart(?array $bestSellerData, ?array $trendData): array
+    {
+        $label = $bestSellerData['label'] ?? null;
+        $trendLabels = $trendData['labels'] ?? [];
+        $trendSeries = collect($trendData['series'] ?? [])
+            ->map(function ($series) {
+                return [
+                    'name' => $series['name'] ?? 'Product',
+                    'data' => collect($series['data'] ?? [])
+                        ->map(fn ($value) => round((float) $value, 2))
+                        ->all(),
+                ];
+            })
+            ->filter(function ($series) {
+                return collect($series['data'])->sum() > 0;
+            })
+            ->values()
+            ->all();
+
+        return [
+            'label' => $label,
+            'labels' => $trendLabels,
+            'series' => $trendSeries,
+            'value_type' => 'currency',
+        ];
     }
 }

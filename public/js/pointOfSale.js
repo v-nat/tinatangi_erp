@@ -28,6 +28,148 @@ $(document).ready(function () {
         '<div class="text-center py-3 text-danger">Failed to load categories.</div>';
 
     let posCategories = [];
+    const categoryProductsCache = {};
+    let currentCategorySlug = null;
+    let currentSortMode = "default";
+    const BEST_SELLER_CATEGORY_SLUG = "months-best-sellers";
+
+    function cacheCategoryProducts(slug, products) {
+        if (!slug) {
+            return;
+        }
+        categoryProductsCache[slug] = Array.isArray(products)
+            ? products.map((product) => Object.assign({}, product))
+            : [];
+    }
+
+    function getCachedCategoryProducts(slug) {
+        if (!slug || !categoryProductsCache[slug]) {
+            return [];
+        }
+        return categoryProductsCache[slug].map((product) =>
+            Object.assign({}, product)
+        );
+    }
+
+    function sortProductsForDisplay(products) {
+        if (!Array.isArray(products)) {
+            return [];
+        }
+
+        const productsCopy = products.map((product) =>
+            Object.assign({}, product)
+        );
+
+        if (currentSortMode === "alphabetical") {
+            return productsCopy.sort((a, b) => {
+                const nameA = (a.name || "").toString().toLowerCase();
+                const nameB = (b.name || "").toString().toLowerCase();
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
+                return 0;
+            });
+        }
+
+        if (currentSortMode === "servings") {
+            return productsCopy.sort((a, b) => {
+                const servingsA =
+                    parseInt(a.available_servings ?? a.servings ?? 0, 10) || 0;
+                const servingsB =
+                    parseInt(b.available_servings ?? b.servings ?? 0, 10) || 0;
+                return servingsB - servingsA;
+            });
+        }
+
+        return productsCopy;
+    }
+
+    function renderProductsToContainer(products, containerSelector) {
+        const $container = $(containerSelector);
+
+        if (!Array.isArray(products) || products.length === 0) {
+            const placeholderHtml = `
+                <div class="col-12 text-center my-5 p-5">
+                    <h3 class="text-muted">No available products in this category.</h3>
+                    <p class="text-muted">Available products will appear here automatically.</p>
+                </div>`;
+            $container.html(placeholderHtml);
+            applySearchFilter();
+            return;
+        }
+
+        const sortedProducts = sortProductsForDisplay(products);
+        const productsHtml = [];
+
+        sortedProducts.forEach((element) => {
+            const imagePath = element.image;
+            let imageUrl;
+            const productName = element.name || "";
+            const productNameLower = productName.toLowerCase();
+
+            if (imagePath && imagePath !== "N/A") {
+                imageUrl = "/storage/app/public/" + imagePath;
+            } else {
+                imageUrl = DEFAULT_PRODUCT_IMAGE;
+            }
+            const rawServings =
+                element.available_servings ?? element.servings ?? 0;
+            const parsedServings = parseInt(rawServings, 10);
+            const servings = Number.isNaN(parsedServings) ? 0 : parsedServings;
+            let servingsHtml = "";
+
+            if (servings > 0) {
+                servingsHtml = `<span class="position-absolute top-0 end-0 bg-primary text-white p-1 px-2 rounded-pill" style="font-size: 0.8rem; margin: 5px;">${servings} servings</span>`;
+            } else {
+                servingsHtml = `
+                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background-color: rgba(220, 53, 69, 0.7); border-radius: inherit;">
+                        <h5 class="text-white fw-bold">Out of Stock</h5>
+                    </div>
+                `;
+            }
+            productsHtml.push(`
+                <div class="col" data-id="${
+                    element.id
+                }" data-available-servings="${servings}" data-name="${productNameLower.replace(
+                /"/g,
+                "&quot;"
+            )}" ${servings <= 0 ? 'data-disabled="true"' : ""}>
+                    <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2 ${
+                        servings <= 0 ? "border-danger" : ""
+                    }">
+                        ${servingsHtml}
+                        <img src="${imageUrl}" class="card-img-top img-fluid prod-img" alt="Product Image">
+                        <div class="card-body p-2 flex-grow-1">
+                            <h6 class="card-title mb-1 prod-name">${productName}</h6>
+                            <h6 class="text-success mb-0 prod-price">₱${parseFloat(
+                                element.base_price || 0
+                            ).toFixed(2)}</h6>
+                        </div>
+                    </div>
+                </div>
+            `);
+        });
+
+        $container.html(productsHtml.join(""));
+        applySearchFilter();
+    }
+
+    function renderActiveCategoryProducts() {
+        if (!currentCategorySlug) {
+            return;
+        }
+
+        const activeCategory = posCategories.find(
+            (category) => category.slug === currentCategorySlug
+        );
+
+        if (!activeCategory) {
+            return;
+        }
+
+        const containerSelector = `#${activeCategory.productsContainerId}`;
+        const products = getCachedCategoryProducts(activeCategory.slug);
+        renderProductsToContainer(products, containerSelector);
+    }
 
     function slugify(text) {
         if (!text) {
@@ -66,6 +208,11 @@ $(document).ready(function () {
             const paneId = `v-pills-${slug}`;
             const productsContainerId = `${slug}Products`;
             const isActive = index === 0;
+            const prefetchedProducts = Array.isArray(
+                category.prefetchedProducts
+            )
+                ? category.prefetchedProducts
+                : null;
 
             navLinks.push(
                 `<a class="nav-link ${
@@ -91,6 +238,10 @@ $(document).ready(function () {
                 navId,
                 paneId,
                 productsContainerId,
+                prefetchedProducts,
+                isBestSellers:
+                    category.isBestSellers === true ||
+                    slug === BEST_SELLER_CATEGORY_SLUG,
             };
         });
 
@@ -103,14 +254,31 @@ $(document).ready(function () {
             return;
         }
 
+        currentCategorySlug = category.slug;
         const containerSelector = `#${category.productsContainerId}`;
+
+        if (
+            Array.isArray(category.prefetchedProducts) &&
+            category.prefetchedProducts.length > 0
+        ) {
+            cacheCategoryProducts(category.slug, category.prefetchedProducts);
+            category.prefetchedProducts = null;
+        }
+
+        const cachedProducts = getCachedCategoryProducts(category.slug);
+
+        if (cachedProducts.length > 0) {
+            renderProductsToContainer(cachedProducts, containerSelector);
+            return;
+        }
+
         let url = "/operations/pos/products";
 
         if (!category.isAll) {
             url += `?category=${encodeURIComponent(category.name)}`;
         }
 
-        getProducts(url, containerSelector);
+        getProducts(url, containerSelector, category);
     }
 
     function loadPosCategories() {
@@ -130,11 +298,37 @@ $(document).ready(function () {
                 })),
             ];
 
-            renderCategoryNavigation(categories);
+            $.get("/operations/pos/monthly-best-sellers", { limit: 5 })
+                .done(function (bestSellerResponse) {
+                    const bestSellerProducts = Array.isArray(
+                        bestSellerResponse.data
+                    )
+                        ? bestSellerResponse.data
+                        : [];
 
-            if (posCategories.length > 0) {
-                loadProductsForCategory(posCategories[0]);
-            }
+                    if (bestSellerProducts.length > 0) {
+                        categories.unshift({
+                            id: "best-sellers",
+                            name: "Month's Best Sellers",
+                            slug: BEST_SELLER_CATEGORY_SLUG,
+                            isAll: false,
+                            isBestSellers: true,
+                            prefetchedProducts: bestSellerProducts,
+                        });
+                    }
+                })
+                .fail(function () {
+                    console.warn(
+                        "Warning: Unable to load monthly best sellers for POS."
+                    );
+                })
+                .always(function () {
+                    renderCategoryNavigation(categories);
+
+                    if (posCategories.length > 0) {
+                        loadProductsForCategory(posCategories[0]);
+                    }
+                });
         }).fail(function () {
             categoriesNavContainer.html(categoriesErrorHtml);
             tabContentContainer.html(
@@ -196,7 +390,7 @@ $(document).ready(function () {
         }
     }
 
-    function getProducts(url, id) {
+    function getProducts(url, id, category) {
         const loading_items = `
              <div class="col-12 text-center my-5 p-5 d-flex flex-column align-items-center">
                 <div class="spinner-border" style="width: 3rem; height: 3rem"
@@ -211,68 +405,15 @@ $(document).ready(function () {
         $.get(url, function (response) {
             if (response.data && Array.isArray(response.data)) {
                 const productsArray = response.data;
-                let productsHtml = [];
+                const categorySlug =
+                    category && category.slug ? category.slug : null;
 
-                if (productsArray.length === 0) {
-                    const placeholderHtml = `
-                    <div class="col-12 text-center my-5 p-5">
-                        <h3 class="text-muted">No available products in this category.</h3>
-                        <p class="text-muted">Available products will appear here automatically.</p>
-                    </div>`;
-                    $(id).html(placeholderHtml);
+                if (categorySlug) {
+                    cacheCategoryProducts(categorySlug, productsArray);
+                    const cached = getCachedCategoryProducts(categorySlug);
+                    renderProductsToContainer(cached, id);
                 } else {
-                    productsArray.forEach((element) => {
-                        const imagePath = element.image;
-                        let imageUrl;
-                        const productName = element.name || "";
-                        const productNameLower = productName.toLowerCase();
-
-                        if (imagePath && imagePath !== "N/A") {
-                            imageUrl = "/storage/app/public/" + imagePath;
-                        } else {
-                            imageUrl = DEFAULT_PRODUCT_IMAGE;
-                        }
-                        const rawServings =
-                            element.available_servings ?? element.servings ?? 0;
-                        const parsedServings = parseInt(rawServings, 10);
-                        const servings = Number.isNaN(parsedServings)
-                            ? 0
-                            : parsedServings;
-                        let servingsHtml = "";
-
-                        if (servings > 0) {
-                            servingsHtml = `<span class="position-absolute top-0 end-0 bg-primary text-white p-1 px-2 rounded-pill" style="font-size: 0.8rem; margin: 5px;">${servings} servings</span>`;
-                        } else {
-                            servingsHtml = `
-                                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background-color: rgba(220, 53, 69, 0.7); border-radius: inherit;">
-                                    <h5 class="text-white fw-bold">Out of Stock</h5>
-                                </div>
-                            `;
-                        }
-                        productsHtml.push(`
-                        <div class="col" data-id="${
-                            element.id
-                        }" data-available-servings="${servings}" data-name="${productNameLower.replace(
-                            /"/g,
-                            "&quot;"
-                        )}" ${servings <= 0 ? 'data-disabled="true"' : ""}>
-                            <div class="card shadow h-100 product-card-fixed-size d-flex p-2 m-2 ${
-                                servings <= 0 ? "border-danger" : ""
-                            }">
-                                ${servingsHtml}
-                                <img src="${imageUrl}" class="card-img-top img-fluid prod-img" alt="Product Image">
-                                <div class="card-body p-2 flex-grow-1">
-                                    <h6 class="card-title mb-1 prod-name">${productName}</h6>
-                                    <h6 class="text-success mb-0 prod-price">₱${parseFloat(
-                                        element.base_price || 0
-                                    ).toFixed(2)}</h6>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                    });
-
-                    $(id).html(productsHtml.join(""));
+                    renderProductsToContainer(productsArray, id);
                 }
             } else {
                 const errorHtml = `
@@ -317,6 +458,18 @@ $(document).ready(function () {
 
     $(document).on("input", "#product-search-input", function () {
         applySearchFilter();
+    });
+
+    $(document).on("change", "#pos-sort-select", function () {
+        const selected = $(this).val();
+
+        if (selected === "alphabetical" || selected === "servings") {
+            currentSortMode = selected;
+        } else {
+            currentSortMode = "default";
+        }
+
+        renderActiveCategoryProducts();
     });
 
     $(document).on("click", ".col", function () {

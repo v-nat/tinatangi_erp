@@ -16,9 +16,17 @@ use App\Models\InventoryItem;
 use App\Models\StockTransaction;
 use App\Enums\TransactionType;
 use Illuminate\Support\Str;
+use App\Services\BestSellerService;
 
 class POSController extends Controller
 {
+    protected BestSellerService $bestSellerService;
+
+    public function __construct(BestSellerService $bestSellerService)
+    {
+        $this->bestSellerService = $bestSellerService;
+    }
+
     private function getProductsByCategory($categoryName = null)
     {
         try {
@@ -379,6 +387,69 @@ class POSController extends Controller
             return response()->json(['message' => 'This order has already been voided.'], 400);
         } else {
             return response()->json(['message' => 'This order cannot be voided at its current status.'], 400);
+        }
+    }
+
+    public function monthlyBestSellers(Request $request)
+    {
+        $limit = (int) $request->query('limit', 5);
+
+        if ($limit <= 0) {
+            $limit = 5;
+        }
+
+        $limit = min($limit, 10);
+
+        try {
+            $bestSellerData = $this->bestSellerService->getMonthlyBestSellers($limit);
+
+            $topItems = collect($bestSellerData['categories'] ?? [])
+                ->flatMap(fn ($category) => $category['items'] ?? [])
+                ->sortByDesc(fn ($item) => (int) ($item['total_units'] ?? 0))
+                ->take($limit)
+                ->values();
+
+            if ($topItems->isEmpty()) {
+                return response()->json(['data' => []]);
+            }
+
+            $productIds = $topItems->pluck('product_id')->all();
+
+            $products = Product::whereIn('id', $productIds)
+                ->with('productCategoryRS')
+                ->select('id', 'name', 'base_price', 'image', 'servings', 'product_category_id')
+                ->get()
+                ->keyBy('id');
+
+            $orderedProducts = $topItems
+                ->map(function ($item) use ($products) {
+                    $product = $products->get($item['product_id']);
+
+                    if (! $product) {
+                        return null;
+                    }
+
+                    $availableServings = $product->syncAvailability();
+
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'base_price' => (float) $product->base_price,
+                        'image' => $product->image,
+                        'servings' => $product->servings,
+                        'available_servings' => $availableServings,
+                        'product_category_id' => $product->product_category_id,
+                        'total_units' => (int) ($item['total_units'] ?? 0),
+                    ];
+                })
+                ->filter()
+                ->values();
+
+            return response()->json(['data' => $orderedProducts]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching monthly best sellers for POS: ' . $e->getMessage());
+
+            return response()->json(['error' => 'Failed to load monthly best sellers.'], 500);
         }
     }
 }
