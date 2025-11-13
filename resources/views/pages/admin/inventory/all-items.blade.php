@@ -45,7 +45,6 @@
                                 <th>#</th>
                                 <th>SKU</th>
                                 <th>Item Name</th>
-                                <th>Unit</th>
                                 <th>Category</th>
                                 <th>Stocks</th>
                                 <th>Cost Price</th>

@@ -114,25 +114,20 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "8%",
                 render: function (data, type, row) {
-                    const quantityValue =
-                        typeof row.quantity === "number"
-                            ? row.quantity
-                            : Number(data || 0);
-                    const formatted =
-                        row.quantity_formatted ??
-                        Number(quantityValue || 0).toLocaleString("en-PH", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        });
-                    const withUnit = row.unit
-                        ? `${formatted} ${row.unit}`
-                        : formatted;
-
                     if (type === "display" || type === "filter") {
-                        return withUnit;
+                        if (row.quantity_display) {
+                            return row.quantity_display;
+                        }
+                        const formatted =
+                            row.quantity_formatted ??
+                            Number(data || 0).toLocaleString("en-PH", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            });
+                        const unitLabel = row.unit ? ` ${row.unit}` : "";
+                        return `${formatted}${unitLabel}`.trim();
                     }
-
-                    return quantityValue;
+                    return data;
                 },
             },
             { data: "item", className: "dt-left", width: "22%" },
