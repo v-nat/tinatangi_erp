@@ -285,6 +285,26 @@ $(document).ready(function () {
             supplierConfig.disableWhenSingle = false;
         }
 
+        if (requestData && requestData.supplier_id) {
+            const supplierIdString = String(requestData.supplier_id);
+            supplierIdsFromData.add(supplierIdString);
+            supplierConfig.allowedIds = supplierIdsFromData;
+            supplierConfig.defaultValue = supplierIdString;
+            supplierConfig.disableWhenSingle = true;
+        } else if (requestData && requestData.purchase_orders) {
+            const firstOrderWithSupplier = requestData.purchase_orders.find(
+                (order) => order.supplier_id
+            );
+            if (firstOrderWithSupplier && firstOrderWithSupplier.supplier_id) {
+                const supplierIdString = String(
+                    firstOrderWithSupplier.supplier_id
+                );
+                supplierIdsFromData.add(supplierIdString);
+                supplierConfig.allowedIds = supplierIdsFromData;
+                supplierConfig.defaultValue = supplierIdString;
+            }
+        }
+
         configureSupplierOptions(supplierConfig);
         getSuppliers();
 
@@ -1385,7 +1405,11 @@ $(document).ready(function () {
 
     $("#submit-PR").click(function (e) {
         e.preventDefault();
-        const supplier_id = $("#supplier").val();
+        let supplier_id = $("#supplier").val();
+        if ((!supplier_id || String(supplier_id).trim() === "") && selectedSupplierId) {
+            $("#supplier").val(selectedSupplierId);
+            supplier_id = selectedSupplierId;
+        }
 
         let isValid = true;
         const $form = $("#submitPORequest");
