@@ -77,17 +77,24 @@ class InventoryController extends Controller
     public function getRecentItems()
     {
         try {
-            $items = InventoryItem::with(['itemss', 'category', 'unit', 'itemStatus'])->latest()->take(10)->get();
+            $items = InventoryItem::with(['itemss', 'category', 'unit', 'baseUnit', 'itemStatus'])
+                ->latest()
+                ->take(10)
+                ->get();
 
             return response()->json([
                 'data' => $items->map(function ($item) {
+                    $availableBaseQuantity = $item->getAvailableBaseUnits();
+                    $unitLabel = $item->getDisplayUnitLabel();
                     return [
                         'id'                => $item->id,
                         'sku'               => $item->sku,
                         'item_name'         => optional($item->itemss)->name,
                         'category'          => optional($item->category)->name,
-                        'unit'              => optional($item->unit)->abbreviation,
-                        'stock_level'       => $item->stock_level,
+                        'unit'              => $unitLabel,
+                        'stock_level'       => $availableBaseQuantity,
+                        'stock_level_formatted' => $item->formatStockQuantity(),
+                        'stock_display'     => $item->formatStockDisplay(),
                         'cost_price'        => (float)$item->cost_price,
                         // 'selling_price'     => (float)$item->selling_price, --- IGNORE ---
                         'status'            => Status::getStatusText($item->status),
@@ -101,18 +108,22 @@ class InventoryController extends Controller
     public function getAllItems()
     {
         try {
-            $items = InventoryItem::with(['itemss', 'category', 'unit', 'itemss.inventoryLocation', 'itemStatus'])->get();
+            $items = InventoryItem::with(['itemss', 'category', 'unit', 'baseUnit', 'itemss.inventoryLocation', 'itemStatus'])->get();
 
             return response()->json([
                 'data' => $items->map(function ($item) {
+                    $availableBaseQuantity = $item->getAvailableBaseUnits();
+                    $unitLabel = $item->getDisplayUnitLabel();
                     return [
                         'id'                => $item->id,
                         'sku'               => $item->sku,
                         'item_name'         => optional($item->itemss)->name,
                         'inventory_location' => optional(optional($item->itemss)->inventoryLocation)->name,
                         'category'          => optional($item->category)->name,
-                        'unit'              => optional($item->unit)->abbreviation,
-                        'stock_level'       => $item->stock_level,
+                        'unit'              => $unitLabel,
+                        'stock_level'       => $availableBaseQuantity,
+                        'stock_level_formatted' => $item->formatStockQuantity(),
+                        'stock_display'     => $item->formatStockDisplay(),
                         'cost_price'        => (float)$item->cost_price,
                         // 'selling_price'     => (float)$item->selling_price, --- IGNORE ---
                         'status'            => Status::getStatusText($item->status),
@@ -186,6 +197,7 @@ class InventoryController extends Controller
             $forRestock = InventoryItem::with([
                 'itemss',
                 'unit',
+                'baseUnit',
                 'category'
             ])->where('status', 25)->orWhere('status', 26)
                 ->orderBy('stock_level', 'asc')
@@ -193,14 +205,18 @@ class InventoryController extends Controller
 
             return response()->json([
                 'data' => $forRestock->map(function ($item) {
+                    $availableBaseQuantity = $item->getAvailableBaseUnits();
+                    $unitLabel = $item->getDisplayUnitLabel();
                     return [
                         'id'                => $item->id,
                         'sku'               => $item->sku,
                         'item_name'         => optional($item->itemss)->name,
                         'item_id'           => $item->item_id,
                         'category'          => optional($item->category)->name,
-                        'unit'              => optional($item->unit)->name,
-                        'stock_level'       => (int)$item->stock_level,
+                        'unit'              => $unitLabel,
+                        'stock_level'       => $availableBaseQuantity,
+                        'stock_level_formatted' => $item->formatStockQuantity(),
+                        'stock_display'     => $item->formatStockDisplay(),
                         'cost_price'        => (float)$item->cost_price,
                         'status'            => Status::getStatusText($item->status),
 

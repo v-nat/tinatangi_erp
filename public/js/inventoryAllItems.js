@@ -21,7 +21,26 @@ $(document).ready(function () {
             { data: "unit", className: "dt-left" },
             { data: "inventory_location", className: "dt-left" },
             { data: "category", className: "dt-left" },
-            { data: "stock_level", className: "dt-left" },
+            {
+                data: "stock_level",
+                className: "dt-left",
+                render: function (data, type, row) {
+                    if (type === "display" || type === "filter") {
+                        if (row.stock_display) {
+                            return row.stock_display;
+                        }
+                        const formatted =
+                            row.stock_level_formatted ??
+                            Number(data || 0).toLocaleString("en-PH", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            });
+                        const unitLabel = row.unit ? ` ${row.unit}` : "";
+                        return `${formatted}${unitLabel}`.trim();
+                    }
+                    return data;
+                },
+            },
             {
                 data: "cost_price",
                 className: "dt-left",

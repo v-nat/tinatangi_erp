@@ -22,18 +22,26 @@ class StockManagementController extends Controller
     public function stockTransactions()
     {
         try {
-            $transaction = StockTransaction::with(['inventoryItemRS.itemss', 'user'])
+            $transaction = StockTransaction::with(['inventoryItemRS.itemss', 'inventoryItemRS.unit', 'inventoryItemRS.baseUnit', 'user'])
                 ->orderBy('transaction_date', 'desc')->get();
 
             return response()->json([
                 'data' => $transaction->map(function ($data) {
+                    $inventoryItem = $data->inventoryItemRS;
+                    $unitLabel = $inventoryItem ? $inventoryItem->getDisplayUnitLabel() : '';
+                    $quantityRaw = (float) $data->quantity;
+                    $quantityFormatted = number_format($quantityRaw, 2);
+                    $quantityDisplay = trim($quantityFormatted . ($unitLabel ? ' ' . $unitLabel : ''));
                     return [
                         'id'                => $data->id,
                         'type'              => $data->transaction_type,
                         'batch'             => $data->batch,
                         'date'              => $data->transaction_date->setTimezone('Asia/Manila')->format('Y-m-d\TH:i:s\Z'),
                         'reference'         => $data->reference_type,
-                        'quantity'          => $data->quantity,
+                        'quantity'          => $quantityRaw,
+                        'quantity_formatted'=> $quantityFormatted,
+                        'quantity_display'  => $quantityDisplay,
+                        'unit'              => $unitLabel,
                         'item'              => optional(optional($data->inventoryItemRS)->itemss)->name,
                         'receive'           => optional($data->user)->full_name,
                         'status'            => Status::getStatusText($data->status),

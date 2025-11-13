@@ -23,7 +23,27 @@ $(document).ready(function () {
             { data: "item_name", className: "dt-left" },
             { data: "unit", className: "dt-left" },
             { data: "category", className: "dt-left" },
-            { data: "stock_level", className: "dt-left" },
+            {
+                data: "stock_level",
+                className: "dt-left",
+                render: function (data, type, row) {
+                    if (type === "display" || type === "filter") {
+                        if (row.stock_display) {
+                            return row.stock_display;
+                        }
+
+                        const formatted =
+                            row.stock_level_formatted ??
+                            Number(data || 0).toLocaleString("en-PH", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            });
+                        const unitLabel = row.unit ? ` ${row.unit}` : "";
+                        return `${formatted}${unitLabel}`.trim();
+                    }
+                    return data;
+                },
+            },
             {
                 data: "cost_price",
                 className: "dt-left",
@@ -236,10 +256,19 @@ $(document).ready(function () {
             const unit_price = request.unit_price;
             const unit = request.unit;
             let head = `<div class="alert alert-light-warning alert-dismissible fade show" role="alert">`;
-            let counts = `<p class="mb-0 ">Current Stock(s): ${request.stock_level}</p>`;
-            if (request.stock_level === 0) {
+            const stockRaw = Number(request.stock_level ?? 0);
+            const stockDisplay =
+                request.stock_display ||
+                (request.stock_level_formatted
+                    ? `${request.stock_level_formatted}${request.unit ? " " + request.unit : ""}`
+                    : Number(stockRaw || 0).toLocaleString("en-PH", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      }) + (request.unit ? " " + request.unit : ""));
+            let counts = `<p class="mb-0 ">Current Stock(s): ${stockDisplay}</p>`;
+            if (stockRaw === 0) {
                 head = `<div class="alert alert-light-danger alert-dismissible fade show" role="alert">`;
-                counts = `<p class="mb-0 ">${request.stock_level} Stock</p>`;
+                counts = `<p class="mb-0 ">${stockDisplay}</p>`;
             }
 
             const alertHtml = `

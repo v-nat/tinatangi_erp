@@ -214,23 +214,16 @@ class POSController extends Controller
                         }
 
                         $totalQuantityToDeduct = $quantityUsedPerProduct * $item['quantity'];
-                        $availableBaseStock = $inventoryItem->base_unit_stock_level ?? $inventoryItem->stock_level ?? 0;
+                        $availableBaseStock = $inventoryItem->getAvailableBaseUnits();
 
                         if ($availableBaseStock < $totalQuantityToDeduct) {
                             throw new \Exception("Insufficient stock for: " . optional($inventoryItem->itemss)->name);
                         }
 
-                        $oldBaseQuantity = $inventoryItem->base_unit_stock_level ?? $inventoryItem->stock_level;
-                        $oldQuantity = $inventoryItem->stock_level;
+                        $oldBaseQuantity = $availableBaseStock;
+                        $newBaseQuantity = $availableBaseStock - $totalQuantityToDeduct;
 
-                        if (! is_null($inventoryItem->base_unit_stock_level)) {
-                            $inventoryItem->base_unit_stock_level = max(
-                                0,
-                                $inventoryItem->base_unit_stock_level - $totalQuantityToDeduct
-                            );
-                        }
-
-                        $inventoryItem->stock_level = max(0, $inventoryItem->stock_level - $totalQuantityToDeduct);
+                        $inventoryItem->setBaseStockFromQuantity($newBaseQuantity);
                         $inventoryItem->save();
 
                         $affectedInventoryIds[] = $inventoryItem->id;

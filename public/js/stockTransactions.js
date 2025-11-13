@@ -108,7 +108,27 @@ $(document).ready(function () {
                 },
             },
             { data: "reference", className: "dt-left", width: "14%" },
-            { data: "quantity", className: "dt-left", width: "8%" },
+            {
+                data: "quantity",
+                className: "dt-left",
+                width: "8%",
+                render: function (data, type, row) {
+                    if (type === "display" || type === "filter") {
+                        if (row.quantity_display) {
+                            return row.quantity_display;
+                        }
+                        const formatted =
+                            row.quantity_formatted ??
+                            Number(data || 0).toLocaleString("en-PH", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            });
+                        const unitLabel = row.unit ? ` ${row.unit}` : "";
+                        return `${formatted}${unitLabel}`.trim();
+                    }
+                    return data;
+                },
+            },
             { data: "item", className: "dt-left", width: "22%" },
             { data: "receive", className: "dt-left", width: "22%" },
             {
