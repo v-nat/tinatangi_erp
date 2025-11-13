@@ -118,12 +118,27 @@ $(document).ready(function () {
                         typeof row.quantity === "number"
                             ? row.quantity
                             : Number(data || 0);
-                    const formatted =
-                        row.quantity_formatted ??
-                        Number(quantityValue || 0).toLocaleString("en-PH", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 4,
-                        });
+
+                    let formatted;
+
+                    if (row.quantity_formatted) {
+                        formatted = row.quantity_formatted;
+                    } else {
+                        const value = Number(quantityValue || 0);
+
+                        if (value > 0 && value < 0.01) {
+                            formatted = value.toLocaleString("en-PH", {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 4,
+                            });
+                        } else {
+                            formatted = value.toLocaleString("en-PH", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 4,
+                            });
+                        }
+                    }
+
                     const withUnit = row.unit
                         ? `${formatted} ${row.unit}`
                         : formatted;
