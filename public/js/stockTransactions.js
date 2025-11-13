@@ -108,11 +108,11 @@ $(document).ready(function () {
                     return formatToManilaTime(data);
                 },
             },
-            { data: "reference", className: "dt-left", width: "14%" },
+            { data: "reference", className: "dt-left", width: "10%" },
             {
                 data: "quantity",
                 className: "dt-left",
-                width: "8%",
+                width: "12%",
                 render: function (data, type, row) {
                     if (type === "display" || type === "filter") {
                         if (row.quantity_display) {
@@ -121,8 +121,8 @@ $(document).ready(function () {
                         const formatted =
                             row.quantity_formatted ??
                             Number(data || 0).toLocaleString("en-PH", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
+                                minimumFractionDigits: 6,
+                                maximumFractionDigits: 6,
                             });
                         const unitLabel = row.unit ? ` ${row.unit}` : "";
                         return `${formatted}${unitLabel}`.trim();
