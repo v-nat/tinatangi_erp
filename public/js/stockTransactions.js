@@ -104,7 +104,6 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "20%",
                 render: function (data) {
-                    console.log("Final raw data received by browser:", data);
                     return formatToManilaTime(data);
                 },
             },
@@ -116,28 +115,9 @@ $(document).ready(function () {
                 render: function (data, type, row) {
                     const quantityValue = Number(row.quantity || 0);
 
-                    let formatted;
-
-                    if (row.quantity_formatted) {
-                        formatted = row.quantity_formatted;
-                    } else {
-                        const value = quantityValue;
-                        if (value > 0 && value < 0.01) {
-                            formatted = value.toLocaleString("en-PH", {
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 10,
-                            });
-                        } else {
-                            formatted = value.toLocaleString("en-PH", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 4,
-                            });
-                        }
-                    }
-
                     const withUnit = row.unit
-                        ? `${formatted} ${row.unit}`
-                        : formatted;
+                        ? `${quantityValue} ${row.unit}`
+                        : quantityValue;
 
                     if (type === "display" || type === "filter") {
                         return withUnit;
