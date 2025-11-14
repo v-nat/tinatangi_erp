@@ -68,7 +68,7 @@ $(document).ready(function () {
                 });
         },
         initComplete: function () {
-            const column = this.api().column(5);
+            const column = this.api().column(3);
             const select = $("#category_filter");
 
             column
@@ -83,7 +83,7 @@ $(document).ready(function () {
                     }
                 });
 
-            const statusColumn = this.api().column(8);
+            const statusColumn = this.api().column(6);
             const statusSelect = $("#status_filter");
             const statusSet = new Set();
 
@@ -111,7 +111,7 @@ $(document).ready(function () {
         const selectedCategory = $(this).val();
 
         allItems
-            .column(5)
+            .column(3)
             .search(
                 selectedCategory ? "^" + selectedCategory + "$" : "",
                 true,
@@ -122,7 +122,7 @@ $(document).ready(function () {
 
     $("#status_filter").on("change", function () {
         const selectedStatus = $(this).val();
-        const statusColumn = allItems.column(8);
+        const statusColumn = allItems.column(6);
 
         statusColumn
             .search(
