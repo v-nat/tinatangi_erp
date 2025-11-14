@@ -50,3 +50,5 @@ class BestSellerController extends Controller
 }
 
 
+
+

@@ -967,6 +967,21 @@ $(document).ready(function () {
 });
 
 $(function () {
+    const RECEIPT_META = window.POS_RECEIPT_META || {
+        companyName: "Tinatangi Cafe",
+        branchName: "Tinatangi Cafe - Dasmariñas",
+        address: "Brgy 13 Jose Abad Santos Ave, Dasmariñas, Cavite 4114",
+        vatTin: "000-000-000-000",
+        accrNo: "000-00000000-00000",
+        permitNo: "0000-0000-000-00000",
+        serialNo: "000 0 000 000000",
+        contactNumber: "(+63) 915 796 8729",
+        hotline: "(+63) 960 216 4109",
+        email: "tinatangicafe@gmail.com",
+        website: "www.tinatangi.site",
+        vatRate: 0.12,
+    };
+
     let orderItems = [];
     let grandTotal = 0;
 
@@ -1110,47 +1125,175 @@ $(function () {
         });
     });
 
-    function generateReceipt(orderId, cash, change, cashierName) {
-        let itemsHtml = "";
-        orderItems.forEach((item) => {
-            itemsHtml += `
-                <tr>
-                    <td>${item.quantity}x ${item.name}</td>
-                    <td style="text-align: right;">${item.total_price}</td>
-                </tr>
-            `;
+    function formatCurrency(value) {
+        return (
+            "₱ " +
+            Number(value || 0)
+                .toFixed(2)
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        );
+    }
+
+    function formatDateTime(date) {
+        return date.toLocaleDateString("en-PH", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
         });
+    }
+
+    function formatTime(date) {
+        return date.toLocaleTimeString("en-PH", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    }
+
+    function generateReceipt(orderId, cash, change, cashierName) {
+        const now = new Date();
+        const guestCount = Math.max(orderItems.length, 1);
+        const vatBase = RECEIPT_META.vatRate
+            ? grandTotal / (1 + RECEIPT_META.vatRate)
+            : grandTotal;
+        const vatAmount = RECEIPT_META.vatRate ? grandTotal - vatBase : 0;
+
+        const itemsHtml = orderItems
+            .map(
+                (item) => `
+                    <tr>
+                        <td>${item.quantity} ${item.name}</td>
+                        <td class="text-end">${formatCurrency(
+                            parseFloat(item.total_price)
+                        )}</td>
+                    </tr>
+                `
+            )
+            .join("");
 
         const receiptHtml = `
-            <div style="width: 300px; font-family: monospace; font-size: 14px; color: #000; margin: 0 auto;">
-                <h3 style="text-align: center;">Tinatangi Cafe</h3>
-                <p style="text-align: center;">Brgy 13 Jose Abad Santos Ave, Dasmariñas, 4114 Cavite<br>Official Receipt</p>
+            <style>
+                #receipt-container .pos-receipt {
+                    width: 320px;
+                    margin: 0 auto;
+                    font-family: "Courier New", Courier, monospace;
+                    font-size: 13px;
+                    color: #000;
+                    padding: 12px 10px 24px;
+                }
+                #receipt-container .pos-receipt h2,
+                #receipt-container .pos-receipt h3,
+                #receipt-container .pos-receipt p {
+                    margin: 0;
+                    text-align: center;
+                }
+                #receipt-container .pos-receipt hr {
+                    border: none;
+                    border-top: 1px solid #000;
+                    margin: 8px 0;
+                }
+                #receipt-container .pos-receipt table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                #receipt-container .pos-receipt td {
+                    padding: 2px 0;
+                }
+                #receipt-container .text-end {
+                    text-align: right;
+                }
+                #receipt-container .meta-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    row-gap: 2px;
+                    column-gap: 8px;
+                }
+                #receipt-container .meta-grid span {
+                    display: block;
+                    text-align: left;
+                }
+                #receipt-container .section-heading {
+                    text-transform: uppercase;
+                    font-weight: bold;
+                    text-align: center;
+                    margin: 6px 0 4px;
+                }
+            </style>
+            <div class="pos-receipt">
+                <h3>${RECEIPT_META.companyName}</h3>
+                <p>${RECEIPT_META.branchName}</p>
+                <p>${RECEIPT_META.address}</p>
+                <p>VAT Reg TIN: ${RECEIPT_META.vatTin}</p>
+                <p>ACCR. NO.: ${RECEIPT_META.accrNo}</p>
+                <div class="meta-grid" style="margin-top:6px;">
+                    <span>Serial #: ${RECEIPT_META.serialNo}</span>
+                    <span>Permit #: ${RECEIPT_META.permitNo}</span>
+                    <span>Date: ${formatDateTime(now)}</span>
+                    <span>Time: ${formatTime(now)}</span>
+                </div>
                 <hr>
-                <p>
-                    Order ID: ${orderId}<br>
-                    Date: ${new Date().toLocaleString()}<br>
-                    Cashier: ${cashierName}
-                </p>
+                <div style="text-align:left;">
+                    <p>Cashier: ${cashierName}</p>
+                    <p>Check #: ${orderId}</p>
+                    <p>Guests: ${guestCount}</p>
+                    <p>Official Receipt #: ${orderId}</p>
+                </div>
                 <hr>
-                <table style="width: 100%;">
-                    <tbody>${itemsHtml}</tbody>
-                </table>
+                <div style="text-align:left;">
+                    <p class="section-heading">Customer Information</p>
+                    <p>Walk-in Customer</p>
+                    <p>${RECEIPT_META.branchName}</p>
+                </div>
                 <hr>
-                <table style="width: 100%;">
+                <p class="section-heading">Items on Ticket: ${
+                    orderItems.length
+                }</p>
+                <table>
                     <tbody>
-                        <tr><td>Total:</td><td style="text-align: right;">₱ ${grandTotal.toFixed(
-                            2
-                        )}</td></tr>
-                        <tr><td>Cash:</td><td style="text-align: right;">₱ ${cash.toFixed(
-                            2
-                        )}</td></tr>
-                        <tr><td>Change:</td><td style="text-align: right;">₱ ${change.toFixed(
-                            2
-                        )}</td></tr>
+                        ${itemsHtml}
                     </tbody>
                 </table>
                 <hr>
-                <p style="text-align: center;">Thank you, come again!</p>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Subtotal</td>
+                            <td class="text-end">${formatCurrency(vatBase)}</td>
+                        </tr>
+                        <tr>
+                            <td>VAT ${
+                                RECEIPT_META.vatRate
+                                    ? `(${(RECEIPT_META.vatRate * 100).toFixed(
+                                          0
+                                      )}%)`
+                                    : ""
+                            }</td>
+                            <td class="text-end">${formatCurrency(
+                                vatAmount
+                            )}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Amount Due</strong></td>
+                            <td class="text-end"><strong>${formatCurrency(
+                                grandTotal
+                            )}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Cash</td>
+                            <td class="text-end">${formatCurrency(cash)}</td>
+                        </tr>
+                        <tr>
+                            <td>Change</td>
+                            <td class="text-end">${formatCurrency(change)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr>
+                <p>Prices inclusive of 10% service charge</p>
+                <p>12% VAT Included</p>
+                <p>Thank you and please come again.</p>
+                <p>For feedback call ${RECEIPT_META.hotline}</p>
+                <p>Email: ${RECEIPT_META.email}</p>
+                <p>Visit us at ${RECEIPT_META.website}</p>
             </div>
         `;
 
