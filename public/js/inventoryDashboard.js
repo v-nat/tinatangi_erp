@@ -733,19 +733,25 @@ $(document).ready(function () {
             const category = request.category || "N/A";
             const item_name = request.item_name || "N/A";
             const unit_price = request.unit_price;
-            const unit = request.unit;
+            const unit =
+                request.original_unit ||
+                request.unit;
             let head = `<div class="alert alert-light-warning alert-dismissible fade show" role="alert">`;
-            const stockRaw = Number(request.stock_level ?? 0);
+            const stockRaw = Number(
+                request.original_stock_level ?? request.stock_level ?? 0
+            );
             const stockDisplay =
+                request.original_stock_display ||
                 request.stock_display ||
-                (request.stock_level_formatted
-                    ? `${request.stock_level_formatted}${
-                          request.unit ? " " + request.unit : ""
+                (request.original_stock_level_formatted ??
+                request.stock_level_formatted
+                    ? `${request.original_stock_level_formatted ?? request.stock_level_formatted}${
+                          unit ? " " + unit : ""
                       }`
                     : Number(stockRaw || 0).toLocaleString("en-PH", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                      }) + (request.unit ? " " + request.unit : ""));
+                      }) + (unit ? " " + unit : ""));
             let counts = `<p class="mb-0 ">Current Stock(s): ${stockDisplay}</p>`;
             if (stockRaw === 0) {
                 head = `<div class="alert alert-light-danger alert-dismissible fade show" role="alert">`;

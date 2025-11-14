@@ -272,25 +272,33 @@ class InventoryController extends Controller
             return response()->json([
                 'data' => $forRestock->map(function ($item) {
                     $displayQuantity = $item->getDisplayQuantity();
-                    // $baseQuantity = $item->getAvailableBaseUnits();
-                    // $unitLabel = $item->getDisplayUnitLabel();
+                    $baseQuantity = $item->getAvailableBaseUnits();
+                    $unitLabel = $item->getDisplayUnitLabel();
+
+                    $originalUnitModel = $item->unit ?? $item->unit()->first();
+                    $originalUnitLabel = $originalUnitModel?->abbreviation ?? $originalUnitModel?->name ?? '';
+                    $originalStockLevel = (float)($item->stock_level ?? 0);
+                    $originalStockFormatted = number_format($originalStockLevel, 2);
+                    $originalStockDisplay = trim($originalStockFormatted . ($originalUnitLabel ? ' ' . $originalUnitLabel : ''));
+
                     return [
                         'id'                => $item->id,
                         'sku'               => $item->sku,
                         'item_name'         => optional($item->itemss)->name,
                         'item_id'           => $item->item_id,
                         'category'          => optional($item->category)->name,
-                        // 'unit'              => $unitLabel,
-                        // 'stock_level'       => $displayQuantity,
-                        'unit'              => $displayQuantity,
-                        'stock_level'       => (float)$item->stock_level,
-                        // 'stock_level_base'  => $displayQuantity,
+                        'unit'              => $unitLabel,
+                        'stock_level'       => $displayQuantity,
+                        'stock_level_base'  => $baseQuantity,
                         'stock_level_formatted' => $item->formatStockQuantity(),
                         'stock_display'     => $item->formatStockDisplay(),
                         'cost_price'        => (float)$item->cost_price,
                         'status'            => Status::getStatusText($item->status),
-
                         'unit_price'        => optional($item->itemss)->unit_price,
+                        'original_unit'     => $originalUnitLabel,
+                        'original_stock_level' => $originalStockLevel,
+                        'original_stock_level_formatted' => $originalStockFormatted,
+                        'original_stock_display' => $originalStockDisplay,
                     ];
                 })
             ]);
