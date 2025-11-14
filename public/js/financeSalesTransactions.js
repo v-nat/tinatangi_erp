@@ -189,6 +189,7 @@ $(document).ready(function () {
 
         Swal.fire({
             title: action === "approve" ? "Approve reports?" : "Reject reports?",
+            text: action === "approve" ? "Are you sure you want to approve?" : "Are you sure you want to reject?",
             icon: "question",
             input: action === "reject" ? "textarea" : "hidden",
             inputPlaceholder: "Provide remarks (optional)",
