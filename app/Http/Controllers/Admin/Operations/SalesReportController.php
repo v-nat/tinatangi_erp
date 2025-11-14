@@ -17,6 +17,9 @@ class SalesReportController extends Controller
 {
     public function index()
     {
+        if (!AuthController::checkAuthorization()) {
+            return redirect()->back()->with('error', "You have no access to this page.");
+        }
         return view('pages.admin.operations.sales-reporting');
     }
 
@@ -83,13 +86,6 @@ class SalesReportController extends Controller
 
     public function store(StoreSalesReportRequest $request): JsonResponse
     {
-        if (!AuthController::checkAuthorization()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You are not authorized for this action.'
-            ], 401);
-        }
-
         $orderIds = $request->input('order_ids', []);
         $remarks = $request->input('remarks');
 
