@@ -14,13 +14,13 @@ class Attendance extends Seeder
      */
     public function run(): void
     {
-        $employeeId = 6;
+        $employeeId = 7;
 
         $startDate = Carbon::create(2025, 11, 1);
 
         $records = [];
 
-        for ($i = 0; $i < 22; $i++) {
+        for ($i = 0; $i < 13; $i++) {
             $date = $startDate->copy()->addDays($i)->toDateString();
 
             $records[] = [
