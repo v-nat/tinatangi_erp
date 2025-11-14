@@ -137,6 +137,41 @@ class InventoryController extends Controller
     public function getAllItems()
     {
         try {
+            $inventoryItems = InventoryItem::get(['id', 'stock_level', 'status']);
+
+            $lowStockCount = 0;
+
+            $outOfStockIds = [];
+            $lowStockIds = [];
+            foreach ($inventoryItems as $item) {
+                $totalStocks = StockTransaction::where('reference_id', $item->id)->value('quantity');
+
+                $totalStocks = $totalStocks ?? 1;
+
+                $stockMargin = $totalStocks * 0.30;
+
+                if ($item->stock_level <= 0) {
+                    if ($item->status != 26 && $item->status != 27) {
+                        $outOfStockIds[] = $item->id;
+                    }
+                } elseif ($item->stock_level <= $stockMargin) {
+                    if ($item->status != 25 && $item->status != 27) {
+                        $lowStockIds[] = $item->id;
+                    }
+                    $lowStockCount++;
+                }
+            }
+
+            if (!empty($outOfStockIds)) {
+                InventoryItem::whereIn('id', $outOfStockIds)->update(['status' => 26]);
+            }
+
+            if (!empty($lowStockIds)) {
+                InventoryItem::whereIn('id', $lowStockIds)
+                    ->where('status', '!=', 26)
+                    ->update(['status' => 25]);
+            }
+
             $items = InventoryItem::with(['itemss', 'category', 'unit', 'baseUnit', 'itemss.inventoryLocation', 'itemStatus'])->get();
 
             return response()->json([

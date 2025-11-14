@@ -27,7 +27,8 @@ class EmployeeController extends Controller
 {
     public function manage()
     {
-        $departments = Department::whereNot('name', 'Administrator')->get();
+        
+        $departments = Department::whereNot('name', 'Administration')->whereNot('name', 'Executives')->get();
         $data = ['address' => '', 'first_name' => '', 'middle_name' => '', 'last_name' => '', 'email' => '', 'phone_number' => '', 'postal_code' => '', 'gender' => '', 'birth_date' => '', 'age' => '', 'citizenship' => '', 'department' => '', 'position' => '', 'position_id' => '', 'level' => '', 'supervisor' => '', 'supervisor_id' => '', 'sss' => '', 'pagibig' => '', 'philhealth' => '', 'salary' => '',];
         $mode = 'add';
         $title = 'Add';
