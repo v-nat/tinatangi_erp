@@ -798,9 +798,7 @@ $(document).ready(function () {
 
             totalElement.text("₱ " + parseFloat(newGrandTotal).toFixed(2));
         }
-    });
-
-    $(function () {
+        
         $(document).on("click", ".showTransactionsModal", function (e) {
             $("#orderTransactions").modal("show");
             loadTodayOrdersData();
@@ -962,9 +960,7 @@ $(document).ready(function () {
             });
         }
     });
-});
 
-$(function () {
     const RECEIPT_META = window.POS_RECEIPT_META || {
         companyName: "Tinatangi Cafe",
         branchName: "Tinatangi Cafe - Dasmariñas",
