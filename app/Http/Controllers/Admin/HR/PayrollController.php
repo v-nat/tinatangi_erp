@@ -404,6 +404,38 @@ class PayrollController extends Controller
 
     protected function initialComputation($employee, $start_date, $end_date, PayrollSettings $payrollSettings)
     {
+        $hasAttendance = Attendance::where('employee_id', $employee->id)
+            ->whereBetween('date', [$start_date, $end_date])
+            ->exists();
+
+        if (!$hasAttendance) {
+            return [
+                'days_present' => 0,
+                'total_hours_worked' => 0,
+                'regular_hour_pay' => 0,
+                'overtime_pay' => 0,
+                'leave_pay' => 0,
+                'days_absent' => 0,
+                'days_absent_deduction' => 0,
+                'tardiness_deduction' => 0,
+                'mandatory_deduction' => ['sss' => 0, 'philhealth' => 0, 'pagibig' => 0, 'total' => 0],
+                'deduction' => 0,
+                'sss' => 0,
+                'philhealth' => 0,
+                'pagibig' => 0,
+                'per_hour_rate' => $this->ratePerHour($employee->base_salary),
+                'daily_rate' => 0,
+                'working_days' => $this->getTotalWorkingDays($start_date, $end_date),
+                'tardiness_total' => 0,
+                'employee_id' => $employee->id,
+                'month' => Carbon::parse($start_date)->format('m'),
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+                'payroll_date' => now(),
+                'status' => 11,
+            ];
+        }
+
         $per_hour_rate = $this->ratePerHour($employee->base_salary);
         $working_days = $this->getTotalWorkingDays($start_date, $end_date);
         $daily_rate = $employee->base_salary / $working_days;
