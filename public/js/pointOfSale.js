@@ -1095,6 +1095,7 @@ $(document).ready(function () {
                         text: "Order completed! ID: " + response.order_id,
                         icon: "success",
                     });
+                    renderActiveCategoryProducts();
                     loadPosCategories();
                     const cashierName =
                         $("#cashierNameDisplay").text().trim() || "N/A";
