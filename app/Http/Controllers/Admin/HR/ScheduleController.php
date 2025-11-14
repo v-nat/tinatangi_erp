@@ -169,7 +169,7 @@ class ScheduleController extends Controller
         $validated = $this->validateSchedule($request);
 
         $days = collect($validated['days_of_week'])
-            ->map(fn($day) => (int) $day)
+            ->map(fn($day) => (string) (int) $day)
             ->unique()
             ->sort()
             ->values()
