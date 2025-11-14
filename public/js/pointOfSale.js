@@ -485,7 +485,6 @@ $(document).ready(function () {
             return;
         }
 
-
         const id = clickedColumn.data("id");
         const availableServings =
             parseInt(clickedColumn.data("available-servings"), 10) || 0;
@@ -1042,8 +1041,6 @@ $(function () {
                 .removeClass("d-none");
             $("#printReceiptBtn").addClass("d-none");
             $("#orderFinalization").modal("show");
-            loadTodayOrdersData();
-            loadPosCategories();
         } else {
             Toast.fire({
                 text: "The order is empty or contains invalid items. Please add products.",
@@ -1109,6 +1106,8 @@ $(function () {
                 $("#confirmSubmitOrder").addClass("d-none");
                 $("#orderList").empty();
                 $("#order-total-amount").text("₱ 0.00");
+                loadTodayOrdersData();
+                loadPosCategories();
 
                 const activeTab = $(".nav-pills .nav-link.active");
                 if (activeTab.length > 0) {
