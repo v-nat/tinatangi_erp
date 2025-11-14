@@ -104,24 +104,8 @@ class InventoryController extends Controller
     public function getRecentItems()
     {
         try {
-            // $items = InventoryItem::with(['itemss', 'category', 'unit', 'baseUnit', 'itemStatus'])
-            //     ->latest()
-            //     ->take(10)
-            //     ->get();
-
             $items = InventoryItem::with(['itemss', 'category', 'unit', 'baseUnit', 'itemStatus'])
-                ->join('stock_transactions', function ($join) {
-                    $join->on('stock_transactions.reference_id', '=', 'inventory_items.id')
-
-                        ->where('stock_transactions.reference_type', 'App\Models\InventoryItem')
-
-                        ->where('stock_transactions.transaction_type', 'IN');
-                })
-                ->select('inventory_items.*')
-
-                ->orderBy('stock_transactions.transaction_date', 'desc')
-
-                ->distinct()
+                ->latest()
                 ->take(10)
                 ->get();
 
