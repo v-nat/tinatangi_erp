@@ -106,6 +106,7 @@ class InventoryController extends Controller
         try {
             $items = InventoryItem::with(['itemss', 'category', 'unit', 'baseUnit', 'itemStatus'])
                 ->latest()
+                ->where 
                 ->take(10)
                 ->get();
 

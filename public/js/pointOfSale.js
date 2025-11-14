@@ -475,7 +475,6 @@ $(document).ready(function () {
     $(document).on("click", ".col", function () {
         const clickedColumn = $(this);
 
-        // MODIFICATION: Check if the card is disabled (out of stock)
         if (clickedColumn.data("disabled") === true) {
             Toast.fire({
                 icon: "error",
@@ -483,9 +482,9 @@ $(document).ready(function () {
                 text: "This product is currently unavailable.",
                 timer: 1500,
             });
-            return; // Stop execution
+            return;
         }
-        // END MODIFICATION
+
 
         const id = clickedColumn.data("id");
         const availableServings =
@@ -1043,6 +1042,8 @@ $(function () {
                 .removeClass("d-none");
             $("#printReceiptBtn").addClass("d-none");
             $("#orderFinalization").modal("show");
+            loadTodayOrdersData();
+            loadPosCategories();
         } else {
             Toast.fire({
                 text: "The order is empty or contains invalid items. Please add products.",
