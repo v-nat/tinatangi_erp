@@ -1106,8 +1106,6 @@ $(function () {
                 $("#confirmSubmitOrder").addClass("d-none");
                 $("#orderList").empty();
                 $("#order-total-amount").text("₱ 0.00");
-                loadTodayOrdersData();
-                loadPosCategories();
 
                 const activeTab = $(".nav-pills .nav-link.active");
                 if (activeTab.length > 0) {
@@ -1120,6 +1118,7 @@ $(function () {
                 Toast.fire("Error: " + xhr.responseJSON.message);
             },
             complete: function () {
+                window.location.reload();
                 $("#LoadingScreen").fadeOut(200);
             },
         });
