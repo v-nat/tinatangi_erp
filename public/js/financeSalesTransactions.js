@@ -198,7 +198,7 @@ $(document).ready(function () {
             inputValue: "",
             showCancelButton: true,
             confirmButtonText: action === "approve" ? "Approve" : "Reject",
-            confirmButtonColor: action === "approve" ? "#198754" : "#dc3545",
+            confirmButtonColor: action === "approve" ? "#3085d6" : "#d33",
         }).then((result) => {
             if (!result.isConfirmed) {
                 return;
