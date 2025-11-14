@@ -1091,7 +1091,7 @@ $(function () {
                     text: "Order completed! ID: " + response.order_id,
                     icon: "success",
                 });
-
+                renderActiveCategoryProducts();
                 const cashierName =
                     $("#cashierNameDisplay").text().trim() || "N/A";
                 generateReceipt(
@@ -1118,7 +1118,6 @@ $(function () {
                 Toast.fire("Error: " + xhr.responseJSON.message);
             },
             complete: function () {
-                window.location.reload();
                 $("#LoadingScreen").fadeOut(200);
             },
         });
