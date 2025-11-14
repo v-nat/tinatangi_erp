@@ -160,7 +160,7 @@ class AttendanceController extends Controller
                 ->whereJsonContains('days_of_week', (string) $todayDayOfWeek)
                 ->first();
 
-            return response()->json(['success' => false, 'message' => $schedule], 422);
+            // return response()->json(['success' => false, 'message' => $schedule], 422);
 
             if (!$schedule) {
                 return response()->json(['success' => false, 'message' => 'You do not have a schedule for today.'], 422);
