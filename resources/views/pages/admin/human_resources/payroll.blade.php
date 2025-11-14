@@ -59,7 +59,6 @@
                                 <th width="30px">
                                     <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
                                 </th>
-                                <th>#</th>
                                 <th>Employee</th>
                                 <th>Department</th>
                                 <th>Position</th>
