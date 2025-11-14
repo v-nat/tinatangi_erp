@@ -115,6 +115,7 @@
             '#crm-average-rating',
             '#exec-best-sellers-weekly-range',
             '#exec-best-sellers-monthly-range',
+            '#exec-forecast-range',
         ];
 
         $.each(fields, function (_, selector) {
@@ -133,6 +134,12 @@
         setHtmlMessage('#chart-crm-average-rating', 'Unable to load chart.');
         setHtmlMessage('#chart-exec-best-sellers-weekly', 'Unable to load chart.');
         setHtmlMessage('#chart-exec-best-sellers-monthly', 'Unable to load chart.');
+        setHtmlMessage('#chart-exec-best-sellers-forecast', 'Unable to load chart.');
+
+        var $forecastContext = $('#exec-forecast-context');
+        if ($forecastContext.length) {
+            $forecastContext.text('Unable to load forecast.');
+        }
     }
 
     var chartsInstances = {};
@@ -398,6 +405,100 @@
         }
 
         renderActiveBestSellerChart();
+
+        var bestSellerForecast = chartData && chartData.bestSellerForecast;
+        var $forecastRange = $('#exec-forecast-range');
+        var $forecastContext = $('#exec-forecast-context');
+        var defaultForecastContext = 'Projected revenue for the next 7 days based on current best sellers.';
+
+        if ($forecastRange.length) {
+            var forecastRangeText =
+                (bestSellerForecast && (bestSellerForecast.upcoming_range || bestSellerForecast.label)) ||
+                'No data yet';
+            $forecastRange.text(forecastRangeText);
+        }
+
+        if ($forecastContext.length) {
+            if (
+                bestSellerForecast &&
+                bestSellerForecast.metadata &&
+                typeof bestSellerForecast.metadata.averageDailyRevenue !== 'undefined'
+            ) {
+                $forecastContext.text(
+                    'Based on ' +
+                        formatCurrency(bestSellerForecast.metadata.averageDailyRevenue) +
+                        " average daily revenue from this week's best sellers."
+                );
+            } else {
+                $forecastContext.text(defaultForecastContext);
+            }
+        }
+
+        if (
+            bestSellerForecast &&
+            bestSellerForecast.labels &&
+            hasSeriesData(bestSellerForecast.series)
+        ) {
+            var dashArray = bestSellerForecast.dashArray || [];
+            var seriesLength = bestSellerForecast.series.length;
+            if (dashArray.length < seriesLength) {
+                var diff = seriesLength - dashArray.length;
+                for (var da = 0; da < diff; da += 1) {
+                    dashArray.push(0);
+                }
+            }
+
+            renderChart('#chart-exec-best-sellers-forecast', {
+                chart: { type: 'line', height: 300, toolbar: { show: false } },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3,
+                    dashArray: dashArray,
+                },
+                markers: {
+                    size: 4,
+                    strokeWidth: 2,
+                },
+                dataLabels: { enabled: false },
+                series: bestSellerForecast.series,
+                xaxis: {
+                    categories: bestSellerForecast.labels,
+                    labels: {
+                        rotate: -45,
+                        style: { fontSize: '11px' },
+                    },
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (val) {
+                            return formatCurrency(val);
+                        },
+                    },
+                    title: {
+                        text: 'Projected Revenue (₱)',
+                    },
+                },
+                tooltip: {
+                    shared: true,
+                    intersect: false,
+                    y: {
+                        formatter: function (val) {
+                            return formatCurrency(val);
+                        },
+                    },
+                },
+                legend: {
+                    position: 'top',
+                },
+                colors: ['#00b8a9', '#868e96', '#5f3dc4'],
+            });
+        } else {
+            renderChart(
+                '#chart-exec-best-sellers-forecast',
+                null,
+                'Not enough data to generate a forecast.'
+            );
+        }
 
         var crm = chartData && chartData.crmAverageRating;
         if (crm && !isNil(crm.percentage)) {

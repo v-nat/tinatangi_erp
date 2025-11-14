@@ -136,6 +136,24 @@
             </div>
         </div>
 
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card card-surface border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 d-flex flex-wrap gap-3 justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-0">Projected Sales (Next Week)</h5>
+                            <small class="text-muted">Forecast based on this week&apos;s best sellers</small>
+                        </div>
+                        <span class="text-muted small" id="exec-forecast-range">Loading...</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3" id="exec-forecast-context">Loading forecast insights...</p>
+                        <div id="chart-exec-best-sellers-forecast" style="min-height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row g-4">
             <div class="col-12 col-xl-6">
                 <div class="card card-surface border-0 shadow-sm h-100">

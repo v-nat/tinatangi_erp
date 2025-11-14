@@ -282,6 +282,8 @@ class ExecutivesController extends Controller
             'yearly' => $this->transformBestSellerTrendChart($yearlyBestSellers, $yearlyTrend),
         ];
 
+        $bestSellerForecast = $this->bestSellerService->getUpcomingWeekForecast();
+
         $charts = [
             'operationsTopProducts' => [
                 'labels' => $operationsTopProducts->pluck('name')->all(),
@@ -326,6 +328,7 @@ class ExecutivesController extends Controller
                 ],
             ],
             'bestSellers' => $bestSellerCharts,
+            'bestSellerForecast' => $bestSellerForecast,
         ];
 
         $operations['topProducts'] = $operationsTopProducts->toArray();

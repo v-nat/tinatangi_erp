@@ -189,6 +189,73 @@ class BestSellerService
     }
 
     /**
+     * Build a simple forecast for the upcoming week using current-week sales totals.
+     */
+    public function getUpcomingWeekForecast(): array
+    {
+        $currentWeekStart = Carbon::now()->copy()->startOfWeek();
+        $currentWeekEnd = $currentWeekStart->copy()->endOfWeek();
+        $nextWeekStart = $currentWeekStart->copy()->addWeek();
+        $nextWeekEnd = $currentWeekEnd->copy()->addWeek();
+
+        $weekStructure = $this->buildWeekStructure($nextWeekStart);
+        $weekdayKeys = array_column($weekStructure, 'key');
+
+        $currentWeekValues = array_fill_keys($weekdayKeys, 0.0);
+
+        $rows = $this->baseOrderItemQuery($currentWeekStart, $currentWeekEnd)
+            ->select(
+                DB::raw('DATE(orders.created_at) as sale_date'),
+                DB::raw('SUM(order_items.quantity * order_items.unit_price) as total_revenue')
+            )
+            ->groupBy(DB::raw('DATE(orders.created_at)'))
+            ->get();
+
+        foreach ($rows as $row) {
+            $weekday = Carbon::parse($row->sale_date)->format('D');
+            if (array_key_exists($weekday, $currentWeekValues)) {
+                $currentWeekValues[$weekday] += round((float) $row->total_revenue, 2);
+            }
+        }
+
+        $totalRevenue = array_sum($currentWeekValues);
+        $daysWithSales = count(array_filter($currentWeekValues, fn($value) => $value > 0));
+        $divisor = $daysWithSales > 0 ? $daysWithSales : count($currentWeekValues);
+        $averageDailyRevenue = $divisor > 0 ? $totalRevenue / $divisor : 0.0;
+
+        $forecastValues = [];
+        foreach ($weekdayKeys as $weekday) {
+            $historical = $currentWeekValues[$weekday] ?? 0.0;
+            $baseLine = $historical > 0 ? $historical : $averageDailyRevenue;
+
+            // Apply a modest uplift to account for potential growth.
+            $forecastValues[] = round($baseLine * 1.05, 2);
+        }
+
+        return [
+            'label' => $this->formatRangeLabel($nextWeekStart, $nextWeekEnd),
+            'current_range' => $this->formatRangeLabel($currentWeekStart, $currentWeekEnd),
+            'upcoming_range' => $this->formatRangeLabel($nextWeekStart, $nextWeekEnd),
+            'labels' => array_column($weekStructure, 'label'),
+            'series' => [
+                [
+                    'name' => 'Forecast (Next Week)',
+                    'data' => $forecastValues,
+                ],
+                [
+                    'name' => 'Current Week (Actual)',
+                    'data' => array_values($currentWeekValues),
+                ],
+            ],
+            'dashArray' => [0, 8],
+            'metadata' => [
+                'averageDailyRevenue' => round($averageDailyRevenue, 2),
+                'totalCurrentWeekRevenue' => round($totalRevenue, 2),
+            ],
+        ];
+    }
+
+    /**
      * Ensure the requested limit stays within acceptable bounds.
      */
     protected function normalizeLimit(?int $limit): int
@@ -344,6 +411,32 @@ class BestSellerService
         }
 
         return $buckets;
+    }
+
+    /**
+     * Build the weekday structure (Mon-Sun) for a given week starting point.
+     */
+    protected function buildWeekStructure(Carbon $weekStart): array
+    {
+        $structure = [];
+        $cursor = $weekStart->copy()->startOfDay();
+        $weekEnd = $weekStart->copy()->endOfWeek();
+
+        while ($cursor <= $weekEnd) {
+            $structure[] = [
+                'key' => $cursor->format('D'),
+                'date' => $cursor->toDateString(),
+                'label' => sprintf(
+                    '%s (%s)',
+                    $cursor->format('M d'),
+                    $cursor->format('D')
+                ),
+            ];
+
+            $cursor->addDay();
+        }
+
+        return $structure;
     }
 
     /**
