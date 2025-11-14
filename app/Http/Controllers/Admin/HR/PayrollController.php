@@ -268,7 +268,7 @@ class PayrollController extends Controller
                 } else if (auth('')->user()->id == $payroll->employee_id || !AuthController::checkAuthorization()) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'You are not authorized for this action.'
+                        'message' => 'You are not authorized for this action. you cannot release your own payroll, uncheck your own payroll to proceed.'
                     ], 401);
                 }
             }
