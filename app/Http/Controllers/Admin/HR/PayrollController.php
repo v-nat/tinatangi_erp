@@ -229,6 +229,59 @@ class PayrollController extends Controller
         }
     }
 
+    public function batchReleasePayroll(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            if (!AuthController::checkAuthorization()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized for this action.'
+                ], 401);
+            }
+
+            $request->validate([
+                'ids' => 'required|array',
+                'ids.*' => 'required|integer|exists:payrolls,id'
+            ]);
+
+            $ids = $request->ids;
+            $payrolls = Payroll::whereIn('id', $ids)
+                ->where('status', 13)
+                ->get();
+
+            if ($payrolls->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No approved payrolls found to release.'
+                ], 400);
+            }
+
+            $releasedCount = 0;
+            foreach ($payrolls as $payroll) {
+                if (auth('')->user()->id != $payroll->employee_id) {
+                    $payroll->remarks = 'payroll released';
+                    $payroll->status = 15;
+                    $payroll->save();
+                    $releasedCount++;
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully released {$releasedCount} payroll(s)!"
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function getMonthString($month)
     {
         switch ($month) {

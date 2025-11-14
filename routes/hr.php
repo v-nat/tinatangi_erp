@@ -99,6 +99,7 @@ Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(fun
     Route::get('/payroll/list', [PayrollController::class, 'getPayrollList']);
     Route::get('/payroll/view/{id}', [PayrollController::class, 'getPayrollview']);
     Route::put('/payroll/release/{id}', [PayrollController::class, 'releasePayroll']);
+    Route::put('/payroll/batch-release', [PayrollController::class, 'batchReleasePayroll']);
     Route::post('/payroll/generate', [PayrollController::class, 'generatePayroll'])->name('hr.payroll.generate');
     Route::post('/payroll/batch-generate', [PayrollController::class, 'generateBatchPayroll']);
 });

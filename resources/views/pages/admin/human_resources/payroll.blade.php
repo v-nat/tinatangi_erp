@@ -41,6 +41,9 @@
                             <option value="">All</option>
                         </select>
                     </div>
+                    <button class="btn btn-success btn-sm" id="btn-batch-release" style="display: none;">
+                        <i class="fa-solid fa-check-double"></i> Batch Release
+                    </button>
                     <button class="btn btn-outline-primary btn-sm" id="btn-refresh-payrolls">
                         <i class="fa-solid fa-rotate"></i> Refresh
                     </button>
@@ -53,6 +56,9 @@
                         style="width:100% !important; table-layout:fixed">
                         <thead>
                             <tr>
+                                <th width="30px">
+                                    <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
+                                </th>
                                 <th>#</th>
                                 <th>Employee</th>
                                 <th>Department</th>

@@ -340,6 +340,18 @@ $(document).ready(function () {
         columns: [
             {
                 data: null,
+                render: function (data, type, row) {
+                    if (row.status == '<span class="badge bg-success">Approved</span>') {
+                        return `<input type="checkbox" class="form-check-input payroll-checkbox" value="${row.id}" data-status="${row.status}">`;
+                    }
+                    return '';
+                },
+                className: "text-center",
+                width: "30px",
+                orderable: false,
+            },
+            {
+                data: null,
                 render: function (data, type, row, meta) {
                     return meta.row + 1;
                 },
@@ -469,7 +481,7 @@ $(document).ready(function () {
             },
         ],
         initComplete: function () {
-            const departmentColumn = this.api().column(2);
+            const departmentColumn = this.api().column(3);
             const departmentSelect = $("#departmentFilter");
             departmentColumn
                 .data()
@@ -483,7 +495,7 @@ $(document).ready(function () {
                     }
                 });
 
-            const periodColumn = this.api().column(4);
+            const periodColumn = this.api().column(5);
             const periodSelect = $("#periodFilter");
             periodColumn
                 .data()
@@ -500,13 +512,16 @@ $(document).ready(function () {
     });
 
     $("#btn-refresh-payrolls").on("click", function () {
+        $("#selectAllCheckbox").prop("checked", false);
+        $(".payroll-checkbox").prop("checked", false);
+        updateBatchReleaseButton();
         table.ajax.reload(null, false);
     });
 
     $("#departmentFilter").on("change", function () {
         const selectedDepartment = $(this).val();
         table
-            .column(2)
+            .column(3)
             .search(
                 selectedDepartment ? "^" + selectedDepartment + "$" : "",
                 true,
@@ -518,13 +533,105 @@ $(document).ready(function () {
     $("#periodFilter").on("change", function () {
         const selectedPeriod = $(this).val();
         table
-            .column(4)
+            .column(5)
             .search(
                 selectedPeriod ? "^" + selectedPeriod + "$" : "",
                 true,
                 false
             )
             .draw();
+    });
+
+    $("#selectAllCheckbox").on("click", function () {
+        const isChecked = $(this).is(":checked");
+        $(".payroll-checkbox").prop("checked", isChecked);
+        updateBatchReleaseButton();
+    });
+
+    $(document).on("change", ".payroll-checkbox", function () {
+        const totalCheckboxes = $(".payroll-checkbox").length;
+        const checkedCheckboxes = $(".payroll-checkbox:checked").length;
+        $("#selectAllCheckbox").prop("checked", totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes);
+        updateBatchReleaseButton();
+    });
+
+    function updateBatchReleaseButton() {
+        const checkedCount = $(".payroll-checkbox:checked").length;
+        if (checkedCount > 0) {
+            $("#btn-batch-release").show();
+        } else {
+            $("#btn-batch-release").hide();
+        }
+    }
+
+    $("#btn-batch-release").on("click", function (e) {
+        e.preventDefault();
+        const selectedIds = $(".payroll-checkbox:checked")
+            .map(function () {
+                return $(this).val();
+            })
+            .get();
+
+        if (selectedIds.length === 0) {
+            Toast.fire("Error", "Please select at least one payroll to release.", "error");
+            return;
+        }
+
+        Swal.fire({
+            title: "Batch Release Payroll?",
+            html: `You are about to release <b>${selectedIds.length}</b> payroll(s). This action cannot be undone.`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirm!",
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+            $("#LoadingScreen").fadeIn(200);
+            $.ajax({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                },
+                url: `/human-resources/payroll/batch-release`,
+                type: "PUT",
+                data: {
+                    ids: selectedIds,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $("#LoadingScreen").fadeOut(200);
+                        $("#selectAllCheckbox").prop("checked", false);
+                        $(".payroll-checkbox").prop("checked", false);
+                        updateBatchReleaseButton();
+                        reloadTable("payrollsTable");
+                        Toast.fire({
+                            text: response.message,
+                            icon: "success",
+                        });
+                    } else {
+                        $("#LoadingScreen").fadeOut(200);
+                        Toast.fire("Error", response.message, "error");
+                    }
+                },
+                error: function (xhr) {
+                    $("#LoadingScreen").fadeOut(200);
+                    if (xhr.responseJSON?.errors) {
+                        let errorMessages = Object.values(xhr.responseJSON.errors)
+                            .flat()
+                            .join("\n");
+                        Toast.fire("Validation Error", errorMessages, "error");
+                    } else {
+                        Toast.fire(
+                            "Error",
+                            xhr.responseJSON?.message || "Something went wrong",
+                            "error"
+                        );
+                    }
+                },
+            });
+        });
     });
 
     $(document).on("click", ".btn-view", function () {
