@@ -798,7 +798,9 @@ $(document).ready(function () {
 
             totalElement.text("₱ " + parseFloat(newGrandTotal).toFixed(2));
         }
-        
+    });
+
+    $(function () {
         $(document).on("click", ".showTransactionsModal", function (e) {
             $("#orderTransactions").modal("show");
             loadTodayOrdersData();
@@ -960,200 +962,206 @@ $(document).ready(function () {
             });
         }
     });
-
-    const RECEIPT_META = window.POS_RECEIPT_META || {
-        companyName: "Tinatangi Cafe",
-        branchName: "Tinatangi Cafe - Dasmariñas",
-        address: "Brgy 13 Jose Abad Santos Ave, Dasmariñas, Cavite 4114",
-        vatTin: "000-000-000-000",
-        accrNo: "000-00000000-00000",
-        permitNo: "0000-0000-000-00000",
-        serialNo: "000 0 000 000000",
-        contactNumber: "(+63) 915 796 8729",
-        hotline: "(+63) 960 216 4109",
-        email: "tinatangicafe@gmail.com",
-        website: "www.tinatangi.site",
-        vatRate: 0.12,
-    };
-
-    let orderItems = [];
-    let grandTotal = 0;
-
-    $(document).on("click", "#submit-order-btn", function (e) {
-        e.preventDefault();
-        orderItems = [];
-        let isValid = true;
-
-        $("#orderList")
-            .find(".order-item-row")
-            .each(function () {
-                const $itemRow = $(this);
-                const productId = $itemRow.find(".prod-name").data("id");
-                const productName = $itemRow.find(".prod-name").text().trim();
-                const quantity =
-                    parseInt($itemRow.find(".qnty").text().trim()) || 0;
-                const itemPriceText = $itemRow
-                    .find(".prod-price")
-                    .text()
-                    .trim();
-                const itemTotalPrice =
-                    parseFloat(itemPriceText.replace(/[^0-9.]/g, "")) || 0;
-                const unitPrice = quantity > 0 ? itemTotalPrice / quantity : 0;
-
-                if (quantity === 0 || productId === null) {
-                    isValid = false;
-                    return false;
-                }
-
-                orderItems.push({
-                    product_id: productId,
-                    name: productName,
-                    quantity: quantity,
-                    unit_price: parseFloat(unitPrice).toFixed(2),
-                    total_price: parseFloat(itemTotalPrice).toFixed(2),
-                });
-            });
-
-        grandTotal =
-            parseFloat(
-                $("#order-total-amount")
-                    .text()
-                    .replace(/[^0-9.]/g, "")
-            ) || 0;
-
-        if (isValid && orderItems.length > 0) {
-            const $summaryContainer = $("#orderSummaryList");
-            $summaryContainer.empty();
-            orderItems.forEach((item) => {
-                const itemHtml = `<div class="d-flex justify-content-between"><span>${item.quantity}x ${item.name}</span><span>₱ ${item.total_price}</span></div>`;
-                $summaryContainer.append(itemHtml);
-            });
-
-            $("#modalGrandTotal").text("₱ " + grandTotal.toFixed(2));
-            $("#cashReceivedInput").val("");
-            $("#modalChange").text("₱ 0.00");
-            $("#confirmSubmitOrder")
-                .prop("disabled", true)
-                .removeClass("d-none");
-            $("#printReceiptBtn").addClass("d-none");
-            $("#orderFinalization").modal("show");
-        } else {
-            Toast.fire({
-                text: "The order is empty or contains invalid items. Please add products.",
-                icon: "warning",
-                timer: 2000,
-            });
-        }
-    });
-
-    $("#cashReceivedInput").on("keyup input", function () {
-        const cashReceived = parseFloat($(this).val()) || 0;
-        const change = cashReceived - grandTotal;
-
-        if (cashReceived >= grandTotal) {
-            $("#modalChange").text("₱ " + change.toFixed(2));
-            $("#confirmSubmitOrder").prop("disabled", false);
-        } else {
-            $("#modalChange").text("₱ 0.00");
-            $("#confirmSubmitOrder").prop("disabled", true);
-        }
-    });
-
-    $("#finalizeOrderForm").on("submit", function (e) {
-        e.preventDefault();
-        $("#LoadingScreen").fadeIn(200);
-
-        const orderType = $("#order_type_input").val();
-        const cashReceived = parseFloat($("#cashReceivedInput").val()) || 0;
-        const changeDue = cashReceived - grandTotal;
-
-        const orderData = {
-            order_items: orderItems,
-            grand_total: parseFloat(grandTotal).toFixed(2),
-            order_type: orderType,
-            cash_received: cashReceived.toFixed(2),
-            change_due: changeDue.toFixed(2),
+    $(function () {
+        const RECEIPT_META = window.POS_RECEIPT_META || {
+            companyName: "Tinatangi Cafe",
+            branchName: "Tinatangi Cafe - Dasmariñas",
+            address: "Brgy 13 Jose Abad Santos Ave, Dasmariñas, Cavite 4114",
+            vatTin: "000-000-000-000",
+            accrNo: "000-00000000-00000",
+            permitNo: "0000-0000-000-00000",
+            serialNo: "000 0 000 000000",
+            contactNumber: "(+63) 915 796 8729",
+            hotline: "(+63) 960 216 4109",
+            email: "tinatangicafe@gmail.com",
+            website: "www.tinatangi.site",
+            vatRate: 0.12,
         };
 
-        $.ajax({
-            url: "/operations/pos/submit-order",
-            type: "POST",
-            data: orderData,
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: function (response) {
-                Toast.fire({
-                    text: "Order completed! ID: " + response.order_id,
-                    icon: "success",
+        let orderItems = [];
+        let grandTotal = 0;
+
+        $(document).on("click", "#submit-order-btn", function (e) {
+            e.preventDefault();
+            orderItems = [];
+            let isValid = true;
+
+            $("#orderList")
+                .find(".order-item-row")
+                .each(function () {
+                    const $itemRow = $(this);
+                    const productId = $itemRow.find(".prod-name").data("id");
+                    const productName = $itemRow
+                        .find(".prod-name")
+                        .text()
+                        .trim();
+                    const quantity =
+                        parseInt($itemRow.find(".qnty").text().trim()) || 0;
+                    const itemPriceText = $itemRow
+                        .find(".prod-price")
+                        .text()
+                        .trim();
+                    const itemTotalPrice =
+                        parseFloat(itemPriceText.replace(/[^0-9.]/g, "")) || 0;
+                    const unitPrice =
+                        quantity > 0 ? itemTotalPrice / quantity : 0;
+
+                    if (quantity === 0 || productId === null) {
+                        isValid = false;
+                        return false;
+                    }
+
+                    orderItems.push({
+                        product_id: productId,
+                        name: productName,
+                        quantity: quantity,
+                        unit_price: parseFloat(unitPrice).toFixed(2),
+                        total_price: parseFloat(itemTotalPrice).toFixed(2),
+                    });
                 });
-                renderActiveCategoryProducts();
-                const cashierName =
-                    $("#cashierNameDisplay").text().trim() || "N/A";
-                generateReceipt(
-                    response.order_id,
-                    cashReceived,
-                    changeDue,
-                    cashierName
-                );
-                $("#closeBtn").removeClass("d-none");
-                $("#printReceiptBtn").removeClass("d-none");
-                $("#cancelBtn").addClass("d-none");
-                $("#confirmSubmitOrder").addClass("d-none");
-                $("#orderList").empty();
-                $("#order-total-amount").text("₱ 0.00");
 
-                const activeTab = $(".nav-pills .nav-link.active");
-                if (activeTab.length > 0) {
-                    activeTab.trigger("shown.bs.tab");
-                } else if (posCategories.length > 0) {
-                    loadProductsForCategory(posCategories[0]);
-                }
-            },
-            error: function (xhr) {
-                Toast.fire("Error: " + xhr.responseJSON.message);
-            },
-            complete: function () {
-                $("#LoadingScreen").fadeOut(200);
-            },
+            grandTotal =
+                parseFloat(
+                    $("#order-total-amount")
+                        .text()
+                        .replace(/[^0-9.]/g, "")
+                ) || 0;
+
+            if (isValid && orderItems.length > 0) {
+                const $summaryContainer = $("#orderSummaryList");
+                $summaryContainer.empty();
+                orderItems.forEach((item) => {
+                    const itemHtml = `<div class="d-flex justify-content-between"><span>${item.quantity}x ${item.name}</span><span>₱ ${item.total_price}</span></div>`;
+                    $summaryContainer.append(itemHtml);
+                });
+
+                $("#modalGrandTotal").text("₱ " + grandTotal.toFixed(2));
+                $("#cashReceivedInput").val("");
+                $("#modalChange").text("₱ 0.00");
+                $("#confirmSubmitOrder")
+                    .prop("disabled", true)
+                    .removeClass("d-none");
+                $("#printReceiptBtn").addClass("d-none");
+                $("#orderFinalization").modal("show");
+            } else {
+                Toast.fire({
+                    text: "The order is empty or contains invalid items. Please add products.",
+                    icon: "warning",
+                    timer: 2000,
+                });
+            }
         });
-    });
 
-    function formatCurrency(value) {
-        return (
-            "₱ " +
-            Number(value || 0)
-                .toFixed(2)
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-        );
-    }
+        $("#cashReceivedInput").on("keyup input", function () {
+            const cashReceived = parseFloat($(this).val()) || 0;
+            const change = cashReceived - grandTotal;
 
-    function formatDateTime(date) {
-        return date.toLocaleDateString("en-PH", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
+            if (cashReceived >= grandTotal) {
+                $("#modalChange").text("₱ " + change.toFixed(2));
+                $("#confirmSubmitOrder").prop("disabled", false);
+            } else {
+                $("#modalChange").text("₱ 0.00");
+                $("#confirmSubmitOrder").prop("disabled", true);
+            }
         });
-    }
 
-    function formatTime(date) {
-        return date.toLocaleTimeString("en-PH", {
-            hour: "2-digit",
-            minute: "2-digit",
+        $("#finalizeOrderForm").on("submit", function (e) {
+            e.preventDefault();
+            $("#LoadingScreen").fadeIn(200);
+
+            const orderType = $("#order_type_input").val();
+            const cashReceived = parseFloat($("#cashReceivedInput").val()) || 0;
+            const changeDue = cashReceived - grandTotal;
+
+            const orderData = {
+                order_items: orderItems,
+                grand_total: parseFloat(grandTotal).toFixed(2),
+                order_type: orderType,
+                cash_received: cashReceived.toFixed(2),
+                change_due: changeDue.toFixed(2),
+            };
+
+            $.ajax({
+                url: "/operations/pos/submit-order",
+                type: "POST",
+                data: orderData,
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
+                },
+                success: function (response) {
+                    Toast.fire({
+                        text: "Order completed! ID: " + response.order_id,
+                        icon: "success",
+                    });
+                    renderActiveCategoryProducts();
+                    const cashierName =
+                        $("#cashierNameDisplay").text().trim() || "N/A";
+                    generateReceipt(
+                        response.order_id,
+                        cashReceived,
+                        changeDue,
+                        cashierName
+                    );
+                    $("#closeBtn").removeClass("d-none");
+                    $("#printReceiptBtn").removeClass("d-none");
+                    $("#cancelBtn").addClass("d-none");
+                    $("#confirmSubmitOrder").addClass("d-none");
+                    $("#orderList").empty();
+                    $("#order-total-amount").text("₱ 0.00");
+
+                    const activeTab = $(".nav-pills .nav-link.active");
+                    if (activeTab.length > 0) {
+                        activeTab.trigger("shown.bs.tab");
+                    } else if (posCategories.length > 0) {
+                        loadProductsForCategory(posCategories[0]);
+                    }
+                },
+                error: function (xhr) {
+                    Toast.fire("Error: " + xhr.responseJSON.message);
+                },
+                complete: function () {
+                    $("#LoadingScreen").fadeOut(200);
+                },
+            });
         });
-    }
 
-    function generateReceipt(orderId, cash, change, cashierName) {
-        const now = new Date();
-        const guestCount = Math.max(orderItems.length, 1);
-        const vatBase = RECEIPT_META.vatRate
-            ? grandTotal / (1 + RECEIPT_META.vatRate)
-            : grandTotal;
-        const vatAmount = RECEIPT_META.vatRate ? grandTotal - vatBase : 0;
+        function formatCurrency(value) {
+            return (
+                "₱ " +
+                Number(value || 0)
+                    .toFixed(2)
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            );
+        }
 
-        const itemsHtml = orderItems
-            .map(
-                (item) => `
+        function formatDateTime(date) {
+            return date.toLocaleDateString("en-PH", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+            });
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString("en-PH", {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+        }
+
+        function generateReceipt(orderId, cash, change, cashierName) {
+            const now = new Date();
+            const guestCount = Math.max(orderItems.length, 1);
+            const vatBase = RECEIPT_META.vatRate
+                ? grandTotal / (1 + RECEIPT_META.vatRate)
+                : grandTotal;
+            const vatAmount = RECEIPT_META.vatRate ? grandTotal - vatBase : 0;
+
+            const itemsHtml = orderItems
+                .map(
+                    (item) => `
                     <tr>
                         <td>${item.quantity} ${item.name}</td>
                         <td class="text-end">${formatCurrency(
@@ -1161,10 +1169,10 @@ $(document).ready(function () {
                         )}</td>
                     </tr>
                 `
-            )
-            .join("");
+                )
+                .join("");
 
-        const receiptHtml = `
+            const receiptHtml = `
             <style>
                 #receipt-container .pos-receipt {
                     width: 320px;
@@ -1291,16 +1299,17 @@ $(document).ready(function () {
             </div>
         `;
 
-        $("#receipt-container").html(receiptHtml);
-    }
+            $("#receipt-container").html(receiptHtml);
+        }
 
-    $(document).on("click", "#printReceiptBtn", function () {
-        window.print();
-    });
+        $(document).on("click", "#printReceiptBtn", function () {
+            window.print();
+        });
 
-    $("#orderFinalization .order-type-btn").on("click", function () {
-        $(this).siblings().removeClass("active");
-        $(this).addClass("active");
-        $("#order_type_input").val($(this).data("type"));
+        $("#orderFinalization .order-type-btn").on("click", function () {
+            $(this).siblings().removeClass("active");
+            $(this).addClass("active");
+            $("#order_type_input").val($(this).data("type"));
+        });
     });
 });
