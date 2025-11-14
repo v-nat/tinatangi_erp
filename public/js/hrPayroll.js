@@ -342,21 +342,13 @@ $(document).ready(function () {
                 data: null,
                 render: function (data, type, row) {
                     if (row.status == '<span class="badge bg-success">Approved</span>') {
-                        return `<input type="checkbox" class="form-check-input payroll-checkbox" value="${row.id}" data-status="${row.status}">`;
+                        return `<input type="checkbox" class="form-check-input payroll-checkbox" value="${row.id}">`;
                     }
                     return '';
                 },
                 className: "text-center",
                 width: "30px",
                 orderable: false,
-            },
-            {
-                data: null,
-                render: function (data, type, row, meta) {
-                    return meta.row + 1;
-                },
-                className: "text-center",
-                width: "45px",
             },
             { data: "name", className: "dt-left" },
             { data: "department", className: "dt-left" },
@@ -481,7 +473,7 @@ $(document).ready(function () {
             },
         ],
         initComplete: function () {
-            const departmentColumn = this.api().column(3);
+            const departmentColumn = this.api().column(2);
             const departmentSelect = $("#departmentFilter");
             departmentColumn
                 .data()
@@ -495,7 +487,7 @@ $(document).ready(function () {
                     }
                 });
 
-            const periodColumn = this.api().column(5);
+            const periodColumn = this.api().column(4);
             const periodSelect = $("#periodFilter");
             periodColumn
                 .data()
@@ -521,7 +513,7 @@ $(document).ready(function () {
     $("#departmentFilter").on("change", function () {
         const selectedDepartment = $(this).val();
         table
-            .column(3)
+            .column(2)
             .search(
                 selectedDepartment ? "^" + selectedDepartment + "$" : "",
                 true,
@@ -533,7 +525,7 @@ $(document).ready(function () {
     $("#periodFilter").on("change", function () {
         const selectedPeriod = $(this).val();
         table
-            .column(5)
+            .column(4)
             .search(
                 selectedPeriod ? "^" + selectedPeriod + "$" : "",
                 true,
