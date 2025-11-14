@@ -271,7 +271,7 @@ class InventoryController extends Controller
 
             return response()->json([
                 'data' => $forRestock->map(function ($item) {
-                    $displayQuantity = $item->getDisplayQuantity();
+                    // $displayQuantity = $item->getDisplayQuantity();
                     // $baseQuantity = $item->getAvailableBaseUnits();
                     // $unitLabel = $item->getDisplayUnitLabel();
                     return [
@@ -284,7 +284,7 @@ class InventoryController extends Controller
                         // 'stock_level'       => $displayQuantity,
                         'unit'              => optional($item->unit)->name,
                         'stock_level'       => (float)$item->stock_level,
-                        'stock_level_base'  => $displayQuantity,
+                        // 'stock_level_base'  => $displayQuantity,
                         'stock_level_formatted' => $item->formatStockQuantity(),
                         'stock_display'     => $item->formatStockDisplay(),
                         'cost_price'        => (float)$item->cost_price,
