@@ -58,7 +58,7 @@ class AuthController extends Controller
         ];
 
         $userLevelString = strtolower(Auth::user()->employeeRS->empPosition->level);
-        $requiredLevelString = 'manager';
+        $requiredLevelString = 'supervisor';
 
         if (!array_key_exists($userLevelString, $hierarchy)) {
             $userLevelNumber = 0;
