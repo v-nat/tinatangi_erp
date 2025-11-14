@@ -265,6 +265,11 @@ class PayrollController extends Controller
                     $payroll->status = 15;
                     $payroll->save();
                     $releasedCount++;
+                } else if (auth('')->user()->id == $payroll->employee_id || !AuthController::checkAuthorization()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You are not authorized for this action.'
+                    ], 401);
                 }
             }
 
