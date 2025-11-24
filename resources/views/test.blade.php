@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Testing</title>
+    <title>Happy Birthday - Paramore Empowered</title>
+
+    <!-- Website Thumbnail (Open Graph) & Favicon -->
+    <meta property="og:title" content="Happy Birthday - Paramore Empowered">
+    <meta property="og:description" content="A special birthday celebration!">
+    <meta property="og:image" content="https://placehold.co/1200x630/FF884D/FFF8F5?text=Happy+Birthday!">
+    <link rel="icon" href="https://fav.farm/🎂">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -391,7 +397,6 @@
             100% { box-shadow: 0 0 0 0 rgba(255, 136, 77, 0); }
         }
 
-        /* Particles */
         .particle, .bg-floater {
             position: absolute;
             pointer-events: none;
@@ -433,9 +438,6 @@
             100% { transform: translateY(-20vh) translateX(var(--drift)) rotate(var(--rot)); opacity: 0.8; }
         }
 
-        /* =========================================
-           MOBILE (iPhone 16 Pro Max & smaller)
-           ========================================= */
         @media screen and (max-width: 768px) {
             body {
                 padding: 20px;
@@ -640,7 +642,6 @@
             }
         }
 
-        //  Animations
         function createBackgroundFloater(isInitial) {
             const isBalloon = Math.random() > 0.7;
             const el = document.createElement('div');
@@ -676,7 +677,7 @@
         function letItSpark() {
             const btn = document.querySelector('.spark-btn');
             const originalText = btn.innerText;
-            btn.innerText = "You are Amazing!";
+            btn.innerText = "You are glowing!";
             btn.style.pointerEvents = "none";
 
             const card = document.getElementById('mainCard');
