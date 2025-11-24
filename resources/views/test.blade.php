@@ -573,13 +573,13 @@
     </div>
 
     <div class="sketch-cutout extra-1">
-        <img src="{{ asset('storage/app/public/img/prv/pic1.png') }}" alt="Memory 1">
+        <img src="{{ asset('storage/app/public/img/prv/pic2.png') }}" alt="Memory 1">
     </div>
     <div class="sketch-cutout extra-2">
-        <img src="{{ asset('storage/app/public/img/prv/pic2.png') }}" alt="Memory 2">
+        <img src="{{ asset('storage/app/public/img/prv/pic3.png') }}" alt="Memory 2">
     </div>
     <div class="sketch-cutout extra-3">
-        <img src="{{ asset('storage/app/public/img/prv/pic3.png') }}" alt="Memory 3">
+        <img src="{{ asset('storage/app/public/img/prv/pic4.png') }}" alt="Memory 3">
     </div>
 
     <div class="sticky-note note-1">
