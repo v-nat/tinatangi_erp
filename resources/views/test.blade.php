@@ -7,7 +7,7 @@
 
     <meta property="og:title" content="Tinatangi ERP">
     <meta property="og:description" content="Test Page!">
-    <meta property="og:image" content="https://placehold.co/1200x630/FF884D/FFF8F5?text=0">
+    <meta property="og:image" content="https://placehold.co/1200x630/FF884D/FFF8F5?text=">
     <link rel="icon" href="https://fav.farm/🎂">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,7 +175,7 @@
             border: 5px solid var(--scrapbook-paper);
             background-color: var(--scrapbook-paper);
             box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
-            z-index: 15;
+            z-index: 22;
             filter: sepia(0.2) contrast(1.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             overflow: hidden;
@@ -190,13 +190,13 @@
             clip-path: polygon(2% 5%, 98% 0%, 100% 95%, 5% 100%);
         }
 
-        .member-1 { top: 12%; left: 5%; --r: -12deg; }
-        .member-2 { bottom: 15%; left: 3%; --r: 8deg; }
-        .member-3 { top: 15%; right: 5%; --r: 15deg; }
+        .member-1 { top: 8%; left: 10%; --r: -12deg; }
+        .member-2 { bottom: 12%; left: 8%; --r: 8deg; }
+        .member-3 { top: 15%; right: 8%; --r: 15deg; }
 
         .sketch-cutout:hover {
             transform: scale(1.1) rotate(0deg) !important;
-            z-index: 25;
+            z-index: 26;
             filter: sepia(0) contrast(1);
             box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
         }
@@ -207,7 +207,7 @@
             height: 140px;
             background-color: var(--note-yellow);
             box-shadow: 3px 3px 10px rgba(0,0,0,0.15);
-            z-index: 16;
+            z-index: 22;
             transform: rotate(var(--r, 0deg));
             padding: 15px;
             display: flex;
@@ -454,14 +454,27 @@
             .lyrics-quote { font-size: 1.1rem; margin-bottom: 30px; }
 
             .sketch-cutout {
-                width: 85px;
-                height: 105px;
-                z-index: 10;
+                width: 90px;
+                height: 110px;
+                z-index: 22;
+                box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
             }
 
-            .member-1 { top: 3%; left: -5px; transform: rotate(-5deg) scale(0.8); }
-            .member-2 { bottom: 3%; left: -5px; transform: rotate(5deg) scale(0.8); }
-            .member-3 { top: 3%; right: -5px; transform: rotate(5deg) scale(0.8); }
+            .member-1 {
+                top: 10%;
+                left: -5px;
+                transform: rotate(-5deg);
+            }
+            .member-2 {
+                bottom: 10%;
+                left: -5px;
+                transform: rotate(5deg);
+            }
+            .member-3 {
+                top: 10%;
+                right: -5px;
+                transform: rotate(5deg);
+            }
 
             .sticky-note {
                 width: 90px;
@@ -473,18 +486,18 @@
             .sticky-note p { font-size: 0.8rem; }
 
             .note-1 {
-                top: 10%;
+                top: 18%;
                 right: -5px;
                 transform: rotate(5deg);
             }
             .note-2 {
-                bottom: 10%;
+                bottom: 18%;
                 right: -5px;
                 left: auto;
                 transform: rotate(-3deg);
             }
             .note-3 {
-                bottom: 15%;
+                bottom: 25%;
                 left: -5px;
                 display: flex;
                 transform: rotate(4deg);
