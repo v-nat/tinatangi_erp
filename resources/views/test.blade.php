@@ -180,6 +180,13 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             overflow: hidden;
             transform: rotate(var(--r, 0deg));
+            cursor: grab; /* Added for drag indication */
+            touch-action: none; /* Important for mobile dragging */
+            user-select: none;
+        }
+
+        .sketch-cutout:active {
+            cursor: grabbing;
         }
 
         .sketch-cutout img {
@@ -188,6 +195,7 @@
             object-fit: cover;
             display: block;
             clip-path: polygon(2% 5%, 98% 0%, 100% 95%, 5% 100%);
+            pointer-events: none; /* Let drag events pass to parent */
         }
 
         .member-1 { top: 5%; left: 3%; --r: -12deg; }
@@ -219,6 +227,13 @@
             justify-content: center;
             text-align: center;
             transition: transform 0.3s ease;
+            cursor: grab; /* Added for drag indication */
+            touch-action: none; /* Important for mobile dragging */
+            user-select: none;
+        }
+
+        .sticky-note:active {
+            cursor: grabbing;
         }
 
         .sticky-note.pink { background-color: var(--note-pink); }
@@ -229,6 +244,7 @@
             color: #333;
             line-height: 1.3;
             margin: 0;
+            pointer-events: none; /* Let drag events pass to parent */
         }
 
         .sticky-note:hover {
@@ -486,7 +502,7 @@
                 transform: rotate(15deg);
             }
             .extra-2 {
-                top: auto; /* Fix: reset top from desktop styles */
+                top: auto;
                 bottom: 2%;
                 right: -2%;
                 left: auto;
@@ -658,6 +674,9 @@
                     if(spinner) spinner.style.display = 'none';
                 }
             }, 3000);
+
+            // Initialize drag functionality
+            initDraggableItems();
         };
 
         function enterSite() {
@@ -792,6 +811,71 @@
 
                 bgMusic.play().catch(e => console.log("BG resume prevented"));
             }
+        }
+
+        // New functionality: Draggable Items
+        let globalZIndex = 100;
+
+        function initDraggableItems() {
+            const draggables = document.querySelectorAll('.sketch-cutout, .sticky-note');
+
+            draggables.forEach(elmnt => {
+                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+                elmnt.onmousedown = dragMouseDown;
+                elmnt.ontouchstart = dragMouseDown;
+
+                function dragMouseDown(e) {
+                    e = e || window.event;
+
+                    // Get initial position
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                    pos3 = clientX;
+                    pos4 = clientY;
+
+                    // Important: Set initial left/top to computed values to break free from bottom/right CSS
+                    const rect = elmnt.getBoundingClientRect();
+                    elmnt.style.left = rect.left + 'px';
+                    elmnt.style.top = rect.top + 'px';
+                    elmnt.style.bottom = 'auto';
+                    elmnt.style.right = 'auto';
+
+                    // Bring to front
+                    elmnt.style.zIndex = ++globalZIndex;
+
+                    document.onmouseup = closeDragElement;
+                    document.onmousemove = elementDrag;
+
+                    document.ontouchend = closeDragElement;
+                    document.ontouchmove = elementDrag;
+                }
+
+                function elementDrag(e) {
+                    e = e || window.event;
+                    e.preventDefault(); // prevent scrolling on touch
+
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                    pos1 = pos3 - clientX;
+                    pos2 = pos4 - clientY;
+                    pos3 = clientX;
+                    pos4 = clientY;
+
+                    // set the element's new position:
+                    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+                }
+
+                function closeDragElement() {
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                    document.ontouchend = null;
+                    document.ontouchmove = null;
+                }
+            });
         }
     </script>
 </body>
