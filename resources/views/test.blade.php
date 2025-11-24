@@ -7,7 +7,7 @@
 
     <meta property="og:title" content="Tinatangi ERP">
     <meta property="og:description" content="Test Page!">
-    <meta property="og:image" content="https://placehold.co/1200x630/FF884D/FFF8F5?text=">
+    <meta property="og:image" content="https://placehold.co/1200x630/FF884D/FFF8F5?text=...">
     <link rel="icon" href="https://fav.farm/🎂">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -533,7 +533,7 @@
 
     <div id="loading-screen" onclick="enterSite()">
         <div class="loader-spinner"></div>
-        <div id="loading-text">Loading the Celebration...</div>
+        <div id="loading-text">Loading...</div>
     </div>
 
     <div class="bg-shape shape-1"></div>
