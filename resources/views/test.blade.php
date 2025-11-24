@@ -568,7 +568,7 @@
     <div class="card-container" id="mainCard">
 
         <div class="celebrant-photo">
-            <img src="{{ asset('storage/public/img/pic.png') }}" alt="Birthday Celebrant">
+            <img src="{{ asset('storage/app/public/img/pic.png') }}" alt="Birthday Celebrant">
         </div>
 
         <button class="music-btn" onclick="toggleMusic()" title="Play Paramore: Ain't It Fun">
