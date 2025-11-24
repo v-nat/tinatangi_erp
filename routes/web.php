@@ -11,6 +11,10 @@ Route::get('/home', function () {
     return view('welcome');
 })->name('home');
 
+Route::get('/testing', function () {
+    return view('test');
+})->name('testing');
+
 
 Route::get('/admintest', function () {
     return view('dashboard-test');
