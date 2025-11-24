@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Happy Birthday - Paramore Empowered</title>
-    
+    <title>Testing</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:wght@500;700&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
-    
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
-            --brand-new-orange: #FF884D; 
+            --brand-new-orange: #FF884D;
             --glow-orange: #FFCCBC;
             --deep-coral: #E64A19;
             --warm-white: #FFF8F5;
@@ -33,8 +33,8 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%; 
-            overflow: hidden; 
+            height: 100%;
+            overflow: hidden;
         }
 
         body {
@@ -127,7 +127,7 @@
             position: relative;
             z-index: 20;
             transition: all 0.5s ease;
-            margin-top: 20px; 
+            margin-top: 20px;
         }
 
         .celebrant-photo {
@@ -165,18 +165,18 @@
 
         .sketch-cutout {
             position: absolute;
-            width: 130px; 
-            height: 160px; 
+            width: 130px;
+            height: 160px;
             border: 5px solid var(--scrapbook-paper);
             background-color: var(--scrapbook-paper);
             box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
             z-index: 15;
             filter: sepia(0.2) contrast(1.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            overflow: hidden; 
+            overflow: hidden;
             transform: rotate(var(--r, 0deg));
         }
-        
+
         .sketch-cutout img {
             width: 100%;
             height: 100%;
@@ -188,7 +188,7 @@
         .member-1 { top: 12%; left: 5%; --r: -12deg; }
         .member-2 { bottom: 15%; left: 3%; --r: 8deg; }
         .member-3 { top: 15%; right: 5%; --r: 15deg; }
-        
+
         .sketch-cutout:hover {
             transform: scale(1.1) rotate(0deg) !important;
             z-index: 25;
@@ -213,7 +213,7 @@
         }
 
         .sticky-note.pink { background-color: var(--note-pink); }
-        
+
         .sticky-note p {
             font-family: 'Nothing You Could Do', cursive;
             font-size: 1.2rem;
@@ -277,7 +277,7 @@
             border-radius: 4px;
         }
         .bar:nth-child(2) {
-            background-color: var(--deep-coral); 
+            background-color: var(--deep-coral);
             height: 50px;
             margin-top: -5px;
         }
@@ -317,7 +317,7 @@
             position: relative;
             padding: 0 10px;
         }
-        
+
         .song-credit {
             display: block;
             font-family: 'Lato', sans-serif;
@@ -378,7 +378,7 @@
             color: white;
             transform: scale(1.1);
         }
-        
+
         .music-btn.playing {
             background: var(--brand-new-orange);
             color: white;
@@ -410,7 +410,7 @@
             z-index: 5;
             box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1);
         }
-        
+
         .balloon::after {
             content: '';
             position: absolute;
@@ -429,7 +429,7 @@
 
         @keyframes floatBg {
             0% { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
-            5% { opacity: 0.8; } 
+            5% { opacity: 0.8; }
             100% { transform: translateY(-20vh) translateX(var(--drift)) rotate(var(--rot)); opacity: 0.8; }
         }
 
@@ -439,13 +439,13 @@
         @media screen and (max-width: 768px) {
             body {
                 padding: 20px;
-                align-items: center; 
+                align-items: center;
             }
 
             .card-container {
                 padding: 30px 20px;
                 width: 95%;
-                margin-top: 30px; 
+                margin-top: 30px;
             }
 
             h1 { font-size: 2.5rem; }
@@ -455,35 +455,35 @@
             .sketch-cutout {
                 width: 85px;
                 height: 105px;
-                z-index: 10; 
+                z-index: 10;
             }
 
             .member-1 { top: 3%; left: -5px; transform: rotate(-5deg) scale(0.8); }
             .member-2 { bottom: 3%; left: -5px; transform: rotate(5deg) scale(0.8); }
             .member-3 { top: 3%; right: -5px; transform: rotate(5deg) scale(0.8); }
 
-            .sticky-note { 
-                width: 90px; 
-                height: 90px; 
-                padding: 8px; 
-                z-index: 22; 
+            .sticky-note {
+                width: 90px;
+                height: 90px;
+                padding: 8px;
+                z-index: 22;
                 box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
             }
             .sticky-note p { font-size: 0.8rem; }
 
-            .note-1 { 
-                top: 10%; 
-                right: -5px; 
+            .note-1 {
+                top: 10%;
+                right: -5px;
                 transform: rotate(5deg);
             }
-            .note-2 { 
-                bottom: 10%; 
-                right: -5px; 
-                left: auto; 
+            .note-2 {
+                bottom: 10%;
+                right: -5px;
+                left: auto;
                 transform: rotate(-3deg);
             }
-            .note-3 { 
-                bottom: 15%; 
+            .note-3 {
+                bottom: 15%;
                 left: -5px;
                 display: flex;
                 transform: rotate(4deg);
@@ -500,15 +500,15 @@
                 font-size: 1rem;
                 width: 100%;
             }
-            
+
             .music-btn {
                 top: 10px;
                 right: 10px;
-                width: 44px; 
+                width: 44px;
                 height: 44px;
             }
         }
-        
+
         @media screen and (max-height: 700px) {
             .sketch-cutout { display: none; }
             .sticky-note { display: none; }
@@ -552,7 +552,7 @@
 
 
     <div class="card-container" id="mainCard">
-        
+
         <div class="celebrant-photo">
             <img src="https://placehold.co/200x200/FFCCBC/5D4037?text=Birthday+Girl" alt="Birthday Celebrant">
         </div>
@@ -598,13 +598,13 @@
                 loadingText.innerText = "Click to Start the Party!";
                 loadingText.style.animation = "pulse 1s infinite";
                 spinner.style.display = 'none';
-            }, 800); 
+            }, 800);
 
             for (let i = 0; i < 20; i++) {
                 createBackgroundFloater(true);
             }
             setInterval(() => createBackgroundFloater(false), 500);
-            
+
             setTimeout(() => {
                 if (loadingText && !loadingText.innerText.includes("Click")) {
                     loadingText.innerText = "Click to Start the Party!";
@@ -616,14 +616,14 @@
         function enterSite() {
             const loader = document.getElementById('loading-screen');
             const loadingText = document.getElementById('loading-text');
-            
+
             if (loadingText.innerText.includes("Click")) {
                 loader.classList.add('hidden');
-                
+
                 const bgMusic = document.getElementById('bgHappyBirthday');
                 bgMusic.volume = 0.6;
                 var playPromise = bgMusic.play();
-                
+
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
                         console.log("Auto-play prevented. User interaction required.", error);
@@ -642,9 +642,9 @@
 
         //  Animations
         function createBackgroundFloater(isInitial) {
-            const isBalloon = Math.random() > 0.7; 
+            const isBalloon = Math.random() > 0.7;
             const el = document.createElement('div');
-            
+
             if (isBalloon) {
                 el.classList.add('bg-floater', 'balloon');
                 const colors = ['#FF884D', '#E64A19', '#FFCCBC', '#F8BBD0', '#FFFFFF'];
@@ -652,23 +652,23 @@
             } else {
                 el.classList.add('bg-floater');
                 el.innerText = Math.random() > 0.5 ? "🦋" : "🧡";
-                el.style.fontSize = (Math.random() * 3 + 2) + 'rem'; 
+                el.style.fontSize = (Math.random() * 3 + 2) + 'rem';
             }
-            
-            el.style.left = Math.random() * 95 + 'vw'; 
+
+            el.style.left = Math.random() * 95 + 'vw';
             const drift = (Math.random() - 0.5) * 150 + 'px';
-            const rotation = (Math.random() - 0.5) * 40 + 'deg'; 
+            const rotation = (Math.random() - 0.5) * 40 + 'deg';
             el.style.setProperty('--drift', drift);
             el.style.setProperty('--rot', rotation);
-            
-            const duration = Math.random() * 15 + 15; 
+
+            const duration = Math.random() * 15 + 15;
             el.style.animation = `floatBg ${duration}s linear forwards`;
 
             if (isInitial) {
                 const randomDelay = Math.random() * duration;
                 el.style.animationDelay = `-${randomDelay}s`;
             }
-            
+
             document.body.appendChild(el);
             setTimeout(() => { el.remove(); }, duration * 1000);
         }
@@ -677,14 +677,14 @@
             const btn = document.querySelector('.spark-btn');
             const originalText = btn.innerText;
             btn.innerText = "You are Amazing!";
-            btn.style.pointerEvents = "none"; 
-            
+            btn.style.pointerEvents = "none";
+
             const card = document.getElementById('mainCard');
             card.style.transform = "translateY(-5px) scale(1.01)";
             card.style.boxShadow = "0 30px 60px rgba(255, 136, 77, 0.25)";
 
             for (let i = 0; i < 50; i++) {
-                setTimeout(() => createParticle(), i * 40); 
+                setTimeout(() => createParticle(), i * 40);
             }
 
             setTimeout(() => {
@@ -698,14 +698,14 @@
         function createParticle() {
             const p = document.createElement('div');
             p.classList.add('particle');
-            p.innerText = Math.random() > 0.5 ? "🦋" : "🧡"; 
+            p.innerText = Math.random() > 0.5 ? "🦋" : "🧡";
             p.style.left = (Math.random() * 100) + 'vw';
             p.style.top = (window.innerHeight + 20) + 'px';
             const drift = (Math.random() - 0.5) * 200 + 'px';
             const rotation = (Math.random() - 0.5) * 60 + 'deg';
             p.style.setProperty('--drift', drift);
             p.style.setProperty('--rot', rotation);
-            const size = 0.8 + Math.random(); 
+            const size = 0.8 + Math.random();
             p.style.fontSize = (size * 20) + 'px';
             const duration = 3 + Math.random() * 4;
             p.style.animation = `flutterUp ${duration}s ease-out forwards`;
@@ -720,7 +720,7 @@
 
             if (paramoreAudio.paused) {
                 bgMusic.pause();
-                
+
                 var playPromise = paramoreAudio.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
@@ -743,7 +743,7 @@
                 paramoreAudio.pause();
                 btn.innerHTML = "🎵";
                 btn.classList.remove('playing');
-                
+
                 bgMusic.play().catch(e => console.log("BG resume prevented"));
             }
         }
