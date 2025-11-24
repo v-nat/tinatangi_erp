@@ -550,13 +550,13 @@
     </div>
 
     <div class="sticky-note note-1">
-        <p>Happy B-Day Big Sis! You rock! 🤘</p>
+        <p>Happy B-Day Sis Andeng HAHHAHA!🤘</p>
     </div>
     <div class="sticky-note note-2 pink">
-        <p>Ain't it fun being the boss? (JK ily) ✨</p>
+        <p>Ain't it fun being the boss? HHAHAHAH</p>
     </div>
     <div class="sticky-note note-3">
-        <p>You're the Only Exception to my annoying list ❤️</p>
+        <p>Best Wishes, God bless always </p>
     </div>
 
     <div class="scrapbook-deco deco-1">🧡</div>
@@ -568,7 +568,7 @@
     <div class="card-container" id="mainCard">
 
         <div class="celebrant-photo">
-            <img src="https://placehold.co/200x200/FFCCBC/5D4037?text=Birthday+Girl" alt="Birthday Celebrant">
+            <img src="{{ asset('storage/public/img/pic.png') }}" alt="Birthday Celebrant">
         </div>
 
         <button class="music-btn" onclick="toggleMusic()" title="Play Paramore: Ain't It Fun">
@@ -584,12 +584,12 @@
         <div class="butterfly-icon">🦋</div>
 
         <h1>Happy<br>Birthday</h1>
-        <div class="subtitle">To the Best Big Sister</div>
+        <div class="subtitle">ate Andrea Danica HAHAHA</div>
 
         <div class="lyrics-quote">
-            "Growing up might be 'Hard Times', but I'm glad I've got you leading the way.<br>
-            Thanks for the good music taste!"
-            <span class="song-credit">— From your favorite little bro</span>
+            "sana po gumaling ka pa magviola at at at at at iba pa thank you<br>
+            Hapi hapi birthday HAHHAHAHHAHHHAHAHAH"
+            <span class="song-credit">— From Taylor Swift's sole child</span>
         </div>
 
         <button class="spark-btn" onclick="letItSpark()">Let it Spark</button>
@@ -645,7 +645,7 @@
                             toast: true,
                             position: 'top',
                             icon: 'info',
-                            title: 'Tap again to play music!',
+                            title: 'Tap again to toggle music!',
                             showConfirmButton: false,
                             timer: 2000
                         });
