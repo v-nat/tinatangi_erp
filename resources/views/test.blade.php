@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Happy Birthday - Paramore Empowered</title>
+    <title>Test Page</title>
 
-    <!-- Website Thumbnail (Open Graph) & Favicon -->
-    <meta property="og:title" content="Happy Birthday - Paramore Empowered">
-    <meta property="og:description" content="A special birthday celebration!">
-    <meta property="og:image" content="https://placehold.co/1200x630/FF884D/FFF8F5?text=Happy+Birthday!">
+    <meta property="og:title" content="Tinatangi ERP">
+    <meta property="og:description" content="Test Page!">
+    <meta property="og:image" content="https://placehold.co/1200x630/FF884D/FFF8F5?text=0">
     <link rel="icon" href="https://fav.farm/🎂">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
