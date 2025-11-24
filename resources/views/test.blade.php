@@ -675,7 +675,6 @@
                 }
             }, 3000);
 
-            // Initialize drag functionality
             initDraggableItems();
         };
 
@@ -741,7 +740,7 @@
         function letItSpark() {
             const btn = document.querySelector('.spark-btn');
             const originalText = btn.innerText;
-            btn.innerText = "You are glowing!";
+            btn.innerText = "You are Amazing!";
             btn.style.pointerEvents = "none";
 
             const card = document.getElementById('mainCard');
@@ -813,7 +812,6 @@
             }
         }
 
-        // New functionality: Draggable Items
         let globalZIndex = 100;
 
         function initDraggableItems() {
@@ -828,21 +826,18 @@
                 function dragMouseDown(e) {
                     e = e || window.event;
 
-                    // Get initial position
                     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
                     pos3 = clientX;
                     pos4 = clientY;
 
-                    // Important: Set initial left/top to computed values to break free from bottom/right CSS
                     const rect = elmnt.getBoundingClientRect();
                     elmnt.style.left = rect.left + 'px';
                     elmnt.style.top = rect.top + 'px';
                     elmnt.style.bottom = 'auto';
                     elmnt.style.right = 'auto';
 
-                    // Bring to front
                     elmnt.style.zIndex = ++globalZIndex;
 
                     document.onmouseup = closeDragElement;
@@ -854,7 +849,7 @@
 
                 function elementDrag(e) {
                     e = e || window.event;
-                    e.preventDefault(); // prevent scrolling on touch
+                    e.preventDefault();
 
                     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -864,7 +859,6 @@
                     pos3 = clientX;
                     pos4 = clientY;
 
-                    // set the element's new position:
                     elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
                     elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
                 }
