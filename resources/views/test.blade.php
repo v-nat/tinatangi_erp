@@ -190,9 +190,13 @@
             clip-path: polygon(2% 5%, 98% 0%, 100% 95%, 5% 100%);
         }
 
-        .member-1 { top: 8%; left: 10%; --r: -12deg; }
-        .member-2 { bottom: 12%; left: 8%; --r: 8deg; }
-        .member-3 { top: 15%; right: 8%; --r: 15deg; }
+        .member-1 { top: 5%; left: 3%; --r: -12deg; }
+        .member-2 { bottom: 5%; right: 3%; --r: 8deg; }
+        .member-3 { top: 5%; right: 3%; --r: 10deg; }
+
+        .extra-1 { top: 3%; left: 20%; --r: 4deg; z-index: 15; }
+        .extra-2 { top: 3%; right: 20%; --r: -6deg; z-index: 15; }
+        .extra-3 { bottom: 5%; left: 3%; --r: -5deg; z-index: 15; }
 
         .sketch-cutout:hover {
             transform: scale(1.1) rotate(0deg) !important;
@@ -244,9 +248,9 @@
             box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        .note-1 { top: 8%; right: 20%; --r: 5deg; }
-        .note-2 { bottom: 10%; left: 20%; --r: -4deg; }
-        .note-3 { top: 35%; left: 2%; --r: -8deg; }
+        .note-1 { top: 12%; left: 25%; --r: 5deg; }
+        .note-2 { bottom: 10%; left: 25%; --r: -4deg; }
+        .note-3 { bottom: 35%; left: 3%; --r: -8deg; }
 
         .scrapbook-deco {
             position: absolute;
@@ -265,7 +269,7 @@
 
         .deco-1 { top: 15%; left: 30%; --r: -20deg; --s: 2rem; animation-delay: 0s; }
         .deco-2 { bottom: 20%; right: 25%; --r: 15deg; --s: 2.5rem; animation-delay: 1s; }
-        .deco-3 { top: 5%; right: 20%; --r: 10deg; --s: 1.5rem; animation-delay: 2s; }
+        .deco-3 { top: 45%; right: 2%; --r: 10deg; --s: 1.5rem; animation-delay: 2s; }
         .deco-4 { bottom: 10%; left: 20%; --r: -10deg; --s: 1.8rem; animation-delay: 3s; }
 
         .para-bars {
@@ -454,52 +458,71 @@
             .lyrics-quote { font-size: 1.1rem; margin-bottom: 30px; }
 
             .sketch-cutout {
-                width: 90px;
-                height: 110px;
+                width: 80px;
+                height: 100px;
                 z-index: 22;
                 box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
             }
 
             .member-1 {
-                top: 10%;
-                left: -5px;
+                top: 2%;
+                left: -2%;
                 transform: rotate(-5deg);
             }
             .member-2 {
-                bottom: 10%;
-                left: -5px;
+                bottom: 2%;
+                left: -2%;
                 transform: rotate(5deg);
             }
             .member-3 {
-                top: 10%;
-                right: -5px;
+                top: 2%;
+                right: -2%;
                 transform: rotate(5deg);
             }
 
+            .extra-1 {
+                top: 2%;
+                left: 40%;
+                transform: rotate(15deg);
+            }
+            .extra-2 {
+                top: auto; /* Fix: reset top from desktop styles */
+                bottom: 2%;
+                right: -2%;
+                left: auto;
+                transform: rotate(-10deg);
+            }
+            .extra-3 {
+                bottom: 2%;
+                left: 40%;
+                right: auto;
+                transform: rotate(8deg);
+            }
+
             .sticky-note {
-                width: 90px;
-                height: 90px;
+                width: 80px;
+                height: 80px;
                 padding: 8px;
                 z-index: 22;
                 box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
             }
-            .sticky-note p { font-size: 0.8rem; }
+            .sticky-note p { font-size: 0.7rem; }
 
             .note-1 {
-                top: 18%;
-                right: -5px;
+                top: 20%;
+                left: -2%;
+                right: auto;
                 transform: rotate(5deg);
             }
             .note-2 {
-                bottom: 18%;
-                right: -5px;
+                bottom: 20%;
                 left: auto;
+                right: -2%;
                 transform: rotate(-3deg);
             }
             .note-3 {
-                bottom: 25%;
-                left: -5px;
-                display: flex;
+                bottom: 15%;
+                left: -2%;
                 transform: rotate(4deg);
             }
 
@@ -549,6 +572,16 @@
         <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Zac_Farro_Paramore.jpg?width=300" alt="Zac Farro">
     </div>
 
+    <div class="sketch-cutout extra-1">
+        <img src="{{ asset('storage/app/public/img/prv/pic1.png') }}" alt="Memory 1">
+    </div>
+    <div class="sketch-cutout extra-2">
+        <img src="{{ asset('storage/app/public/img/prv/pic2.png') }}" alt="Memory 2">
+    </div>
+    <div class="sketch-cutout extra-3">
+        <img src="{{ asset('storage/app/public/img/prv/pic3.png') }}" alt="Memory 3">
+    </div>
+
     <div class="sticky-note note-1">
         <p>Happy B-Day Sis Andeng HAHHAHA!🤘</p>
     </div>
@@ -568,7 +601,7 @@
     <div class="card-container" id="mainCard">
 
         <div class="celebrant-photo">
-            <img src="{{ asset('storage/app/public/img/pic.png') }}" alt="Birthday Celebrant">
+            <img src="{{ asset('storage/app/public/img/prv/pic.png') }}" alt="Birthday Celebrant">
         </div>
 
         <button class="music-btn" onclick="toggleMusic()" title="Play Paramore: Ain't It Fun">
