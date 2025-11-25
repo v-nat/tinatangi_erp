@@ -288,6 +288,7 @@
         .deco-3 { top: 45%; right: 2%; --r: 10deg; --s: 1.5rem; animation-delay: 2s; }
         .deco-4 { bottom: 10%; left: 20%; --r: -10deg; --s: 1.8rem; animation-delay: 3s; }
 
+        /* NEW ADDITIONS FOR VIOLAS AND NOTES */
         .music-floater {
             position: absolute;
             z-index: 12;
@@ -298,6 +299,7 @@
             pointer-events: none;
         }
 
+        /* Violas */
         .viola-img {
             font-size: 3.5rem;
         }
@@ -305,11 +307,13 @@
         .viola-2 { bottom: 25%; right: 10%; transform: rotate(15deg); --r: 15deg; }
         .viola-3 { top: 45%; left: 5%; transform: rotate(10deg); --r: 10deg; }
 
+        /* Music Notes */
         .note-deco { font-size: 2rem; color: var(--text-color); }
         .note-f-1 { top: 8%; right: 35%; transform: rotate(10deg); --r: 10deg; }
         .note-f-2 { bottom: 40%; right: 5%; transform: rotate(-10deg); --r: -10deg; font-size: 2.5rem; }
         .note-f-3 { bottom: 8%; left: 45%; transform: rotate(5deg); --r: 5deg; }
 
+        /* Scattered Alto Clefs */
         .alto-clef-scatter {
             width: 40px;
             opacity: 0.6;
@@ -317,6 +321,7 @@
         .clef-s-1 { top: 75%; left: 15%; transform: rotate(-10deg); --r: -10deg; }
         .clef-s-2 { top: 25%; right: 15%; transform: rotate(20deg); --r: 20deg; }
 
+        /* Side Card Alto Clef */
         .card-side-clef {
             position: absolute;
             right: -45px;
@@ -326,9 +331,10 @@
             transform: rotate(10deg);
             filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
             opacity: 0.9;
-            pointer-events: none;
+            pointer-events: none; /* Added to prevent blocking touches */
         }
 
+        /* ----- POLAROID SURPRISE STYLES ----- */
         #polaroid-overlay {
             position: fixed;
             top: 0;
@@ -336,14 +342,14 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.4);
-            z-index: 999;
+            z-index: 999; /* Below loading screen but above everything else */
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease, visibility 0.5s;
-            pointer-events: none;
+            pointer-events: none; /* Let touches pass until active */
         }
 
         #polaroid-overlay.active {
@@ -359,7 +365,7 @@
             transform: scale(0) rotate(-10deg);
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-width: 90%;
-            width: 320px;
+            width: 320px; /* Responsive size */
             text-align: center;
             position: relative;
         }
@@ -394,7 +400,7 @@
             height: 20px;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            z-index: 1000;
+            z-index: 10000; /* Increased to be on top of everything */
             pointer-events: none;
         }
 
@@ -403,6 +409,7 @@
             80% { opacity: 1; }
             100% { transform: translate(var(--tx), var(--ty)) scale(var(--s)) rotate(var(--r)); opacity: 0; }
         }
+        /* END NEW ADDITIONS */
 
         .para-bars {
             display: flex;
@@ -538,7 +545,7 @@
             user-select: none;
         }
 
-        .particle { z-index: 25; }
+        .particle { z-index: 10000; } /* Increased to be on top of everything */
         .bg-floater { z-index: 5; opacity: 0; }
 
         .balloon {
@@ -585,11 +592,12 @@
                 margin-top: 30px;
             }
 
+            /* Responsive adjustment for side clef */
             .card-side-clef {
                 right: -15px;
                 width: 45px;
             }
-
+            /* Hide the middle viola to prevent clutter on small screens */
             .viola-3 { display: none; }
 
             h1 { font-size: 2.5rem; }
@@ -684,6 +692,7 @@
                 height: 44px;
             }
 
+            /* Responsive fix for polaroid on small screens */
             .polaroid-frame {
                 width: 80%;
                 max-width: 300px;
@@ -708,7 +717,7 @@
 
     <div id="polaroid-overlay">
         <div class="polaroid-frame">
-            <img src="{{ asset('storage/app/public/img/prv/pic1.png') }}" alt="Surprise Celebrant">
+            <img src="https://drive.google.com/thumbnail?id=1mzrTu6jKtDcTyChkdJ9pbBXMrrLWXYzJ&sz=w1000" alt="Surprise Celebrant">
             <div class="polaroid-caption">Happy Birthday!</div>
         </div>
     </div>
@@ -747,13 +756,13 @@
     </div>
 
     <div class="sketch-cutout extra-1">
-        <img src="{{ asset('storage/app/public/img/prv/pic2.png') }}" alt="Memory 1">
+        <img src="https://drive.google.com/thumbnail?id=1GeOiLIngIOfKcBlVMoHXBOSstoKzuEha&sz=w1000" alt="Memory 1">
     </div>
     <div class="sketch-cutout extra-2">
-        <img src="{{ asset('storage/app/public/img/prv/pic3.png') }}" alt="Memory 2">
+        <img src="https://drive.google.com/thumbnail?id=145iCi_QYkniuhgja9HDt8s35J8TadWr_&sz=w1000" alt="Memory 2">
     </div>
     <div class="sketch-cutout extra-3">
-        <img src="{{ asset('storage/app/public/img/prv/pic4.png') }}" alt="Memory 3">
+        <img src="https://drive.google.com/thumbnail?id=1P-h30JbqPUngVdDL6f8YCmj-FhrGL2iE&sz=w1000" alt="Memory 3">
     </div>
 
     <div class="sticky-note note-1">
@@ -781,7 +790,7 @@
         </svg>
 
         <div class="celebrant-photo">
-            <img src="{{ asset('storage/app/public/img/prv/pic.png') }}" alt="Birthday Celebrant">
+            <img src="https://drive.google.com/thumbnail?id=1BCfckf5lAJugoyytaqYuIm7PbVze_6Pl&sz=w1000" alt="Birthday Celebrant">
         </div>
 
         <button class="music-btn" onclick="toggleMusic()" title="Play Paramore: Ain't It Fun">
@@ -802,7 +811,7 @@
         <div class="lyrics-quote">
             "sana po gumaling ka pa magviola at at at at at iba pa thank you<br>
             Hapi hapi birthday HAHHAHAHHAHHHAHAHAH"
-            <span class="song-credit">— From Taylor Swift's sole child</span>
+            <span class="song-credit">From Taylor Swift's sole child<br>— Nat</span>
         </div>
 
         <button class="spark-btn" onclick="letItSpark()">Let it Spark</button>
@@ -911,10 +920,12 @@
             card.style.transform = "translateY(-5px) scale(1.01)";
             card.style.boxShadow = "0 30px 60px rgba(255, 136, 77, 0.25)";
 
+            // Trigger the existing rain of particles
             for (let i = 0; i < 50; i++) {
                 setTimeout(() => createParticle(), i * 40);
             }
 
+            // Trigger the new Polaroid Surprise with Boom
             triggerPolaroidSurprise();
 
             setTimeout(() => {
@@ -928,14 +939,17 @@
         function triggerPolaroidSurprise() {
             const overlay = document.getElementById('polaroid-overlay');
 
+            // Create "Boom" explosion first
             for(let i=0; i<30; i++) {
                 createBoomParticle();
             }
 
+            // Show Overlay after a tiny delay to let boom start
             setTimeout(() => {
                 overlay.classList.add('active');
             }, 300);
 
+            // Hide after 5 seconds
             setTimeout(() => {
                 overlay.classList.remove('active');
             }, 5000);
@@ -957,8 +971,9 @@
                 p.style.background = "transparent";
             }
 
+            // Random direction from center
             const angle = Math.random() * Math.PI * 2;
-            const velocity = Math.random() * 300 + 150;
+            const velocity = Math.random() * 300 + 150; // Distance to travel
             const tx = Math.cos(angle) * velocity + 'px';
             const ty = Math.sin(angle) * velocity + 'px';
             const rot = (Math.random() * 360) + 'deg';
@@ -1039,6 +1054,10 @@
                 elmnt.ontouchstart = dragMouseDown;
 
                 function dragMouseDown(e) {
+                    // Prevent dragging if the surprise overlay is visible
+                    const overlay = document.getElementById('polaroid-overlay');
+                    if (overlay && overlay.classList.contains('active')) return;
+
                     e = e || window.event;
 
                     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
