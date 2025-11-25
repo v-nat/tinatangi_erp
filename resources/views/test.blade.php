@@ -180,8 +180,8 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             overflow: hidden;
             transform: rotate(var(--r, 0deg));
-            cursor: grab; /* Added for drag indication */
-            touch-action: none; /* Important for mobile dragging */
+            cursor: grab;
+            touch-action: none;
             user-select: none;
         }
 
@@ -195,7 +195,7 @@
             object-fit: cover;
             display: block;
             clip-path: polygon(2% 5%, 98% 0%, 100% 95%, 5% 100%);
-            pointer-events: none; /* Let drag events pass to parent */
+            pointer-events: none;
         }
 
         .member-1 { top: 5%; left: 3%; --r: -12deg; }
@@ -227,8 +227,8 @@
             justify-content: center;
             text-align: center;
             transition: transform 0.3s ease;
-            cursor: grab; /* Added for drag indication */
-            touch-action: none; /* Important for mobile dragging */
+            cursor: grab;
+            touch-action: none;
             user-select: none;
         }
 
@@ -244,7 +244,7 @@
             color: #333;
             line-height: 1.3;
             margin: 0;
-            pointer-events: none; /* Let drag events pass to parent */
+            pointer-events: none;
         }
 
         .sticky-note:hover {
@@ -287,6 +287,122 @@
         .deco-2 { bottom: 20%; right: 25%; --r: 15deg; --s: 2.5rem; animation-delay: 1s; }
         .deco-3 { top: 45%; right: 2%; --r: 10deg; --s: 1.5rem; animation-delay: 2s; }
         .deco-4 { bottom: 10%; left: 20%; --r: -10deg; --s: 1.8rem; animation-delay: 3s; }
+
+        .music-floater {
+            position: absolute;
+            z-index: 12;
+            opacity: 0.9;
+            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.15));
+            animation: floatScrapbook 6s ease-in-out infinite alternate;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .viola-img {
+            font-size: 3.5rem;
+        }
+        .viola-1 { top: 15%; left: 10%; transform: rotate(-25deg); --r: -25deg; }
+        .viola-2 { bottom: 25%; right: 10%; transform: rotate(15deg); --r: 15deg; }
+        .viola-3 { top: 45%; left: 5%; transform: rotate(10deg); --r: 10deg; }
+
+        .note-deco { font-size: 2rem; color: var(--text-color); }
+        .note-f-1 { top: 8%; right: 35%; transform: rotate(10deg); --r: 10deg; }
+        .note-f-2 { bottom: 40%; right: 5%; transform: rotate(-10deg); --r: -10deg; font-size: 2.5rem; }
+        .note-f-3 { bottom: 8%; left: 45%; transform: rotate(5deg); --r: 5deg; }
+
+        .alto-clef-scatter {
+            width: 40px;
+            opacity: 0.6;
+        }
+        .clef-s-1 { top: 75%; left: 15%; transform: rotate(-10deg); --r: -10deg; }
+        .clef-s-2 { top: 25%; right: 15%; transform: rotate(20deg); --r: 20deg; }
+
+        .card-side-clef {
+            position: absolute;
+            right: -45px;
+            top: 25%;
+            width: 60px;
+            z-index: 25;
+            transform: rotate(10deg);
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        #polaroid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s;
+            pointer-events: none;
+        }
+
+        #polaroid-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .polaroid-frame {
+            background-color: white;
+            padding: 15px 15px 60px 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transform: scale(0) rotate(-10deg);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90%;
+            width: 320px;
+            text-align: center;
+            position: relative;
+        }
+
+        #polaroid-overlay.active .polaroid-frame {
+            transform: scale(1) rotate(-3deg);
+        }
+
+        .polaroid-frame img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #eee;
+            display: block;
+        }
+
+        .polaroid-caption {
+            font-family: 'Nothing You Could Do', cursive;
+            font-size: 1.8rem;
+            color: #333;
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .boom-particle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        @keyframes boomOut {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(var(--s)) rotate(var(--r)); opacity: 0; }
+        }
 
         .para-bars {
             display: flex;
@@ -469,6 +585,13 @@
                 margin-top: 30px;
             }
 
+            .card-side-clef {
+                right: -15px;
+                width: 45px;
+            }
+
+            .viola-3 { display: none; }
+
             h1 { font-size: 2.5rem; }
             .subtitle { font-size: 0.9rem; }
             .lyrics-quote { font-size: 1.1rem; margin-bottom: 30px; }
@@ -560,6 +683,14 @@
                 width: 44px;
                 height: 44px;
             }
+
+            .polaroid-frame {
+                width: 80%;
+                max-width: 300px;
+            }
+            .polaroid-caption {
+                font-size: 1.5rem;
+            }
         }
 
         @media screen and (max-height: 700px) {
@@ -575,8 +706,35 @@
         <div id="loading-text">Loading...</div>
     </div>
 
+    <div id="polaroid-overlay">
+        <div class="polaroid-frame">
+            <img src="{{ asset('storage/app/public/img/prv/pic1.png') }}" alt="Surprise Celebrant">
+            <div class="polaroid-caption">Happy Birthday!</div>
+        </div>
+    </div>
+
     <div class="bg-shape shape-1"></div>
     <div class="bg-shape shape-2"></div>
+
+    <div class="music-floater viola-img viola-1">🎻</div>
+    <div class="music-floater viola-img viola-2">🎻</div>
+    <div class="music-floater viola-img viola-3">🎻</div>
+
+    <div class="music-floater note-deco note-f-1">🎵</div>
+    <div class="music-floater note-deco note-f-2">🎶</div>
+    <div class="music-floater note-deco note-f-3">🎵</div>
+
+    <svg class="music-floater alto-clef-scatter clef-s-1" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+        <path d="M70,10 C70,10 50,10 50,30 C50,45 60,55 70,55 L70,95 C60,95 50,105 50,120 C50,140 70,140 70,140" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+        <path d="M40,10 L40,140 M30,10 L30,140" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        <path d="M50,75 L80,75 L60,65 L60,85 Z" fill="currentColor"/>
+    </svg>
+    <svg class="music-floater alto-clef-scatter clef-s-2" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+        <path d="M70,10 C70,10 50,10 50,30 C50,45 60,55 70,55 L70,95 C60,95 50,105 50,120 C50,140 70,140 70,140" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+        <path d="M40,10 L40,140 M30,10 L30,140" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        <path d="M50,75 L80,75 L60,65 L60,85 Z" fill="currentColor"/>
+    </svg>
+
 
     <div class="sketch-cutout member-1" title="Hayley Williams">
         <img src="https://commons.wikimedia.org/wiki/Special:FilePath/RiP2013_Paramore_Hayley_Williams_0003.jpg?width=300" alt="Hayley Williams">
@@ -615,6 +773,12 @@
 
 
     <div class="card-container" id="mainCard">
+
+        <svg class="card-side-clef" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+            <path d="M70,10 C70,10 50,10 50,30 C50,45 60,55 70,55 L70,95 C60,95 50,105 50,120 C50,140 70,140 70,140" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+            <path d="M40,10 L40,140 M30,10 L30,140" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            <path d="M50,75 L80,75 L60,65 L60,85 Z" fill="currentColor"/>
+        </svg>
 
         <div class="celebrant-photo">
             <img src="{{ asset('storage/app/public/img/prv/pic.png') }}" alt="Birthday Celebrant">
@@ -751,12 +915,63 @@
                 setTimeout(() => createParticle(), i * 40);
             }
 
+            triggerPolaroidSurprise();
+
             setTimeout(() => {
                  btn.innerText = originalText;
                  btn.style.pointerEvents = "auto";
                  card.style.transform = "translateY(0) scale(1)";
                  card.style.boxShadow = "0 20px 50px rgba(230, 74, 25, 0.15)";
             }, 5000);
+        }
+
+        function triggerPolaroidSurprise() {
+            const overlay = document.getElementById('polaroid-overlay');
+
+            for(let i=0; i<30; i++) {
+                createBoomParticle();
+            }
+
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 300);
+
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 5000);
+        }
+
+        function createBoomParticle() {
+            const p = document.createElement('div');
+            p.classList.add('boom-particle');
+
+            const isBalloon = Math.random() > 0.6;
+            if(isBalloon) {
+                p.style.backgroundColor = ['#FF884D', '#E64A19', '#F8BBD0'][Math.floor(Math.random()*3)];
+                p.style.borderRadius = "50%";
+                p.style.width = (Math.random() * 30 + 10) + "px";
+                p.style.height = (parseFloat(p.style.width) * 1.2) + "px";
+            } else {
+                p.innerText = Math.random() > 0.5 ? "🦋" : "✨";
+                p.style.fontSize = (Math.random() * 20 + 20) + "px";
+                p.style.background = "transparent";
+            }
+
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 300 + 150;
+            const tx = Math.cos(angle) * velocity + 'px';
+            const ty = Math.sin(angle) * velocity + 'px';
+            const rot = (Math.random() * 360) + 'deg';
+
+            p.style.setProperty('--tx', tx);
+            p.style.setProperty('--ty', ty);
+            p.style.setProperty('--r', rot);
+            p.style.setProperty('--s', Math.random() + 0.5);
+
+            p.style.animation = `boomOut 1.5s ease-out forwards`;
+
+            document.body.appendChild(p);
+            setTimeout(() => { p.remove(); }, 1500);
         }
 
         function createParticle() {
