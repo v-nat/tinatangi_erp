@@ -288,7 +288,6 @@
         .deco-3 { top: 45%; right: 2%; --r: 10deg; --s: 1.5rem; animation-delay: 2s; }
         .deco-4 { bottom: 10%; left: 20%; --r: -10deg; --s: 1.8rem; animation-delay: 3s; }
 
-        /* NEW ADDITIONS FOR VIOLAS AND NOTES */
         .music-floater {
             position: absolute;
             z-index: 12;
@@ -299,7 +298,6 @@
             pointer-events: none;
         }
 
-        /* Violas */
         .viola-img {
             font-size: 3.5rem;
         }
@@ -307,13 +305,11 @@
         .viola-2 { bottom: 25%; right: 10%; transform: rotate(15deg); --r: 15deg; }
         .viola-3 { top: 45%; left: 5%; transform: rotate(10deg); --r: 10deg; }
 
-        /* Music Notes */
         .note-deco { font-size: 2rem; color: var(--text-color); }
         .note-f-1 { top: 8%; right: 35%; transform: rotate(10deg); --r: 10deg; }
         .note-f-2 { bottom: 40%; right: 5%; transform: rotate(-10deg); --r: -10deg; font-size: 2.5rem; }
         .note-f-3 { bottom: 8%; left: 45%; transform: rotate(5deg); --r: 5deg; }
 
-        /* Scattered Alto Clefs */
         .alto-clef-scatter {
             width: 40px;
             opacity: 0.6;
@@ -321,7 +317,6 @@
         .clef-s-1 { top: 75%; left: 15%; transform: rotate(-10deg); --r: -10deg; }
         .clef-s-2 { top: 25%; right: 15%; transform: rotate(20deg); --r: 20deg; }
 
-        /* Side Card Alto Clef */
         .card-side-clef {
             position: absolute;
             right: -45px;
@@ -331,10 +326,9 @@
             transform: rotate(10deg);
             filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
             opacity: 0.9;
-            pointer-events: none; /* Added to prevent blocking touches */
+            pointer-events: none;
         }
 
-        /* ----- POLAROID SURPRISE STYLES ----- */
         #polaroid-overlay {
             position: fixed;
             top: 0;
@@ -342,14 +336,14 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.4);
-            z-index: 999; /* Below loading screen but above everything else */
+            z-index: 999;
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease, visibility 0.5s;
-            pointer-events: none; /* Let touches pass until active */
+            pointer-events: none;
         }
 
         #polaroid-overlay.active {
@@ -365,7 +359,7 @@
             transform: scale(0) rotate(-10deg);
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-width: 90%;
-            width: 320px; /* Responsive size */
+            width: 320px;
             text-align: center;
             position: relative;
         }
@@ -400,7 +394,7 @@
             height: 20px;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10000; /* Increased to be on top of everything */
+            z-index: 10000;
             pointer-events: none;
         }
 
@@ -409,7 +403,6 @@
             80% { opacity: 1; }
             100% { transform: translate(var(--tx), var(--ty)) scale(var(--s)) rotate(var(--r)); opacity: 0; }
         }
-        /* END NEW ADDITIONS */
 
         .para-bars {
             display: flex;
@@ -545,7 +538,7 @@
             user-select: none;
         }
 
-        .particle { z-index: 10000; } /* Increased to be on top of everything */
+        .particle { z-index: 10000; }
         .bg-floater { z-index: 5; opacity: 0; }
 
         .balloon {
@@ -592,12 +585,11 @@
                 margin-top: 30px;
             }
 
-            /* Responsive adjustment for side clef */
             .card-side-clef {
                 right: -15px;
                 width: 45px;
             }
-            /* Hide the middle viola to prevent clutter on small screens */
+
             .viola-3 { display: none; }
 
             h1 { font-size: 2.5rem; }
@@ -692,7 +684,6 @@
                 height: 44px;
             }
 
-            /* Responsive fix for polaroid on small screens */
             .polaroid-frame {
                 width: 80%;
                 max-width: 300px;
@@ -920,12 +911,10 @@
             card.style.transform = "translateY(-5px) scale(1.01)";
             card.style.boxShadow = "0 30px 60px rgba(255, 136, 77, 0.25)";
 
-            // Trigger the existing rain of particles
             for (let i = 0; i < 50; i++) {
                 setTimeout(() => createParticle(), i * 40);
             }
 
-            // Trigger the new Polaroid Surprise with Boom
             triggerPolaroidSurprise();
 
             setTimeout(() => {
@@ -939,17 +928,14 @@
         function triggerPolaroidSurprise() {
             const overlay = document.getElementById('polaroid-overlay');
 
-            // Create "Boom" explosion first
             for(let i=0; i<30; i++) {
                 createBoomParticle();
             }
 
-            // Show Overlay after a tiny delay to let boom start
             setTimeout(() => {
                 overlay.classList.add('active');
             }, 300);
 
-            // Hide after 5 seconds
             setTimeout(() => {
                 overlay.classList.remove('active');
             }, 5000);
@@ -971,9 +957,8 @@
                 p.style.background = "transparent";
             }
 
-            // Random direction from center
             const angle = Math.random() * Math.PI * 2;
-            const velocity = Math.random() * 300 + 150; // Distance to travel
+            const velocity = Math.random() * 300 + 150;
             const tx = Math.cos(angle) * velocity + 'px';
             const ty = Math.sin(angle) * velocity + 'px';
             const rot = (Math.random() * 360) + 'deg';
@@ -1054,7 +1039,6 @@
                 elmnt.ontouchstart = dragMouseDown;
 
                 function dragMouseDown(e) {
-                    // Prevent dragging if the surprise overlay is visible
                     const overlay = document.getElementById('polaroid-overlay');
                     if (overlay && overlay.classList.contains('active')) return;
 
