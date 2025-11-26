@@ -38,11 +38,11 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
             overflow: hidden;
         }
 
         body {
+            height: 100dvh;
             background: linear-gradient(135deg, var(--warm-white) 0%, var(--glow-orange) 100%);
             color: var(--text-color);
             font-family: 'Lato', sans-serif;
@@ -573,7 +573,6 @@
             100% { transform: translateY(-20vh) translateX(var(--drift)) rotate(var(--rot)); opacity: 0.8; }
         }
 
-        /* Existing Mobile Styles (below 768px) */
         @media screen and (max-width: 768px) {
             body {
                 padding: 20px;
@@ -605,37 +604,46 @@
             }
 
             .member-1 {
-                top: 2%;
-                left: -2%;
+                top: auto;
+                bottom: 2%;
+                left: 2%;
+                right: auto;
                 transform: rotate(-5deg);
             }
             .member-2 {
+                top: auto;
                 bottom: 2%;
-                left: -2%;
+                left: 40%;
+                right: auto;
                 transform: rotate(5deg);
             }
             .member-3 {
-                top: 2%;
-                right: -2%;
+                top: auto;
+                bottom: 2%;
+                right: 2%;
+                left: auto;
                 transform: rotate(5deg);
             }
 
             .extra-1 {
                 top: 2%;
-                left: 40%;
+                right: 2%;
+                left: auto;
+                bottom: auto;
                 transform: rotate(15deg);
             }
             .extra-2 {
-                top: auto;
-                bottom: 2%;
-                right: -2%;
+                top: 24%;
+                right: 2%;
                 left: auto;
+                bottom: auto;
                 transform: rotate(-10deg);
             }
             .extra-3 {
-                bottom: 2%;
-                left: 40%;
-                right: auto;
+                top: 45%;
+                right: 2%;
+                left: auto;
+                bottom: auto;
                 transform: rotate(8deg);
             }
 
@@ -649,20 +657,24 @@
             .sticky-note p { font-size: 0.7rem; }
 
             .note-1 {
-                top: 20%;
+                top: 5%;
                 left: -2%;
                 right: auto;
+                bottom: auto;
                 transform: rotate(5deg);
             }
             .note-2 {
-                bottom: 20%;
-                left: auto;
-                right: -2%;
+                top: 25%;
+                left: -2%;
+                right: auto;
+                bottom: auto;
                 transform: rotate(-3deg);
             }
             .note-3 {
-                bottom: 15%;
+                top: 45%;
                 left: -2%;
+                right: auto;
+                bottom: auto;
                 transform: rotate(4deg);
             }
 
@@ -695,16 +707,23 @@
         }
 
         @media screen and (max-height: 700px) {
-            .sketch-cutout { display: none; }
-            .sticky-note { display: none; }
+
+            .sketch-cutout, .sticky-note {
+                transform: scale(0.65) rotate(var(--r));
+            }
+
+            .member-1 { top: 10px; left: -15px; }
+            .member-3 { top: 10px; right: -15px; }
+
+            .note-1 { top: 35%; left: -25px; }
+
+            .member-2 { bottom: 10px; right: -15px; left: auto; }
+            .note-2 { bottom: 10px; left: -15px; right: auto; }
+            .note-3 { bottom: 40%; left: auto; right: -25px; }
         }
 
-        /* iPhone 16 Pro Max Specific Responsive Styles
-           Targeting Logic Width ~440px
-        */
         @media screen and (max-width: 440px) {
             body {
-                /* Ensure safe areas (Dynamic Island) are respected */
                 padding-top: max(20px, env(safe-area-inset-top));
                 padding-bottom: max(20px, env(safe-area-inset-bottom));
                 padding-left: 15px;
@@ -712,23 +731,19 @@
             }
 
             .card-container {
-                /* iPhone 16 Pro Max has more width than standard, so we give it slightly more room */
                 width: 92%;
                 max-width: 420px;
                 padding: 35px 25px;
             }
 
             h1 {
-                /* Utilize the larger screen real estate */
                 font-size: 2.8rem;
             }
 
             .spark-btn {
-                /* Larger touch target for the larger screen */
                 padding: 18px 30px;
             }
 
-            /* Adjust floating elements to not be covered by Dynamic Island */
             #loading-screen {
                 padding-top: env(safe-area-inset-top);
             }
@@ -1086,9 +1101,12 @@
                     pos3 = clientX;
                     pos4 = clientY;
 
-                    const rect = elmnt.getBoundingClientRect();
-                    elmnt.style.left = rect.left + 'px';
-                    elmnt.style.top = rect.top + 'px';
+                    if (!elmnt.style.left) {
+                        const computed = window.getComputedStyle(elmnt);
+                        elmnt.style.left = computed.left;
+                        elmnt.style.top = computed.top;
+                    }
+
                     elmnt.style.bottom = 'auto';
                     elmnt.style.right = 'auto';
 
