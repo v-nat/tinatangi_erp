@@ -573,6 +573,7 @@
             100% { transform: translateY(-20vh) translateX(var(--drift)) rotate(var(--rot)); opacity: 0.8; }
         }
 
+        /* Existing Mobile Styles (below 768px) */
         @media screen and (max-width: 768px) {
             body {
                 padding: 20px;
@@ -696,6 +697,41 @@
         @media screen and (max-height: 700px) {
             .sketch-cutout { display: none; }
             .sticky-note { display: none; }
+        }
+
+        /* iPhone 16 Pro Max Specific Responsive Styles
+           Targeting Logic Width ~440px
+        */
+        @media screen and (max-width: 440px) {
+            body {
+                /* Ensure safe areas (Dynamic Island) are respected */
+                padding-top: max(20px, env(safe-area-inset-top));
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .card-container {
+                /* iPhone 16 Pro Max has more width than standard, so we give it slightly more room */
+                width: 92%;
+                max-width: 420px;
+                padding: 35px 25px;
+            }
+
+            h1 {
+                /* Utilize the larger screen real estate */
+                font-size: 2.8rem;
+            }
+
+            .spark-btn {
+                /* Larger touch target for the larger screen */
+                padding: 18px 30px;
+            }
+
+            /* Adjust floating elements to not be covered by Dynamic Island */
+            #loading-screen {
+                padding-top: env(safe-area-inset-top);
+            }
         }
     </style>
 </head>
