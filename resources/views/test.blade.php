@@ -808,13 +808,13 @@
     </div>
 
     <div class="sticky-note note-1">
-        <p>Happy B-Day Sis Andeng HAHHAHA!🤘</p>
+        <p>Happy B-Day Sis Andeng HAHHAHA!</p>
     </div>
     <div class="sticky-note note-2 pink">
-        <p>Ain't it fun being the boss? HHAHAHAH</p>
+        <p>found an older sister in u</p>
     </div>
     <div class="sticky-note note-3">
-        <p>Best Wishes, God bless always </p>
+        <p>Best Wishes, God bless, always</p>
     </div>
 
     <div class="scrapbook-deco deco-1">🧡</div>
