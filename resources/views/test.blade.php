@@ -775,17 +775,13 @@
     <div class="music-floater note-deco note-f-2">🎶</div>
     <div class="music-floater note-deco note-f-3">🎵</div>
 
-    <svg class="music-floater alto-clef-scatter clef-s-1" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
-        <path d="M70,10 C70,10 50,10 50,30 C50,45 60,55 70,55 L70,95 C60,95 50,105 50,120 C50,140 70,140 70,140" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
-        <path d="M40,10 L40,140 M30,10 L30,140" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-        <path d="M50,75 L80,75 L60,65 L60,85 Z" fill="currentColor"/>
-    </svg>
-    <svg class="music-floater alto-clef-scatter clef-s-2" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
-        <path d="M70,10 C70,10 50,10 50,30 C50,45 60,55 70,55 L70,95 C60,95 50,105 50,120 C50,140 70,140 70,140" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
-        <path d="M40,10 L40,140 M30,10 L30,140" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-        <path d="M50,75 L80,75 L60,65 L60,85 Z" fill="currentColor"/>
-    </svg>
+    <div class="music-floater alto-clef-scatter clef-s-1">
+        <img src="https://drive.google.com/thumbnail?id=1FyDsKgVvdoht1uDRLyZvdTGjdsnhpLe4&sz=w1000" style="width: 50px;" alt="Alto Clef">
+    </div>
 
+    <div class="music-floater alto-clef-scatter clef-s-2">
+        <img src="https://drive.google.com/thumbnail?id=1FyDsKgVvdoht1uDRLyZvdTGjdsnhpLe4&sz=w1000" style="width: 50px;" alt="Alto Clef">
+    </div>
 
     <div class="sketch-cutout member-1" title="Hayley Williams">
         <img src="https://commons.wikimedia.org/wiki/Special:FilePath/RiP2013_Paramore_Hayley_Williams_0003.jpg?width=300" alt="Hayley Williams">
@@ -825,11 +821,9 @@
 
     <div class="card-container" id="mainCard">
 
-        <svg class="card-side-clef" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
-            <path d="M70,10 C70,10 50,10 50,30 C50,45 60,55 70,55 L70,95 C60,95 50,105 50,120 C50,140 70,140 70,140" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
-            <path d="M40,10 L40,140 M30,10 L30,140" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-            <path d="M50,75 L80,75 L60,65 L60,85 Z" fill="currentColor"/>
-        </svg>
+        <div class="card-side-clef">
+            <img src="https://drive.google.com/thumbnail?id=1FyDsKgVvdoht1uDRLyZvdTGjdsnhpLe4&sz=w1000" style="width: 50px;" alt="Alto Clef">
+        </div>
 
         <div class="celebrant-photo">
             <img src="https://drive.google.com/thumbnail?id=1BCfckf5lAJugoyytaqYuIm7PbVze_6Pl&sz=w1000" alt="Birthday Celebrant">
