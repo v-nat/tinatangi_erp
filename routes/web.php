@@ -14,6 +14,9 @@ Route::get('/home', function () {
 Route::get('/4861707079204269727468646179', function () {
     return view('test');
 })->name('testing');
+Route::get('/hmmm', function () {
+    return view('congrats');
+});
 
 
 Route::get('/admintest', function () {
