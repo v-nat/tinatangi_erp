@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\EmployeeSalarySettings;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Controllers\GenerateIdController;
@@ -441,10 +442,13 @@ class EmployeeController extends Controller
 
             if ($request->hasFile('proof')) {
                 // Store file in public disk
-                $path = $request->file('proof')->store('proof_of_payments', 'public');
+                $file = $request->file("proof");
+                $filename = $file->hashName();
+                $path = 'img/proof_of_payments/' . $filename;
+                Storage::disk('public')->put($path, $file->get());
+                $returnPhotoPath = '/storage/app/public/' . $path;
 
-                // Save path to DB
-                $payroll->proof_of_payment = $path;
+                $payroll->proof_of_payment = $returnPhotoPath;
 
                 // You might want to update a status field here as well
                 // $payroll->status = 'Acknowledged';
