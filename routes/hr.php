@@ -72,15 +72,15 @@ Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(fun
     Route::get('/positions-by-department', [EmployeeController::class, 'getPositions']);
 
     ////////////////////////////////// PAYROLL SETTINGS AND POSITIONS SALARIES //////////////////////////
-    Route::get('/get-payroll-settings', [EmployeeController::class, 'getPayrollSettings']);
-    Route::get('/get-salary-by-position', [EmployeeController::class, 'getSalaryByPosition']);
-    Route::get('/get-salary-settings', [EmployeeController::class, 'getSalarySettings']);
-    Route::post('/update-payroll-settings', [PayrollSettingsController::class, 'updatePayrollSettings']);
-    Route::get('/get-salary-setting/{id}', [PayrollSettingsController::class, 'getSingleSalarySetting']);
-    Route::put('/update-salary-setting/{id}', [PayrollSettingsController::class, 'updateSalarySetting']);
-    Route::get('/departments/list', [DepartmentController::class, 'getDepartmentList']);
-    Route::post('/store-position-and-salary', [PayrollSettingsController::class, 'storePositionAndSalary']);
-    Route::get('/ceo', [EmployeeController::class, 'getCEO']);
+    // Route::get('/get-payroll-settings', [EmployeeController::class, 'getPayrollSettings']);
+    // Route::get('/get-salary-by-position', [EmployeeController::class, 'getSalaryByPosition']);
+    // Route::get('/get-salary-settings', [EmployeeController::class, 'getSalarySettings']);
+    // Route::post('/update-payroll-settings', [PayrollSettingsController::class, 'updatePayrollSettings']);
+    // Route::get('/get-salary-setting/{id}', [PayrollSettingsController::class, 'getSingleSalarySetting']);
+    // Route::put('/update-salary-setting/{id}', [PayrollSettingsController::class, 'updateSalarySetting']);
+    // Route::get('/departments/list', [DepartmentController::class, 'getDepartmentList']);
+    // Route::post('/store-position-and-salary', [PayrollSettingsController::class, 'storePositionAndSalary']);
+    // Route::get('/ceo', [EmployeeController::class, 'getCEO']);
 
     //////////////////////////////// OVERTIME ///////////////////////////////////////////
     Route::get('/overtimes', [HR_Controller::class, 'otMngmnt'])->name('hr.ot-app');

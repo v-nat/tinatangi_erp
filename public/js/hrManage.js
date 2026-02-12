@@ -2,6 +2,79 @@ $(function() {
     var mode = "";
     let defaultSss, defaultPhilhealth, defaultPagibig;
 
+    const sssTable = [
+        { min: 0,        max: 5249.99,  deduction: 250.00 },
+        { min: 5250,     max: 5749.99,  deduction: 275.00 },
+        { min: 5750,     max: 6249.99,  deduction: 300.00 },
+        { min: 6250,     max: 6749.99,  deduction: 325.00 },
+        { min: 6750,     max: 7249.99,  deduction: 350.00 },
+        { min: 7250,     max: 7749.99,  deduction: 375.00 },
+        { min: 7750,     max: 8249.99,  deduction: 400.00 },
+        { min: 8250,     max: 8749.99,  deduction: 425.00 },
+        { min: 8750,     max: 9249.99,  deduction: 450.00 },
+        { min: 9250,     max: 9749.99,  deduction: 475.00 },
+        { min: 9750,     max: 10249.99, deduction: 500.00 },
+        { min: 10250,    max: 10749.99, deduction: 525.00 },
+        { min: 10750,    max: 11249.99, deduction: 550.00 },
+        { min: 11250,    max: 11749.99, deduction: 575.00 },
+        { min: 11750,    max: 12249.99, deduction: 600.00 },
+        { min: 12250,    max: 12749.99, deduction: 625.00 },
+        { min: 12750,    max: 13249.99, deduction: 650.00 },
+        { min: 13250,    max: 13749.99, deduction: 675.00 },
+        { min: 13750,    max: 14249.99, deduction: 700.00 },
+        { min: 14250,    max: 14749.99, deduction: 725.00 },
+        { min: 14750,    max: 15249.99, deduction: 750.00 },
+        { min: 15250,    max: 15749.99, deduction: 775.00 },
+        { min: 15750,    max: 16249.99, deduction: 800.00 },
+        { min: 16250,    max: 16749.99, deduction: 825.00 },
+        { min: 16750,    max: 17249.99, deduction: 850.00 },
+        { min: 17250,    max: 17749.99, deduction: 875.00 },
+        { min: 17750,    max: 18249.99, deduction: 900.00 },
+        { min: 18250,    max: 18749.99, deduction: 925.00 },
+        { min: 18750,    max: 19249.99, deduction: 950.00 },
+        { min: 19250,    max: 19749.99, deduction: 975.00 },
+        { min: 19750,    max: 20249.99, deduction: 1000.00 },
+
+        { min: 20250,    max: 20749.99, deduction: 1025.00 },
+        { min: 20750,    max: 21249.99, deduction: 1050.00 },
+        { min: 21250,    max: 21749.99, deduction: 1075.00 },
+        { min: 21750,    max: 22249.99, deduction: 1100.00 },
+        { min: 22250,    max: 22749.99, deduction: 1125.00 },
+        { min: 22750,    max: 23249.99, deduction: 1150.00 },
+        { min: 23250,    max: 23749.99, deduction: 1175.00 },
+        { min: 23750,    max: 24249.99, deduction: 1200.00 },
+        { min: 24250,    max: 24749.99, deduction: 1225.00 },
+        { min: 24750,    max: 25249.99, deduction: 1250.00 },
+        { min: 25250,    max: 25749.99, deduction: 1275.00 },
+        { min: 25750,    max: 26249.99, deduction: 1300.00 },
+        { min: 26250,    max: 26749.99, deduction: 1325.00 },
+        { min: 26750,    max: 27249.99, deduction: 1350.00 },
+        { min: 27250,    max: 27749.99, deduction: 1375.00 },
+        { min: 27750,    max: 28249.99, deduction: 1400.00 },
+        { min: 28250,    max: 28749.99, deduction: 1425.00 },
+        { min: 28750,    max: 29249.99, deduction: 1450.00 },
+        { min: 29250,    max: 29749.99, deduction: 1475.00 },
+        { min: 29750,    max: 30249.99, deduction: 1500.00 },
+        { min: 30250,    max: 30749.99, deduction: 1525.00 },
+        { min: 30750,    max: 31249.99, deduction: 1550.00 },
+        { min: 31250,    max: 31749.99, deduction: 1575.00 },
+        { min: 31750,    max: 32249.99, deduction: 1600.00 },
+        { min: 32250,    max: 32749.99, deduction: 1625.00 },
+        { min: 32750,    max: 33249.99, deduction: 1650.00 },
+        { min: 33250,    max: 33749.99, deduction: 1675.00 },
+        { min: 33750,    max: 34249.99, deduction: 1700.00 },
+        { min: 34250,    max: 34749.99, deduction: 1725.00 },
+        { min: 34750,    max: Infinity, deduction: 1750.00 }
+    ];
+
+    function calculateSSSDeduction(salary) {
+        if (!salary && salary !== 0) return 0;
+
+        const bracket = sssTable.find(b => salary >= b.min && salary <= b.max);
+
+        return bracket ? bracket.deduction : 0;
+    }
+
     const currencyFields = ['#base_salary', '#sss', '#philhealth', '#pagibig'];
 
     function formatToCurrency(value) {
@@ -25,6 +98,14 @@ $(function() {
         },
         blur: function() {
             $(this).val(formatToCurrency($(this).val()));
+
+            if ($(this).is('#base_salary')) {
+                const salary = parseFloat(formatToNumber($(this).val()));
+                if (!isNaN(salary)) {
+                    const newSss = calculateSSSDeduction(salary);
+                    $('#sss').val(formatToCurrency(newSss));
+                }
+            }
         }
     });
 
@@ -202,9 +283,20 @@ $(function() {
                 dataType: 'json',
                 success: function(data) {
                     if (data && data.base_salary) {
-                        $("#base_salary").val(formatToCurrency(data.base_salary));
+                        const rawSalary = parseFloat(data.base_salary);
+
+                        // Set Salary Field
+                        $("#base_salary").val(formatToCurrency(rawSalary));
+
+                        // --- AUTO-CALCULATE SSS ---
+                        if (!isNaN(rawSalary)) {
+                            const newSss = calculateSSSDeduction(rawSalary);
+                            $('#sss').val(formatToCurrency(newSss));
+                        }
                     } else {
                         $("#base_salary").val("");
+                        // Reset SSS to default if salary is cleared
+                        if(defaultSss) $('#sss').val(formatToCurrency(defaultSss));
                     }
                 },
                 error: function(xhr, status, error) {

@@ -102,6 +102,7 @@ class PayrollController extends Controller
 
         try {
             $payroll = Payroll::findOrFail($id);
+            // Keeping this fetch for potential view-related data, though calculations use employee now
             $payrollSettings = PayrollSettings::where('status', 1)->first();
 
             $remarks = null;
@@ -339,7 +340,7 @@ class PayrollController extends Controller
             $payroll_start_date = Carbon::parse($validated['start_date']);
             $payroll_end_date = Carbon::parse($validated['end_date']);
 
-            $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date, $payrollSettings);
+            $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date);
             $breakdown = $this->calculator->fromPayrollAttributes($data);
 
             $payroll = Payroll::create(array_merge($data, $breakdown));
@@ -380,7 +381,7 @@ class PayrollController extends Controller
             foreach ($employeeIds as $employeeId) {
                 $employee = Employee::findOrFail($employeeId);
 
-                $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date, $payrollSettings);
+                $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date);
                 $breakdown = $this->calculator->fromPayrollAttributes($data);
 
                 $payroll = Payroll::create(array_merge($data, $breakdown));
@@ -402,7 +403,7 @@ class PayrollController extends Controller
         }
     }
 
-    protected function initialComputation($employee, $start_date, $end_date, PayrollSettings $payrollSettings)
+    protected function initialComputation($employee, $start_date, $end_date)
     {
         $hasAttendance = Attendance::where('employee_id', $employee->id)
             ->whereBetween('date', [$start_date, $end_date])
@@ -450,7 +451,8 @@ class PayrollController extends Controller
         $days_absent_deduction = $this->absentDeduction($days_absent, $daily_rate);
         $tardiness_total = $this->tardinessTotal($employee->id, $start_date, $end_date);
         $tardiness_deduction = $this->tardinessDeduction($employee->id, $start_date, $end_date, $per_hour_rate);
-        $mandatory_deduction = $this->totalMandatoryDeductions($payrollSettings);
+
+        $mandatory_deduction = $this->totalMandatoryDeductions($employee);
 
         return [
             'days_present' => $days_present,
@@ -610,11 +612,12 @@ class PayrollController extends Controller
             ->sum('tardiness_minutes');
     }
 
-    protected function totalMandatoryDeductions(PayrollSettings $payrollSettings)
+    protected function totalMandatoryDeductions($employee)
     {
-        $sss = $payrollSettings->sss;
-        $philhealth = $payrollSettings->philhealth;
-        $pagibig = $payrollSettings->pagibig;
+        $sss = $employee->sss ?? 0;
+        $philhealth = $employee->philhealth ?? 0;
+        $pagibig = $employee->pagibig ?? 0;
+
         $total = $sss + $philhealth + $pagibig;
         return [
             'sss' => $sss,

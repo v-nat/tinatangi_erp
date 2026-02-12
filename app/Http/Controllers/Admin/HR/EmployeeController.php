@@ -27,7 +27,7 @@ class EmployeeController extends Controller
 {
     public function manage()
     {
-        
+
         $departments = Department::whereNot('name', 'Administration')->whereNot('name', 'Executives')->get();
         $data = ['address' => '', 'first_name' => '', 'middle_name' => '', 'last_name' => '', 'email' => '', 'phone_number' => '', 'postal_code' => '', 'gender' => '', 'birth_date' => '', 'age' => '', 'citizenship' => '', 'department' => '', 'position' => '', 'position_id' => '', 'level' => '', 'supervisor' => '', 'supervisor_id' => '', 'sss' => '', 'pagibig' => '', 'philhealth' => '', 'salary' => '',];
         $mode = 'add';
@@ -222,7 +222,6 @@ class EmployeeController extends Controller
                     'description' => $validated['description'] ?? null,
                 ]);
             }
-            // --- END ADDED ---
 
             DB::commit();
 
@@ -284,9 +283,11 @@ class EmployeeController extends Controller
                 'level' => $levelEnum,
                 'position_id' => $validated['position_id'],
                 'supervisor_id' => $validated['supervisor_id'],
+                'sss' => $validated['sss'] ?? 600.00,
+                'pagibig' => $validated['pagibig'] ?? 100.00,
+                'philhealth' => $validated['philhealth'] ?? 450.00,
                 'base_salary' => $validated['base_salary'],
             ]);
-
 
              if (!empty($validated['days_of_week']) && !empty($validated['time_in']) && !empty($validated['time_out'])) {
                 $employee->schedule()->updateOrCreate(
