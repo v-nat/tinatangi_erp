@@ -194,9 +194,47 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="cancelAddPosition" type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="cancelAddPosition" type="button" class="btn btn-light-secondary"
+                    data-bs-dismiss="modal">Cancel</button>
                 <button id="submitAddPosition" type="submit" form="addPositionForm" class="btn btn-primary">Create
                     Position</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Proof of Payment Modal -->
+<div class="modal fade" id="proofOfPaymentModal" tabindex="-1" aria-labelledby="proofOfPaymentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="proofOfPaymentModalLabel">Confirm Receipt of Salary</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    By printing this payslip, you are declaring that you have <strong>received your salary</strong> for
+                    this period.
+                </div>
+                <p class="mb-3">Please upload a photo/screenshot as proof of payment (e.g., bank transfer receipt, cash
+                    acknowledgement) to proceed.</p>
+
+                <form id="proofOfPaymentForm" enctype="multipart/form-data">
+                    <input type="hidden" id="proof_payroll_id" name="payroll_id">
+                    <div class="mb-3">
+                        <label for="proof_file" class="form-label fw-bold">Upload Proof (Image)</label>
+                        <input class="form-control" type="file" id="proof_file" name="proof" accept="image/*" required>
+                        <div class="form-text text-muted">Allowed formats: JPG, PNG, JPEG.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-submit-proof">
+                    <i class="fa-solid fa-check me-1"></i> Confirm & Print
+                </button>
             </div>
         </div>
     </div>

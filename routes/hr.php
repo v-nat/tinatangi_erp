@@ -37,6 +37,7 @@ Route::prefix('/employee')->middleware(['auth', 'isEmployee'])->group(function (
     Route::get('/payslip/{id}', [HR_Controller::class, 'employeePayslip'])->name('hr.payslip');
     Route::get('/payslip/list/{id}', [PayrollController::class, 'getPayslipList']);
     Route::get('/payslip/data/{id}', [PayrollController::class, 'getPayrollview']);
+    Route::post('/payslip/acknowledge', [EmployeeController::class, 'acknowledgePayslip']);
 
     ///////////////////////////////// SCHEDULE ///////////////////////////////////////
     Route::get('/schedule/{id}', [ScheduleController::class, 'viewEmployeeSchedule'])->name('hr.employee-schedule');

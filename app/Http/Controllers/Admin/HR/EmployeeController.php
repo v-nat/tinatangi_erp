@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Enums\Level;
 use App\Models\User;
 use App\Models\Status;
+use App\Models\Payroll;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\Schedule;
@@ -169,7 +170,7 @@ class EmployeeController extends Controller
             $validated = $request->validated();
             $levelEnum = Level::tryFrom(strtolower(trim($validated['level'] ?? '')));
             if (!$levelEnum) {
-                 throw ValidationException::withMessages(['level' => 'Invalid role specified.']);
+                throw ValidationException::withMessages(['level' => 'Invalid role specified.']);
             }
 
             $employee_Id = GenerateIdController::generateID('employee');
@@ -237,7 +238,6 @@ class EmployeeController extends Controller
                 ];
                 MailSender::sendEmployeeEmail($content);
             } catch (\Exception $mailError) {
-
             }
 
             return response()->json(['message' => 'Employee and schedule added successfully!'], 201); // Updated message
@@ -245,7 +245,6 @@ class EmployeeController extends Controller
         } catch (ValidationException $e) {
             DB::rollBack();
             return response()->json(['errors' => $e->errors()], 422);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
@@ -268,9 +267,9 @@ class EmployeeController extends Controller
             ]);
 
             $levelEnum = Level::tryFrom(strtolower(trim($validated['level'] ?? '')));
-             if (!$levelEnum) {
-                 throw ValidationException::withMessages(['level' => 'Invalid role specified.']);
-             }
+            if (!$levelEnum) {
+                throw ValidationException::withMessages(['level' => 'Invalid role specified.']);
+            }
             $employee->update([
                 'address' => $validated['address'],
                 'postal_code' => $validated['postal_code'],
@@ -289,7 +288,7 @@ class EmployeeController extends Controller
                 'base_salary' => $validated['base_salary'],
             ]);
 
-             if (!empty($validated['days_of_week']) && !empty($validated['time_in']) && !empty($validated['time_out'])) {
+            if (!empty($validated['days_of_week']) && !empty($validated['time_in']) && !empty($validated['time_out'])) {
                 $employee->schedule()->updateOrCreate(
                     ['employee_id' => $employee->id],
                     [
@@ -308,7 +307,6 @@ class EmployeeController extends Controller
 
             DB::commit();
             return response()->json(['message' => 'Employee and schedule updated successfully!'], 200);
-
         } catch (ValidationException $e) {
             DB::rollBack();
             return response()->json(['errors' => $e->errors()], 422);
@@ -426,4 +424,43 @@ class EmployeeController extends Controller
         return view("pages.admin.human_resources.manage-employee", compact("data", "departments", "mode", "title", "id"));
     }
 
+    public function acknowledgePayslip(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'payroll_id' => 'required|integer|exists:payrolls,id',
+                'proof' => 'required|image|max:5120', // Max 5MB
+            ]);
+
+            $payroll = Payroll::findOrFail($validated['payroll_id']);
+
+            // Prevent re-uploading if already exists (optional safety check)
+            if ($payroll->proof_of_payment) {
+                return response()->json(['message' => 'Proof of payment already exists.'], 400);
+            }
+
+            if ($request->hasFile('proof')) {
+                // Store file in public disk
+                $path = $request->file('proof')->store('proof_of_payments', 'public');
+
+                // Save path to DB
+                $payroll->proof_of_payment = $path;
+
+                // You might want to update a status field here as well
+                // $payroll->status = 'Acknowledged';
+
+                $payroll->save();
+            }
+
+            return response()->json([
+                'message' => 'Proof of payment uploaded successfully.',
+                'path' => $path ?? null
+            ]);
+        } catch (ValidationException $ve) {
+            return response()->json(['errors' => $ve->errors()], 422);
+        } catch (\Exception $e) {
+            Log::error('Payslip Acknowledgement Error: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to upload proof. Please try again.'], 500);
+        }
+    }
 }

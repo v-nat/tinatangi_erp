@@ -37,6 +37,7 @@ class Payroll extends Model
         'salary_before_tax',
         'net_pay',
         'remarks',
+        'proof_of_payment',
         'status',
     ];
 

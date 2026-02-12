@@ -88,6 +88,7 @@ class PayrollController extends Controller
                     'gross_pay' => $payroll->gross_pay ?? '',
                     'gross_deduction' => $payroll->deduction + $payroll->days_absent_deduction ?? '',
                     'net_pay' => $payroll->net_pay ?? '',
+                    'proof_of_payment' => $payroll->proof_of_payment ? asset('storage/' . $payroll->proof_of_payment) : null,
                     'status' => Status::getStatusText($payroll->status),
                 ];
             });
@@ -145,6 +146,7 @@ class PayrollController extends Controller
                 'gross_deduction' => $payroll->deduction + $payroll->days_absent_deduction ?? '',
                 'net_pay' => $payroll->net_pay ?? '',
                 'remarks' => $remarks ?? '',
+                'proof_of_payment' => $payroll->proof_of_payment ? asset('storage/' . $payroll->proof_of_payment) : null,
                 'status' => Status::getStatusText($payroll->status),
             ];
 
