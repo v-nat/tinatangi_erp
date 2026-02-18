@@ -791,33 +791,25 @@ $(document).ready(function () {
         $.get(
             `/human-resources/payroll/view/${payroll_id}`,
             function (response) {
-                // Determine layout needs based on status (38 = Acknowledged)
                 const isAcknowledged = response.data.status_id == 38;
 
-                // Build the standard modal first (populates #viewPayroll .modal-body)
                 buildPayslipModal(response.data);
 
                 const $modal = $("#viewPayroll");
                 const $dialog = $modal.find(".modal-dialog");
                 const $body = $modal.find(".modal-body");
 
-                // Reset modal to default state first (remove fullscreen if previously added)
                 $dialog.removeClass("modal-fullscreen");
 
-                // If acknowledged and has proof, modify the modal layout dynamically
                 if (isAcknowledged && response.data.proof_of_payment) {
-                    // Make modal fullscreen
                     $dialog.addClass("modal-fullscreen");
 
-                    // Verify body has content before wrapping
                     if ($body.children().length > 0) {
-                        // Wrap existing payslip content (Left Side)
                         $body.wrapInner(
                             '<div class="col-md-7 h-100" style="overflow-y: auto;"></div>',
                         );
                         const $leftCol = $body.children().first();
 
-                        // Create Proof content (Right Side)
                         const $rightCol = $(`
                                 <div class="col-md-5 proof-payment-container border-start ps-4 h-100" style="overflow-y: auto; background-color: #f8f9fa;">
                                     <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
@@ -832,14 +824,11 @@ $(document).ready(function () {
                                 </div>
                             `);
 
-                        // Create Row wrapper
                         const $row = $('<div class="row h-100"></div>');
 
-                        // Append columns to row
                         $leftCol.appendTo($row);
                         $rightCol.appendTo($row);
 
-                        // Append row to body
                         $body.append($row);
                     }
                 }
