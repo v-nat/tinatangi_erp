@@ -430,18 +430,16 @@ class EmployeeController extends Controller
         try {
             $validated = $request->validate([
                 'payroll_id' => 'required|integer|exists:payrolls,id',
-                'proof' => 'required|image|max:5120', // Max 5MB
+                'proof' => 'required|image|max:5120',
             ]);
 
             $payroll = Payroll::findOrFail($validated['payroll_id']);
 
-            // Prevent re-uploading if already exists (optional safety check)
             if ($payroll->proof_of_payment) {
                 return response()->json(['message' => 'Proof of payment already exists.'], 400);
             }
 
             if ($request->hasFile('proof')) {
-                // Store file in public disk
                 $file = $request->file("proof");
                 $filename = $file->hashName();
                 $path = 'img/proof_of_payments/' . $filename;
@@ -449,9 +447,8 @@ class EmployeeController extends Controller
                 $returnPhotoPath = '/storage/app/public/' . $path;
 
                 $payroll->proof_of_payment = $returnPhotoPath;
-
-                // You might want to update a status field here as well
-                // $payroll->status = 'Acknowledged';
+                $payroll->status = 38;
+                $payroll->remarks = 'payslip acknowledged';
 
                 $payroll->save();
             }
@@ -464,7 +461,7 @@ class EmployeeController extends Controller
             return response()->json(['errors' => $ve->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Payslip Acknowledgement Error: ' . $e->getMessage());
-            return response()->json(['message' => 'Failed to upload proof. Please try again.'], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

@@ -42,7 +42,11 @@ $(document).ready(function () {
         const base = parseFloat(baseSalary) || 0;
         let ratePerHour = 0;
         let ratePerDay = 0;
-        if (base > 0 && WORKING_DAYS_PER_MONTH > 0 && WORKING_HOURS_PER_DAY > 0) {
+        if (
+            base > 0 &&
+            WORKING_DAYS_PER_MONTH > 0 &&
+            WORKING_HOURS_PER_DAY > 0
+        ) {
             ratePerDay = base / WORKING_DAYS_PER_MONTH;
             ratePerHour = ratePerDay / WORKING_HOURS_PER_DAY;
         }
@@ -55,38 +59,46 @@ $(document).ready(function () {
     function calculateAndUpdateRates() {
         const baseSalaryValue = formatToNumber($("#edit_base_salary").val());
         const rates = calculateRates(baseSalaryValue);
-        $("#edit_rate_per_hour").val(formatToCurrency(rates.rate_per_hour.toFixed(2)));
-        $("#edit_rate_per_day").val(formatToCurrency(rates.rate_per_day.toFixed(2)));
+        $("#edit_rate_per_hour").val(
+            formatToCurrency(rates.rate_per_hour.toFixed(2)),
+        );
+        $("#edit_rate_per_day").val(
+            formatToCurrency(rates.rate_per_day.toFixed(2)),
+        );
     }
 
-    $('#payrollSettingsForm, #editSalarySettingForm, #addPositionForm').on('input change', 'input, select', function() {
-        $(this).closest('form').attr('data-dirty', 'true');
-    });
+    $("#payrollSettingsForm, #editSalarySettingForm, #addPositionForm").on(
+        "input change",
+        "input, select",
+        function () {
+            $(this).closest("form").attr("data-dirty", "true");
+        },
+    );
 
-    $('.modal').on('hide.bs.modal', function (e) {
-        const form = $(this).find('form');
-        if (form.attr('data-dirty') === 'true') {
+    $(".modal").on("hide.bs.modal", function (e) {
+        const form = $(this).find("form");
+        if (form.attr("data-dirty") === "true") {
             e.preventDefault();
             Swal.fire({
-                title: 'Unsaved Changes',
+                title: "Unsaved Changes",
                 text: "You have unsaved changes. Are you sure you want to close this window?",
-                icon: 'warning',
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, discard changes',
-                cancelButtonText: 'No, stay here'
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, discard changes",
+                cancelButtonText: "No, stay here",
             }).then((result) => {
                 if (result.isConfirmed) {
-                    form.removeAttr('data-dirty');
-                    $(this).modal('hide');
+                    form.removeAttr("data-dirty");
+                    $(this).modal("hide");
                 }
             });
         }
     });
 
     $("#payrollSettingsBtn").click(function () {
-        $('#payrollSettingsForm').removeAttr('data-dirty');
+        $("#payrollSettingsForm").removeAttr("data-dirty");
         if (!positionsTable) {
             positionsTable = $("#positionsTable").DataTable({
                 processing: true,
@@ -96,35 +108,84 @@ $(document).ready(function () {
                     type: "GET",
                     dataSrc: "data",
                     error: function (xhr, error, thrown) {
-                        Toast.fire("Error", "Could not load salary settings.", "error");
+                        Toast.fire(
+                            "Error",
+                            "Could not load salary settings.",
+                            "error",
+                        );
                     },
                 },
                 columns: [
-                    { data: null, render: function (data, type, row, meta) { return meta.row + 1; }, className: "text-center", width: "45px" },
+                    {
+                        data: null,
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
+                        },
+                        className: "text-center",
+                        width: "45px",
+                    },
                     { data: "position", className: "dt-left" },
-                    { data: "base_salary", className: "dt-left", render: formatToCurrency },
-                    { data: "rate_per_hour", className: "dt-left", render: formatToCurrency },
-                    { data: "rate_per_day", className: "dt-left", render: formatToCurrency },
+                    {
+                        data: "base_salary",
+                        className: "dt-left",
+                        render: formatToCurrency,
+                    },
+                    {
+                        data: "rate_per_hour",
+                        className: "dt-left",
+                        render: formatToCurrency,
+                    },
+                    {
+                        data: "rate_per_day",
+                        className: "dt-left",
+                        render: formatToCurrency,
+                    },
                     { data: "department", className: "dt-left" },
-                    { data: "status", className: "text-center", width: "150px" },
-                    { data: "id", render: function (data) {
-                        return `<div class="action-btns"><a href="#" class="btn icon btn-sm btn-primary edit-setting-btn bs-tooltip" data-id="${data}" title="Edit Salary"><i class="fa-solid fa-pen"></i></a></div>`;
-                    }, className: "text-center", width: "100px" },
+                    {
+                        data: "status",
+                        className: "text-center",
+                        width: "150px",
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return `<div class="action-btns"><a href="#" class="btn icon btn-sm btn-primary edit-setting-btn bs-tooltip" data-id="${data}" title="Edit Salary"><i class="fa-solid fa-pen"></i></a></div>`;
+                        },
+                        className: "text-center",
+                        width: "100px",
+                    },
                 ],
                 initComplete: function () {
                     const departmentColumn = this.api().column(5);
                     const select = $("#positionDepartmentFilter");
                     select.empty().append('<option value="">All</option>');
-                    departmentColumn.data().unique().sort().each(function (d) {
-                        if (d) {
-                            select.append($("<option></option>").attr("value", d).text(d));
-                        }
-                    });
+                    departmentColumn
+                        .data()
+                        .unique()
+                        .sort()
+                        .each(function (d) {
+                            if (d) {
+                                select.append(
+                                    $("<option></option>")
+                                        .attr("value", d)
+                                        .text(d),
+                                );
+                            }
+                        });
                 },
             });
             $("#positionDepartmentFilter").on("change", function () {
                 const selectedDepartment = $(this).val();
-                positionsTable.column(5).search(selectedDepartment ? "^" + selectedDepartment + "$" : "", true, false).draw();
+                positionsTable
+                    .column(5)
+                    .search(
+                        selectedDepartment
+                            ? "^" + selectedDepartment + "$"
+                            : "",
+                        true,
+                        false,
+                    )
+                    .draw();
             });
         } else {
             positionsTable.ajax.reload();
@@ -135,17 +196,25 @@ $(document).ready(function () {
 
     function fetchAndSetDeductions() {
         $.ajax({
-            url: "/human-resources/get-payroll-settings", type: "GET", dataType: "json",
+            url: "/human-resources/get-payroll-settings",
+            type: "GET",
+            dataType: "json",
             success: function (data) {
                 if (data) {
-                    originalContributions = { sss: data.sss, philhealth: data.philhealth, pagibig: data.pagibig };
+                    originalContributions = {
+                        sss: data.sss,
+                        philhealth: data.philhealth,
+                        pagibig: data.pagibig,
+                    };
                     $("#sss").val(formatToCurrency(data.sss));
                     $("#philhealth").val(formatToCurrency(data.philhealth));
                     $("#pagibig").val(formatToCurrency(data.pagibig));
-                    $('#payrollSettingsForm').removeAttr('data-dirty');
+                    $("#payrollSettingsForm").removeAttr("data-dirty");
                 }
             },
-            error: function (xhr, status, error) { console.error("Error fetching payroll settings:", error); },
+            error: function (xhr, status, error) {
+                console.error("Error fetching payroll settings:", error);
+            },
         });
     }
 
@@ -156,31 +225,61 @@ $(document).ready(function () {
         const currentPhilhealth = formatToNumber($("#philhealth").val());
         const currentPagibig = formatToNumber($("#pagibig").val());
 
-        if (parseFloat(currentSss) === parseFloat(originalContributions.sss) && parseFloat(currentPhilhealth) === parseFloat(originalContributions.philhealth) && parseFloat(currentPagibig) === parseFloat(originalContributions.pagibig)) {
-            Toast.fire({ icon: "info", title: "No Changes Detected", text: "The contribution values have not been changed." });
+        if (
+            parseFloat(currentSss) === parseFloat(originalContributions.sss) &&
+            parseFloat(currentPhilhealth) ===
+                parseFloat(originalContributions.philhealth) &&
+            parseFloat(currentPagibig) ===
+                parseFloat(originalContributions.pagibig)
+        ) {
+            Toast.fire({
+                icon: "info",
+                title: "No Changes Detected",
+                text: "The contribution values have not been changed.",
+            });
             return;
         }
 
         Swal.fire({
             title: "Are you sure?",
             text: "This will update the default SSS, PhilHealth, and Pag-IBIG contributions for ALL employees. This action cannot be undone.",
-            icon: "warning", showCancelButton: true, confirmButtonColor: "#3085d6", cancelButtonColor: "#d33", confirmButtonText: "Yes, update all!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, update all!",
         }).then((result) => {
             if (result.isConfirmed) {
-                form.find('input[inputmode="decimal"]').each(function () { $(this).val(formatToNumber($(this).val())); });
+                form.find('input[inputmode="decimal"]').each(function () {
+                    $(this).val(formatToNumber($(this).val()));
+                });
                 $("#LoadingScreen").fadeIn(200);
                 $.ajax({
-                    url: "/human-resources/update-payroll-settings", type: "POST", data: form.serialize(),
+                    url: "/human-resources/update-payroll-settings",
+                    type: "POST",
+                    data: form.serialize(),
                     success: function (response) {
                         $("#LoadingScreen").fadeOut(200);
-                        Toast.fire({ icon: "success", title: "Success!", text: response.message });
-                        form.removeAttr('data-dirty');
+                        Toast.fire({
+                            icon: "success",
+                            title: "Success!",
+                            text: response.message,
+                        });
+                        form.removeAttr("data-dirty");
                         fetchAndSetDeductions();
                     },
                     error: function (xhr) {
                         $("#LoadingScreen").fadeOut(200);
-                        Toast.fire({ icon: "error", title: "Error", text: "Failed to update settings." });
-                        form.find('input[inputmode="decimal"]').each(function () { $(this).val(formatToCurrency($(this).val())); });
+                        Toast.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "Failed to update settings.",
+                        });
+                        form.find('input[inputmode="decimal"]').each(
+                            function () {
+                                $(this).val(formatToCurrency($(this).val()));
+                            },
+                        );
                     },
                 });
             }
@@ -191,8 +290,11 @@ $(document).ready(function () {
         const settingId = $(this).data("id");
         const $form = $("#editSalarySettingForm");
         $form[0].reset();
-        $form.removeAttr('data-dirty');
-        $form.attr("action", `/human-resources/update-salary-setting/${settingId}`);
+        $form.removeAttr("data-dirty");
+        $form.attr(
+            "action",
+            `/human-resources/update-salary-setting/${settingId}`,
+        );
         $("#modal-position-name").text("Loading...");
         loadSettingData(settingId);
     });
@@ -203,18 +305,23 @@ $(document).ready(function () {
 
     function loadSettingData(settingId) {
         $.ajax({
-            url: `/human-resources/get-salary-setting/${settingId}`, type: "GET",
+            url: `/human-resources/get-salary-setting/${settingId}`,
+            type: "GET",
             success: function (data) {
                 if (data) {
                     originalBaseSalary = data.base_salary;
                     $("#modal-position-name").text(data.position.name);
-                    $("#edit_base_salary").val(formatToCurrency(data.base_salary));
+                    $("#edit_base_salary").val(
+                        formatToCurrency(data.base_salary),
+                    );
                     calculateAndUpdateRates();
-                    $('#editSalarySettingForm').removeAttr('data-dirty');
+                    $("#editSalarySettingForm").removeAttr("data-dirty");
                     $("#editSalarySettingModal").modal("show");
                 }
             },
-            error: function () { Toast.fire("Error", "Failed to load setting details.", "error"); },
+            error: function () {
+                Toast.fire("Error", "Failed to load setting details.", "error");
+            },
         });
     }
 
@@ -225,14 +332,22 @@ $(document).ready(function () {
         const currentBaseSalary = formatToNumber($("#edit_base_salary").val());
 
         if (parseFloat(currentBaseSalary) === parseFloat(originalBaseSalary)) {
-            Toast.fire({ icon: "info", title: "No Changes Detected", text: "The base salary has not been changed." });
+            Toast.fire({
+                icon: "info",
+                title: "No Changes Detected",
+                text: "The base salary has not been changed.",
+            });
             return;
         }
 
         Swal.fire({
             title: "Confirm Salary Change?",
             html: `This will update the base salary for <b>all employees</b> with the "<b>${positionName}</b>" position. Are you sure?`,
-            icon: "warning", showCancelButton: true, confirmButtonColor: "#3085d6", cancelButtonColor: "#d33", confirmButtonText: "Yes, update it!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, update it!",
         }).then((result) => {
             if (result.isConfirmed) {
                 const formData = {
@@ -242,18 +357,28 @@ $(document).ready(function () {
                 };
                 $("#LoadingScreen").fadeIn(200);
                 $.ajax({
-                    url: form.attr("action"), type: "POST", data: formData,
+                    url: form.attr("action"),
+                    type: "POST",
+                    data: formData,
                     success: function (response) {
                         $("#LoadingScreen").fadeOut(200);
-                        form.removeAttr('data-dirty');
+                        form.removeAttr("data-dirty");
                         $("#editSalarySettingModal").modal("hide");
-                        Toast.fire({ icon: "success", title: "Updated!", text: response.message });
-                        if (positionsTable) { positionsTable.ajax.reload(); }
+                        Toast.fire({
+                            icon: "success",
+                            title: "Updated!",
+                            text: response.message,
+                        });
+                        if (positionsTable) {
+                            positionsTable.ajax.reload();
+                        }
                     },
                     error: function (xhr) {
                         $("#LoadingScreen").fadeOut(200);
                         let errorMessage = "Failed to update salary setting.";
-                        if (xhr.responseJSON && xhr.responseJSON.message) { errorMessage = xhr.responseJSON.message; }
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
                         Toast.fire("Error", errorMessage, "error");
                     },
                 });
@@ -264,8 +389,8 @@ $(document).ready(function () {
     $("#payrollSettings").on("click", "#addNewPositionBtn", function () {
         const form = $("#addPositionForm");
         form[0].reset();
-        form.removeAttr('data-dirty');
-        form.find('.is-invalid').removeClass('is-invalid');
+        form.removeAttr("data-dirty");
+        form.find(".is-invalid").removeClass("is-invalid");
         $("#addPositionModal").modal("show");
         populateDepartmentDropdown();
     });
@@ -273,13 +398,22 @@ $(document).ready(function () {
     function populateDepartmentDropdown() {
         const $select = $("#add_department_id");
         $.ajax({
-            url: "/human-resources/departments/list", type: "GET",
+            url: "/human-resources/departments/list",
+            type: "GET",
             success: function (response) {
-                $select.html('<option value="" disabled selected>Select a Department</option>');
-                response.data.forEach(function (department) { $select.append(`<option value="${department.id}">${department.name}</option>`); });
+                $select.html(
+                    '<option value="" disabled selected>Select a Department</option>',
+                );
+                response.data.forEach(function (department) {
+                    $select.append(
+                        `<option value="${department.id}">${department.name}</option>`,
+                    );
+                });
             },
             error: function () {
-                $select.html('<option value="">Could not load departments</option>');
+                $select.html(
+                    '<option value="">Could not load departments</option>',
+                );
                 Toast.fire("Error", "Failed to load department list.", "error");
             },
         });
@@ -298,27 +432,41 @@ $(document).ready(function () {
             }
         });
 
-        if (!isValid) { return; }
+        if (!isValid) {
+            return;
+        }
 
         const formData = form.serializeArray();
         formData.forEach(function (field) {
-            if (field.name === "base_salary") { field.value = formatToNumber(field.value); }
+            if (field.name === "base_salary") {
+                field.value = formatToNumber(field.value);
+            }
         });
         $("#LoadingScreen").fadeIn(200);
         $.ajax({
-            url: "/human-resources/store-position-and-salary", type: "POST", data: $.param(formData),
+            url: "/human-resources/store-position-and-salary",
+            type: "POST",
+            data: $.param(formData),
             success: function (response) {
                 $("#LoadingScreen").fadeOut(200);
-                form.removeAttr('data-dirty');
+                form.removeAttr("data-dirty");
                 $("#addPositionModal").modal("hide");
-                Toast.fire({ icon: "success", title: "Created!", text: response.message });
-                if (positionsTable) { positionsTable.ajax.reload(); }
+                Toast.fire({
+                    icon: "success",
+                    title: "Created!",
+                    text: response.message,
+                });
+                if (positionsTable) {
+                    positionsTable.ajax.reload();
+                }
             },
             error: function (xhr) {
                 $("#LoadingScreen").fadeOut(200);
                 let errorMessage = "Failed to create position.";
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    errorMessage = Object.values(xhr.responseJSON.errors).flat().join("<br>");
+                    errorMessage = Object.values(xhr.responseJSON.errors)
+                        .flat()
+                        .join("<br>");
                 } else if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
                 }
@@ -341,10 +489,13 @@ $(document).ready(function () {
             {
                 data: null,
                 render: function (data, type, row) {
-                    if (row.status == '<span class="badge bg-success">Approved</span>') {
+                    if (
+                        row.status ==
+                        '<span class="badge bg-success">Approved</span>'
+                    ) {
                         return `<input type="checkbox" class="form-check-input payroll-checkbox" value="${row.id}">`;
                     }
-                    return '';
+                    return "";
                 },
                 className: "text-center",
                 width: "30px",
@@ -356,10 +507,6 @@ $(document).ready(function () {
             {
                 data: "period",
                 className: "dt-left",
-                // render: function (data) {
-                //     return data ? formatDate(data) : "N/A";
-                // },
-                // type: "date", // Ensure proper date sorting
             },
             {
                 data: "reg_pay",
@@ -482,7 +629,7 @@ $(document).ready(function () {
                 .each(function (d, j) {
                     if (d) {
                         departmentSelect.append(
-                            $("<option></option>").attr("value", d).text(d)
+                            $("<option></option>").attr("value", d).text(d),
                         );
                     }
                 });
@@ -496,7 +643,7 @@ $(document).ready(function () {
                 .each(function (d, j) {
                     if (d) {
                         periodSelect.append(
-                            $("<option></option>").attr("value", d).text(d)
+                            $("<option></option>").attr("value", d).text(d),
                         );
                     }
                 });
@@ -517,7 +664,7 @@ $(document).ready(function () {
             .search(
                 selectedDepartment ? "^" + selectedDepartment + "$" : "",
                 true,
-                false
+                false,
             )
             .draw();
     });
@@ -529,7 +676,7 @@ $(document).ready(function () {
             .search(
                 selectedPeriod ? "^" + selectedPeriod + "$" : "",
                 true,
-                false
+                false,
             )
             .draw();
     });
@@ -543,7 +690,10 @@ $(document).ready(function () {
     $(document).on("change", ".payroll-checkbox", function () {
         const totalCheckboxes = $(".payroll-checkbox").length;
         const checkedCheckboxes = $(".payroll-checkbox:checked").length;
-        $("#selectAllCheckbox").prop("checked", totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes);
+        $("#selectAllCheckbox").prop(
+            "checked",
+            totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes,
+        );
         updateBatchReleaseButton();
     });
 
@@ -565,7 +715,11 @@ $(document).ready(function () {
             .get();
 
         if (selectedIds.length === 0) {
-            Toast.fire("Error", "Please select at least one payroll to release.", "error");
+            Toast.fire(
+                "Error",
+                "Please select at least one payroll to release.",
+                "error",
+            );
             return;
         }
 
@@ -584,7 +738,9 @@ $(document).ready(function () {
             $("#LoadingScreen").fadeIn(200);
             $.ajax({
                 headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content",
+                    ),
                 },
                 url: `/human-resources/payroll/batch-release`,
                 type: "PUT",
@@ -610,7 +766,9 @@ $(document).ready(function () {
                 error: function (xhr) {
                     $("#LoadingScreen").fadeOut(200);
                     if (xhr.responseJSON?.errors) {
-                        let errorMessages = Object.values(xhr.responseJSON.errors)
+                        let errorMessages = Object.values(
+                            xhr.responseJSON.errors,
+                        )
                             .flat()
                             .join("\n");
                         Toast.fire("Validation Error", errorMessages, "error");
@@ -618,7 +776,7 @@ $(document).ready(function () {
                         Toast.fire(
                             "Error",
                             xhr.responseJSON?.message || "Something went wrong",
-                            "error"
+                            "error",
                         );
                     }
                 },
@@ -633,10 +791,64 @@ $(document).ready(function () {
         $.get(
             `/human-resources/payroll/view/${payroll_id}`,
             function (response) {
+                // Determine layout needs based on status (38 = Acknowledged)
+                const isAcknowledged = response.data.status_id == 38;
+
+                // Build the standard modal first (populates #viewPayroll .modal-body)
                 buildPayslipModal(response.data);
-            }
+
+                const $modal = $("#viewPayroll");
+                const $dialog = $modal.find(".modal-dialog");
+                const $body = $modal.find(".modal-body");
+
+                // Reset modal to default state first (remove fullscreen if previously added)
+                $dialog.removeClass("modal-fullscreen");
+
+                // If acknowledged and has proof, modify the modal layout dynamically
+                if (isAcknowledged && response.data.proof_of_payment) {
+                    // Make modal fullscreen
+                    $dialog.addClass("modal-fullscreen");
+
+                    // Verify body has content before wrapping
+                    if ($body.children().length > 0) {
+                        // Wrap existing payslip content (Left Side)
+                        $body.wrapInner(
+                            '<div class="col-md-7 h-100" style="overflow-y: auto;"></div>',
+                        );
+                        const $leftCol = $body.children().first();
+
+                        // Create Proof content (Right Side)
+                        const $rightCol = $(`
+                                <div class="col-md-5 proof-payment-container border-start ps-4 h-100" style="overflow-y: auto; background-color: #f8f9fa;">
+                                    <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
+                                        <h5 class="fw-bold mb-0">Proof of Payment</h5>
+                                        <a href="${response.data.proof_of_payment}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="fa-solid fa-expand"></i>
+                                        </a>
+                                    </div>
+                                    <div class="text-center rounded d-flex flex-column align-items-center justify-content-start">
+                                        <img src="${response.data.proof_of_payment}" class="img-fluid rounded shadow-sm" alt="Proof of Payment" style="width: 100%; object-fit: contain;">
+                                    </div>
+                                </div>
+                            `);
+
+                        // Create Row wrapper
+                        const $row = $('<div class="row h-100"></div>');
+
+                        // Append columns to row
+                        $leftCol.appendTo($row);
+                        $rightCol.appendTo($row);
+
+                        // Append row to body
+                        $body.append($row);
+                    }
+                }
+
+                $("#LoadingScreen").fadeOut(200);
+            },
         ).fail(function () {
-            alert("Failed to load payslip.");
+            $("#LoadingScreen").fadeOut(200);
+            Toast.fire("Error", "Failed to load payslip.", "error");
         });
     });
 
@@ -646,7 +858,7 @@ $(document).ready(function () {
             `/human-resources/payroll/view/${payroll_id}`,
             function (response) {
                 printPayslip(response.data);
-            }
+            },
         ).fail(function () {
             alert("Failed to load payslip.");
         });
@@ -672,7 +884,7 @@ $(document).ready(function () {
             $.ajax({
                 headers: {
                     "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                        "content"
+                        "content",
                     ),
                 },
                 url: `/human-resources/payroll/release/${id}`,
@@ -697,7 +909,7 @@ $(document).ready(function () {
                     $("#LoadingScreen").fadeOut(200);
                     if (xhr.responseJSON?.errors) {
                         let errorMessages = Object.values(
-                            xhr.responseJSON.errors
+                            xhr.responseJSON.errors,
                         )
                             .flat()
                             .join("\n");
@@ -707,7 +919,7 @@ $(document).ready(function () {
                         Toast.fire(
                             "Error",
                             xhr.responseJSON?.message || "Something went wrong",
-                            "error"
+                            "error",
                         );
                     }
                 },

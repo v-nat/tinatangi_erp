@@ -94,11 +94,8 @@ $(document).ready(function () {
         e.preventDefault();
         const $btn = $(this);
         const payroll_id = $btn.data("id");
-        const proof = $btn.attr("data-proof"); // Use .attr to get the raw string value
+        const proof = $btn.attr("data-proof");
 
-        // CONDITIONAL LOGIC:
-        // If proof exists (is not empty/null), print directly.
-        // Otherwise, show the modal to upload proof.
         if (proof && proof !== "" && proof !== "null" && proof !== undefined) {
             $("#LoadingScreen").fadeIn(200);
             $.get(`/employee/payslip/data/${payroll_id}`, function (response) {
@@ -113,14 +110,12 @@ $(document).ready(function () {
                 });
             });
         } else {
-            // No proof found: Show the modal for acknowledgement
             $("#proofOfPaymentForm")[0].reset();
             $("#proof_payroll_id").val(payroll_id);
             $("#proofOfPaymentModal").modal("show");
         }
     });
 
-    // Handle Proof Submission
     $("#btn-submit-proof").on("click", function () {
         const fileInput = $("#proof_file")[0];
         const payrollId = $("#proof_payroll_id").val();
@@ -154,10 +149,8 @@ $(document).ready(function () {
             success: function (response) {
                 $("#proofOfPaymentModal").modal("hide");
 
-                // IMPORTANT: Reload table to ensure the 'data-proof' attribute is updated
                 payslipTable.ajax.reload(null, false);
 
-                // Fetch data and print immediately after successful upload
                 $.get(`/employee/payslip/data/${payrollId}`, function (response) {
                     printPayslip(response.data);
                 }).fail(function () {

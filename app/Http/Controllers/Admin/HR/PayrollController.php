@@ -74,6 +74,7 @@ class PayrollController extends Controller
                 'employee',
             ])->where('employee_id', $id)
                 ->where('status', 15)
+                ->orWhere('status', 38)
                 ->orderBy('updated_at', 'desc');
             $payroll = $query->get();
             $result = $payroll->map(function ($payroll) {
@@ -113,6 +114,8 @@ class PayrollController extends Controller
                 $remarks = '<div class="alert alert-success">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
             } else if ($payroll->remarks == 'requesting budget') {
                 $remarks = '<div class="alert alert-info">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
+            } else if ($payroll->remarks == 'payslip acknowledged') {
+                $remarks = '<div class="alert alert-success">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
             } else if ($payroll->remarks) {
                 $remarks = '<div class="alert alert-danger"> Rejected: ' . $payroll->remarks . '</div>';
             }
@@ -146,7 +149,8 @@ class PayrollController extends Controller
                 'gross_deduction' => $payroll->deduction + $payroll->days_absent_deduction ?? '',
                 'net_pay' => $payroll->net_pay ?? '',
                 'remarks' => $remarks ?? '',
-                'proof_of_payment' => $payroll->proof_of_payment ? asset('storage/' . $payroll->proof_of_payment) : null,
+                'proof_of_payment' => $payroll->proof_of_payment ?? null,
+                'status_id' => $payroll->status,
                 'status' => Status::getStatusText($payroll->status),
             ];
 
