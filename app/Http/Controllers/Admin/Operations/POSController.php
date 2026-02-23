@@ -190,8 +190,21 @@ class POSController extends Controller
                 throw new \Exception("Grand total mismatch. Client total: {$submittedGrandTotal}, Server total: {$calculatedGrandTotal}");
             }
 
+            $today = Carbon::today()->toDateString();
+            $lastOrder = Order::whereDate('created_at', $today)
+                ->where('order_id', 'like', 'ORD-%')
+                ->orderBy('id', 'desc')
+                ->first();
+
+            $nextNum = 100;
+            if ($lastOrder && preg_match('/^ORD-(\d{4})$/', $lastOrder->order_id, $matches)) {
+                $nextNum = (int) $matches[1] + 1;
+            }
+
+            $newOrderId = 'ORD-' . str_pad($nextNum, 4, '0', STR_PAD_LEFT);
+
             $order = Order::create([
-                'order_id' => 'ORD-' . time() . '-' . rand(100, 999),
+                'order_id' => $newOrderId,
                 'user_id' => auth('')->id(),
                 'total_amount' => $calculatedGrandTotal,
                 'status' => 28,
