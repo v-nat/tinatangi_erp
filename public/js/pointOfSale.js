@@ -233,7 +233,7 @@ $(document).ready(function () {
                 `<div class="tab-pane fade ${
                     isActive ? "show active" : ""
                 } py-4" id="${paneId}" role="tabpanel" aria-labelledby="${navId}">
-                    <div id="${productsContainerId}" class="row row-cols-auto g-3 justify-content-start"></div>
+                    <div id="${productsContainerId}" class="row row-cols-4 g-2"></div>
                 </div>`
             );
 

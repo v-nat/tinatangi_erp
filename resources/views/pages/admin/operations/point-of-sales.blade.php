@@ -123,7 +123,7 @@
         .product-card-fixed-size {
             position: relative; /* MODIFICATION: Added for servings overlay */
             height: 250px;
-            width: 250px;
+            width: 100%;
         }
 
         .product-card-fixed-size .card-img-top {
@@ -162,7 +162,7 @@
 
             .product-card-fixed-size {
                 height: 170px;
-                width: 170px;
+                width: 100%;
             }
 
             .product-card-fixed-size .card-img-top {
