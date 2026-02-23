@@ -31,7 +31,7 @@ $(document).ready(function () {
     const categoryProductsCache = {};
     let currentCategorySlug = null;
     let currentSortMode = "default";
-    const BEST_SELLER_CATEGORY_SLUG = "months-best-sellers";
+    let bestSellerProductIds = new Map();
 
     function cacheCategoryProducts(slug, products) {
         if (!slug) {
@@ -126,6 +126,12 @@ $(document).ready(function () {
                     </div>
                 `;
             }
+
+            const bestSellerRank = bestSellerProductIds.get(element.id);
+            const bestSellerBadge = bestSellerRank !== undefined
+                ? `<span class="position-absolute top-0 start-0 bg-warning text-dark px-2 rounded-pill" style="font-size: 0.7rem; font-weight: 600; margin: 5px; z-index: 2;">#${bestSellerRank} &#9733; Best Seller</span>`
+                : "";
+
             productsHtml.push(`
                 <div class="col" data-id="${
                     element.id
@@ -137,6 +143,7 @@ $(document).ready(function () {
                         servings <= 0 ? "border-danger" : ""
                     }">
                         ${servingsHtml}
+                        ${bestSellerBadge}
                         <img src="${imageUrl}" class="card-img-top img-fluid prod-img" alt="Product Image">
                         <div class="card-body p-2 flex-grow-1">
                             <h6 class="card-title mb-1 prod-name">${productName}</h6>
@@ -239,9 +246,6 @@ $(document).ready(function () {
                 paneId,
                 productsContainerId,
                 prefetchedProducts,
-                isBestSellers:
-                    category.isBestSellers === true ||
-                    slug === BEST_SELLER_CATEGORY_SLUG,
             };
         });
 
@@ -306,16 +310,9 @@ $(document).ready(function () {
                         ? bestSellerResponse.data
                         : [];
 
-                    if (bestSellerProducts.length > 0) {
-                        categories.unshift({
-                            id: "best-sellers",
-                            name: "Month's Best Sellers",
-                            slug: BEST_SELLER_CATEGORY_SLUG,
-                            isAll: false,
-                            isBestSellers: true,
-                            prefetchedProducts: bestSellerProducts,
-                        });
-                    }
+                    bestSellerProductIds = new Map(
+                        bestSellerProducts.map((p, i) => [p.id, i + 1])
+                    );
                 })
                 .fail(function () {
                     console.warn(
