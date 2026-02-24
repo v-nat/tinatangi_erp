@@ -56,6 +56,6 @@ class PurchaseOrder extends Model
     }
     public function purchaseOrderDetailRS(): HasMany
     {
-        return $this->hasMany(PurchaseOrderDetail::class, 'purchase_order_id', 'order_id');
+        return $this->hasMany(PurchaseOrderDetail::class, 'purchase_order_id', 'id');
     }
 }

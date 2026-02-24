@@ -304,12 +304,16 @@ class SupplierController extends Controller
             }
 
             $mappedReturns = $returns->map(function ($return) {
+                $pod = $return->purchaseOrderDetail;
                 return [
-                    'pod_id' => $return->purchase_order_detail_id,
-                    'item_name' => optional(optional($return->purchaseOrderDetail)->itemss)->name ?? 'Unknown Item',
-                    'quantity' => optional($return->purchaseOrderDetail)->quantity ?? 0,
-                    'reason' => $return->reason,
-                    'photo_path' => $return->photo_path ? asset($return->photo_path) : null,
+                    'pod_id'         => $return->purchase_order_detail_id,
+                    'item_name'      => optional(optional($pod)->itemss)->name ?? 'Unknown Item',
+                    'quantity'       => (int) optional($pod)->quantity ?? 0,
+                    'delivered_qnty' => (int) optional($pod)->delivered_qnty ?? 0,
+                    'backorder_qnty' => (int) optional($pod)->backorder_qnty ?? 0,
+                    'unit_price'     => (float) optional($pod)->unit_price ?? 0,
+                    'reason'         => $return->reason,
+                    'photo_path'     => $return->photo_path ? asset($return->photo_path) : null,
                 ];
             });
 
@@ -343,19 +347,32 @@ class SupplierController extends Controller
             $needsRecalculation = false;
 
             foreach ($request->items as $itemData) {
-                $pod = PurchaseOrderDetail::with('itemss')->findOrFail($itemData['pod_id']);
+                $pod          = PurchaseOrderDetail::with('itemss')->findOrFail($itemData['pod_id']);
                 $returnRecord = DeliveryReturn::where('purchase_order_detail_id', $pod->id)->first();
 
                 if ($itemData['action'] == 'redeliver') {
                     $pod->status = 36;
                     $pod->save();
-                } else if ($itemData['action'] == 'cancel') {
+                } elseif ($itemData['action'] == 'cancel') {
+                    $itemName     = optional($pod->itemss)->name ?? 'Item ID ' . $pod->item_id;
+                    $reason       = $itemData['cancel_reason'] ?? 'No reason provided';
+                    $deliveredQty = (int) $pod->delivered_qnty;
+                    $backorderQty = (int) $pod->backorder_qnty;
 
-                    $itemName = $pod->itemss->name ?? 'Item ID ' . $pod->item_id;
-                    $reason = $itemData['cancel_reason'] ?? 'No reason provided';
-                    $cancelledItemsRemarks[] = "Item '{$itemName}' (Qty: {$pod->quantity}) was CANCELLED & REMOVED. Reason: {$reason}";
+                    if ($deliveredQty > 0) {
+                        // Some quantity was already received — keep the POD as a delivered record
+                        // for the received portion; only cancel the returned (backorder) portion.
+                        $pod->total_amount   = $deliveredQty * (float) $pod->unit_price;
+                        $pod->backorder_qnty = 0;
+                        $pod->status         = 16;
+                        $pod->save();
+                        $cancelledItemsRemarks[] = "Item '{$itemName}' — returned qty ({$backorderQty}) CANCELLED. Reason: {$reason}. Received portion ({$deliveredQty}) retained.";
+                    } else {
+                        // Nothing received at all — soft-delete the entire POD.
+                        $cancelledItemsRemarks[] = "Item '{$itemName}' (Qty: {$backorderQty}) was CANCELLED & REMOVED. Reason: {$reason}";
+                        $pod->delete();
+                    }
 
-                    $pod->delete();
                     $needsRecalculation = true;
                 }
 

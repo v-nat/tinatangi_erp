@@ -403,16 +403,12 @@ $(document).ready(function () {
         const req_id = $(this).data("id");
         $("#LoadingScreen").fadeIn(200);
 
-        // Reset form
         $("#receiveOrderForm")[0].reset();
         $("#receiveItemsList").html(
-            '<tr><td colspan="4" class="text-center">Loading items...</td></tr>'
+            '<tr><td colspan="5" class="text-center">Loading items...</td></tr>'
         );
 
-        // Fetch item details for the modal
-        $.get(`/procurement/purchases/get-delivery-details/${req_id}`, function (
-            response
-        ) {
+        $.get(`/procurement/purchases/get-delivery-details/${req_id}`, function (response) {
             const items = response.data;
             const $itemList = $("#receiveItemsList");
             $itemList.empty();
@@ -420,7 +416,7 @@ $(document).ready(function () {
 
             if (!items || items.length === 0) {
                 $itemList.html(
-                    '<tr><td colspan="4" class="text-center text-danger">No items found for this order.</td></tr>'
+                    '<tr><td colspan="5" class="text-center text-danger">No items found for this order.</td></tr>'
                 );
                 $("#LoadingScreen").fadeOut(200);
                 $("#receiveOrderModal").modal("show");
@@ -429,25 +425,33 @@ $(document).ready(function () {
 
             items.forEach((item, index) => {
                 const rowHtml = `
-                    <tr class="item-row" data-index="${index}">
-                        <td class="text-center align-middle">
-                            <!-- This is the visible checkbox -->
-                            <input type="checkbox" class="form-check-input item-received-check" data-index="${index}" checked>
-
-                            <!-- These are the hidden fields that will be submitted -->
-                            <input type="hidden" class="item-status-hidden" name="items[${index}][status]" value="received">
-                            <input type="hidden" name="items[${index}][pod_id]" value="${item.pod_id}">
-                        </td>
+                    <tr class="item-row table-success" data-index="${index}">
                         <td class="align-middle">
+                            <input type="hidden" name="items[${index}][pod_id]" value="${item.pod_id}">
                             <strong>${item.item_name}</strong>
                         </td>
-                        <td class="align-middle">
+                        <td class="text-center align-middle">
                             ${item.quantity_ordered} ${item.item_unit}
                         </td>
+                        <td class="text-center align-middle">
+                            <input type="number"
+                                class="form-control form-control-sm text-center item-received-qty"
+                                name="items[${index}][received_qty]"
+                                min="0"
+                                max="${item.quantity_ordered}"
+                                value="${item.quantity_ordered}"
+                                data-index="${index}"
+                                data-max="${item.quantity_ordered}">
+                        </td>
+                        <td class="text-center align-middle fw-bold">
+                            <span id="return_qty_${index}">0</span> ${item.item_unit}
+                        </td>
                         <td class="align-middle">
-                            <div class="return-fields" id="return_fields_${index}" style="display: none;">
-                                <textarea class="form-control mb-2" name="items[${index}][return_reason]" placeholder="Reason for return..." disabled></textarea>
-                                <input type="file" class="form-control" name="items[${index}][return_photo]" accept="image/*" disabled>
+                            <div class="return-fields" id="return_fields_${index}" style="display:none;">
+                                <textarea class="form-control mb-2" name="items[${index}][return_reason]"
+                                    placeholder="Reason for return..." disabled></textarea>
+                                <input type="file" class="form-control" name="items[${index}][return_photo]"
+                                    accept="image/*" disabled>
                             </div>
                         </td>
                     </tr>
@@ -459,12 +463,7 @@ $(document).ready(function () {
             $("#receiveOrderModal").modal("show");
         }).fail(function (xhr) {
             $("#LoadingScreen").fadeOut(200);
-            Toast.fire(
-                "Error",
-                xhr.responseJSON?.error ||
-                    "Failed to load item details for inspection.",
-                "error"
-            );
+            Toast.fire("Error", xhr.responseJSON?.error || "Failed to load item details for inspection.", "error");
         });
     });
 
@@ -475,125 +474,132 @@ $(document).ready(function () {
         const req_id = $(this).data("id");
         $("#LoadingScreen").fadeIn(200);
 
-        // Reset form
         $("#receiveRedeliveryForm")[0].reset();
         $("#redeliveryItemsList").html(
-            '<tr><td colspan="4" class="text-center">Loading items...</td></tr>'
+            '<tr><td colspan="6" class="text-center">Loading items...</td></tr>'
         );
 
-        // Fetch item details for the modal
-        $.get(
-            `/procurement/purchases/get-redelivery-details/${req_id}`,
-            function (response) {
-                const items = response.data;
-                const $itemList = $("#redeliveryItemsList");
-                $itemList.empty();
-                $("#receive_redelivery_pr_id").val(req_id);
+        $.get(`/procurement/purchases/get-redelivery-details/${req_id}`, function (response) {
+            const items = response.data;
+            const $itemList = $("#redeliveryItemsList");
+            $itemList.empty();
+            $("#receive_redelivery_pr_id").val(req_id);
 
-                if (!items || items.length === 0) {
-                    $itemList.html(
-                        '<tr><td colspan="4" class="text-center text-danger">No items found for redelivery.</td></tr>'
-                    );
-                    $("#LoadingScreen").fadeOut(200);
-                    $("#receiveRedeliveryModal").modal("show");
-                    return;
-                }
+            if (!items || items.length === 0) {
+                $itemList.html(
+                    '<tr><td colspan="6" class="text-center text-danger">No items found for redelivery.</td></tr>'
+                );
+                $("#LoadingScreen").fadeOut(200);
+                $("#receiveRedeliveryModal").modal("show");
+                return;
+            }
 
-                items.forEach((item, index) => {
-                    const rowHtml = `
-                    <tr class="item-row-redelivery" data-index="${index}">
-                        <td class="text-center align-middle">
-                            <input type="checkbox" class="form-check-input item-redelivery-check" data-index="${index}" checked>
-                            <input type="hidden" class="item-status-redelivery-hidden" name="items[${index}][status]" value="received">
-                            <input type="hidden" name="items[${index}][pod_id]" value="${item.pod_id}">
-                        </td>
+            items.forEach((item, index) => {
+                const rowHtml = `
+                    <tr class="item-row-redelivery table-success" data-index="${index}">
                         <td class="align-middle">
+                            <input type="hidden" name="items[${index}][pod_id]" value="${item.pod_id}">
                             <strong>${item.item_name}</strong>
                         </td>
-                        <td class="align-middle">
+                        <td class="text-center align-middle">
                             ${item.quantity_ordered} ${item.item_unit}
                         </td>
+                        <td class="text-center align-middle fw-bold text-primary">
+                            ${item.backorder_qnty} ${item.item_unit}
+                        </td>
+                        <td class="text-center align-middle">
+                            <input type="number"
+                                class="form-control form-control-sm text-center item-redelivery-received-qty"
+                                name="items[${index}][received_qty]"
+                                min="0"
+                                max="${item.backorder_qnty}"
+                                value="${item.backorder_qnty}"
+                                data-index="${index}"
+                                data-max="${item.backorder_qnty}">
+                        </td>
+                        <td class="text-center align-middle fw-bold">
+                            <span id="redeliver_return_qty_${index}">0</span> ${item.item_unit}
+                        </td>
                         <td class="align-middle">
-                            <div class="return-fields-redelivery" id="return_fields_redelivery_${index}" style="display: none;">
-                                <textarea class="form-control mb-2" name="items[${index}][return_reason]" placeholder="Reason for returning again..." disabled></textarea>
-                                <input type="file" class="form-control" name="items[${index}][return_photo]" accept="image/*" disabled>
+                            <div class="return-fields-redelivery" id="return_fields_redeliver_${index}" style="display:none;">
+                                <textarea class="form-control mb-2" name="items[${index}][return_reason]"
+                                    placeholder="Reason for returning again..." disabled></textarea>
+                                <input type="file" class="form-control" name="items[${index}][return_photo]"
+                                    accept="image/*" disabled>
                             </div>
                         </td>
                     </tr>
                 `;
-                    $itemList.append(rowHtml);
-                });
+                $itemList.append(rowHtml);
+            });
 
-                $("#LoadingScreen").fadeOut(200);
-                $("#receiveRedeliveryModal").modal("show");
-            }
-        ).fail(function (xhr) {
             $("#LoadingScreen").fadeOut(200);
-            Toast.fire(
-                "Error",
-                xhr.responseJSON?.error ||
-                    "Failed to load redelivery item details.",
-                "error"
-            );
+            $("#receiveRedeliveryModal").modal("show");
+        }).fail(function (xhr) {
+            $("#LoadingScreen").fadeOut(200);
+            Toast.fire("Error", xhr.responseJSON?.error || "Failed to load redelivery item details.", "error");
         });
     });
 
     // =================================================================
-    // CHANGE HANDLER: Checkbox for *Initial* Delivery
+    // INPUT HANDLER: Qty input for *Initial* Delivery
     // =================================================================
-    $(document).on("change", ".item-received-check", function () {
+    $(document).on("input change", ".item-received-qty", function () {
         const index = $(this).data("index");
-        const $returnFields = $("#return_fields_" + index);
-        const $hiddenStatus = $(this)
-            .closest("tr")
-            .find(".item-status-hidden");
-        const $fieldsToToggle = $returnFields.find(
-            "textarea, input[type=file]"
-        );
+        const max   = parseInt($(this).data("max"));
+        let val     = parseInt($(this).val()) || 0;
 
-        if ($(this).is(":checked")) {
-            // Item is received
-            $returnFields.hide();
-            $fieldsToToggle.prop("disabled", true).prop("required", false); // Disable and remove required
-            $hiddenStatus.val("received");
-            $(this).closest("tr").removeClass("table-danger");
-        } else {
-            // Item is returned
+        if (val < 0) val = 0;
+        if (val > max) val = max;
+        $(this).val(val);
+
+        const $returnFields    = $(`#return_fields_${index}`);
+        const $returnQtyDisplay = $(`#return_qty_${index}`);
+        const $fieldsToToggle  = $returnFields.find("textarea, input[type=file]");
+        const returnQty        = max - val;
+
+        $returnQtyDisplay.text(returnQty);
+
+        if (returnQty > 0) {
             $returnFields.show();
             $fieldsToToggle.prop("disabled", false);
-            $fieldsToToggle.filter("textarea").prop("required", true); // Make reason required
-            $hiddenStatus.val("returned");
-            $(this).closest("tr").addClass("table-danger");
+            $returnFields.find("textarea").prop("required", true);
+            $(this).closest("tr").addClass("table-warning").removeClass("table-success");
+        } else {
+            $returnFields.hide();
+            $fieldsToToggle.prop("disabled", true).prop("required", false);
+            $(this).closest("tr").removeClass("table-warning").addClass("table-success");
         }
     });
 
     // =================================================================
-    // CHANGE HANDLER: Checkbox for *Redelivery*
+    // INPUT HANDLER: Qty input for *Redelivery*
     // =================================================================
-    $(document).on("change", ".item-redelivery-check", function () {
+    $(document).on("input change", ".item-redelivery-received-qty", function () {
         const index = $(this).data("index");
-        const $returnFields = $("#return_fields_redelivery_" + index);
-        const $hiddenStatus = $(this)
-            .closest("tr")
-            .find(".item-status-redelivery-hidden");
-        const $fieldsToToggle = $returnFields.find(
-            "textarea, input[type=file]"
-        );
+        const max   = parseInt($(this).data("max"));
+        let val     = parseInt($(this).val()) || 0;
 
-        if ($(this).is(":checked")) {
-            // Item is received
-            $returnFields.hide();
-            $fieldsToToggle.prop("disabled", true).prop("required", false);
-            $hiddenStatus.val("received");
-            $(this).closest("tr").removeClass("table-danger");
-        } else {
-            // Item is returned *again*
+        if (val < 0) val = 0;
+        if (val > max) val = max;
+        $(this).val(val);
+
+        const $returnFields     = $(`#return_fields_redeliver_${index}`);
+        const $returnQtyDisplay = $(`#redeliver_return_qty_${index}`);
+        const $fieldsToToggle   = $returnFields.find("textarea, input[type=file]");
+        const returnQty         = max - val;
+
+        $returnQtyDisplay.text(returnQty);
+
+        if (returnQty > 0) {
             $returnFields.show();
             $fieldsToToggle.prop("disabled", false);
-            $fieldsToToggle.filter("textarea").prop("required", true);
-// Make reason required
-            $hiddenStatus.val("returned_again");
-            $(this).closest("tr").addClass("table-danger");
+            $returnFields.find("textarea").prop("required", true);
+            $(this).closest("tr").addClass("table-warning").removeClass("table-success");
+        } else {
+            $returnFields.hide();
+            $fieldsToToggle.prop("disabled", true).prop("required", false);
+            $(this).closest("tr").removeClass("table-warning").addClass("table-success");
         }
     });
 
@@ -604,71 +610,50 @@ $(document).ready(function () {
         e.preventDefault();
         $("#LoadingScreen").fadeIn(200);
 
-        const formData = new FormData(this);
-
-        // Client-side validation
-        let hasUncheckedWithoutReason = false;
+        // Client-side: ensure return reason filled for any returned qty
+        let valid = true;
         $("#receiveItemsList .item-row").each(function () {
-            const isChecked = $(this).find(".item-received-check").is(":checked");
-            const reason = $(this).find("textarea").val();
-            if (!isChecked && !reason) {
-                hasUncheckedWithoutReason = true;
-                $(this).find("textarea").addClass("is-invalid");
+            const max       = parseInt($(this).find(".item-received-qty").data("max"));
+            const received  = parseInt($(this).find(".item-received-qty").val()) || 0;
+            const returnQty = max - received;
+            const $textarea = $(this).find("textarea");
+
+            if (returnQty > 0 && !$textarea.val().trim()) {
+                $textarea.addClass("is-invalid");
+                valid = false;
             } else {
-                $(this).find("textarea").removeClass("is-invalid");
+                $textarea.removeClass("is-invalid");
             }
         });
 
-        if (hasUncheckedWithoutReason) {
+        if (!valid) {
             $("#LoadingScreen").fadeOut(200);
-            Toast.fire(
-                "Error",
-                "Please provide a reason for all returned items.",
-                "error"
-            );
+            Toast.fire("Error", "Please provide a return reason for all items with returned quantity.", "error");
             return;
         }
 
         $.ajax({
             url: "/procurement/purchases/receive-delivery",
             type: "POST",
-            data: formData,
+            data: new FormData(this),
             processData: false,
             contentType: false,
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
+            headers: { "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content") },
             success: function (response) {
                 $("#LoadingScreen").fadeOut(200);
                 $("#receiveOrderModal").modal("hide");
                 reloadTable("purchaseOrderTable");
-                Toast.fire({
-                    text: response.message,
-                    icon: "success",
-                });
+                Toast.fire({ text: response.message, icon: "success" });
             },
             error: function (xhr) {
                 $("#LoadingScreen").fadeOut(200);
                 if (xhr.status === 422) {
-                    // Validation errors
-                    let errorMessages =
-                        "<strong>Validation Failed:</strong><ul class='text-start'>";
-                    $.each(xhr.responseJSON.errors, function (key, value) {
-                        errorMessages += `<li>${value[0]}</li>`;
-                    });
-                    errorMessages += "</ul>";
-                    Toast.fire({
-                        title: "Error",
-                        html: errorMessages,
-                        icon: "error",
-                    });
+                    let msgs = "<strong>Validation Failed:</strong><ul class='text-start'>";
+                    $.each(xhr.responseJSON.errors, (k, v) => { msgs += `<li>${v[0]}</li>`; });
+                    msgs += "</ul>";
+                    Toast.fire({ title: "Error", html: msgs, icon: "error" });
                 } else {
-                    Toast.fire(
-                        "Error",
-                        xhr.responseJSON?.error ||
-                            "An unexpected error occurred.",
-                        "error"
-                    );
+                    Toast.fire("Error", xhr.responseJSON?.error || "An unexpected error occurred.", "error");
                 }
             },
         });
@@ -681,70 +666,50 @@ $(document).ready(function () {
         e.preventDefault();
         $("#LoadingScreen").fadeIn(200);
 
-        const formData = new FormData(this);
-
-        // Client-side validation
-        let hasUncheckedWithoutReason = false;
+        // Client-side: ensure return reason filled for any returned qty
+        let valid = true;
         $("#redeliveryItemsList .item-row-redelivery").each(function () {
-            const isChecked = $(this).find(".item-redelivery-check").is(":checked");
-            const reason = $(this).find("textarea").val();
-            if (!isChecked && !reason) {
-                hasUncheckedWithoutReason = true;
-                $(this).find("textarea").addClass("is-invalid");
+            const max       = parseInt($(this).find(".item-redelivery-received-qty").data("max"));
+            const received  = parseInt($(this).find(".item-redelivery-received-qty").val()) || 0;
+            const returnQty = max - received;
+            const $textarea = $(this).find("textarea");
+
+            if (returnQty > 0 && !$textarea.val().trim()) {
+                $textarea.addClass("is-invalid");
+                valid = false;
             } else {
-                $(this).find("textarea").removeClass("is-invalid");
+                $textarea.removeClass("is-invalid");
             }
         });
 
-        if (hasUncheckedWithoutReason) {
+        if (!valid) {
             $("#LoadingScreen").fadeOut(200);
-            Toast.fire(
-                "Error",
-                "Please provide a reason for all items being returned again.",
-                "error"
-            );
+            Toast.fire("Error", "Please provide a reason for all items being returned again.", "error");
             return;
         }
 
         $.ajax({
-            url: "/procurement/purchases/receive-redelivery", // New endpoint
+            url: "/procurement/purchases/receive-redelivery",
             type: "POST",
-            data: formData,
+            data: new FormData(this),
             processData: false,
             contentType: false,
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
+            headers: { "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content") },
             success: function (response) {
                 $("#LoadingScreen").fadeOut(200);
                 $("#receiveRedeliveryModal").modal("hide");
                 reloadTable("purchaseOrderTable");
-                Toast.fire({
-                    text: response.message,
-                    icon: "success",
-                });
+                Toast.fire({ text: response.message, icon: "success" });
             },
             error: function (xhr) {
                 $("#LoadingScreen").fadeOut(200);
                 if (xhr.status === 422) {
-                    let errorMessages =
-                        "<strong>Validation Failed:</strong><ul class='text-start'>";
-                    $.each(xhr.responseJSON.errors, function (key, value) {
-                        errorMessages += `<li>${value[0]}</li>`;
-                    });
-                    errorMessages += "</ul>";
-                    Toast.fire({
-                        title: "Error",
-                        html: errorMessages,
-                        icon: "error",
-                    });
+                    let msgs = "<strong>Validation Failed:</strong><ul class='text-start'>";
+                    $.each(xhr.responseJSON.errors, (k, v) => { msgs += `<li>${v[0]}</li>`; });
+                    msgs += "</ul>";
+                    Toast.fire({ title: "Error", html: msgs, icon: "error" });
                 } else {
-                    Toast.fire(
-                        "Error",
-                        xhr.responseJSON?.error ||
-                            "An unexpected error occurred.",
-                        "error"
-                    );
+                    Toast.fire("Error", xhr.responseJSON?.error || "An unexpected error occurred.", "error");
                 }
             },
         });

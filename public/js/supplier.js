@@ -382,14 +382,23 @@ $(document).ready(function () {
                        </a>`
                     : `<span class="text-muted">No photo</span>`;
 
+                // Build qty context line
+                const qtyContext = item.delivered_qnty > 0
+                    ? `<small class="text-muted d-block">Ordered: <strong>${item.quantity}</strong> &nbsp;|&nbsp; Already received: <strong class="text-success">${item.delivered_qnty}</strong> &nbsp;|&nbsp; Returned: <strong class="text-danger">${item.backorder_qnty}</strong></small>`
+                    : `<small class="text-muted d-block">Ordered: <strong>${item.quantity}</strong> &nbsp;|&nbsp; Returned: <strong class="text-danger">${item.backorder_qnty}</strong></small>`;
+
+                // If some was already received, show a note about cancel behaviour
+                const cancelNote = item.delivered_qnty > 0
+                    ? `<small class="text-warning d-block mt-1"><i class="fa-solid fa-triangle-exclamation"></i> Cancelling will keep the already-received ${item.delivered_qnty} unit(s) and remove only the returned portion.</small>`
+                    : '';
+
                 const rowHtml = `
                     <tr class="item-row" data-index="${index}">
                         <input type="hidden" name="items[${index}][pod_id]" value="${item.pod_id}">
 
                         <td class="align-top">
                             <strong>${item.item_name}</strong>
-                            <br>
-                            <small class="text-muted">Qty Returned: ${item.quantity}</small>
+                            ${qtyContext}
                         </td>
                         <td class="align-top">
                             ${item.reason}
@@ -399,17 +408,22 @@ $(document).ready(function () {
                         </td>
                         <td class="align-middle">
                             <div class="form-check">
-                                <input class="form-check-input supplier-return-action" type="radio" name="items[${index}][action]" id="action_redeliver_${index}" value="redeliver" data-index="${index}" checked>
+                                <input class="form-check-input supplier-return-action" type="radio"
+                                    name="items[${index}][action]" id="action_redeliver_${index}"
+                                    value="redeliver" data-index="${index}" checked>
                                 <label class="form-check-label" for="action_redeliver_${index}">
-                                    Redeliver
+                                    Redeliver (${item.backorder_qnty} unit(s))
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input supplier-return-action" type="radio" name="items[${index}][action]" id="action_cancel_${index}" value="cancel" data-index="${index}">
+                                <input class="form-check-input supplier-return-action" type="radio"
+                                    name="items[${index}][action]" id="action_cancel_${index}"
+                                    value="cancel" data-index="${index}">
                                 <label class="form-check-label" for="action_cancel_${index}">
-                                    Cancel Item
+                                    Cancel Return
                                 </label>
                             </div>
+                            ${cancelNote}
 
                             <div class="cancel-reason-field" id="cancel_reason_field_${index}" style="display: none;">
                                 <textarea class="form-control form-control-sm mt-2"
