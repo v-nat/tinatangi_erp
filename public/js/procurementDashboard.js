@@ -220,6 +220,130 @@ $(document).ready(function () {
         $summaryList.html(items.map((item) => `<li class="mb-2">${item}</li>`).join(""));
     }
 
+    // ── Forecasting ──────────────────────────────────────────────────────────
+
+    let monthlySpendChart = null;
+
+    function updateForecastKpi(forecastedSpend, forecastedMonth) {
+        const $kpiSpend = $("#kpi-forecast-spend");
+        const $kpiMonth = $("#kpi-forecast-month");
+        if ($kpiSpend.length) {
+            $kpiSpend.text(forecastedSpend > 0 ? formatCurrency(forecastedSpend) : "No data yet");
+        }
+        if ($kpiMonth.length) {
+            $kpiMonth.text(forecastedMonth ? escapeHTML(forecastedMonth) : "");
+        }
+    }
+
+    function updateTopReorderedItems(items) {
+        const $list = $("#top-reordered-items");
+        if (!$list.length) return;
+
+        if (!items || items.length === 0) {
+            $list.html('<li class="list-group-item text-muted">No reorder data available.</li>');
+            return;
+        }
+
+        const html = items
+            .map((item) => {
+                const name  = escapeHTML(item.item_name ?? "Unknown item");
+                const count = formatNumber(item.order_count ?? 0);
+                const qty   = formatNumber(item.total_qty ?? 0);
+                return `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>${name}</span>
+                        <span class="text-muted small">${count} order${item.order_count !== 1 ? "s" : ""} &middot; ${qty} units</span>
+                    </li>
+                `;
+            })
+            .join("");
+
+        $list.html(html);
+    }
+
+    function renderMonthlySpendChart(monthlySpend, forecastedSpend, forecastedMonth) {
+        const chartEl = document.getElementById("chart-monthly-spend");
+        if (!chartEl || typeof ApexCharts === "undefined") return;
+
+        const labels  = monthlySpend.map((m) => m.month);
+        const actuals = monthlySpend.map((m) => parseFloat(m.spend) || 0);
+
+        // Append forecast data point
+        labels.push(forecastedMonth ?? "Next Month");
+        const forecastSeries = new Array(monthlySpend.length).fill(null);
+        forecastSeries.push(parseFloat(forecastedSpend) || 0);
+        const actualSeries = [...actuals, null];
+
+        const options = {
+            series: [
+                { name: "Actual Spend", data: actualSeries },
+                { name: "Forecast",     data: forecastSeries },
+            ],
+            chart: {
+                type: "bar",
+                height: 260,
+                toolbar: { show: false },
+                stacked: false,
+            },
+            plotOptions: {
+                bar: { columnWidth: "55%", borderRadius: 4 },
+            },
+            dataLabels: { enabled: false },
+            colors: ["#435ebe", "#f9c74f"],
+            stroke: { show: true, width: 2, colors: ["transparent"] },
+            xaxis: {
+                categories: labels,
+                labels: { style: { fontSize: "11px" } },
+            },
+            yaxis: {
+                labels: {
+                    formatter: (val) => {
+                        if (val === null || val === undefined) return "";
+                        if (val >= 1000) return "₱" + (val / 1000).toFixed(0) + "k";
+                        return "₱" + val.toFixed(0);
+                    },
+                },
+            },
+            tooltip: {
+                y: { formatter: (val) => (val !== null ? formatCurrency(val) : "—") },
+            },
+            legend: { position: "top", horizontalAlign: "right" },
+        };
+
+        if (monthlySpendChart) {
+            monthlySpendChart.updateOptions(options);
+        } else {
+            monthlySpendChart = new ApexCharts(chartEl, options);
+            monthlySpendChart.render();
+        }
+    }
+
+    function loadForecastData() {
+        setListLoading($("#top-reordered-items"), "Loading items...");
+        $.ajax({
+            url: "/procurement/spend-forecast",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                updateForecastKpi(response?.forecastedNextMonth ?? 0, response?.forecastedMonth ?? "");
+                updateTopReorderedItems(response?.topReorderedItems ?? []);
+                renderMonthlySpendChart(
+                    response?.monthlySpend ?? [],
+                    response?.forecastedNextMonth ?? 0,
+                    response?.forecastedMonth ?? "Next Month"
+                );
+            },
+            error: function () {
+                $("#top-reordered-items").html(
+                    '<li class="list-group-item text-danger">Unable to load forecast data.</li>'
+                );
+                $("#kpi-forecast-spend").text("Error");
+            },
+        });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+
     function loadDashboardData() {
         setTableLoading($recentPrBody, 4);
         setTableLoading($recentPoBody, 4);
@@ -262,8 +386,10 @@ $(document).ready(function () {
 
     $refreshButton.on("click", function () {
         loadDashboardData();
+        loadForecastData();
     });
 
     loadDashboardData();
+    loadForecastData();
 });
 

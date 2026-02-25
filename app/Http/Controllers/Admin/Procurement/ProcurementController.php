@@ -122,6 +122,67 @@ class ProcurementController extends Controller
         ]);
     }
 
+    public function getSpendForecast()
+    {
+        $completedStatuses = [23];
+
+        // Last 6 months of monthly spend (completed POs)
+        $monthlySpend = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $monthStart = Carbon::now()->subMonths($i)->startOfMonth();
+            $monthEnd   = Carbon::now()->subMonths($i)->endOfMonth();
+
+            $spend = DB::table('purchase_orders')
+                ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
+                ->whereIn('purchase_orders.status', $completedStatuses)
+                ->whereBetween('purchase_orders.created_at', [$monthStart, $monthEnd])
+                ->whereNull('purchase_orders.deleted_at')
+                ->whereNull('purchase_order_details.deleted_at')
+                ->sum('purchase_order_details.total_amount');
+
+            $monthlySpend[] = [
+                'month' => $monthStart->format('M Y'),
+                'spend' => (float) $spend,
+            ];
+        }
+
+        // 3-month simple moving average for next month forecast
+        $last3          = array_slice($monthlySpend, -3);
+        $forecastedSpend = count($last3) > 0
+            ? array_sum(array_column($last3, 'spend')) / count($last3)
+            : 0;
+
+        // Top re-ordered items across all completed POs
+        $topItems = DB::table('purchase_order_details')
+            ->join('purchase_orders', 'purchase_order_details.purchase_order_id', '=', 'purchase_orders.id')
+            ->join('items', 'purchase_order_details.item_id', '=', 'items.id')
+            ->whereIn('purchase_orders.status', $completedStatuses)
+            ->whereNull('purchase_orders.deleted_at')
+            ->whereNull('purchase_order_details.deleted_at')
+            ->select(
+                'items.name as item_name',
+                DB::raw('COUNT(DISTINCT purchase_orders.id) as order_count'),
+                DB::raw('SUM(purchase_order_details.quantity) as total_qty')
+            )
+            ->groupBy('items.name')
+            ->orderByDesc('order_count')
+            ->take(5)
+            ->get()
+            ->map(fn($row) => [
+                'item_name'   => $row->item_name,
+                'order_count' => (int) $row->order_count,
+                'total_qty'   => (int) $row->total_qty,
+            ])
+            ->values();
+
+        return response()->json([
+            'monthlySpend'       => $monthlySpend,
+            'forecastedNextMonth' => (float) $forecastedSpend,
+            'forecastedMonth'    => Carbon::now()->addMonth()->format('F Y'),
+            'topReorderedItems'  => $topItems,
+        ]);
+    }
+
     public function purchaseOrdersList()
     {
         try {

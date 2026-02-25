@@ -17,6 +17,65 @@
         </button>
     </div>
 
+     {{-- ── Procurement Forecasting ── --}}
+    <section class="section row g-3 mb-4">
+        <div class="col-12">
+            <h5 class="fw-semibold text-muted text-uppercase mb-2" style="letter-spacing:.05em;">
+                <i class="fa-solid fa-chart-line me-2"></i>Procurement Forecasting
+            </h5>
+        </div>
+
+        {{-- Forecast KPI cards --}}
+        <div class="col-12 col-sm-6 col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stats-icon-wrapper me-3">
+                            <div class="stats-icon blue">
+                                <i class="fa-solid fa-crystal-ball"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1">Forecasted Spend</h6>
+                            <h5 class="font-extrabold mb-0" id="kpi-forecast-spend">—</h5>
+                            <span class="text-muted small" id="kpi-forecast-month"></span>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <i class="fa-solid fa-circle-info me-1"></i>3-month moving average of completed PO spend.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Top Re-ordered Items --}}
+        <div class="col-12 col-sm-6 col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header">
+                    <h4 class="mb-0">Top Re-ordered Items</h4>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush" id="top-reordered-items">
+                        <li class="list-group-item text-muted">Loading...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {{-- Monthly Spend Trend Chart --}}
+        <div class="col-12 col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Monthly Spend Trend</h4>
+                    <span class="text-muted small">Last 6 months</span>
+                </div>
+                <div class="card-body">
+                    <div id="chart-monthly-spend"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="section row g-3 mb-4">
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="card h-100 shadow-sm border-0">
@@ -171,9 +230,12 @@
             </div>
         </div>
     </section>
+
 @endsection
 
 @section('scripts')
+    <link rel="stylesheet" href="{{ asset('assets/vendors/apexcharts/apexcharts.css') }}">
     <script src="{{ asset('assets/vendors/dayjs/dayjs.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
     <script src="{{ asset('js/procurementDashboard.js') }}"></script>
 @endsection

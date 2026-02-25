@@ -12,6 +12,7 @@ Route::get('/procurement', [ProcurementController::class, 'index'])->middleware(
 
 Route::prefix('/procurement')->middleware(['auth', 'isEmployee'])->group(function () {
     Route::get('/dashboard-analytics', [ProcurementController::class, 'getDashboardAnalytics']);
+    Route::get('/spend-forecast', [ProcurementController::class, 'getSpendForecast']);
     //////////////////////////////////////////  to views /////////////////////////////////////
     Route::get('/create-purchase-request', [ProcurementController::class, 'createPR'])->name('procurement.createPR');
     Route::get('/purchase-orders', [ProcurementController::class, 'purchaseOrders'])->name('procurement.purchaseOrders');
