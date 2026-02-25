@@ -222,11 +222,13 @@ class AttendanceController extends Controller
             if (!$schedule) {
                 $hours_worked = $attendance->time_in->diffInMinutes($now);
             } else {
+                $scheduledTimeIn  = Carbon::parse($now->toDateString() . ' ' . Carbon::parse($schedule->time_in)->format('H:i:s'));
                 $scheduledTimeOut = Carbon::parse($now->toDateString() . ' ' . Carbon::parse($schedule->time_out)->format('H:i:s'));
 
-                $timeForCalc = $now->isAfter($scheduledTimeOut) ? $scheduledTimeOut : $now;
+                $effectiveStart = $attendance->time_in->isAfter($scheduledTimeIn) ? $attendance->time_in : $scheduledTimeIn;
+                $effectiveEnd   = $now->isAfter($scheduledTimeOut) ? $scheduledTimeOut : $now;
 
-                $hours_worked = $attendance->time_in->diffInMinutes($timeForCalc);
+                $hours_worked = $effectiveStart->isAfter($effectiveEnd) ? 0 : $effectiveStart->diffInMinutes($effectiveEnd);
             }
 
             $dataToUpdate = [

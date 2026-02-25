@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\HR;
 
 use App\Http\Controllers\AuthController;
 use Carbon\Carbon;
+use App\Models\Attendance;
 use App\Models\Leave;
 use App\Models\Status;
 use Illuminate\Support\Facades\DB;
@@ -63,6 +64,10 @@ class LeaveController extends Controller
 
             $startDate = Carbon::create($leave->start_date);
             $endDate = Carbon::create($leave->end_date);
+
+            Attendance::where('employee_id', $leave->employee_id)
+                ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+                ->forceDelete();
 
             $records = [];
 
@@ -157,6 +162,25 @@ class LeaveController extends Controller
             DB::beginTransaction();
 
             $validated = $request->validated();
+
+            $today = Carbon::today();
+            $startDate = Carbon::parse($validated['start_date']);
+            $endDate = Carbon::parse($validated['end_date']);
+
+            if ($today->between($startDate, $endDate)) {
+                $timedIn = Attendance::where('employee_id', $validated['employee_id'])
+                    ->whereDate('date', $today)
+                    ->whereNotNull('time_in')
+                    ->whereNull('time_out')
+                    ->exists();
+
+                if ($timedIn) {
+                    DB::rollBack();
+                    return response()->json([
+                        'error' => 'You are currently timed in. Please time out first before filing a leave for today.'
+                    ], 422);
+                }
+            }
 
             Leave::create([
                 'employee_id' => $validated['employee_id'],
