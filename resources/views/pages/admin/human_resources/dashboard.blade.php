@@ -4,6 +4,7 @@
 @section('headings') Human Resources Dashboard @endsection
 
 @section('content')
+    <link rel="stylesheet" href="{{ asset('assets/vendors/apexcharts/apexcharts.css') }}">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('hr.dashboard') }}">Human Resources</a></li>
@@ -85,6 +86,56 @@
             </div>
         </div>
 
+        {{-- Analytics Row 1: Weekly Attendance + Department Headcount --}}
+        <div class="row g-3 mb-3">
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">Weekly Attendance Overview</h4>
+                        <small class="text-muted">Current week breakdown by status</small>
+                    </div>
+                    <div class="card-body">
+                        <div id="chart-weekly-attendance"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">Headcount by Department</h4>
+                        <small class="text-muted">Active employees</small>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center">
+                        <div id="chart-department-headcount" style="width:100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Analytics Row 2: Overtime Trend + Payroll Trend --}}
+        <div class="row g-3 mb-3">
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">Overtime Requests (Last 6 Months)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="chart-overtime-trend"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">Total Net Payroll (Last 6 Months)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="chart-payroll-trend"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="card-title mb-0">Employees Today's Attendance</h4>
@@ -132,5 +183,6 @@
 
 @endsection
 @section('scripts')
+    <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
     <script type="module" src="{{ asset('js/hrDashboard.js') }}"></script>
 @endsection

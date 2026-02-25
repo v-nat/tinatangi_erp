@@ -54,6 +54,7 @@ Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(fun
 
     ///////////////////////////////////// DASHBOARD ////////////////////////////////////////////////
     Route::get('/schedules', [HR_Controller::class, 'getSchedules'])->name('hr.schedules');
+    Route::get('/dashboard/analytics', [HR_Controller::class, 'getDashboardAnalytics'])->name('hr.dashboard.analytics');
 
     ////////////////////////////////// EMPLOYEE MANAGEMENT //////////////////////////
     Route::get('/employees', [HR_Controller::class, 'employees'])->name('hr.employees');
