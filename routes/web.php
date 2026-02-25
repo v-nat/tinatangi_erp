@@ -17,6 +17,9 @@ Route::get('/4861707079204269727468646179', function () {
 Route::get('/hmmm', function () {
     return view('congrats');
 });
+Route::get('/garden', function () {
+    return view('flowers');
+});
 
 
 Route::get('/admintest', function () {
