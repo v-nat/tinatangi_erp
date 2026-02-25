@@ -16,6 +16,7 @@ Route::prefix('/supplier')->middleware(['auth', 'isSupplier'])->group(function (
     Route::get('/products/list', [SupplierController::class, 'listItems']);
     Route::get('/products/{item}', [SupplierController::class, 'showItem']);
     Route::post('/products', [SupplierController::class, 'storeItem']);
+    Route::post('/products/bulk-update', [SupplierController::class, 'bulkUpdate']);
     Route::put('/products/{item}', [SupplierController::class, 'updateItem']);
     Route::get('/orders/get-list', [SupplierController::class, 'purchaseOrdersList']);
     Route::get('/purchases/get-details/{id}', [FinanceController::class, 'getDetailsForViewing']);

@@ -24,10 +24,19 @@
                 </div>
             </div>
             <div class="card-body">
+                <div id="bulk-action-bar" class="d-none mb-3 px-3 py-2 bg-light border rounded d-flex align-items-center gap-2 flex-wrap">
+                    <span class="text-muted small fw-semibold me-1"><span id="bulk-selected-count">0</span> item(s) selected</span>
+                    <button class="btn btn-sm btn-success" data-bulk-action="set_active"><i class="fa-solid fa-circle-check me-1"></i>Set Active</button>
+                    <button class="btn btn-sm btn-secondary" data-bulk-action="set_inactive"><i class="fa-solid fa-circle-xmark me-1"></i>Set Inactive</button>
+                    <button class="btn btn-sm btn-info text-white" data-bulk-action="set_perishable"><i class="fa-solid fa-clock me-1"></i>Set Perishable</button>
+                    <button class="btn btn-sm btn-warning" data-bulk-action="set_not_perishable"><i class="fa-solid fa-ban me-1"></i>Set Not Perishable</button>
+                    <button class="btn btn-sm btn-outline-danger ms-auto" id="btn-clear-selection">Clear</button>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover" id="supplier-products-table" style="width: 100%;">
                         <thead>
                             <tr>
+                                <th style="width:40px;" class="text-center"><input type="checkbox" class="form-check-input" id="select-all-products" title="Select all"></th>
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Unit</th>

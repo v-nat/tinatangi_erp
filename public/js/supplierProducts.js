@@ -81,6 +81,59 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
+    function updateBulkBar() {
+        const count = $("#supplier-products-table tbody .row-checkbox:checked").length;
+        if (count > 0) {
+            $("#bulk-selected-count").text(count);
+            $("#bulk-action-bar").removeClass("d-none");
+        } else {
+            $("#bulk-action-bar").addClass("d-none");
+        }
+    }
+
+    function executeBulkAction(action, ids) {
+        const labels = {
+            set_active: "Set Active",
+            set_inactive: "Set Inactive",
+            set_perishable: "Set Perishable",
+            set_not_perishable: "Set Not Perishable",
+        };
+        Swal.fire({
+            title: "Confirm Action",
+            text: `Apply "${labels[action]}" to ${ids.length} selected product(s)?`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, apply",
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+            $.ajax({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                },
+                url: "/supplier/products/bulk-update",
+                type: "POST",
+                data: { ids, action },
+                success: function (response) {
+                    reloadTable("supplier-products-table");
+                    $("#select-all-products").prop("checked", false).prop("indeterminate", false);
+                    updateBulkBar();
+                    Toast.fire({
+                        title: "Success",
+                        text: response.message || "Products updated successfully.",
+                        icon: "success",
+                    });
+                },
+                error: function (xhr) {
+                    Toast.fire({
+                        title: "Error",
+                        text: xhr.responseJSON?.error || "Unable to apply action.",
+                        icon: "error",
+                    });
+                },
+            });
+        });
+    }
+
     function initDataTable() {
         productDataTable = $("#supplier-products-table").DataTable({
             responsive: true,
@@ -89,7 +142,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 url: "/supplier/products/list",
                 dataSrc: "data",
             },
+            drawCallback: function () {
+                $("#select-all-products").prop("checked", false).prop("indeterminate", false);
+                updateBulkBar();
+            },
             columns: [
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    className: "text-center align-middle",
+                    render: function (data, type, row) {
+                        return `<input type="checkbox" class="row-checkbox form-check-input" data-id="${row.id}">`;
+                    },
+                },
                 { data: "name" },
                 { data: "category_name", defaultContent: "—" },
                 { data: "unit_name", defaultContent: "—" },
@@ -265,6 +331,37 @@ document.addEventListener("DOMContentLoaded", () => {
     $productForm.on("submit", function (event) {
         event.preventDefault();
         submitProductForm();
+    });
+
+    $(document).on("change", "#select-all-products", function () {
+        const checked = $(this).is(":checked");
+        $("#supplier-products-table tbody .row-checkbox").prop("checked", checked);
+        updateBulkBar();
+    });
+
+    $(document).on("change", ".row-checkbox", function () {
+        const total = $("#supplier-products-table tbody .row-checkbox").length;
+        const checked = $("#supplier-products-table tbody .row-checkbox:checked").length;
+        $("#select-all-products")
+            .prop("indeterminate", checked > 0 && checked < total)
+            .prop("checked", checked === total && total > 0);
+        updateBulkBar();
+    });
+
+    $(document).on("click", "#btn-clear-selection", function () {
+        $("#supplier-products-table tbody .row-checkbox").prop("checked", false);
+        $("#select-all-products").prop("checked", false).prop("indeterminate", false);
+        updateBulkBar();
+    });
+
+    $(document).on("click", "[data-bulk-action]", function () {
+        const action = $(this).data("bulk-action");
+        const ids = [];
+        $("#supplier-products-table tbody .row-checkbox:checked").each(function () {
+            ids.push($(this).data("id"));
+        });
+        if (!ids.length) return;
+        executeBulkAction(action, ids);
     });
 
     fetchOptions().then(() => {

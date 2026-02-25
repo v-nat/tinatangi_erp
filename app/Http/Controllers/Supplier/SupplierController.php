@@ -235,6 +235,44 @@ class SupplierController extends Controller
         return response()->json(['message' => 'Product updated successfully!']);
     }
 
+    public function bulkUpdate(Request $request)
+    {
+        $supplierId = auth('')->id();
+
+        $validator = Validator::make($request->all(), [
+            'ids'    => ['required', 'array', 'min:1'],
+            'ids.*'  => ['integer'],
+            'action' => ['required', 'in:set_active,set_inactive,set_perishable,set_not_perishable'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $items = Item::where('supplier_id', $supplierId)
+            ->whereIn('id', $request->ids)
+            ->get();
+
+        if ($items->isEmpty()) {
+            return response()->json(['error' => 'No matching products found.'], 404);
+        }
+
+        $updateData = match ($request->action) {
+            'set_active'          => ['status' => 1],
+            'set_inactive'        => ['status' => 0],
+            'set_perishable'      => ['is_perishable' => true],
+            'set_not_perishable'  => ['is_perishable' => false],
+        };
+
+        Item::where('supplier_id', $supplierId)
+            ->whereIn('id', $request->ids)
+            ->update($updateData);
+
+        return response()->json([
+            'message' => count($request->ids) . ' product(s) updated successfully.',
+        ]);
+    }
+
     protected function authorizeItem(Item $item): void
     {
         if ($item->supplier_id !== auth('')->id()) {
