@@ -51,8 +51,8 @@
             color: #555;
         }
 
-        /* Responsive adjustments for Tablets like Redmi Tab Pro 5G */
-        @media (max-width: 1024px) {
+        /* Responsive adjustments for Tablets like Redmi Tab Pro 5G (1280x800) */
+        @media (max-width: 1280px) {
             #ui-panel {
                 width: 85%;
                 padding: 15px 20px;
@@ -264,7 +264,8 @@
 
         function createInstancedGrass() {
             // OPTIMIZATION: Dynamically adapt grass density based on screen size (Tablet vs Desktop)
-            const isTablet = window.innerWidth <= 1200;
+            // Updated to 1280px to properly catch the Redmi Tab Pro 5G dimensions
+            const isTablet = window.innerWidth <= 1280;
             const count = isTablet ? 35000 : 60000;
 
             const geo = new THREE.PlaneGeometry(0.15, 0.6);
