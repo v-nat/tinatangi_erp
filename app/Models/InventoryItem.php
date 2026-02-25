@@ -27,6 +27,7 @@ class InventoryItem extends Model
         'selling_price',
         'stock_level',
         'status',
+        'expiration_date',
     ];
 
     /**
@@ -41,6 +42,7 @@ class InventoryItem extends Model
         'stock_level' => 'float',
         'base_unit_stock_level' => 'float',
         'status' => 'integer',
+        'expiration_date' => 'date',
     ];
 
     /*
@@ -226,6 +228,31 @@ class InventoryItem extends Model
         } else {
             $this->stock_level = $baseQuantity;
         }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Expiration Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    public function isExpired(): bool
+    {
+        return $this->expiration_date !== null && now()->gt($this->expiration_date);
+    }
+
+    public function isExpiringSoon(int $days = 30): bool
+    {
+        return $this->expiration_date !== null
+            && !$this->isExpired()
+            && now()->diffInDays($this->expiration_date, false) <= $days;
+    }
+
+    public function daysUntilExpiry(): ?int
+    {
+        return $this->expiration_date !== null
+            ? (int) now()->diffInDays($this->expiration_date, false)
+            : null;
     }
 
     /**

@@ -25,6 +25,11 @@ class PurchaseOrderDetail extends Model
         'delivered_qnty',
         'sku',
         'status',
+        'expiration_date',
+    ];
+
+    protected $casts = [
+        'expiration_date' => 'date',
     ];
 
     /*

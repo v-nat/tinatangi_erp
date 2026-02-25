@@ -53,6 +53,24 @@ $(document).ready(function () {
                 },
             },
             {
+                data: "expiration_date",
+                className: "dt-left",
+                render: function (data, type, row) {
+                    if (!data) return '<span class="text-muted">—</span>';
+                    if (type === "sort" || type === "type") return data;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const expDate = new Date(data);
+                    const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                    if (diffDays < 0) {
+                        return `<span class="badge bg-danger">Expired (${data})</span>`;
+                    } else if (diffDays <= 30) {
+                        return `<span class="badge bg-warning text-dark">Expiring Soon (${data})</span>`;
+                    }
+                    return `<span class="text-success">${data}</span>`;
+                },
+            },
+            {
                 data: "status",
                 className: "text-center",
                 width: "150px",
@@ -83,7 +101,7 @@ $(document).ready(function () {
                     }
                 });
 
-            const statusColumn = this.api().column(6);
+            const statusColumn = this.api().column(7);
             const statusSelect = $("#status_filter");
             const statusSet = new Set();
 
@@ -122,7 +140,7 @@ $(document).ready(function () {
 
     $("#status_filter").on("change", function () {
         const selectedStatus = $(this).val();
-        const statusColumn = allItems.column(6);
+        const statusColumn = allItems.column(7);
 
         statusColumn
             .search(

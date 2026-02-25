@@ -201,56 +201,86 @@ $(document).ready(function () {
 
     $(document).on("click", ".approve-btn", function () {
         const req_id = $(this).data("id");
-        Swal.fire({
-            title: "Approve Purchase Order?",
-            text: "You are about to ship this order to Tinatangi Cafe.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm!",
-        }).then((result) => {
-            if (!result.isConfirmed) {
+        $("#approveOrderId").val(req_id);
+        $("#approveItemsList").html(
+            '<tr><td colspan="4" class="text-center text-muted">Loading items...</td></tr>'
+        );
+        $("#approveOrderModal").modal("show");
+
+        $.get(`/supplier/purchases/get-details/${req_id}`, function (response) {
+            if (!response.data || response.data.length === 0) {
+                $("#approveItemsList").html(
+                    '<tr><td colspan="4" class="text-center text-danger">No items found.</td></tr>'
+                );
                 return;
             }
-            $("#LoadingScreen").fadeIn(200);
-            $.ajax({
-                headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                        "content"
-                    ),
-                },
-                url: `/supplier/orders/process/${req_id}/20`,
-                type: "PUT",
-                data: null,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    $("#LoadingScreen").fadeOut(200);
-                    reloadTable("purchaseOrderTable");
-                    Toast.fire({
-                        text: response.message,
-                        icon: "success",
-                    });
-                },
-                error: function (xhr) {
-                    $("#LoadingScreen").fadeOut(200);
-                    if (xhr.responseJSON?.errors) {
-                        let errorMessages = Object.values(
-                            xhr.responseJSON.errors
-                        )
-                            .flat()
-                            .join("\n");
-                        Toast.fire("Validation Error", errorMessages, "error");
-                    } else {
-                        Toast.fire(
-                            "Error",
-                            "An unexpected error occurred.",
-                            "error"
-                        );
-                    }
-                },
+            const requestData = response.data[0];
+            let rowsHtml = "";
+            let itemIndex = 0;
+            (requestData.purchase_orders || []).forEach((order) => {
+                (order.details || []).forEach((item) => {
+                    itemIndex++;
+                    const expInput = item.is_perishable
+                        ? `<input type="date" class="form-control form-control-sm approve-exp-date-input" data-pod-id="${item.pod_id}" style="min-width:130px;">`
+                        : `<span class="text-muted small">Not perishable</span>`;
+                    rowsHtml += `
+                        <tr>
+                            <td>${itemIndex}</td>
+                            <td>${item.item_name || "N/A"}</td>
+                            <td class="text-end">${item.quantity || 0} ${item.item_unit || ""}</td>
+                            <td>${expInput}</td>
+                        </tr>`;
+                });
             });
+            if (!rowsHtml) {
+                rowsHtml = '<tr><td colspan="4" class="text-center text-muted">No items found.</td></tr>';
+            }
+            $("#approveItemsList").html(rowsHtml);
+        }).fail(function () {
+            $("#approveItemsList").html(
+                '<tr><td colspan="4" class="text-center text-danger">Failed to load items.</td></tr>'
+            );
+        });
+    });
+
+    $(document).on("click", "#confirmApproveBtn", function () {
+        const req_id = $("#approveOrderId").val();
+        const expirationDates = {};
+        $(".approve-exp-date-input").each(function () {
+            const podId = $(this).data("pod-id");
+            const dateVal = $(this).val();
+            if (podId && dateVal) {
+                expirationDates[podId] = dateVal;
+            }
+        });
+        $("#approveOrderModal").modal("hide");
+        $("#LoadingScreen").fadeIn(200);
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            url: `/supplier/orders/process/${req_id}/20`,
+            type: "PUT",
+            data: { expiration_dates: expirationDates },
+            success: function (response) {
+                $("#LoadingScreen").fadeOut(200);
+                reloadTable("purchaseOrderTable");
+                Toast.fire({
+                    text: response.message,
+                    icon: "success",
+                });
+            },
+            error: function (xhr) {
+                $("#LoadingScreen").fadeOut(200);
+                if (xhr.responseJSON?.errors) {
+                    let errorMessages = Object.values(xhr.responseJSON.errors)
+                        .flat()
+                        .join("\n");
+                    Toast.fire("Validation Error", errorMessages, "error");
+                } else {
+                    Toast.fire("Error", "An unexpected error occurred.", "error");
+                }
+            },
         });
     });
 

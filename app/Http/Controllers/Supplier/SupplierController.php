@@ -190,6 +190,7 @@ class SupplierController extends Controller
             'inventory_location_id' => $request->inventory_location_id ?? null,
             'unit_price' => $request->unit_price,
             'status' => $request->status ?? 1,
+            'is_perishable' => $request->boolean('is_perishable', false),
             'supplier_id' => $supplierId,
         ]);
 
@@ -212,6 +213,7 @@ class SupplierController extends Controller
                 'inventory_location_id' => $item->inventory_location_id,
                 'unit_price' => $item->unit_price,
                 'status' => $item->status,
+                'is_perishable' => (bool) $item->is_perishable,
             ],
         ]);
     }
@@ -227,6 +229,7 @@ class SupplierController extends Controller
             'inventory_location_id' => $request->inventory_location_id ?? null,
             'unit_price' => $request->unit_price,
             'status' => $request->status ?? $item->status,
+            'is_perishable' => $request->boolean('is_perishable', false),
         ]);
 
         return response()->json(['message' => 'Product updated successfully!']);

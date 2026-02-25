@@ -175,6 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
         $("#product_unit").val(item.unit_id).trigger("change");
         $("#product_price").val(item.unit_price);
         $("#product_status").val(item.status ?? 1);
+        $("#product_is_perishable").prop("checked", !!item.is_perishable);
 
         $productModal.modal("show");
     }

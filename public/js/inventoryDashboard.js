@@ -17,11 +17,11 @@ $(document).ready(function () {
                     return meta.row + 1;
                 },
                 className: "text-center",
-                width: "45px",
+                width: "40px",
+                orderable: false,
             },
             { data: "sku", className: "dt-left" },
             { data: "item_name", className: "dt-left" },
-            { data: "unit", className: "dt-left" },
             { data: "category", className: "dt-left" },
             {
                 data: "stock_level",
@@ -31,7 +31,6 @@ $(document).ready(function () {
                         if (row.stock_display) {
                             return row.stock_display;
                         }
-
                         const formatted =
                             row.stock_level_formatted ??
                             Number(data || 0).toLocaleString("en-PH", {
@@ -58,11 +57,37 @@ $(document).ready(function () {
                 },
             },
             {
+                data: "expiration_date",
+                className: "dt-left",
+                render: function (data, type, row) {
+                    if (!data) return '<span class="text-muted">—</span>';
+                    if (type === "sort" || type === "type") return data;
+                    const today = new Date(); today.setHours(0, 0, 0, 0);
+                    const expDate = new Date(data);
+                    const diffDays = Math.ceil((expDate - today) / 86400000);
+                    if (diffDays < 0)
+                        return `<span class="badge bg-danger">Expired</span>`;
+                    if (diffDays <= 30)
+                        return `<span class="badge bg-warning text-dark">${data}</span>`;
+                    return `<span class="text-success">${data}</span>`;
+                },
+            },
+            {
                 data: "status",
                 className: "text-center",
-                width: "150px",
+                width: "130px",
+            },
+            {
+                data: "received_at",
+                className: "dt-left",
+                render: function (data, type, row) {
+                    if (type === "sort" || type === "type") return row.received_at_raw || "";
+                    if (!data) return '<span class="text-muted">—</span>';
+                    return `<span class="text-muted small">${data}</span>`;
+                },
             },
         ],
+        order: [[8, "desc"]],
     });
 
     const DEFAULT_PRODUCT_IMAGE = "/logo.png";
@@ -576,6 +601,13 @@ $(document).ready(function () {
                 animateCount("#totalStocksCount", data.total_stocks || 0);
                 animateCount("#lowStocksCount", data.low_stocks || 0);
                 animateCount("#outOfStockCount", data.out_of_stock || 0);
+                animateCount("#expiredCount", data.expired || 0);
+                animateCount("#expiringSoonCount", data.expiring_soon || 0);
+                animateCount("#activeItemsCount", data.active_items || 0);
+                const totalValue = parseFloat(data.total_value || 0);
+                $("#totalValueAmount").text(
+                    "₱ " + totalValue.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                );
                 reloadTable("recentItems");
             } else {
                 console.error("No data received from the server.");
@@ -981,6 +1013,7 @@ $(document).ready(function () {
                 $("#LoadingScreen").fadeIn(200);
                 $.post(
                     `/inventory/items-to-receive/receive-inventory/${req_id}`,
+                    { _token: $('meta[name="csrf-token"]').attr("content") },
                     function (response) {
                         if (response.success) {
                             Toast.fire({
@@ -988,7 +1021,6 @@ $(document).ready(function () {
                                 text: response.message,
                                 icon: "success",
                             });
-                            // Refresh counts and alerts
                             fetchAndUpdateCounts();
                             getToReceiveRequests();
                             getToRestockItems();
@@ -1001,15 +1033,15 @@ $(document).ready(function () {
                         }
                     }
                 )
-                    .fail(function (xhr) {
-                        const errorMsg = xhr.responseJSON
-                            ? xhr.responseJSON.error
-                            : "Failed to mark items as received.";
-                        Swal.fire("Error", errorMsg, "error");
-                    })
-                    .always(function () {
-                        $("#LoadingScreen").fadeOut(200);
-                    });
+                .fail(function (xhr) {
+                    const errorMsg = xhr.responseJSON
+                        ? xhr.responseJSON.error
+                        : "Failed to mark items as received.";
+                    Swal.fire("Error", errorMsg, "error");
+                })
+                .always(function () {
+                    $("#LoadingScreen").fadeOut(200);
+                });
             }
         });
     });
@@ -1116,7 +1148,7 @@ $(document).ready(function () {
         const poNum = Array.from(po).join(", ");
 
         if (allDetailRowsHtml === "") {
-            allDetailRowsHtml = `<tr><td colspan="8" class="text-center">No item details were found across all Purchase Orders.</td></tr>`;
+            allDetailRowsHtml = `<tr><td colspan="7" class="text-center">No item details were found across all Purchase Orders.</td></tr>`;
         }
 
         const html = `
@@ -1153,7 +1185,7 @@ $(document).ready(function () {
                     ${allDetailRowsHtml}
                     <tr>
                         <td colspan="5" class="text-end"><strong>Total Amount:</strong></td>
-                        <td colspan="5" class="text-end"><strong>₱${parseFloat(
+                        <td class="text-end"><strong>₱${parseFloat(
                             data.total_amount || 0
                         ).toFixed(2)}</strong></td>
                     </tr>

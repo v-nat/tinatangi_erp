@@ -21,6 +21,11 @@ class Item extends Model
         'inventory_location_id',
         'status',
         'supplier_id',
+        'is_perishable',
+    ];
+
+    protected $casts = [
+        'is_perishable' => 'boolean',
     ];
 
     /*

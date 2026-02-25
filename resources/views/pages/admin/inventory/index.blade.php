@@ -130,6 +130,78 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-6 col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body px-3 py-4-5">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stats-icon bg-warning">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h6 class="text-muted font-semibold">Expiring Soon</h6>
+                            <h5 class="font-extrabold mb-0" id="expiringSoonCount"></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body px-3 py-4-5">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stats-icon red">
+                                <i class="fa-solid fa-ban"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h6 class="text-muted font-semibold">Expired</h6>
+                            <h5 class="font-extrabold mb-0" id="expiredCount"></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body px-3 py-4-5">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stats-icon purple">
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h6 class="text-muted font-semibold">Active Items</h6>
+                            <h5 class="font-extrabold mb-0" id="activeItemsCount"></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body px-3 py-4-5">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stats-icon green">
+                                <i class="fa-solid fa-peso-sign"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h6 class="text-muted font-semibold">Inventory Value</h6>
+                            <h5 class="font-extrabold mb-0" id="totalValueAmount" style="font-size:0.95rem;"></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <section class="section mt-3">
@@ -259,11 +331,12 @@
                                 <th>#</th>
                                 <th>SKU</th>
                                 <th>Item Name</th>
-                                <th>Unit</th>
                                 <th>Category</th>
                                 <th>Stocks</th>
                                 <th>Cost Price</th>
+                                <th>Expiry Date</th>
                                 <th>Status</th>
+                                <th>Last Received</th>
                             </tr>
                         </thead>
                         <tbody>

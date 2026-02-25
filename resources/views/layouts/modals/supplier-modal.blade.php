@@ -36,6 +36,53 @@
     </div>
 </div>
 
+{{-- ////////////////////////////////////////// APPROVE WITH EXPIRATION DATES ////////////////////////////////////////// --}}
+
+<div class="modal fade" id="approveOrderModal" tabindex="-1" role="dialog" aria-labelledby="approveOrderModalLabel"
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title white" id="approveOrderModalLabel">
+                    <i class="fa-solid fa-truck me-2"></i> Approve &amp; Ship Order
+                </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-3">You are about to approve this purchase order and ship it to Tinatangi Cafe.
+                    For perishable items, you may optionally enter an expiration date.</p>
+                <input type="hidden" id="approveOrderId">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th class="text-end">Qty</th>
+                                <th>Expiration Date <span class="text-muted fw-normal">(perishable items only)</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="approveItemsList">
+                            <tr><td colspan="4" class="text-center text-muted">Loading items...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                    <span class="d-none d-sm-block">Cancel</span>
+                </button>
+                <button id="confirmApproveBtn" type="button" class="btn btn-primary ml-1">
+                    <i class="fa-solid fa-truck me-1"></i>
+                    <span class="d-none d-sm-block">Confirm &amp; Ship</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- view modal-->
 <div class="modal fade text-left w-100" id="viewPO" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     aria-hidden="true">

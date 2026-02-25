@@ -37,6 +37,13 @@ class InventoryController extends Controller
     {
         $toReceiveCount = PurchaseRequest::where('status', 16)->count();
         $itemsInStock = InventoryItem::distinct()->count('item_id');
+        $activeItemsCount = InventoryItem::where('stock_level', '>', 0)->count();
+        $totalInventoryValue = (float) InventoryItem::sum('cost_price');
+        $expiredCount = InventoryItem::whereNotNull('expiration_date')
+            ->whereDate('expiration_date', '<', today())->count();
+        $expiringSoonCount = InventoryItem::whereNotNull('expiration_date')
+            ->whereDate('expiration_date', '>=', today())
+            ->whereDate('expiration_date', '<=', today()->addDays(30))->count();
         $inventoryItems = InventoryItem::get(['id', 'stock_level', 'status']);
 
         $lowStockCount = 0;
@@ -76,10 +83,14 @@ class InventoryController extends Controller
         $outOfStockCount = InventoryItem::where('stock_level', 0)->count();
 
         return response()->json([
-            'to_receive' => $toReceiveCount,
-            'total_stocks' => $itemsInStock,
-            'low_stocks' => $lowStockCount,
-            'out_of_stock' => $outOfStockCount,
+            'to_receive'     => $toReceiveCount,
+            'total_stocks'   => $itemsInStock,
+            'active_items'   => $activeItemsCount,
+            'total_value'    => $totalInventoryValue,
+            'low_stocks'     => $lowStockCount,
+            'out_of_stock'   => $outOfStockCount,
+            'expired'        => $expiredCount,
+            'expiring_soon'  => $expiringSoonCount,
         ]);
     }
 
@@ -105,7 +116,7 @@ class InventoryController extends Controller
     {
         try {
             $items = InventoryItem::with(['itemss', 'category', 'unit', 'baseUnit', 'itemStatus'])
-                ->latest()
+                ->latest('updated_at')
                 ->take(10)
                 ->get();
 
@@ -125,8 +136,10 @@ class InventoryController extends Controller
                         'stock_level_formatted' => $item->formatStockQuantity(),
                         'stock_display'     => $item->formatStockDisplay(),
                         'cost_price'        => (float)$item->cost_price,
-                        // 'selling_price'     => (float)$item->selling_price, --- IGNORE ---
                         'status'            => Status::getStatusText($item->status),
+                        'expiration_date'   => $item->expiration_date?->format('Y-m-d'),
+                        'received_at'       => $item->updated_at?->format('M d, Y g:i A'),
+                        'received_at_raw'   => $item->updated_at?->toIso8601String(),
                     ];
                 })
             ]);
@@ -193,6 +206,7 @@ class InventoryController extends Controller
                         'cost_price'        => (float)$item->cost_price,
                         // 'selling_price'     => (float)$item->selling_price, --- IGNORE ---
                         'status'            => Status::getStatusText($item->status),
+                        'expiration_date'   => $item->expiration_date?->format('Y-m-d'),
                     ];
                 })
             ]);
@@ -223,6 +237,7 @@ class InventoryController extends Controller
 
                         $mappedDetails = $order->purchaseOrderDetail->map(function ($detail) {
                             return [
+                                'pod_id'      => $detail->id,
                                 'item_name'   => optional($detail->itemss)->name,
                                 'item_unit'   => optional(optional($detail->itemss)->unit)->abbreviation,
                                 'item_unit_name'   => optional(optional($detail->itemss)->unit)->name,

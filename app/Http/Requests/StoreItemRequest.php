@@ -20,6 +20,7 @@ class StoreItemRequest extends FormRequest
             'inventory_location_id' => ['nullable', 'exists:inventory_locations,id'],
             'unit_price' => ['required', 'numeric', 'min:0'],
             'status' => ['nullable', 'integer'],
+            'is_perishable' => ['nullable', 'boolean'],
         ];
     }
 }

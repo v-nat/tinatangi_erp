@@ -323,6 +323,7 @@ class PurchaseOrderController extends Controller
                 $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
                 $supplier_id = null;
                 $firstIteration = true;
+                $expirationDates = $request->input('expiration_dates', []);
                 foreach ($orderInstances as $orderInstance) {
                     $prpo = PurchaseOrder::where('id', $orderInstance)->first();
                     $prpo->remarks = 'order accepted';
@@ -332,6 +333,9 @@ class PurchaseOrderController extends Controller
                     $prpod = PurchaseOrderDetail::where('purchase_order_id', $orderInstance)->get();
                     foreach ($prpod as $detail) {
                         $detail->status = $status;
+                        if (!empty($expirationDates[$detail->id])) {
+                            $detail->expiration_date = $expirationDates[$detail->id];
+                        }
                         $detail->save();
                     }
 

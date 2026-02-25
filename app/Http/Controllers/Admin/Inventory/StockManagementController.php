@@ -65,7 +65,7 @@ class StockManagementController extends Controller
         }
     }
 
-    public function receiveInventory($id)
+    public function receiveInventory(Request $request, $id)
     {
         try {
             DB::beginTransaction();
@@ -129,6 +129,9 @@ class StockManagementController extends Controller
                     }
 
                     $inventoryItem->status = 24;
+                    if (!empty($detail->expiration_date)) {
+                        $inventoryItem->expiration_date = $detail->expiration_date;
+                    }
                     $inventoryItem->save();
                     $inventoryItem->refreshProductAvailability();
                     ////////////////////////////////////////////////////////////////////////////////////////////
