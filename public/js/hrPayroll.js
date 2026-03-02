@@ -5,6 +5,11 @@ $(document).ready(function () {
     let positionsTable = null;
     let originalContributions = {};
     let originalBaseSalary = null;
+    const RATE_FIELDS = [
+        'sss_employee_rate', 'sss_employer_rate',
+        'philhealth_employee_rate', 'philhealth_employer_rate',
+        'pagibig_employee_rate', 'pagibig_employer_rate',
+    ];
     const WORKING_DAYS_PER_MONTH = 26;
     const WORKING_HOURS_PER_DAY = 8;
 
@@ -191,6 +196,7 @@ $(document).ready(function () {
             positionsTable.ajax.reload();
         }
         fetchAndSetDeductions();
+        loadContributionRateHistory();
         $("#payrollSettings").modal("show");
     });
 
@@ -201,14 +207,12 @@ $(document).ready(function () {
             dataType: "json",
             success: function (data) {
                 if (data) {
-                    originalContributions = {
-                        sss: data.sss,
-                        philhealth: data.philhealth,
-                        pagibig: data.pagibig,
-                    };
-                    $("#sss").val(formatToCurrency(data.sss));
-                    $("#philhealth").val(formatToCurrency(data.philhealth));
-                    $("#pagibig").val(formatToCurrency(data.pagibig));
+                    originalContributions = {};
+                    RATE_FIELDS.forEach(function (field) {
+                        const pct = parseFloat(data[field] || 0) * 100;
+                        originalContributions[field] = pct;
+                        $("#" + field).val(pct.toFixed(2));
+                    });
                     $("#payrollSettingsForm").removeAttr("data-dirty");
                 }
             },
@@ -218,46 +222,85 @@ $(document).ready(function () {
         });
     }
 
+    function loadContributionRateHistory() {
+        $.ajax({
+            url: "/human-resources/contribution-rates/history",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                const tbody = $("#contributionHistoryBody");
+                tbody.empty();
+                if (!response.data || response.data.length === 0) {
+                    tbody.append('<tr><td colspan="9" class="text-center text-muted">No history found.</td></tr>');
+                    return;
+                }
+                response.data.forEach(function (row) {
+                    const statusBadge = row.is_active
+                        ? '<span class="badge bg-success">Active</span>'
+                        : '<span class="badge bg-secondary">Inactive</span>';
+                    const fmtEe = (v) => (parseFloat(v) * 100).toFixed(2) + "%";
+                    tbody.append(`
+                        <tr>
+                            <td>${row.effective_date}</td>
+                            <td>${fmtEe(row.sss_employee_rate)}</td>
+                            <td>${fmtEe(row.sss_employer_rate)}</td>
+                            <td>${fmtEe(row.philhealth_employee_rate)}</td>
+                            <td>${fmtEe(row.philhealth_employer_rate)}</td>
+                            <td>${fmtEe(row.pagibig_employee_rate)}</td>
+                            <td>${fmtEe(row.pagibig_employer_rate)}</td>
+                            <td>${row.set_by}</td>
+                            <td>${statusBadge}</td>
+                        </tr>
+                    `);
+                });
+            },
+            error: function () {
+                $("#contributionHistoryBody").html(
+                    '<tr><td colspan="9" class="text-center text-danger">Failed to load history.</td></tr>'
+                );
+            },
+        });
+    }
+
     $("#payrollSettingsForm").on("submit", function (e) {
         e.preventDefault();
         const form = $(this);
-        const currentSss = formatToNumber($("#sss").val());
-        const currentPhilhealth = formatToNumber($("#philhealth").val());
-        const currentPagibig = formatToNumber($("#pagibig").val());
 
-        if (
-            parseFloat(currentSss) === parseFloat(originalContributions.sss) &&
-            parseFloat(currentPhilhealth) ===
-                parseFloat(originalContributions.philhealth) &&
-            parseFloat(currentPagibig) ===
-                parseFloat(originalContributions.pagibig)
-        ) {
+        // Check whether any rate field has actually changed
+        const hasChanges = RATE_FIELDS.some(function (field) {
+            return parseFloat($("#" + field).val()) !== parseFloat(originalContributions[field]);
+        });
+
+        if (!hasChanges) {
             Toast.fire({
                 icon: "info",
                 title: "No Changes Detected",
-                text: "The contribution values have not been changed.",
+                text: "The contribution rates have not been changed.",
             });
             return;
         }
 
         Swal.fire({
             title: "Are you sure?",
-            text: "This will update the default SSS, PhilHealth, and Pag-IBIG contributions for ALL employees. This action cannot be undone.",
+            text: "This will set new SSS, PhilHealth, and Pag-IBIG rates. A new rate entry will be created and the old one archived. All future payrolls will use the new rates.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, update all!",
+            confirmButtonText: "Yes, apply new rates!",
         }).then((result) => {
             if (result.isConfirmed) {
-                form.find('input[inputmode="decimal"]').each(function () {
-                    $(this).val(formatToNumber($(this).val()));
+                // Convert % values to decimal before POST
+                const postData = { _token: $('meta[name="csrf-token"]').attr("content") };
+                RATE_FIELDS.forEach(function (field) {
+                    postData[field] = (parseFloat($("#" + field).val()) / 100).toFixed(4);
                 });
+
                 $("#LoadingScreen").fadeIn(200);
                 $.ajax({
                     url: "/human-resources/update-payroll-settings",
                     type: "POST",
-                    data: form.serialize(),
+                    data: postData,
                     success: function (response) {
                         $("#LoadingScreen").fadeOut(200);
                         Toast.fire({
@@ -267,19 +310,12 @@ $(document).ready(function () {
                         });
                         form.removeAttr("data-dirty");
                         fetchAndSetDeductions();
+                        loadContributionRateHistory();
                     },
                     error: function (xhr) {
                         $("#LoadingScreen").fadeOut(200);
-                        Toast.fire({
-                            icon: "error",
-                            title: "Error",
-                            text: "Failed to update settings.",
-                        });
-                        form.find('input[inputmode="decimal"]').each(
-                            function () {
-                                $(this).val(formatToCurrency($(this).val()));
-                            },
-                        );
+                        const msg = xhr.responseJSON?.message || "Failed to update rates.";
+                        Toast.fire({ icon: "error", title: "Error", text: msg });
                     },
                 });
             }

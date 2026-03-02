@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\AuthController;
 use App\Services\CompensationCalculator;
 use App\Http\Requests\StorePayrollRequest;
+use App\Models\ContributionRate;
 use App\Http\Controllers\GenerateIdController;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\StoreBatchPayrollRequest;
@@ -143,6 +144,9 @@ class PayrollController extends Controller
                 'sss' => $payroll->sss ?? 0,
                 'philhealth' => $payroll->philhealth ?? 0,
                 'pagibig' => $payroll->pagibig ?? 0,
+                'sss_employer' => $payroll->sss_employer_share ?? 0,
+                'philhealth_employer' => $payroll->philhealth_employer_share ?? 0,
+                'pagibig_employer' => $payroll->pagibig_employer_share ?? 0,
                 'mandatory_deduction' => $payroll->deduction,
                 'tax_deduction' => $payroll->tardiness_deduction,
                 'salary_before_tax' => $payroll->salary_before_tax,
@@ -417,29 +421,38 @@ class PayrollController extends Controller
 
         if (!$hasAttendance) {
             return [
-                'days_present' => 0,
-                'total_hours_worked' => 0,
-                'regular_hour_pay' => 0,
-                'overtime_pay' => 0,
-                'leave_pay' => 0,
-                'days_absent' => 0,
-                'days_absent_deduction' => 0,
-                'tardiness_deduction' => 0,
-                'mandatory_deduction' => ['sss' => 0, 'philhealth' => 0, 'pagibig' => 0, 'total' => 0],
-                'deduction' => 0,
-                'sss' => 0,
-                'philhealth' => 0,
-                'pagibig' => 0,
-                'per_hour_rate' => $this->ratePerHour($employee->base_salary),
-                'daily_rate' => 0,
-                'working_days' => $this->getTotalWorkingDays($start_date, $end_date),
-                'tardiness_total' => 0,
-                'employee_id' => $employee->id,
-                'month' => Carbon::parse($start_date)->format('m'),
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-                'payroll_date' => now(),
-                'status' => 11,
+                'days_present'            => 0,
+                'total_hours_worked'      => 0,
+                'regular_hour_pay'        => 0,
+                'overtime_pay'            => 0,
+                'leave_pay'               => 0,
+                'days_absent'             => 0,
+                'days_absent_deduction'   => 0,
+                'tardiness_deduction'     => 0,
+                'mandatory_deduction'     => [
+                    'sss' => 0, 'sss_employer' => 0,
+                    'philhealth' => 0, 'philhealth_employer' => 0,
+                    'pagibig' => 0, 'pagibig_employer' => 0,
+                    'total' => 0, 'contribution_rate_id' => null,
+                ],
+                'deduction'               => 0,
+                'sss'                     => 0,
+                'philhealth'              => 0,
+                'pagibig'                 => 0,
+                'sss_employer_share'      => 0,
+                'philhealth_employer_share' => 0,
+                'pagibig_employer_share'  => 0,
+                'contribution_rate_id'    => null,
+                'per_hour_rate'           => $this->ratePerHour($employee->base_salary),
+                'daily_rate'              => 0,
+                'working_days'            => $this->getTotalWorkingDays($start_date, $end_date),
+                'tardiness_total'         => 0,
+                'employee_id'             => $employee->id,
+                'month'                   => Carbon::parse($start_date)->format('m'),
+                'start_date'              => $start_date,
+                'end_date'                => $end_date,
+                'payroll_date'            => now(),
+                'status'                  => 11,
             ];
         }
 
@@ -461,32 +474,36 @@ class PayrollController extends Controller
         $mandatory_deduction = $this->totalMandatoryDeductions($employee);
 
         return [
-            'days_present' => $days_present,
-            'total_hours_worked' => $total_hours_worked,
-            'regular_hour_pay' => $regular_pay,
-            'overtime_pay' => $overtime_pay,
-            'leave_pay' => $leave_pay,
+            'days_present'              => $days_present,
+            'total_hours_worked'        => $total_hours_worked,
+            'regular_hour_pay'          => $regular_pay,
+            'overtime_pay'              => $overtime_pay,
+            'leave_pay'                 => $leave_pay,
 
-            'days_absent' => $days_absent,
-            'days_absent_deduction' => $days_absent_deduction,
-            'tardiness_deduction' => $tardiness_deduction,
-            'mandatory_deduction' => $mandatory_deduction,
-            'deduction' => $mandatory_deduction['total'],
-            'sss' => $mandatory_deduction['sss'],
-            'philhealth' => $mandatory_deduction['philhealth'],
-            'pagibig' => $mandatory_deduction['pagibig'],
+            'days_absent'               => $days_absent,
+            'days_absent_deduction'     => $days_absent_deduction,
+            'tardiness_deduction'       => $tardiness_deduction,
+            'mandatory_deduction'       => $mandatory_deduction,
+            'deduction'                 => $mandatory_deduction['total'],
+            'sss'                       => $mandatory_deduction['sss'],
+            'philhealth'                => $mandatory_deduction['philhealth'],
+            'pagibig'                   => $mandatory_deduction['pagibig'],
+            'sss_employer_share'        => $mandatory_deduction['sss_employer'],
+            'philhealth_employer_share' => $mandatory_deduction['philhealth_employer'],
+            'pagibig_employer_share'    => $mandatory_deduction['pagibig_employer'],
+            'contribution_rate_id'      => $mandatory_deduction['contribution_rate_id'],
 
-            'per_hour_rate' => $per_hour_rate,
-            'daily_rate' => $daily_rate,
-            'working_days' => $working_days,
-            'tardiness_total' => $tardiness_total,
+            'per_hour_rate'             => $per_hour_rate,
+            'daily_rate'                => $daily_rate,
+            'working_days'              => $working_days,
+            'tardiness_total'           => $tardiness_total,
 
-            'employee_id' => $employee->id,
-            'month' => Carbon::parse($start_date)->format('m'),
-            'start_date' => $start_date,
-            'end_date' => $end_date,
-            'payroll_date' => now(),
-            'status' => 11,
+            'employee_id'               => $employee->id,
+            'month'                     => Carbon::parse($start_date)->format('m'),
+            'start_date'                => $start_date,
+            'end_date'                  => $end_date,
+            'payroll_date'              => now(),
+            'status'                    => 11,
         ];
     }
 
@@ -620,16 +637,36 @@ class PayrollController extends Controller
 
     protected function totalMandatoryDeductions($employee)
     {
-        $sss = $employee->sss ?? 0;
-        $philhealth = $employee->philhealth ?? 0;
-        $pagibig = $employee->pagibig ?? 0;
+        $rate = ContributionRate::where('is_active', 1)->first();
 
-        $total = $sss + $philhealth + $pagibig;
+        if (!$rate) {
+            return [
+                'sss' => 0, 'sss_employer' => 0,
+                'philhealth' => 0, 'philhealth_employer' => 0,
+                'pagibig' => 0, 'pagibig_employer' => 0,
+                'total' => 0,
+                'contribution_rate_id' => null,
+            ];
+        }
+
+        $salary = $employee->base_salary ?? 0;
+
+        $sss_ee      = round($salary * $rate->sss_employee_rate, 2);
+        $sss_er      = round($salary * $rate->sss_employer_rate, 2);
+        $ph_ee       = round($salary * $rate->philhealth_employee_rate, 2);
+        $ph_er       = round($salary * $rate->philhealth_employer_rate, 2);
+        $pi_ee       = round($salary * $rate->pagibig_employee_rate, 2);
+        $pi_er       = round($salary * $rate->pagibig_employer_rate, 2);
+
         return [
-            'sss' => $sss,
-            'philhealth' => $philhealth,
-            'pagibig' => $pagibig,
-            'total' => $total
+            'sss'                  => $sss_ee,
+            'sss_employer'         => $sss_er,
+            'philhealth'           => $ph_ee,
+            'philhealth_employer'  => $ph_er,
+            'pagibig'              => $pi_ee,
+            'pagibig_employer'     => $pi_er,
+            'total'                => $sss_ee + $ph_ee + $pi_ee,
+            'contribution_rate_id' => $rate->id,
         ];
     }
 }

@@ -14,6 +14,7 @@ use App\Models\Department;
 use App\Helpers\MailSender;
 use Illuminate\Http\Request;
 use App\Models\PayrollSettings;
+use App\Models\ContributionRate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -105,17 +106,20 @@ class EmployeeController extends Controller
 
     public function getPayrollSettings()
     {
-        $settings = PayrollSettings::where('status', 1)->first();
+        $rate = ContributionRate::where('is_active', 1)->first();
 
-        if (!$settings) {
+        if (!$rate) {
             return response()->json([
-                'sss' => '0.00',
-                'philhealth' => '0.00',
-                'pagibig' => '0.00'
-            ], 404); // Not Found
+                'sss_employee_rate'        => 0,
+                'sss_employer_rate'        => 0,
+                'philhealth_employee_rate' => 0,
+                'philhealth_employer_rate' => 0,
+                'pagibig_employee_rate'    => 0,
+                'pagibig_employer_rate'    => 0,
+            ], 404);
         }
 
-        return response()->json($settings);
+        return response()->json($rate);
     }
 
     public function getSalaryByPosition(Request $request)
@@ -192,6 +196,12 @@ class EmployeeController extends Controller
                 'must_change_password' => true,
             ]);
 
+            $rate = ContributionRate::where('is_active', 1)->first();
+            $baseSalary = (float) $validated['base_salary'];
+            $computedSss        = $rate ? round($baseSalary * $rate->sss_employee_rate, 2) : 0;
+            $computedPhilhealth = $rate ? round($baseSalary * $rate->philhealth_employee_rate, 2) : 0;
+            $computedPagibig    = $rate ? round($baseSalary * $rate->pagibig_employee_rate, 2) : 0;
+
             $employee = Employee::create([
                 'id' => $employee_Id,
                 'user_id' => $employee_Id,
@@ -206,10 +216,10 @@ class EmployeeController extends Controller
                 'level' => $levelEnum,
                 'position_id' => $validated['position_id'],
                 'supervisor_id' => $validated['supervisor_id'],
-                'sss' => $validated['sss'] ?? 600.00,
-                'pagibig' => $validated['pagibig'] ?? 100.00,
-                'philhealth' => $validated['philhealth'] ?? 450.00,
-                'base_salary' => $validated['base_salary'],
+                'sss' => $computedSss,
+                'pagibig' => $computedPagibig,
+                'philhealth' => $computedPhilhealth,
+                'base_salary' => $baseSalary,
                 'status' => 1
             ]);
 
@@ -271,6 +281,12 @@ class EmployeeController extends Controller
             if (!$levelEnum) {
                 throw ValidationException::withMessages(['level' => 'Invalid role specified.']);
             }
+            $rate = ContributionRate::where('is_active', 1)->first();
+            $baseSalary = (float) $validated['base_salary'];
+            $computedSss        = $rate ? round($baseSalary * $rate->sss_employee_rate, 2) : 0;
+            $computedPhilhealth = $rate ? round($baseSalary * $rate->philhealth_employee_rate, 2) : 0;
+            $computedPagibig    = $rate ? round($baseSalary * $rate->pagibig_employee_rate, 2) : 0;
+
             $employee->update([
                 'address' => $validated['address'],
                 'postal_code' => $validated['postal_code'],
@@ -283,10 +299,10 @@ class EmployeeController extends Controller
                 'level' => $levelEnum,
                 'position_id' => $validated['position_id'],
                 'supervisor_id' => $validated['supervisor_id'],
-                'sss' => $validated['sss'] ?? 600.00,
-                'pagibig' => $validated['pagibig'] ?? 100.00,
-                'philhealth' => $validated['philhealth'] ?? 450.00,
-                'base_salary' => $validated['base_salary'],
+                'sss' => $computedSss,
+                'pagibig' => $computedPagibig,
+                'philhealth' => $computedPhilhealth,
+                'base_salary' => $baseSalary,
             ]);
 
             if (!empty($validated['days_of_week']) && !empty($validated['time_in']) && !empty($validated['time_out'])) {

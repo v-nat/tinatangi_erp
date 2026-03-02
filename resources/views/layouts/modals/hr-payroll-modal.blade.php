@@ -34,36 +34,130 @@
                     @csrf
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Contribution Information</h4>
+                            <h4 class="card-title">Contribution Rates</h4>
+                            <p class="text-muted mb-0 small">Enter rates as percentages (e.g., 4.5 for 4.5%). Only employee shares are deducted from net pay. Employer shares are for record-keeping.</p>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4 col-12">
+                            <div class="row g-3">
+                                {{-- SSS --}}
+                                <div class="col-12">
+                                    <label class="fw-semibold">SSS</label>
+                                </div>
+                                <div class="col-md-6 col-12">
                                     <div class="form-group">
-                                        <label for="sss">SSS</label>
-                                        <input type="text" id="sss" class="form-control" placeholder="₱0.00"
-                                            inputmode="decimal" name="sss">
+                                        <label for="sss_employee_rate">Employee Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="sss_employee_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="sss_employee_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-12">
+                                <div class="col-md-6 col-12">
                                     <div class="form-group">
-                                        <label for="pagibig">Pag-ibig</label>
-                                        <input type="text" id="pagibig" class="form-control" placeholder="₱0.00"
-                                            inputmode="decimal" name="pagibig">
+                                        <label for="sss_employer_rate">Employer Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="sss_employer_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="sss_employer_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-12">
+
+                                {{-- PhilHealth --}}
+                                <div class="col-12 mt-2">
+                                    <label class="fw-semibold">PhilHealth</label>
+                                </div>
+                                <div class="col-md-6 col-12">
                                     <div class="form-group">
-                                        <label for="philhealth">Philhealth</label>
-                                        <input type="text" id="philhealth" class="form-control" placeholder="₱0.00"
-                                            inputmode="decimal" name="philhealth">
+                                        <label for="philhealth_employee_rate">Employee Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="philhealth_employee_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="philhealth_employee_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="philhealth_employer_rate">Employer Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="philhealth_employer_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="philhealth_employer_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Pag-IBIG --}}
+                                <div class="col-12 mt-2">
+                                    <label class="fw-semibold">Pag-IBIG</label>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="pagibig_employee_rate">Employee Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="pagibig_employee_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="pagibig_employee_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="pagibig_employer_rate">Employer Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="pagibig_employer_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="pagibig_employer_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary mt-2">Apply Contribution Changes</button>
+                            <button type="submit" class="btn btn-primary mt-3">Apply Rate Changes</button>
                         </div>
                     </div>
                 </form>
+
+                <hr>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">Contribution Rate History</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="contributionHistoryTable" class="table table-sm table-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Effective Date</th>
+                                        <th colspan="2" class="text-center">SSS</th>
+                                        <th colspan="2" class="text-center">PhilHealth</th>
+                                        <th colspan="2" class="text-center">Pag-IBIG</th>
+                                        <th>Set By</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    <tr class="small text-muted">
+                                        <th></th>
+                                        <th>EE %</th><th>ER %</th>
+                                        <th>EE %</th><th>ER %</th>
+                                        <th>EE %</th><th>ER %</th>
+                                        <th></th><th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contributionHistoryBody">
+                                    <tr><td colspan="9" class="text-center text-muted">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
                 <hr>
 

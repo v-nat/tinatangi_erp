@@ -337,35 +337,47 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="sss">SSS</label>
-                                            <input type="text" id="sss" class="form-control" placeholder="₱0.00"
-                                                inputmode="decimal" name="sss" value="{{ old('sss', $data['sss'] ?? '') }}" readonly>
-                                            @error('sss')
-                                                <div class="text-danger mt-1">{{ $message }}</div>
-                                            @enderror
+                                    <div class="col-12 mt-2">
+                                        <label class="form-label fw-semibold">Mandatory Contribution Preview
+                                            <small class="text-muted fw-normal">(active rates × base salary)</small>
+                                        </label>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-1">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Contribution</th>
+                                                        <th class="text-end">EE Rate</th>
+                                                        <th class="text-end">ER Rate</th>
+                                                        <th class="text-end">EE Amount</th>
+                                                        <th class="text-end">ER Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>SSS</td>
+                                                        <td class="text-end" id="prev-sss-ee-rate">—</td>
+                                                        <td class="text-end" id="prev-sss-er-rate">—</td>
+                                                        <td class="text-end" id="prev-sss-ee">—</td>
+                                                        <td class="text-end" id="prev-sss-er">—</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>PhilHealth</td>
+                                                        <td class="text-end" id="prev-ph-ee-rate">—</td>
+                                                        <td class="text-end" id="prev-ph-er-rate">—</td>
+                                                        <td class="text-end" id="prev-ph-ee">—</td>
+                                                        <td class="text-end" id="prev-ph-er">—</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Pag-IBIG</td>
+                                                        <td class="text-end" id="prev-pi-ee-rate">—</td>
+                                                        <td class="text-end" id="prev-pi-er-rate">—</td>
+                                                        <td class="text-end" id="prev-pi-ee">—</td>
+                                                        <td class="text-end" id="prev-pi-er">—</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="pagibig">Pag-ibig</label>
-                                            <input type="text" id="pagibig" class="form-control" placeholder="₱0.00"
-                                                inputmode="decimal" name="pagibig" value="{{ old('pagibig', $data['pagibig'] ?? '') }}" readonly>
-                                            @error('pagibig')
-                                                <div class="text-danger mt-1">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label for="philhealth">Philhealth</label>
-                                            <input type="text" id="philhealth" class="form-control" placeholder="₱0.00"
-                                                inputmode="decimal" name="philhealth" value="{{ old('philhealth', $data['philhealth'] ?? '') }}" readonly>
-                                            @error('philhealth')
-                                                <div class="text-danger mt-1">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                                        <small class="text-muted">EE = Employee share (deducted from pay) &nbsp;|&nbsp; ER = Employer share (for record only)</small>
                                     </div>
                                 </div>
                             </div>

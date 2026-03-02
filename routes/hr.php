@@ -75,6 +75,7 @@ Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(fun
 
     ////////////////////////////////// PAYROLL SETTINGS AND POSITIONS SALARIES //////////////////////////
     Route::get('/get-payroll-settings', [EmployeeController::class, 'getPayrollSettings']);
+    Route::get('/contribution-rates/history', [PayrollSettingsController::class, 'getContributionRateHistory']);
     Route::get('/get-salary-by-position', [EmployeeController::class, 'getSalaryByPosition']);
     Route::get('/get-salary-settings', [EmployeeController::class, 'getSalarySettings']);
     Route::post('/update-payroll-settings', [PayrollSettingsController::class, 'updatePayrollSettings']);

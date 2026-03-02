@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PositionSeeder::class);
         $this->call(SalarySettingsSeeder::class);
         $this->call(PayrollSettingsSeeder::class);
+        $this->call(ContributionRateSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(EmployeeSeeder::class);
         $this->call(SupplierSeeder::class);
