@@ -2,7 +2,7 @@ import { reloadTable } from "./utils/reloadTable.js";
 import { formatDate } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {
-    $("#leaves_table").DataTable({
+    const dt = $("#leaves_table").DataTable({
         processing: true,
         serverSide: false,
         ajax: {
@@ -28,7 +28,7 @@ $(document).ready(function () {
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
-                type: "date", // Ensure proper date sorting
+                type: "date",
             },
             {
                 data: "end_date",
@@ -36,46 +36,39 @@ $(document).ready(function () {
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
-                type: "date", // Ensure proper date sorting
+                type: "date",
             },
-
-            {
-                data: "reason",
-                className: "dt-left",
-            },
+            // {
+            //     data: "reason",
+            //     className: "dt-left",
+            // },
+            // {
+            //     data: "attachment_url",
+            //     className: "text-center",
+            //     orderable: false,
+            //     render: function (data) {
+            //         if (!data) return '<span class="text-muted">None</span>';
+            //         return `<a href="${data}" target="_blank" class="btn btn-sm btn-outline-secondary">
+            //                     <i class="fa-solid fa-paperclip"></i> View
+            //                 </a>`;
+            //     },
+            //     width: "100px",
+            // },
             {
                 data: "status",
                 className: "text-center",
-                width: "150px",
+                width: "130px",
             },
             {
                 data: "leave_id",
-                render: function (data, type, row) {
-                    if (
-                        row.status !==
-                        '<span class="badge bg-warning">Pending</span>'
-                    ) {
-                        return "";
-                    } else {
-                        return `
-                            <div>
-                                <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 approve-btn"
-                                data-id="${row.leave_id}"
-                                title="Approve">
-                                    <i class="fa-solid fa-check"></i>
-                                </a>
-                                <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
-                                data-id="${data}"
-                                data-name="${row.name}"
-                                data-leave-id="${row.leave_id}"
-                                title="Reject">
-                                    <i class="fa-solid fa-x"></i>
-                                </a>
-                            </div>
-                        `;
-                    }
+                className: "text-center",
+                orderable: false,
+                render: function (data) {
+                    return `<button class="btn btn-sm btn-primary view-leave-btn" data-id="${data}">
+                                <i class="fa-solid fa-eye"></i> View
+                            </button>`;
                 },
-                width: "150px",
+                width: "90px",
             },
         ],
     });
@@ -84,41 +77,120 @@ $(document).ready(function () {
         reloadTable("leaves_table");
     });
 
-    $(".modal").on("hidden.bs.modal", function () {
-        $(this).find("form").trigger("reset");
-    });
-    $(document).on("click", ".approve-btn", function (e) {
+    $(document).on("click", ".view-leave-btn", function (e) {
         e.preventDefault();
-        const leaveId = $(this).data("id");
-        $("#approvalLeaveId").val(leaveId);
-        $("#ApprovalConfirmation").modal("show");
-    });
-    $(document).on("click", ".reject-btn", function (e) {
-        e.preventDefault();
-        const leaveId = $(this).data("id");
-        $("#rejectionLeaveId").val(leaveId);
-        $("#RejectionConfirmation").modal("show");
+        const rowData = dt.row($(this).closest("tr")).data();
+        populateModal(rowData);
+        $("#leaveDetailModal").modal("show");
     });
 
-    $("#approve-btn-confirmed").click(function (e) {
-        e.preventDefault();
-        let leaveId = $("#approvalLeaveId").val();
-        let reason = $("#approvalNotes").val();
+    function populateModal(row) {
+        $("#rejectReasonSection").hide();
+        $("#rejectReasonInput").val("").removeClass("is-invalid");
+        $("#detail-confirm-reject-btn").hide();
+        $("#detail-reject-btn").show();
+        $("#detail-approve-btn").show();
+
+        $("#detail-leave-id").val(row.leave_id);
+
+        $("#detail-employee").text(row.employee   || "N/A");
+        $("#detail-department").text(row.department || "N/A");
+        $("#detail-position").text(row.position   || "N/A");
+
+        $("#detail-start").text(row.start_date !== "N/A" ? formatDate(row.start_date) : "N/A");
+        $("#detail-end").text(row.end_date   !== "N/A" ? formatDate(row.end_date)   : "N/A");
+        $("#detail-days").text((row.days_count || 0) + " working day(s)");
+
+        const isPending = row.status_id === 11;
+        if (isPending) {
+            $("#detail-pay-type").hide();
+            $("#pay-type-toggle").show();
+            $(`input[name="approve-pay-type"][value="${row.is_paid ? 1 : 0}"]`).prop("checked", true);
+        } else {
+            const payBadge = row.is_paid
+                ? '<span class="badge bg-success">Paid Leave</span>'
+                : '<span class="badge bg-warning text-dark">Unpaid Leave</span>';
+            $("#detail-pay-type").html(payBadge).show();
+            $("#pay-type-toggle").hide();
+        }
+
+        $("#detail-reason").text(row.reason || "N/A");
+        $("#detail-status").html(row.status || "N/A");
+
+        if (row.attachment_url) {
+            $("#detail-attachment").html(
+                `<a href="${row.attachment_url}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                    <i class="fa-solid fa-paperclip"></i> View
+                </a>`
+            );
+        } else {
+            $("#detail-attachment").html('<span class="text-muted">None</span>');
+        }
+
+        $("#detail-pending-actions").toggle(isPending);
+    }
+
+    $("#detail-reject-btn").on("click", function () {
+        $("#rejectReasonSection").show();
+        $("#detail-approve-btn").hide();
+        $(this).hide();
+        $("#detail-confirm-reject-btn").show();
+    });
+
+    $("#detail-confirm-reject-btn").on("click", function () {
+        const reason = $("#rejectReasonInput").val().trim();
+        if (!reason) {
+            $("#rejectReasonInput").addClass("is-invalid");
+            return;
+        }
+        $("#rejectReasonInput").removeClass("is-invalid");
+        const leaveId = $("#detail-leave-id").val();
+        submitAction(
+            `/human-resources/leave/reject/${leaveId}`,
+            { reason },
+            "Rejected!",
+            "Leave request rejected successfully."
+        );
+    });
+
+    $("#detail-approve-btn").on("click", function () {
+        const isPaid = $('input[name="approve-pay-type"]:checked').val() ?? "1";
+        const payLabel = isPaid === "1" ? "Paid Leave" : "Unpaid Leave";
+        Swal.fire({
+            title: "Confirm Approval",
+            html: `Approve this leave request as <strong>${payLabel}</strong>?`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, Approve",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#3085d6",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitAction(
+                    `/human-resources/leave/approve/${$("#detail-leave-id").val()}`,
+                    { is_paid: isPaid },
+                    "Approved!",
+                    "Leave request approved successfully."
+                );
+            }
+        });
+    });
+
+    function submitAction(url, extraData, successTitle, successMsg) {
         $("#LoadingScreen").fadeIn(200);
-        $("#approvalModal").modal("hide");
         $.ajax({
-            url: `/human-resources/leave/approve/${leaveId}`,
+            url,
             method: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr("content"),
-                id: leaveId,
-                reason: reason,
+                ...extraData,
             },
             success: function (response) {
+                $("#LoadingScreen").fadeOut(200);
                 if (response.success) {
-                    $("#LoadingScreen").fadeOut(200);
+                    $("#leaveDetailModal").modal("hide");
                     reloadTable("leaves_table");
-                    Toast.fire("Approved!", response.message, "success");
+                    Toast.fire(successTitle, response.message, "success");
                 } else {
                     Toast.fire("Error", response.message, "error");
                 }
@@ -127,44 +199,22 @@ $(document).ready(function () {
                 $("#LoadingScreen").fadeOut(200);
                 Toast.fire(
                     "Error",
-                    xhr.responseJSON?.message || "Something went wrong",
+                    xhr.responseJSON?.message || "Something went wrong.",
                     "error"
                 );
             },
         });
-    });
+    }
 
-    $("#reject-btn-confirmed").click(function (e) {
-        e.preventDefault();
-        let leaveId = $("#rejectionLeaveId").val();
-        let reason = $("#rejectionNotes").val();
-        $("#LoadingScreen").fadeIn(200);
-        $("#rejectionModal").modal("hide");
-        $.ajax({
-            url: `/human-resources/leave/reject/${leaveId}`,
-            method: "POST",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr("content"),
-                id: leaveId,
-                reason: reason,
-            },
-            success: function (response) {
-                if (response.success) {
-                    $("#LoadingScreen").fadeOut(200);
-                    reloadTable("leaves_table");
-                    Toast.fire("Rejected!", response.message, "success");
-                } else {
-                    Toast.fire("Error", response.message, "error");
-                }
-            },
-            error: function (xhr) {
-                $("#LoadingScreen").fadeOut(200);
-                Toast.fire(
-                    "Error",
-                    xhr.responseJSON?.message || "Something went wrong",
-                    "error"
-                );
-            },
-        });
+    // Reset modal state on close
+    $("#leaveDetailModal").on("hidden.bs.modal", function () {
+        $("#rejectReasonSection").hide();
+        $("#rejectReasonInput").val("").removeClass("is-invalid");
+        $("#detail-confirm-reject-btn").hide();
+        $("#detail-reject-btn").show();
+        $("#detail-approve-btn").show();
+        $("#pay-type-toggle").hide();
+        $("#detail-pay-type").show();
+        $("#approve-paid").prop("checked", true);
     });
 });

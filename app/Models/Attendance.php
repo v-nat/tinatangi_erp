@@ -22,6 +22,7 @@ class Attendance extends Model
         'overtime_minutes',
         'leave_id',
         'overtime_id',
+        'is_paid_leave',
         'status',
     ];
 

@@ -105,7 +105,6 @@ class PayrollController extends Controller
 
         try {
             $payroll = Payroll::findOrFail($id);
-            // Keeping this fetch for potential view-related data, though calculations use employee now
             $payrollSettings = PayrollSettings::where('status', 1)->first();
 
             $remarks = null;
@@ -137,7 +136,9 @@ class PayrollController extends Controller
                 'reg_pay' => $payroll->regular_hour_pay ?? '',
                 'total_hours' => $payroll->total_hours_worked ?? '',
                 'overtime_pay' => $payroll->overtime_pay ?? '',
-                'leave_pay' => $payroll->leave_pay ?? '',
+                'leave_pay'         => $payroll->leave_pay ?? '',
+                'paid_leave_days'   => $payroll->paid_leave_days ?? 0,
+                'unpaid_leave_days' => $payroll->unpaid_leave_days ?? 0,
                 'gross_pay' => $payroll->gross_pay ?? '',
                 'absent_deduction' => $payroll->days_absent_deduction ?? '',
                 'tardiness_deduction' => $payroll->tardiness_deduction ?? '',
@@ -426,6 +427,8 @@ class PayrollController extends Controller
                 'regular_hour_pay'        => 0,
                 'overtime_pay'            => 0,
                 'leave_pay'               => 0,
+                'paid_leave_days'         => 0,
+                'unpaid_leave_days'       => 0,
                 'days_absent'             => 0,
                 'days_absent_deduction'   => 0,
                 'tardiness_deduction'     => 0,
@@ -458,13 +461,15 @@ class PayrollController extends Controller
 
         $per_hour_rate = $this->ratePerHour($employee->base_salary);
         $working_days = $this->getTotalWorkingDays($start_date, $end_date);
-        $daily_rate = $employee->base_salary / $working_days;
+        $daily_rate = $employee->base_salary / self::WORKING_DAYS_PER_MONTH;
 
         $days_present = $this->getTotalPresentDays($employee->id, $start_date, $end_date);
         $total_hours_worked = $this->totalHoursWorked($employee->id, $start_date, $end_date);
         $regular_pay = $this->regularPay($employee, $working_days, $days_present);
         $overtime_pay = $this->overtimePay($employee, $start_date, $end_date, $per_hour_rate);
-        $leave_pay = $this->leavePay($employee->id, $start_date, $end_date, $daily_rate, $working_days);
+        $leave_pay         = $this->leavePay($employee->id, $start_date, $end_date, $daily_rate, $working_days);
+        $paid_leave_days   = $this->paidLeaveDays($employee->id, $start_date, $end_date);
+        $unpaid_leave_days = $this->unpaidLeaveDays($employee->id, $start_date, $end_date);
 
         $days_absent = $this->absencesTotal($employee->id, $start_date, $end_date, $working_days);
         $days_absent_deduction = $this->absentDeduction($days_absent, $daily_rate);
@@ -479,6 +484,8 @@ class PayrollController extends Controller
             'regular_hour_pay'          => $regular_pay,
             'overtime_pay'              => $overtime_pay,
             'leave_pay'                 => $leave_pay,
+            'paid_leave_days'           => $paid_leave_days,
+            'unpaid_leave_days'         => $unpaid_leave_days,
 
             'days_absent'               => $days_absent,
             'days_absent_deduction'     => $days_absent_deduction,
@@ -576,11 +583,32 @@ class PayrollController extends Controller
         return $minutes / 60;
     }
 
+    protected function paidLeaveDays($employeeID, $start_date, $end_date): int
+    {
+        return Attendance::where('employee_id', $employeeID)
+            ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
+            ->where('is_leave', 1)
+            ->where('is_paid_leave', 1)
+            ->distinct('date')
+            ->count('date');
+    }
+
+    protected function unpaidLeaveDays($employeeID, $start_date, $end_date): int
+    {
+        return Attendance::where('employee_id', $employeeID)
+            ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
+            ->where('is_leave', 1)
+            ->where('is_paid_leave', 0)
+            ->distinct('date')
+            ->count('date');
+    }
+
     protected function leavePay($employeeID, $start_date, $end_date, $daily_rate, $working_days)
     {
         $daysLeave = Attendance::where('employee_id', $employeeID)
             ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
             ->where('is_leave', 1)
+            ->where('is_paid_leave', 1)
             ->pluck('date')
             ->map(fn($d) => Carbon::parse($d)->toDateString())
             ->unique()

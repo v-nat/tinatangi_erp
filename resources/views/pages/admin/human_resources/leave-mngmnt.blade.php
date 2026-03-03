@@ -32,7 +32,8 @@
                                 <th>Position</th>
                                 <th>Date Start</th>
                                 <th>Date End</th>
-                                <th>Reason</th>
+                                {{-- <th>Reason</th>
+                                <th>Attachment</th> --}}
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>

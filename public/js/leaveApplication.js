@@ -38,6 +38,18 @@ $(document).ready(function () {
             },
             { data: "reason", className: "dt-left" },
             {
+                data: "attachment_url",
+                className: "text-center",
+                orderable: false,
+                render: function (data) {
+                    if (!data) return '<span class="text-muted">None</span>';
+                    return `<a href="${data}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa-solid fa-paperclip"></i> View
+                            </a>`;
+                },
+                width: "100px",
+            },
+            {
                 data: "status",
                 className: "text-center",
                 width: "150px",
@@ -122,6 +134,19 @@ $(document).ready(function () {
             }
         });
 
+        const attachmentFile = document.getElementById("attachment").files[0];
+        if (!attachmentFile) {
+            $("#attachment").addClass("is-invalid");
+            Toast.fire({
+                title: "Missing Attachment",
+                text: "Please attach a supporting document (PDF, DOC, DOCX, JPG, or PNG).",
+                icon: "warning",
+            });
+            return;
+        } else {
+            $("#attachment").removeClass("is-invalid");
+        }
+
         if (!isValid) return;
 
         const today = new Date().toISOString().split("T")[0];
@@ -176,6 +201,7 @@ $(document).ready(function () {
                     success: function (response) {
                         $("#LoadingScreen").fadeOut(200);
                         $("#leaveApplication").trigger("reset");
+                        $("#attachment").val("");
                         reloadTable("leaveRequests");
                         Toast.fire({
                             title: "Success!",

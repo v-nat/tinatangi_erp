@@ -23,9 +23,10 @@ class StoreLeaveRequest extends FormRequest
     {
         return [
             'employee_id' => 'required|integer|exists:employees,id',
-            'start_date' => 'required',
-            'end_date' => 'required',
-            'reason' => 'required|string',
+            'start_date'  => 'required',
+            'end_date'    => 'required',
+            'reason'      => 'required|string',
+            'attachment'  => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ];
     }
 }
