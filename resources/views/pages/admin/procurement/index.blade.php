@@ -17,18 +17,46 @@
         </button>
     </div>
 
-     {{-- ── Procurement Forecasting ── --}}
+    {{-- ── Procurement Forecasting ── --}}
     <section class="section row g-3 mb-4">
-        <div class="col-12">
-            <h5 class="fw-semibold text-muted text-uppercase mb-2" style="letter-spacing:.05em;">
+
+        {{-- Section header + filters --}}
+        <div class="col-12 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <h5 class="fw-semibold text-muted text-uppercase mb-0" style="letter-spacing:.05em;">
                 <i class="fa-solid fa-chart-line me-2"></i>Procurement Forecasting
             </h5>
+            <div class="d-flex align-items-center gap-2 flex-wrap" id="forecast-period-filters">
+                {{-- Year dropdown — last 5 years --}}
+                <select id="forecast-year" class="form-select form-select-sm" style="width:auto;">
+                    @for ($y = now()->year; $y >= now()->year - 4; $y--)
+                        <option value="{{ $y }}" @selected($y === now()->year)>{{ $y }}</option>
+                    @endfor
+                </select>
+
+                {{-- Month range — From --}}
+                @php
+                    $months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                @endphp
+                <select id="forecast-month-start" class="form-select form-select-sm" style="width:auto;">
+                    @foreach ($months as $mi => $mn)
+                        <option value="{{ $mi + 1 }}">{{ $mn }}</option>
+                    @endforeach
+                </select>
+                <span class="text-muted small">to</span>
+                <select id="forecast-month-end" class="form-select form-select-sm" style="width:auto;">
+                    @foreach ($months as $mi => $mn)
+                        <option value="{{ $mi + 1 }}" @selected($mi + 1 === 12)>{{ $mn }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
 
-        {{-- Forecast KPI cards --}}
-        <div class="col-12 col-sm-6 col-xl-4">
+        {{-- Combined: Forecast KPI + Top Re-ordered Items --}}
+        <div class="col-12 col-xl-4">
             <div class="card h-100 shadow-sm border-0">
-                <div class="card-body">
+
+                {{-- KPI section --}}
+                <div class="card-body border-bottom pb-3">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
                             <div class="stats-icon blue">
@@ -42,16 +70,13 @@
                         </div>
                     </div>
                     <p class="text-muted small mt-2 mb-0">
-                        <i class="fa-solid fa-circle-info me-1"></i>3-month moving average of completed PO spend.
+                        <i class="fa-solid fa-circle-info me-1"></i>
+                        <span id="forecast-avg-note">2-quarter moving average of completed PO spend.</span>
                     </p>
                 </div>
-            </div>
-        </div>
 
-        {{-- Top Re-ordered Items --}}
-        <div class="col-12 col-sm-6 col-xl-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-header">
+                {{-- Top Re-ordered Items --}}
+                <div class="card-header border-bottom py-2">
                     <h4 class="mb-0">Top Re-ordered Items</h4>
                 </div>
                 <div class="card-body p-0">
@@ -59,21 +84,29 @@
                         <li class="list-group-item text-muted">Loading...</li>
                     </ul>
                 </div>
+
             </div>
         </div>
 
-        {{-- Monthly Spend Trend Chart --}}
-        <div class="col-12 col-xl-4">
+        {{-- Spend Trend Chart (wider) --}}
+        <div class="col-12 col-xl-8">
             <div class="card h-100 shadow-sm border-0">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">Monthly Spend Trend</h4>
-                    <span class="text-muted small">Last 6 months</span>
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h4 class="mb-0">Spend Trend</h4>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted small" id="forecast-chart-subtitle">Quarterly view</span>
+                        <div class="btn-group btn-group-sm" id="chart-view-toggle" role="group" aria-label="Chart view">
+                            <button type="button" class="btn btn-primary active" data-view="period">Period</button>
+                            <button type="button" class="btn btn-outline-primary" data-view="yearly">Yearly</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div id="chart-monthly-spend"></div>
                 </div>
             </div>
         </div>
+
     </section>
 
     <section class="section row g-3 mb-4">

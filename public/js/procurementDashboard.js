@@ -224,14 +224,30 @@ $(document).ready(function () {
 
     let monthlySpendChart = null;
 
-    function updateForecastKpi(forecastedSpend, forecastedMonth) {
+    // Filter state — defaults match the blade view (current year, Jan–Dec, period mode)
+    let forecastYear       = new Date().getFullYear();
+    let forecastMonthStart = 1;
+    let forecastMonthEnd   = 12;
+    let chartViewMode      = "period"; // "period" | "yearly"
+
+    function updateForecastKpi(forecastedSpend, forecastedLabel, granularity) {
         const $kpiSpend = $("#kpi-forecast-spend");
         const $kpiMonth = $("#kpi-forecast-month");
+        const $note     = $("#forecast-avg-note");
+
         if ($kpiSpend.length) {
             $kpiSpend.text(forecastedSpend > 0 ? formatCurrency(forecastedSpend) : "No data yet");
         }
         if ($kpiMonth.length) {
-            $kpiMonth.text(forecastedMonth ? escapeHTML(forecastedMonth) : "");
+            $kpiMonth.text(forecastedLabel ? escapeHTML(forecastedLabel) : "");
+        }
+        if ($note.length) {
+            const noteMap = {
+                quarterly : "2-quarter moving average of completed PO spend.",
+                monthly   : "3-month moving average of completed PO spend.",
+                yearly    : "3-year moving average of completed PO spend.",
+            };
+            $note.text(noteMap[granularity] ?? "Moving average of completed PO spend.");
         }
     }
 
@@ -261,18 +277,29 @@ $(document).ready(function () {
         $list.html(html);
     }
 
-    function renderMonthlySpendChart(monthlySpend, forecastedSpend, forecastedMonth) {
+    function renderSpendChart(spendData, forecastedSpend, forecastedLabel, granularity) {
         const chartEl = document.getElementById("chart-monthly-spend");
         if (!chartEl || typeof ApexCharts === "undefined") return;
 
-        const labels  = monthlySpend.map((m) => m.month);
-        const actuals = monthlySpend.map((m) => parseFloat(m.spend) || 0);
+        const labels  = spendData.map((d) => d.label);
+        const actuals = spendData.map((d) => parseFloat(d.spend) || 0);
 
         // Append forecast data point
-        labels.push(forecastedMonth ?? "Next Month");
-        const forecastSeries = new Array(monthlySpend.length).fill(null);
+        labels.push(forecastedLabel ?? "Next Period");
+        const forecastSeries = new Array(spendData.length).fill(null);
         forecastSeries.push(parseFloat(forecastedSpend) || 0);
         const actualSeries = [...actuals, null];
+
+        // Update chart subtitle in the card header
+        const $subtitle = $("#forecast-chart-subtitle");
+        if ($subtitle.length) {
+            const subtitleMap = {
+                quarterly : "Quarterly view",
+                monthly   : "Monthly view",
+                yearly    : "Yearly view (5 years)",
+            };
+            $subtitle.text(subtitleMap[granularity] ?? "");
+        }
 
         const options = {
             series: [
@@ -281,7 +308,7 @@ $(document).ready(function () {
             ],
             chart: {
                 type: "bar",
-                height: 260,
+                height: 300,
                 toolbar: { show: false },
                 stacked: false,
             },
@@ -320,17 +347,32 @@ $(document).ready(function () {
 
     function loadForecastData() {
         setListLoading($("#top-reordered-items"), "Loading items...");
+
+        const params = { view: chartViewMode };
+        if (chartViewMode === "period") {
+            params.year        = forecastYear;
+            params.month_start = forecastMonthStart;
+            params.month_end   = forecastMonthEnd;
+        }
+
         $.ajax({
             url: "/procurement/spend-forecast",
             type: "GET",
             dataType: "json",
+            data: params,
             success: function (response) {
-                updateForecastKpi(response?.forecastedNextMonth ?? 0, response?.forecastedMonth ?? "");
+                const granularity = response?.granularity ?? "quarterly";
+                updateForecastKpi(
+                    response?.forecastedNextPeriod ?? 0,
+                    response?.forecastedLabel ?? "",
+                    granularity
+                );
                 updateTopReorderedItems(response?.topReorderedItems ?? []);
-                renderMonthlySpendChart(
-                    response?.monthlySpend ?? [],
-                    response?.forecastedNextMonth ?? 0,
-                    response?.forecastedMonth ?? "Next Month"
+                renderSpendChart(
+                    response?.spendData ?? [],
+                    response?.forecastedNextPeriod ?? 0,
+                    response?.forecastedLabel ?? "Next Period",
+                    granularity
                 );
             },
             error: function () {
@@ -341,6 +383,60 @@ $(document).ready(function () {
             },
         });
     }
+
+    // ── Filter change handlers ────────────────────────────────────────────────
+
+    $("#forecast-year").on("change", function () {
+        forecastYear = parseInt($(this).val(), 10);
+        loadForecastData();
+    });
+
+    $("#forecast-month-start").on("change", function () {
+        forecastMonthStart = parseInt($(this).val(), 10);
+        // Clamp end month so it never goes below start
+        if (forecastMonthEnd < forecastMonthStart) {
+            forecastMonthEnd = forecastMonthStart;
+            $("#forecast-month-end").val(forecastMonthEnd);
+        }
+        loadForecastData();
+    });
+
+    $("#forecast-month-end").on("change", function () {
+        forecastMonthEnd = parseInt($(this).val(), 10);
+        // Clamp start month so it never exceeds end
+        if (forecastMonthStart > forecastMonthEnd) {
+            forecastMonthStart = forecastMonthEnd;
+            $("#forecast-month-start").val(forecastMonthStart);
+        }
+        loadForecastData();
+    });
+
+    // ── Chart view toggle (Period / Yearly) ───────────────────────────────────
+
+    $("#chart-view-toggle").on("click", "button[data-view]", function () {
+        const newMode = $(this).data("view");
+        if (newMode === chartViewMode) return;
+
+        chartViewMode = newMode;
+
+        // Update button active states
+        $("#chart-view-toggle button").each(function () {
+            const isActive = $(this).data("view") === chartViewMode;
+            $(this)
+                .toggleClass("btn-primary", isActive)
+                .toggleClass("btn-outline-primary", !isActive)
+                .toggleClass("active", isActive);
+        });
+
+        // Show/hide year & month filters — not applicable in yearly mode
+        if (chartViewMode === "yearly") {
+            $("#forecast-period-filters").hide();
+        } else {
+            $("#forecast-period-filters").show();
+        }
+
+        loadForecastData();
+    });
 
     // ─────────────────────────────────────────────────────────────────────────
 

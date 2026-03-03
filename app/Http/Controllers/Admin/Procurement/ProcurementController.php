@@ -7,6 +7,7 @@ use App\Models\Status;
 use App\Models\Supplier;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
@@ -122,41 +123,156 @@ class ProcurementController extends Controller
         ]);
     }
 
-    public function getSpendForecast()
+    public function getSpendForecast(Request $request)
     {
         $completedStatuses = [23];
+        $currentYear = Carbon::now()->year;
+        $view        = $request->get('view', 'period'); // 'period' or 'yearly'
 
-        // Last 6 months of monthly spend (completed POs)
-        $monthlySpend = [];
-        for ($i = 5; $i >= 0; $i--) {
-            $monthStart = Carbon::now()->subMonths($i)->startOfMonth();
-            $monthEnd   = Carbon::now()->subMonths($i)->endOfMonth();
+        // ── Yearly view: 5-year annual totals ────────────────────────────────
+        if ($view === 'yearly') {
+            $spendData = [];
+            for ($y = $currentYear - 4; $y <= $currentYear; $y++) {
+                $start = Carbon::create($y, 1, 1)->startOfMonth();
+                $end   = Carbon::create($y, 12, 1)->endOfMonth();
 
-            $spend = DB::table('purchase_orders')
-                ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
+                $spend = DB::table('purchase_orders')
+                    ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
+                    ->whereIn('purchase_orders.status', $completedStatuses)
+                    ->whereBetween('purchase_orders.created_at', [$start, $end])
+                    ->whereNull('purchase_orders.deleted_at')
+                    ->whereNull('purchase_order_details.deleted_at')
+                    ->sum('purchase_order_details.total_amount');
+
+                $spendData[] = [
+                    'label' => (string) $y,
+                    'spend' => (float) $spend,
+                ];
+            }
+
+            // 3-year moving average → forecast next year
+            $last3           = array_slice($spendData, -3);
+            $forecastedSpend = count($last3) > 0
+                ? array_sum(array_column($last3, 'spend')) / count($last3)
+                : 0;
+            $forecastedLabel = (string) ($currentYear + 1);
+
+            // Top re-ordered items across all 5 years
+            $topItems = DB::table('purchase_order_details')
+                ->join('purchase_orders', 'purchase_order_details.purchase_order_id', '=', 'purchase_orders.id')
+                ->join('items', 'purchase_order_details.item_id', '=', 'items.id')
                 ->whereIn('purchase_orders.status', $completedStatuses)
-                ->whereBetween('purchase_orders.created_at', [$monthStart, $monthEnd])
+                ->whereBetween('purchase_orders.created_at', [
+                    Carbon::create($currentYear - 4, 1, 1)->startOfMonth(),
+                    Carbon::create($currentYear, 12, 1)->endOfMonth(),
+                ])
                 ->whereNull('purchase_orders.deleted_at')
                 ->whereNull('purchase_order_details.deleted_at')
-                ->sum('purchase_order_details.total_amount');
+                ->select(
+                    'items.name as item_name',
+                    DB::raw('COUNT(DISTINCT purchase_orders.id) as order_count'),
+                    DB::raw('SUM(purchase_order_details.quantity) as total_qty')
+                )
+                ->groupBy('items.name')
+                ->orderByDesc('order_count')
+                ->take(5)
+                ->get()
+                ->map(fn($row) => [
+                    'item_name'   => $row->item_name,
+                    'order_count' => (int) $row->order_count,
+                    'total_qty'   => (int) $row->total_qty,
+                ])
+                ->values();
 
-            $monthlySpend[] = [
-                'month' => $monthStart->format('M Y'),
-                'spend' => (float) $spend,
-            ];
+            return response()->json([
+                'spendData'            => $spendData,
+                'granularity'          => 'yearly',
+                'forecastedNextPeriod' => (float) $forecastedSpend,
+                'forecastedLabel'      => $forecastedLabel,
+                'topReorderedItems'    => $topItems,
+            ]);
         }
 
-        // 3-month simple moving average for next month forecast
-        $last3          = array_slice($monthlySpend, -3);
-        $forecastedSpend = count($last3) > 0
-            ? array_sum(array_column($last3, 'spend')) / count($last3)
-            : 0;
+        // ── Period view: quarterly or monthly for selected year/range ─────────
+        $year       = (int) $request->get('year', $currentYear);
+        $year       = max($currentYear - 4, min($currentYear, $year));
+        $monthStart = (int) $request->get('month_start', 1);
+        $monthStart = max(1, min(12, $monthStart));
+        $monthEnd   = (int) $request->get('month_end', 12);
+        $monthEnd   = max($monthStart, min(12, $monthEnd));
 
-        // Top re-ordered items across all completed POs
+        // Full-year range → quarterly bars; partial range → monthly bars
+        $granularity = ($monthStart === 1 && $monthEnd === 12) ? 'quarterly' : 'monthly';
+
+        $spendData = [];
+
+        if ($granularity === 'quarterly') {
+            for ($q = 1; $q <= 4; $q++) {
+                $qMonthStart = ($q - 1) * 3 + 1;
+                $qMonthEnd   = $q * 3;
+                $start = Carbon::create($year, $qMonthStart, 1)->startOfMonth();
+                $end   = Carbon::create($year, $qMonthEnd,   1)->endOfMonth();
+
+                $spend = DB::table('purchase_orders')
+                    ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
+                    ->whereIn('purchase_orders.status', $completedStatuses)
+                    ->whereBetween('purchase_orders.created_at', [$start, $end])
+                    ->whereNull('purchase_orders.deleted_at')
+                    ->whereNull('purchase_order_details.deleted_at')
+                    ->sum('purchase_order_details.total_amount');
+
+                $spendData[] = [
+                    'label' => "Q{$q} {$year}",
+                    'spend' => (float) $spend,
+                ];
+            }
+
+            // 2-quarter moving average → forecast next quarter
+            $last2           = array_slice($spendData, -2);
+            $forecastedSpend = count($last2) > 0
+                ? array_sum(array_column($last2, 'spend')) / count($last2)
+                : 0;
+
+            $currentQ        = (int) ceil(Carbon::now()->month / 3);
+            $nextQ           = ($currentQ % 4) + 1;
+            $nextQYear       = $nextQ === 1 ? $year + 1 : $year;
+            $forecastedLabel = "Q{$nextQ} {$nextQYear}";
+        } else {
+            for ($m = $monthStart; $m <= $monthEnd; $m++) {
+                $start = Carbon::create($year, $m, 1)->startOfMonth();
+                $end   = Carbon::create($year, $m, 1)->endOfMonth();
+
+                $spend = DB::table('purchase_orders')
+                    ->join('purchase_order_details', 'purchase_orders.id', '=', 'purchase_order_details.purchase_order_id')
+                    ->whereIn('purchase_orders.status', $completedStatuses)
+                    ->whereBetween('purchase_orders.created_at', [$start, $end])
+                    ->whereNull('purchase_orders.deleted_at')
+                    ->whereNull('purchase_order_details.deleted_at')
+                    ->sum('purchase_order_details.total_amount');
+
+                $spendData[] = [
+                    'label' => Carbon::create($year, $m, 1)->format('M Y'),
+                    'spend' => (float) $spend,
+                ];
+            }
+
+            // 3-month moving average → forecast month after range
+            $last3           = array_slice($spendData, -3);
+            $forecastedSpend = count($last3) > 0
+                ? array_sum(array_column($last3, 'spend')) / count($last3)
+                : 0;
+            $forecastedLabel = Carbon::create($year, $monthEnd, 1)->addMonth()->format('M Y');
+        }
+
+        // Top re-ordered items scoped to the selected period
+        $periodStart = Carbon::create($year, $monthStart, 1)->startOfMonth();
+        $periodEnd   = Carbon::create($year, $monthEnd,   1)->endOfMonth();
+
         $topItems = DB::table('purchase_order_details')
             ->join('purchase_orders', 'purchase_order_details.purchase_order_id', '=', 'purchase_orders.id')
             ->join('items', 'purchase_order_details.item_id', '=', 'items.id')
             ->whereIn('purchase_orders.status', $completedStatuses)
+            ->whereBetween('purchase_orders.created_at', [$periodStart, $periodEnd])
             ->whereNull('purchase_orders.deleted_at')
             ->whereNull('purchase_order_details.deleted_at')
             ->select(
@@ -176,10 +292,14 @@ class ProcurementController extends Controller
             ->values();
 
         return response()->json([
-            'monthlySpend'       => $monthlySpend,
-            'forecastedNextMonth' => (float) $forecastedSpend,
-            'forecastedMonth'    => Carbon::now()->addMonth()->format('F Y'),
-            'topReorderedItems'  => $topItems,
+            'spendData'            => $spendData,
+            'granularity'          => $granularity,
+            'forecastedNextPeriod' => (float) $forecastedSpend,
+            'forecastedLabel'      => $forecastedLabel,
+            'topReorderedItems'    => $topItems,
+            'selectedYear'         => $year,
+            'selectedMonthStart'   => $monthStart,
+            'selectedMonthEnd'     => $monthEnd,
         ]);
     }
 
