@@ -59,7 +59,7 @@ $(document).ready(function () {
             {
                 data: "id",
                 render: function (data, type, row) {
-                    if (row.status.includes("Released")) {
+                    if (row.status.includes("Released") || row.status.includes("Acknowledged")) {
                         return `
                         <div class="action-btns">
                             <a href="#" class="btn icon btn-sm btn-info btn-print-payslip bs-tooltip me-2"

@@ -17,10 +17,18 @@
                     <i class="bx bx-x d-block d-sm-none"></i>
                     <span class="d-none d-sm-block">Close</span>
                 </button>
-                {{-- <button type="button" class="btn btn-primary ml-1" data-bs-dismiss="modal">
-                    <i class="bx bx-check d-block d-sm-none"></i>
-                    <span class="d-none d-sm-block">Accept</span>
-                </button> --}}
+                <button id="po-invoice-btn" type="button" class="btn btn-primary ml-1 d-none">
+                    <span class="d-none d-sm-block">View Invoice</span>
+                </button>
+                <button id="po-process-btn" type="button" class="btn btn-primary ml-1 d-none">
+                    <span class="d-none d-sm-block">Dispatch Order</span>
+                </button>
+                <button id="po-receive-btn" type="button" class="btn btn-success ml-1 d-none">
+                    <span class="d-none d-sm-block">Receive Delivery</span>
+                </button>
+                <button id="po-redeliver-btn" type="button" class="btn btn-success ml-1 d-none">
+                    <span class="d-none d-sm-block">Receive Redelivery</span>
+                </button>
             </div>
         </div>
     </div>

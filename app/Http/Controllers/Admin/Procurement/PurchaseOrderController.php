@@ -465,14 +465,12 @@ class PurchaseOrderController extends Controller
                 $pod          = PurchaseOrderDetail::findOrFail($itemData['pod_id']);
                 $received_qty = (int) $itemData['received_qty'];
 
-                // Clamp received qty to the ordered quantity
                 if ($received_qty > $pod->quantity) {
                     $received_qty = (int) $pod->quantity;
                 }
 
                 $return_qty = (int) $pod->quantity - $received_qty;
 
-                // Validate return reason when there is a returned quantity
                 if ($return_qty > 0 && empty($itemData['return_reason'])) {
                     DB::rollBack();
                     return response()->json([
@@ -520,7 +518,7 @@ class PurchaseOrderController extends Controller
                 $newRemarks = "Partially received. {$fullyReceivedCount} items fully accepted, {$hasReturnCount} items have returned quantities.";
             } elseif ($fullyReceivedCount === 0 && $hasReturnCount > 0) {
                 $newStatus  = 22;
-                $newRemarks = 'All items returned to supplier.';
+                $newRemarks = 'Items returned to supplier.';
             } else {
                 $newStatus  = $pr->status;
                 $newRemarks = 'No items processed.';
@@ -612,14 +610,12 @@ class PurchaseOrderController extends Controller
                 $backorder                = (int) $pod->backorder_qnty;
                 $redelivery_received_qty  = (int) $itemData['received_qty'];
 
-                // Clamp to available backorder quantity
                 if ($redelivery_received_qty > $backorder) {
                     $redelivery_received_qty = $backorder;
                 }
 
                 $new_return_qty = $backorder - $redelivery_received_qty;
 
-                // Validate return reason when there is a returned quantity
                 if ($new_return_qty > 0 && empty($itemData['return_reason'])) {
                     DB::rollBack();
                     return response()->json([
@@ -627,17 +623,14 @@ class PurchaseOrderController extends Controller
                     ], 422);
                 }
 
-                // Accumulate delivered quantity and update backorder
                 $pod->delivered_qnty = (int) $pod->delivered_qnty + $redelivery_received_qty;
                 $pod->backorder_qnty = $new_return_qty;
 
                 if ($new_return_qty === 0) {
-                    // All quantity now received
                     $pod->status = 16;
                     $pod->save();
                     $fullyReceivedCount++;
                 } else {
-                    // Still has returned quantity — goes back to Return status
                     $pod->status = 22;
                     $pod->save();
                     $hasReturnCount++;
@@ -659,7 +652,6 @@ class PurchaseOrderController extends Controller
                 }
             }
 
-            // Recalculate overall status from all detail statuses
             $allPodStatuses = PurchaseOrderDetail::whereIn('purchase_order_id', $pr->purchaseOrders->pluck('id'))
                 ->pluck('status')
                 ->all();
@@ -668,11 +660,9 @@ class PurchaseOrderController extends Controller
             $newRemarks = '';
 
             if (in_array(36, $allPodStatuses)) {
-                // Some items are still awaiting redelivery from supplier
                 $newStatus  = 36;
                 $newRemarks = "Redelivery processed. {$fullyReceivedCount} items fully accepted, {$hasReturnCount} items returned again. Still awaiting redelivery for some items.";
             } elseif (in_array(22, $allPodStatuses)) {
-                // Some items have been returned (awaiting supplier to commit redelivery)
                 $newStatus  = 22;
                 $newRemarks = "Redelivery processed. {$fullyReceivedCount} items fully accepted, {$hasReturnCount} items returned again.";
             } else {

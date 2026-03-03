@@ -174,12 +174,9 @@ export function printPayslip(data) {
     const deductions = [
         { label: "Days Absent Deduction", value: data.absent_deduction },
         { label: "Tardiness Deduction", value: data.tardiness_deduction },
-        { label: "SSS (EE)", value: data.sss },
-        { label: "SSS (ER)*", value: data.sss_employer, employer: true },
-        { label: "PhilHealth (EE)", value: data.philhealth },
-        { label: "PhilHealth (ER)*", value: data.philhealth_employer, employer: true },
-        { label: "Pag-IBIG (EE)", value: data.pagibig },
-        { label: "Pag-IBIG (ER)*", value: data.pagibig_employer, employer: true },
+        { label: "SSS", value: data.sss },
+        { label: "PhilHealth", value: data.philhealth },
+        { label: "Pag-IBIG", value: data.pagibig },
         { label: "Tax", value: data.tax_deduction },
     ];
 
@@ -306,7 +303,6 @@ export function printPayslip(data) {
                                 </tr>
                             </tfoot>
                         </table>
-                        <p class="small text-muted mt-1">* ER (Employer) shares are for record purposes only and are not deducted from the employee's net pay.</p>
                     </div>
                 </div>
             </div>

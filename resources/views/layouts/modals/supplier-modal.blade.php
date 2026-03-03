@@ -27,7 +27,7 @@
                     <i class="bx bx-x d-block d-sm-none"></i>
                     <span class="d-none d-sm-block">Cancel</span>
                 </button>
-                <button id="reject-btn-confirmed" type="button" class="btn btn-danger ml-1" data-bs-dismiss="modal">
+                <button id="reject-btn-confirmed" type="button" class="btn btn-danger ml-1">
                     <i class="bx bx-check d-block d-sm-none"></i>
                     <span class="d-none d-sm-block">Reject</span>
                 </button>
@@ -102,10 +102,18 @@
                     <i class="bx bx-x d-block d-sm-none"></i>
                     <span class="d-none d-sm-block">Close</span>
                 </button>
-                {{-- <button type="button" class="btn btn-primary ml-1" data-bs-dismiss="modal">
-                    <i class="bx bx-check d-block d-sm-none"></i>
-                    <span class="d-none d-sm-block">Accept</span>
-                </button> --}}
+                <button id="supplier-invoice-btn" type="button" class="btn btn-primary ml-1 d-none">
+                    <span class="d-none d-sm-block">View Invoice</span>
+                </button>
+                <button id="supplier-returns-btn" type="button" class="btn btn-warning ml-1 d-none">
+                    <span class="d-none d-sm-block">Process Returns</span>
+                </button>
+                <button id="supplier-reject-btn" type="button" class="btn btn-danger ml-1 d-none">
+                    <span class="d-none d-sm-block">Reject</span>
+                </button>
+                <button id="supplier-approve-btn" type="button" class="btn btn-primary ml-1 d-none">
+                    <span class="d-none d-sm-block">Approve &amp; Ship</span>
+                </button>
             </div>
         </div>
     </div>

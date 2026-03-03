@@ -26,7 +26,7 @@
                     <i class="bx bx-x d-block d-sm-none"></i>
                     <span class="d-none d-sm-block">Cancel</span>
                 </button>
-                <button id="reject-btn-confirmed" type="button" class="btn btn-danger ml-1" data-bs-dismiss="modal">
+                <button id="reject-btn-confirmed" type="button" class="btn btn-danger ml-1">
                     <i class="bx bx-check d-block d-sm-none"></i>
                     <span class="d-none d-sm-block">Reject</span>
                 </button>
@@ -54,10 +54,12 @@
                     <i class="bx bx-x d-block d-sm-none"></i>
                     <span class="d-none d-sm-block">Close</span>
                 </button>
-                {{-- <button type="button" class="btn btn-primary ml-1" data-bs-dismiss="modal">
-                    <i class="bx bx-check d-block d-sm-none"></i>
-                    <span class="d-none d-sm-block">Accept</span>
-                </button> --}}
+                <button id="po-modal-reject-btn" type="button" class="btn btn-danger ml-1 d-none">
+                    <span class="d-none d-sm-block">Reject</span>
+                </button>
+                <button id="po-modal-approve-btn" type="button" class="btn btn-primary ml-1 d-none">
+                    <span class="d-none d-sm-block">Approve</span>
+                </button>
             </div>
         </div>
     </div>

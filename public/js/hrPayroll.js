@@ -3,6 +3,7 @@ import { printPayslip, buildPayslipModal } from "./utils/printPayslip.js";
 
 $(document).ready(function () {
     let positionsTable = null;
+    let currentPayrollId = null;
     let originalContributions = {};
     let originalBaseSalary = null;
     const RATE_FIELDS = [
@@ -604,52 +605,16 @@ $(document).ready(function () {
             {
                 data: "id",
                 render: function (data, type, row) {
-                    if (
-                        row.status ==
-                        '<span class="badge bg-success">Approved</span>'
-                    ) {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}"
-                            data-employee-id="${row.employee_id}"
-                            title="View">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                            <a href="#" class="btn icon btn-sm btn-success bs-tooltip me-2 release-btn"
-                                data-id="${data}"
-                            data-employee-id="${row.employee_id}"
-                                title="Release">
-                                    <i class="fa-solid fa-check"></i>
-                            </a>
-                        </div>
-                        `;
-                    } else if (
-                        row.status ==
-                        '<span class="badge bg-success">Released</span>'
-                    ) {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-print-payslip bs-tooltip me-2"
-                            data-id="${data}"
-                            data-employee-id="${row.employee_id}"
-                            title="Print Payslip">
-                                <i class="fa-solid fa-money-check-dollar"></i>
-                            </a>
-                        </div>
-                        `;
-                    } else {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}"
-                            data-employee-id="${row.employee_id}"
-                            title="View">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                        </div>
-                        `;
-                    }
+                    return `
+                    <div class="action-btns">
+                        <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip"
+                        data-id="${data}"
+                        data-employee-id="${row.employee_id}"
+                        title="View">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                    </div>
+                    `;
                 },
                 className: "text-center",
                 width: "150px",
@@ -822,12 +787,16 @@ $(document).ready(function () {
 
     $(document).on("click", ".btn-view", function () {
         const payroll_id = $(this).data("id");
+        currentPayrollId = payroll_id;
         $("#LoadingScreen").fadeIn(200);
 
         $.get(
             `/human-resources/payroll/view/${payroll_id}`,
             function (response) {
-                const isAcknowledged = response.data.status_id == 38;
+                const statusId = response.data.status_id;
+                const isAcknowledged = statusId == 38;
+                const isReleased = statusId == 15;
+                const isApproved = statusId == 13;
 
                 buildPayslipModal(response.data);
 
@@ -869,6 +838,18 @@ $(document).ready(function () {
                     }
                 }
 
+                // Show the right footer button based on status
+                if (isApproved) {
+                    $("#hr-modal-release-btn").removeClass("d-none");
+                    $("#hr-modal-print-btn").addClass("d-none");
+                } else if (isReleased || isAcknowledged) {
+                    $("#hr-modal-print-btn").removeClass("d-none");
+                    $("#hr-modal-release-btn").addClass("d-none");
+                } else {
+                    $("#hr-modal-release-btn").addClass("d-none");
+                    $("#hr-modal-print-btn").addClass("d-none");
+                }
+
                 $("#LoadingScreen").fadeOut(200);
             },
         ).fail(function () {
@@ -877,22 +858,8 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on("click", ".btn-print-payslip", function () {
-        const payroll_id = $(this).data("id");
-        $.get(
-            `/human-resources/payroll/view/${payroll_id}`,
-            function (response) {
-                printPayslip(response.data);
-            },
-        ).fail(function () {
-            alert("Failed to load payslip.");
-        });
-    });
-
-    $(document).on("click", ".release-btn", function (e) {
-        e.preventDefault();
-        const id = $(this).data("id");
-
+    // Release payroll from inside the modal
+    $("#hr-modal-release-btn").on("click", function () {
         Swal.fire({
             title: "Release Payroll?",
             text: "You are about to release this employee's payroll.",
@@ -902,17 +869,16 @@ $(document).ready(function () {
             cancelButtonColor: "#d33",
             confirmButtonText: "Confirm!",
         }).then((result) => {
-            if (!result.isConfirmed) {
-                return;
-            }
+            if (!result.isConfirmed) return;
+
+            $("#viewPayroll").modal("hide");
             $("#LoadingScreen").fadeIn(200);
+
             $.ajax({
                 headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                        "content",
-                    ),
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
                 },
-                url: `/human-resources/payroll/release/${id}`,
+                url: `/human-resources/payroll/release/${currentPayrollId}`,
                 type: "PUT",
                 data: null,
                 processData: false,
@@ -933,14 +899,11 @@ $(document).ready(function () {
                 error: function (xhr) {
                     $("#LoadingScreen").fadeOut(200);
                     if (xhr.responseJSON?.errors) {
-                        let errorMessages = Object.values(
-                            xhr.responseJSON.errors,
-                        )
+                        let errorMessages = Object.values(xhr.responseJSON.errors)
                             .flat()
                             .join("\n");
                         Toast.fire("Validation Error", errorMessages, "error");
                     } else {
-                        $("#LoadingScreen").fadeOut(200);
                         Toast.fire(
                             "Error",
                             xhr.responseJSON?.message || "Something went wrong",
@@ -950,5 +913,24 @@ $(document).ready(function () {
                 },
             });
         });
+    });
+
+    // Print payslip from inside the modal
+    $("#hr-modal-print-btn").on("click", function () {
+        $.get(
+            `/human-resources/payroll/view/${currentPayrollId}`,
+            function (response) {
+                printPayslip(response.data);
+            },
+        ).fail(function () {
+            Toast.fire("Error", "Failed to load payslip.", "error");
+        });
+    });
+
+    // Reset modal state when closed
+    $("#viewPayroll").on("hidden.bs.modal", function () {
+        currentPayrollId = null;
+        $("#hr-modal-release-btn").addClass("d-none");
+        $("#hr-modal-print-btn").addClass("d-none");
     });
 });

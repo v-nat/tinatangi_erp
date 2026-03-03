@@ -10,6 +10,25 @@ $(document).ready(function () {
         const options = { year: "numeric", month: "long", day: "numeric" };
         return new Date(dateString).toLocaleDateString("en-US", options);
     }
+
+    let currentOrderId = null;
+    let currentInvoiceId = null;
+
+    const STATUS_PENDING_SUPPLIER =
+        '<span class="badge bg-warning">Pending<br>Supplier</span>';
+    const STATUSES_RETURN = [
+        '<span class="badge bg-danger">Return</span>',
+        '<span class="badge bg-warning">Partial Delivered</span>',
+    ];
+    const STATUSES_HAS_INVOICE = [
+        '<span class="badge bg-success">Completed</span>',
+        '<span class="badge bg-success">Delivered</span>',
+        '<span class="badge bg-success">Accepted<br>Supplier</span>',
+        '<span class="badge bg-danger">Cancelled<br>Supplier</span>',
+        '<span class="badge bg-success">Redeliver<br>Supplier</span>',
+        '<span class="badge bg-warning">Approved<br>Pending Dispatch</span>',
+    ];
+
     const supplierOrderTable = $("#purchaseOrderTable").DataTable({
         responsive: true,
         scrollX: false,
@@ -39,7 +58,6 @@ $(document).ready(function () {
                     }
                     return "N/A";
                 },
-                className: "dt-left",
             },
             {
                 data: "purchase_orders",
@@ -53,11 +71,11 @@ $(document).ready(function () {
                     return "N/A";
                 },
                 type: "date",
-                className: "dt-left",
             },
             {
                 data: "purchase_orders",
                 title: "Delivery Date",
+                className: "dt-left",
                 render: function (data) {
                     if (data && data.length > 0) {
                         const deliveryDate = data[0].delivery_date;
@@ -66,7 +84,6 @@ $(document).ready(function () {
                     return "N/A";
                 },
                 type: "date",
-                className: "dt-left",
             },
             { data: "remarks", className: "dt-left" },
             {
@@ -77,113 +94,31 @@ $(document).ready(function () {
             {
                 data: "id",
                 render: function (data, type, row) {
-                    let invoice_id = null;
-                    if (row.invoice_id) {
-                        invoice_id = row.invoice_id;
+                    const invoiceId = row.invoice_id || "";
+                    let statusKey = "";
+                    if (row.status === STATUS_PENDING_SUPPLIER) {
+                        statusKey = "pending-supplier";
+                    } else if (STATUSES_RETURN.includes(row.status)) {
+                        statusKey = "return";
+                    } else if (STATUSES_HAS_INVOICE.includes(row.status)) {
+                        statusKey = "has-invoice";
                     }
-                    if (
-                        row.status ==
-                        '<span class="badge bg-warning">Pending</span>'
-                    ) {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}"
-                            data-bs-toggle="tooltip"
-                            title="View">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                        </div>
-                        `;
-                    } else if (
-                        row.status ==
-                        '<span class="badge bg-warning">Pending<br>Supplier</span>'
-                    ) {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}"
-                            data-bs-toggle="tooltip"
-                            title="View">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                            <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 approve-btn"
-                                data-id="${data}"
-                                data-bs-toggle="tooltip"
-                                title="Approve & Ship">
-                                    <i class="fa-solid fa-truck"></i>
-                            </a>
-                            <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
-                                data-id="${data}"
-                                data-bs-toggle="tooltip"
-                                title="Reject">
-                                    <i class="fa-solid fa-x"></i>
-                            </a>
-                        </div>
-                        `;
-                    } else if (
-                        row.status ==
-                            '<span class="badge bg-danger">Return</span>' ||
-                        row.status ==
-                            '<span class="badge bg-warning">Partial Delivered</span>'
-                    ) {
-                        return `
-                        <div class="action-btns">
-                             <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}"
-                            data-bs-toggle="tooltip"
-                            title="View Original Order">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                            <a href="#" class="btn icon btn-sm btn-danger btn-view-returns bs-tooltip me-2"
-                            data-id="${data}"
-                            data-bs-toggle="tooltip"
-                            title="Process Returns">
-                                <i class="fa-solid fa-person-walking-arrow-right"></i>
-                            </a>
-                        </div>
-                        `;
-                    } else if (
-                        row.status ==
-                            '<span class="badge bg-success">Completed</span>' ||
-                        row.status ==
-                            '<span class="badge bg-success">Delivered</span>' ||
-                        row.status ==
-                            '<span class="badge bg-success">Accepted<br>Supplier</span>' ||
-                        row.status ==
-                            '<span class="badge bg-danger">Cancelled<br>Supplier</span>' ||
-                        row.status ==
-                            '<span class="badge bg-success">Redeliver<br>Supplier</span>' ||
-                        row.status ==
-                            '<span class="badge bg-warning">Approved<br>Pending Dispatch</span>'
-                    ) {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-invoice bs-tooltip me-2"
-                            data-id="${invoice_id}"
-                            data-bs-toggle="tooltip"
-                            title="View Invoice">
-                                <i class="fa-solid fa-file-invoice"></i>
-                            </a>
-                        </div>
-                        `;
-                    } else {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}"
-                            data-bs-toggle="tooltip"
-                            title="View">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                        </div>
-                        `;
-                    }
+                    return `
+                    <div class="action-btns">
+                        <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip"
+                        data-id="${data}"
+                        data-invoice-id="${invoiceId}"
+                        data-status-key="${statusKey}"
+                        data-bs-toggle="tooltip"
+                        title="View">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                    </div>
+                    `;
                 },
                 className: "text-center",
                 width: "170px",
             },
-
             {
                 data: "invoice_id",
                 visible: false,
@@ -199,15 +134,55 @@ $(document).ready(function () {
         },
     });
 
-    $(document).on("click", ".approve-btn", function () {
-        const req_id = $(this).data("id");
-        $("#approveOrderId").val(req_id);
+    $(document).on("click", ".btn-view", function () {
+        const id = $(this).data("id");
+        const invoiceId = $(this).data("invoice-id");
+        const statusKey = $(this).data("status-key");
+
+        currentOrderId = id;
+        currentInvoiceId = invoiceId;
+
+        // Show appropriate modal footer buttons based on status
+        $("#supplier-approve-btn, #supplier-reject-btn, #supplier-returns-btn, #supplier-invoice-btn").addClass("d-none");
+        if (statusKey === "pending-supplier") {
+            $("#supplier-approve-btn").removeClass("d-none");
+            $("#supplier-reject-btn").removeClass("d-none");
+        } else if (statusKey === "return") {
+            $("#supplier-returns-btn").removeClass("d-none");
+        } else if (statusKey === "has-invoice") {
+            $("#supplier-invoice-btn").removeClass("d-none");
+        }
+
+        $("#LoadingScreen").fadeIn(200);
+
+        $.get(`/supplier/purchases/get-details/${id}`, function (response) {
+            if (response.data && response.data.length > 0) {
+                buildPOmodal(response.data[0]);
+            } else {
+                Toast.fire("Error", "Purchase Request not found.", "error");
+            }
+        })
+            .fail(function (xhr) {
+                const errorMsg = xhr.responseJSON
+                    ? xhr.responseJSON.error
+                    : "Failed to load purchase request details.";
+                Toast.fire("Error", errorMsg, "error");
+            })
+            .always(function () {
+                $("#LoadingScreen").fadeOut(200);
+            });
+    });
+
+    // Approve & Ship from inside the modal
+    $("#supplier-approve-btn").on("click", function () {
+        $("#viewPO").modal("hide");
+        $("#approveOrderId").val(currentOrderId);
         $("#approveItemsList").html(
             '<tr><td colspan="4" class="text-center text-muted">Loading items...</td></tr>'
         );
         $("#approveOrderModal").modal("show");
 
-        $.get(`/supplier/purchases/get-details/${req_id}`, function (response) {
+        $.get(`/supplier/purchases/get-details/${currentOrderId}`, function (response) {
             if (!response.data || response.data.length === 0) {
                 $("#approveItemsList").html(
                     '<tr><td colspan="4" class="text-center text-danger">No items found.</td></tr>'
@@ -243,146 +218,41 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on("click", "#confirmApproveBtn", function () {
-        const req_id = $("#approveOrderId").val();
-        const expirationDates = {};
-        $(".approve-exp-date-input").each(function () {
-            const podId = $(this).data("pod-id");
-            const dateVal = $(this).val();
-            if (podId && dateVal) {
-                expirationDates[podId] = dateVal;
-            }
-        });
-        $("#approveOrderModal").modal("hide");
-        $("#LoadingScreen").fadeIn(200);
-        $.ajax({
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
-            url: `/supplier/orders/process/${req_id}/20`,
-            type: "PUT",
-            data: { expiration_dates: expirationDates },
-            success: function (response) {
-                $("#LoadingScreen").fadeOut(200);
-                reloadTable("purchaseOrderTable");
-                Toast.fire({
-                    text: response.message,
-                    icon: "success",
-                });
-            },
-            error: function (xhr) {
-                $("#LoadingScreen").fadeOut(200);
-                if (xhr.responseJSON?.errors) {
-                    let errorMessages = Object.values(xhr.responseJSON.errors)
-                        .flat()
-                        .join("\n");
-                    Toast.fire("Validation Error", errorMessages, "error");
-                } else {
-                    Toast.fire("Error", "An unexpected error occurred.", "error");
-                }
-            },
-        });
+    // Reject from inside the modal — open rejection modal
+    $("#supplier-reject-btn").on("click", function () {
+        $("#rejectionReqId").val(currentOrderId);
+        $("#rejectionNotes").val("");
+        $("#viewPO").modal("hide");
+        $("#RejectionConfirmation").modal("show");
     });
 
-    $(document).on("click", ".btn-view", function () {
-        const id = $(this).data("id");
+    // View Invoice from inside the modal
+    $("#supplier-invoice-btn").on("click", function () {
+        $("#viewPO").modal("hide");
         $("#LoadingScreen").fadeIn(200);
 
-        $.get(`/supplier/purchases/get-details/${id}`, function (response) {
-            if (response.data && response.data.length > 0) {
-                const requestData = response.data[0];
-                buildPOmodal(requestData);
-            } else {
-                alert("Error: Purchase Request not found.");
-            }
-        })
-            .fail(function (xhr) {
-                const errorMsg = xhr.responseJSON
-                    ? xhr.responseJSON.error
-                    : "Failed to load purchase request details.";
-                alert(errorMsg);
-            })
-            .always(function () {
-                $("#LoadingScreen").fadeOut(200);
-            });
-    });
-    $(document).on("click", ".btn-invoice", function () {
-        const id = $(this).data("id");
-        $("#LoadingScreen").fadeIn(200);
-
-        $.get(`/supplier/purchases/get-invoice/${id}`, function (response) {
+        $.get(`/supplier/purchases/get-invoice/${currentInvoiceId}`, function (response) {
             if (response.data) {
-                const requestData = response.data;
-                buildInvoiceModal(requestData);
+                buildInvoiceModal(response.data);
             } else {
-                alert("Error: Invoice not found.");
+                Toast.fire("Error", "Invoice not found.", "error");
             }
         })
             .fail(function (xhr) {
                 const errorMsg = xhr.responseJSON
                     ? xhr.responseJSON.error
                     : "Failed to load purchase invoice details.";
-                alert(errorMsg);
+                Toast.fire("Error", errorMsg, "error");
             })
             .always(function () {
                 $("#LoadingScreen").fadeOut(200);
             });
     });
 
-    $(document).on("click", ".reject-btn", function () {
-        const req_id = $(this).data("id");
-        $("#rejectionReqId").val(req_id);
-        $("#RejectionConfirmation").modal("show");
-    });
-
-    $("#reject-btn-confirmed").click(function (e) {
-        e.preventDefault();
-        let req_id = $("#rejectionReqId").val();
-        let reason = $("#rejectionNotes").val();
-
-        if (reason) {
-            $("#LoadingScreen").fadeIn(200);
-            $("#rejectionModal").modal("hide");
-            $.ajax({
-                url: `/supplier/orders/process/${req_id}/19`,
-                method: "PUT",
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr("content"),
-                    remarks: reason,
-                },
-                success: function (response) {
-                    if (response.success) {
-                        $("#LoadingScreen").fadeOut(200);
-                        reloadTable("purchaseOrderTable");
-                        Toast.fire("Rejected!", response.message, "success");
-                    } else {
-                        Toast.fire("Error", response.message, "error");
-                    }
-                },
-                error: function (xhr) {
-                    Toast.fire(
-                        "Error",
-                        xhr.responseJSON?.message || "Something went wrong",
-                        "error"
-                    );
-                },
-            });
-        } else {
-            Toast.fire({
-                icon: "error",
-                title: "Error",
-                text: "Please provide a remarks",
-                timer: 1500,
-            });
-        }
-    });
-
-    $(document).on("click", "#print", function () {
-        printInvoice();
-    });
-
-    $(document).on("click", ".btn-view-returns", function () {
-        const req_id = $(this).data("id");
+    // Process Returns from inside the modal
+    $("#supplier-returns-btn").on("click", function () {
+        const orderId = currentOrderId;
+        $("#viewPO").modal("hide");
         $("#LoadingScreen").fadeIn(200);
 
         $("#processReturnForm")[0].reset();
@@ -390,11 +260,11 @@ $(document).ready(function () {
             '<tr><td colspan="4" class="text-center">Loading items...</td></tr>'
         );
 
-        $.get(`/supplier/returns/get-details/${req_id}`, function (response) {
+        $.get(`/supplier/returns/get-details/${orderId}`, function (response) {
             const items = response.data;
             const $itemList = $("#returnItemsList");
             $itemList.empty();
-            $("#return_pr_id").val(req_id);
+            $("#return_pr_id").val(orderId);
 
             if (!items || items.length === 0) {
                 $itemList.html(
@@ -412,12 +282,10 @@ $(document).ready(function () {
                        </a>`
                     : `<span class="text-muted">No photo</span>`;
 
-                // Build qty context line
                 const qtyContext = item.delivered_qnty > 0
                     ? `<small class="text-muted d-block">Ordered: <strong>${item.quantity}</strong> &nbsp;|&nbsp; Already received: <strong class="text-success">${item.delivered_qnty}</strong> &nbsp;|&nbsp; Returned: <strong class="text-danger">${item.backorder_qnty}</strong></small>`
                     : `<small class="text-muted d-block">Ordered: <strong>${item.quantity}</strong> &nbsp;|&nbsp; Returned: <strong class="text-danger">${item.backorder_qnty}</strong></small>`;
 
-                // If some was already received, show a note about cancel behaviour
                 const cancelNote = item.delivered_qnty > 0
                     ? `<small class="text-warning d-block mt-1"><i class="fa-solid fa-triangle-exclamation"></i> Cancelling will keep the already-received ${item.delivered_qnty} unit(s) and remove only the returned portion.</small>`
                     : '';
@@ -473,11 +341,102 @@ $(document).ready(function () {
             $("#LoadingScreen").fadeOut(200);
             Toast.fire(
                 "Error",
-                xhr.responseJSON?.error ||
-                    "Failed to load returned item details.",
+                xhr.responseJSON?.error || "Failed to load returned item details.",
                 "error"
             );
         });
+    });
+
+    // Confirm rejection from the rejection modal
+    $("#reject-btn-confirmed").click(function (e) {
+        e.preventDefault();
+        let req_id = $("#rejectionReqId").val();
+        let reason = $("#rejectionNotes").val();
+
+        if (reason) {
+            $("#LoadingScreen").fadeIn(200);
+            $("#RejectionConfirmation").modal("hide");
+            $.ajax({
+                url: `/supplier/orders/process/${req_id}/19`,
+                method: "PUT",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr("content"),
+                    remarks: reason,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $("#LoadingScreen").fadeOut(200);
+                        reloadTable("purchaseOrderTable");
+                        Toast.fire("Rejected!", response.message, "success");
+                    } else {
+                        Toast.fire("Error", response.message, "error");
+                    }
+                },
+                error: function (xhr) {
+                    Toast.fire(
+                        "Error",
+                        xhr.responseJSON?.message || "Something went wrong",
+                        "error"
+                    );
+                },
+            });
+        } else {
+            Toast.fire({
+                icon: "error",
+                title: "Error",
+                text: "Please provide a remarks",
+                timer: 1500,
+            });
+        }
+    });
+
+    // Confirm approval from the approve modal
+    $(document).on("click", "#confirmApproveBtn", function () {
+        const req_id = $("#approveOrderId").val();
+        const expirationDates = {};
+        $(".approve-exp-date-input").each(function () {
+            const podId = $(this).data("pod-id");
+            const dateVal = $(this).val();
+            if (podId && dateVal) {
+                expirationDates[podId] = dateVal;
+            }
+        });
+        $("#approveOrderModal").modal("hide");
+        $("#LoadingScreen").fadeIn(200);
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            url: `/supplier/orders/process/${req_id}/20`,
+            type: "PUT",
+            data: { expiration_dates: expirationDates },
+            success: function (response) {
+                $("#LoadingScreen").fadeOut(200);
+                reloadTable("purchaseOrderTable");
+                Toast.fire({
+                    text: response.message,
+                    icon: "success",
+                });
+            },
+            error: function (xhr) {
+                $("#LoadingScreen").fadeOut(200);
+                if (xhr.responseJSON?.errors) {
+                    let errorMessages = Object.values(xhr.responseJSON.errors)
+                        .flat()
+                        .join("\n");
+                    Toast.fire("Validation Error", errorMessages, "error");
+                } else {
+                    Toast.fire("Error", "An unexpected error occurred.", "error");
+                }
+            },
+        });
+    });
+
+    // Reset modal state when closed
+    $("#viewPO").on("hidden.bs.modal", function () {
+        currentOrderId = null;
+        currentInvoiceId = null;
+        $("#supplier-approve-btn, #supplier-reject-btn, #supplier-returns-btn, #supplier-invoice-btn").addClass("d-none");
     });
 
     $(document).on("change", ".supplier-return-action", function () {
@@ -556,13 +515,16 @@ $(document).ready(function () {
                 } else {
                     Toast.fire(
                         "Error",
-                        xhr.responseJSON?.error ||
-                            "An unexpected error occurred.",
+                        xhr.responseJSON?.error || "An unexpected error occurred.",
                         "error"
                     );
                 }
             },
         });
+    });
+
+    $(document).on("click", "#print", function () {
+        printInvoice();
     });
 
     $("#btn-refresh-supplier-orders").on("click", function () {
