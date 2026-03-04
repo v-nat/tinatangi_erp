@@ -147,6 +147,28 @@
                     <input type="hidden" id="applied_discount_id" name="discount_id" value="">
                     <input type="hidden" id="applied_discount_amount" name="discount_amount" value="0">
 
+                    {{-- Government Discount Section --}}
+                    <div id="gov-discount-section" class="d-none mb-2">
+                        <div id="gov-discount-buttons" class="d-flex align-items-center gap-1 flex-wrap">
+                            <span class="small me-1" style="opacity:.5;font-size:.72rem">Gov't Discount:</span>
+                            {{-- Buttons populated by JS --}}
+                        </div>
+                        <div id="gov-discount-panel" class="d-none mt-2 p-2 rounded"
+                             style="background:rgba(92,184,92,.08);border:1px solid rgba(92,184,92,.3)">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="gov-discount-label" class="small fw-semibold" style="color:#5cb85c"></span>
+                                <button type="button" id="btn-remove-gov-discount"
+                                        class="btn btn-link btn-sm p-0 text-danger" style="font-size:.75rem">Remove</button>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mt-1">
+                                <span id="gov-discount-sublabel"></span>
+                                <span id="gov-discount-amount-display" class="fw-semibold text-success">-₱0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="applied_gov_discount_type_id" name="gov_discount_type_id" value="">
+                    <input type="hidden" id="applied_gov_discount_amount" name="gov_discount_amount" value="0">
+
                     <div class="d-flex justify-content-between">
                         <h5 class="fw-bold">Total:</h5>
                         <h5 class="fw-bold" id="modalGrandTotal">₱ 0.00</h5>

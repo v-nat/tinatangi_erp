@@ -35,3 +35,9 @@
         <span>Announcements</span>
     </a>
 </li>
+<li class="sidebar-item @yield('crmGovDiscounts') ">
+    <a href="{{route('crm.govDiscounts')}}" class='sidebar-link'>
+        <i class="fa-solid fa-id-card"></i>
+        <span>Government Discounts</span>
+    </a>
+</li>

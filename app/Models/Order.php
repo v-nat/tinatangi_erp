@@ -26,6 +26,8 @@ class Order extends Model
         'payment_status',
         'discount_id',
         'discount_amount',
+        'gov_discount_type_id',
+        'gov_discount_amount',
     ];
 
     /*
@@ -60,5 +62,10 @@ class Order extends Model
     public function discount(): BelongsTo
     {
         return $this->belongsTo(Announcement::class, 'discount_id');
+    }
+
+    public function govDiscountType(): BelongsTo
+    {
+        return $this->belongsTo(GovernmentDiscountType::class, 'gov_discount_type_id');
     }
 }

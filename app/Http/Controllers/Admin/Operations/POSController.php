@@ -119,6 +119,15 @@ class POSController extends Controller
         return $this->getProductsByCategory($categoryName);
     }
 
+    public function getGovernmentDiscountTypes()
+    {
+        $types = \App\Models\GovernmentDiscountType::where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'percentage', 'description']);
+
+        return response()->json(['data' => $types]);
+    }
+
     public function getActiveDiscounts()
     {
         $today = Carbon::today()->toDateString();
@@ -156,6 +165,7 @@ class POSController extends Controller
             'cash_received'            => 'required|numeric|min:0',
             'change_due'               => 'required|numeric|min:0',
             'discount_id'              => 'nullable|integer|exists:announcements,id',
+            'gov_discount_type_id'     => 'nullable|integer|exists:government_discount_types,id',
         ]);
 
         $orderItems = $validatedData['order_items'];
@@ -264,18 +274,35 @@ class POSController extends Controller
                     $discountId = null; // discount no longer valid — ignore
                 }
             }
+
+            // ── Government discount calculation ──────────────────────────
+            $govDiscountTypeId = $validatedData['gov_discount_type_id'] ?? null;
+            $govDiscountAmount = 0.0;
+
+            if ($govDiscountTypeId) {
+                $govType = \App\Models\GovernmentDiscountType::where('id', $govDiscountTypeId)
+                    ->where('is_active', true)
+                    ->first();
+                if ($govType) {
+                    $govDiscountAmount = round($calculatedGrandTotal * ($govType->percentage / 100), 2);
+                } else {
+                    $govDiscountTypeId = null; // type no longer active — ignore
+                }
+            }
             // ─────────────────────────────────────────────────────────────
 
             $order = Order::create([
-                'order_id'        => $newOrderId,
-                'user_id'         => auth('')->id(),
-                'total_amount'    => max(0, $calculatedGrandTotal - $totalDiscount),
-                'status'          => 28,
-                'order_type'      => $orderType,
-                'payment_method'  => 'Cash',
-                'payment_status'  => 'Paid',
-                'discount_id'     => $discountId,
-                'discount_amount' => $totalDiscount,
+                'order_id'             => $newOrderId,
+                'user_id'              => auth('')->id(),
+                'total_amount'         => max(0, $calculatedGrandTotal - $totalDiscount - $govDiscountAmount),
+                'status'               => 28,
+                'order_type'           => $orderType,
+                'payment_method'       => 'Cash',
+                'payment_status'       => 'Paid',
+                'discount_id'          => $discountId,
+                'discount_amount'      => $totalDiscount,
+                'gov_discount_type_id' => $govDiscountTypeId,
+                'gov_discount_amount'  => $govDiscountAmount,
             ]);
 
             $order->items()->createMany($itemsToSave);

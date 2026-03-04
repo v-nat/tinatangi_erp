@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CRM\BookingController;
 use App\Http\Controllers\Admin\CRM\FeedbackController;
 use App\Http\Controllers\Admin\CRM\TableForReservationController;
 use App\Http\Controllers\Admin\CRM\AnnouncementController;
+use App\Http\Controllers\Admin\CRM\GovernmentDiscountController;
 
 Route::get('/customer-service', [CrmController::class, 'index'])->middleware('auth', 'isEmployee')->name('crm');
 
@@ -56,4 +57,12 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::delete('/announcements/destroy/{id}', [AnnouncementController::class, 'destroy']);
     Route::delete('/announcements/batch-destroy', [AnnouncementController::class, 'batchDestroy']);
     Route::post('/announcements/toggle-status/{id}', [AnnouncementController::class, 'toggleStatus']);
+
+    Route::get('/government-discounts', [GovernmentDiscountController::class, 'index'])->name('crm.govDiscounts');
+    Route::get('/government-discounts/list', [GovernmentDiscountController::class, 'list']);
+    Route::post('/government-discounts/store', [GovernmentDiscountController::class, 'store']);
+    Route::get('/government-discounts/edit/{id}', [GovernmentDiscountController::class, 'edit']);
+    Route::post('/government-discounts/update/{id}', [GovernmentDiscountController::class, 'update']);
+    Route::delete('/government-discounts/destroy/{id}', [GovernmentDiscountController::class, 'destroy']);
+    Route::post('/government-discounts/toggle-active/{id}', [GovernmentDiscountController::class, 'toggleActive']);
 });

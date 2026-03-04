@@ -983,12 +983,25 @@ $(document).ready(function () {
         let appliedDiscount = null;
         let discountAmount  = 0;
 
+        /* ─── Government discount state ─── */
+        let govDiscountTypes   = [];
+        let appliedGovDiscount = null;
+        let govDiscountAmount  = 0;
+
         function fetchActiveDiscounts() {
             $.get('/operations/pos/active-discounts', function (res) {
                 activeDiscounts = res.data || [];
             });
         }
         fetchActiveDiscounts();
+
+        function fetchGovernmentDiscountTypes() {
+            $.get('/operations/pos/government-discount-types', function (res) {
+                govDiscountTypes = res.data || [];
+                renderGovDiscountButtons();
+            });
+        }
+        fetchGovernmentDiscountTypes();
 
         function calcDiscountAmount(discount) {
             var productIds = (discount.product_ids || []).map(Number);
@@ -1007,6 +1020,7 @@ $(document).ready(function () {
         }
 
         function applyDiscount(discount) {
+            clearGovDiscount(); // mutual exclusivity with gov discount
             appliedDiscount = discount;
             discountAmount  = calcDiscountAmount(discount);
             var netTotal    = Math.max(0, grandTotal - discountAmount);
@@ -1037,16 +1051,93 @@ $(document).ready(function () {
             $('#discount-chooser').addClass('d-none');
             $('#applied_discount_id').val('');
             $('#applied_discount_amount').val('0');
-            $('#modalGrandTotal').text('₱ ' + grandTotal.toFixed(2));
+            var netTotal = Math.max(0, grandTotal - govDiscountAmount);
+            $('#modalGrandTotal').text('₱ ' + netTotal.toFixed(2));
             var cash = parseFloat($('#cashReceivedInput').val()) || 0;
-            if (cash >= grandTotal) {
-                $('#modalChange').text('₱ ' + (cash - grandTotal).toFixed(2));
+            if (cash >= netTotal) {
+                $('#modalChange').text('₱ ' + (cash - netTotal).toFixed(2));
+                $('#confirmSubmitOrder').prop('disabled', false);
+            } else {
+                $('#modalChange').text('₱ 0.00');
+                $('#confirmSubmitOrder').prop('disabled', true);
+            }
+            renderGovDiscountButtons();
+        }
+
+        /* ─── Government discount functions ─── */
+        function renderGovDiscountButtons() {
+            var $buttons = $('#gov-discount-buttons');
+            $buttons.find('.gov-disc-btn').remove();
+            govDiscountTypes.forEach(function (t) {
+                $buttons.append(
+                    `<button type="button" class="btn btn-sm btn-outline-success gov-disc-btn"
+                             data-id="${t.id}" data-name="${t.name}" data-pct="${t.percentage}"
+                             style="font-size:.75rem;padding:2px 8px">
+                        ${t.name} (${t.percentage}%)
+                    </button>`
+                );
+            });
+            if (govDiscountTypes.length > 0) {
+                $('#gov-discount-section').removeClass('d-none');
+                $('#gov-discount-buttons').removeClass('d-none');
+            }
+        }
+
+        function applyGovDiscount(type) {
+            clearDiscount(); // mutual exclusivity: remove announcement discount
+            appliedGovDiscount = type;
+            govDiscountAmount  = Math.round(grandTotal * (type.percentage / 100) * 100) / 100;
+            var netTotal = Math.max(0, grandTotal - govDiscountAmount);
+
+            $('#gov-discount-label').text(type.name + ' Discount');
+            $('#gov-discount-sublabel').text(type.percentage + '% off total');
+            $('#gov-discount-amount-display').text('-₱' + govDiscountAmount.toFixed(2));
+            $('#gov-discount-panel').removeClass('d-none');
+            $('#gov-discount-buttons').addClass('d-none');
+            $('#applied_gov_discount_type_id').val(type.id);
+            $('#applied_gov_discount_amount').val(govDiscountAmount.toFixed(2));
+
+            $('#modalGrandTotal').text('₱ ' + netTotal.toFixed(2));
+            var cash = parseFloat($('#cashReceivedInput').val()) || 0;
+            if (cash >= netTotal) {
+                $('#modalChange').text('₱ ' + (cash - netTotal).toFixed(2));
                 $('#confirmSubmitOrder').prop('disabled', false);
             } else {
                 $('#modalChange').text('₱ 0.00');
                 $('#confirmSubmitOrder').prop('disabled', true);
             }
         }
+
+        function clearGovDiscount() {
+            appliedGovDiscount = null;
+            govDiscountAmount  = 0;
+            $('#gov-discount-panel').addClass('d-none');
+            $('#applied_gov_discount_type_id').val('');
+            $('#applied_gov_discount_amount').val('0');
+            if (govDiscountTypes.length > 0) {
+                $('#gov-discount-buttons').removeClass('d-none');
+            }
+            var netTotal = Math.max(0, grandTotal - discountAmount);
+            $('#modalGrandTotal').text('₱ ' + netTotal.toFixed(2));
+            var cash = parseFloat($('#cashReceivedInput').val()) || 0;
+            if (cash >= netTotal) {
+                $('#modalChange').text('₱ ' + (cash - netTotal).toFixed(2));
+                $('#confirmSubmitOrder').prop('disabled', false);
+            } else {
+                $('#modalChange').text('₱ 0.00');
+                $('#confirmSubmitOrder').prop('disabled', true);
+            }
+        }
+
+        $(document).on('click', '.gov-disc-btn', function () {
+            var id = parseInt($(this).data('id'));
+            var type = govDiscountTypes.find(function (t) { return t.id === id; });
+            if (type) applyGovDiscount(type);
+        });
+
+        $(document).on('click', '#btn-remove-gov-discount', function () {
+            clearGovDiscount();
+        });
 
         function evaluateDiscounts() {
             if (!orderItems.length) { clearDiscount(); return; }
@@ -1159,6 +1250,7 @@ $(document).ready(function () {
                 $("#printReceiptBtn").addClass("d-none");
                 // Reset discount state then evaluate
                 clearDiscount();
+                clearGovDiscount();
                 evaluateDiscounts();
                 $("#orderFinalization").modal("show");
             } else {
@@ -1172,7 +1264,7 @@ $(document).ready(function () {
 
         $("#cashReceivedInput").on("keyup input", function () {
             const cashReceived = parseFloat($(this).val()) || 0;
-            const netTotal     = Math.max(0, grandTotal - discountAmount);
+            const netTotal     = Math.max(0, grandTotal - discountAmount - govDiscountAmount);
             const change       = cashReceived - netTotal;
 
             if (cashReceived >= netTotal) {
@@ -1190,17 +1282,19 @@ $(document).ready(function () {
 
             const orderType   = $("#order_type_input").val();
             const cashReceived = parseFloat($("#cashReceivedInput").val()) || 0;
-            const netTotal    = Math.max(0, grandTotal - discountAmount);
+            const netTotal    = Math.max(0, grandTotal - discountAmount - govDiscountAmount);
             const changeDue   = cashReceived - netTotal;
 
             const orderData = {
-                order_items:     orderItems,
-                grand_total:     parseFloat(grandTotal).toFixed(2),
-                order_type:      orderType,
-                cash_received:   cashReceived.toFixed(2),
-                change_due:      Math.max(0, changeDue).toFixed(2),
-                discount_id:     parseInt($('#applied_discount_id').val()) || null,
-                discount_amount: parseFloat($('#applied_discount_amount').val()) || 0,
+                order_items:          orderItems,
+                grand_total:          parseFloat(grandTotal).toFixed(2),
+                order_type:           orderType,
+                cash_received:        cashReceived.toFixed(2),
+                change_due:           Math.max(0, changeDue).toFixed(2),
+                discount_id:          parseInt($('#applied_discount_id').val()) || null,
+                discount_amount:      parseFloat($('#applied_discount_amount').val()) || 0,
+                gov_discount_type_id: parseInt($('#applied_gov_discount_type_id').val()) || null,
+                gov_discount_amount:  parseFloat($('#applied_gov_discount_amount').val()) || 0,
             };
 
             $.ajax({
@@ -1220,6 +1314,7 @@ $(document).ready(function () {
                     renderActiveCategoryProducts();
                     loadPosCategories();
                     fetchActiveDiscounts(); // refresh discount list after each order
+                    clearGovDiscount();    // reset gov discount state for next order
                     const cashierName =
                         $("#cashierNameDisplay").text().trim() || "N/A";
                     generateReceipt(
@@ -1278,10 +1373,25 @@ $(document).ready(function () {
         function generateReceipt(orderId, cash, change, cashierName) {
             const now = new Date();
             const guestCount = Math.max(orderItems.length, 1);
+            const totalDiscountAmt = discountAmount + govDiscountAmount;
+            const netAmount = Math.max(0, grandTotal - totalDiscountAmt);
             const vatBase = RECEIPT_META.vatRate
                 ? grandTotal / (1 + RECEIPT_META.vatRate)
                 : grandTotal;
             const vatAmount = RECEIPT_META.vatRate ? grandTotal - vatBase : 0;
+
+            var discountLabel = '';
+            if (discountAmount > 0 && appliedDiscount) {
+                discountLabel = 'Promo: ' + appliedDiscount.title;
+            } else if (govDiscountAmount > 0 && appliedGovDiscount) {
+                discountLabel = appliedGovDiscount.name + ' (' + appliedGovDiscount.percentage + '%)';
+            }
+            const discountRowHtml = totalDiscountAmt > 0
+                ? `<tr>
+                        <td>${discountLabel}</td>
+                        <td class="text-end" style="color:#2a7a2a">-${formatCurrency(totalDiscountAmt)}</td>
+                   </tr>`
+                : '';
 
             const itemsHtml = orderItems
                 .map(
@@ -1388,20 +1498,15 @@ $(document).ready(function () {
                         <tr>
                             <td>VAT ${
                                 RECEIPT_META.vatRate
-                                    ? `(${(RECEIPT_META.vatRate * 100).toFixed(
-                                          0
-                                      )}%)`
+                                    ? `(${(RECEIPT_META.vatRate * 100).toFixed(0)}%)`
                                     : ""
                             }</td>
-                            <td class="text-end">${formatCurrency(
-                                vatAmount
-                            )}</td>
+                            <td class="text-end">${formatCurrency(vatAmount)}</td>
                         </tr>
+                        ${discountRowHtml}
                         <tr>
                             <td><strong>Amount Due</strong></td>
-                            <td class="text-end"><strong>${formatCurrency(
-                                grandTotal
-                            )}</strong></td>
+                            <td class="text-end"><strong>${formatCurrency(netAmount)}</strong></td>
                         </tr>
                         <tr>
                             <td>Cash</td>
