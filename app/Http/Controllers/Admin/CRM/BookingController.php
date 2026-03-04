@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\CRM;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\Status;
 use App\Models\Booking;
 use Illuminate\Http\Request;
@@ -94,6 +95,153 @@ class BookingController extends Controller
             }
             return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function getTableSlots(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'table_id'       => 'required|exists:table_for_reservations,id',
+            'date'           => 'required|date',
+            'time'           => 'required',
+            'duration_hours' => 'required|integer|min:1|max:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        try {
+            $table        = TableForReservation::findOrFail($request->table_id);
+            $date         = $request->date;
+            $duration     = (int) $request->duration_hours;
+            $requestStart = Carbon::parse($date . ' ' . $request->time);
+            $requestEnd   = $requestStart->copy()->addHours($duration);
+
+            // Fetch all active bookings for this table on this date
+            $existingBookings = Booking::where('table_id', $table->id)
+                ->where('date', $date)
+                ->whereIn('status', [11, 13])
+                ->whereNotNull('table_number')
+                ->get();
+
+            $slots = [];
+            for ($slot = 1; $slot <= $table->quantity; $slot++) {
+                $conflict = $existingBookings->first(function ($booking) use ($slot, $date, $requestStart, $requestEnd) {
+                    if ((int) $booking->table_number !== $slot) {
+                        return false;
+                    }
+                    $bookingStart = Carbon::parse($date . ' ' . $booking->time);
+                    $bookingEnd   = $bookingStart->copy()->addHours($booking->duration_hours ?? 2);
+                    return $bookingStart < $requestEnd && $requestStart < $bookingEnd;
+                });
+
+                $slots[] = [
+                    'number' => $slot,
+                    'status' => $conflict ? 'taken' : 'available',
+                ];
+            }
+
+            return response()->json([
+                'slots'      => $slots,
+                'table_name' => $table->name,
+                'table_id'   => $table->id,
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function liveOccupancy(): JsonResponse
+    {
+        $now   = Carbon::now('Asia/Manila');
+        $today = $now->toDateString();
+
+        $tables = TableForReservation::where('status', 1)->orderBy('name')->get();
+
+        $bookings = Booking::where('date', $today)
+            ->whereIn('status', [11, 13])
+            ->whereNotNull('table_number')
+            ->get();
+
+        $result = [];
+        foreach ($tables as $table) {
+            $slots = [];
+            for ($slot = 1; $slot <= $table->quantity; $slot++) {
+                $booking = $bookings->first(function ($b) use ($table, $slot) {
+                    return (int) $b->table_id === (int) $table->id
+                        && (int) $b->table_number === $slot;
+                });
+
+                $slotData = ['slot' => $slot, 'booking' => null];
+
+                if ($booking) {
+                    $startTs = Carbon::parse($today . ' ' . $booking->time, 'Asia/Manila');
+                    $endTs   = $startTs->copy()->addHours((int) ($booking->duration_hours ?? 2));
+
+                    $slotData['booking'] = [
+                        'id'             => $booking->id,
+                        'name'           => $booking->name,
+                        'people'         => $booking->people,
+                        'time'           => $booking->time,
+                        'duration_hours' => (int) ($booking->duration_hours ?? 2),
+                        'status'         => (int) $booking->status,
+                        'start_ts'       => $startTs->timestamp,
+                        'end_ts'         => $endTs->timestamp,
+                        'no_show_ts'     => $startTs->copy()->addMinutes(15)->timestamp,
+                    ];
+                }
+
+                $slots[] = $slotData;
+            }
+
+            $result[] = [
+                'id'       => $table->id,
+                'name'     => $table->name,
+                'capacity' => $table->capacity,
+                'quantity' => $table->quantity,
+                'slots'    => $slots,
+            ];
+        }
+
+        return response()->json([
+            'tables'           => $result,
+            'server_timestamp' => $now->timestamp,
+        ]);
+    }
+
+    public function completeEarly(Booking $booking): JsonResponse
+    {
+        if (!in_array((int) $booking->status, [11, 13])) {
+            return response()->json(['error' => 'Only active bookings can be completed early.'], 422);
+        }
+
+        $booking->status      = 23;
+        $booking->status_note = 'Completed early by staff.';
+        $booking->save();
+
+        return response()->json(['success' => 'Booking marked as completed. Table is now free.']);
+    }
+
+    public function markNoShow(Booking $booking): JsonResponse
+    {
+        if ((int) $booking->status !== 13) {
+            return response()->json(['error' => 'Only approved bookings can be marked as no-show.'], 422);
+        }
+
+        $now       = Carbon::now('Asia/Manila');
+        $startTime = Carbon::parse($booking->date->toDateString() . ' ' . $booking->time, 'Asia/Manila');
+
+        if ($now->lt($startTime->copy()->addMinutes(15))) {
+            return response()->json(['error' => 'No-show can only be marked 15 minutes after the booking time.'], 422);
+        }
+
+        $booking->status      = 31;
+        $booking->status_note = 'No-show: customer did not arrive within 15 minutes.';
+        $booking->save();
+
+        Mail::to($booking->email)->send(new BookingStatusMail($booking));
+
+        return response()->json(['success' => 'Booking marked as no-show. Table is now available.']);
     }
 
     public function bookingPage()

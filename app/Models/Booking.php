@@ -18,11 +18,13 @@ class Booking extends Model
      */
     protected $fillable = [
         'table_id',
+        'table_number',
         'name',
         'email',
         'phone',
         'date',
         'time',
+        'duration_hours',
         'people',
         'message',
         'status',

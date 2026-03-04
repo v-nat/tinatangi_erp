@@ -29,7 +29,9 @@ class StoreBookingRequest extends FormRequest
             'time' => 'required',
             'people' => 'required|integer|min:1',
             'message' => 'nullable|string',
-            'table_id' => 'required|integer|exists:table_for_reservations,id'
+            'table_id'       => 'required|integer|exists:table_for_reservations,id',
+            'table_number'   => 'required|integer|min:1',
+            'duration_hours' => 'required|integer|min:1|max:8',
         ];
     }
 }
