@@ -95,6 +95,7 @@
             '#ops-completed-orders',
             '#ops-avg-order-value',
             '#ops-orders-in-progress',
+            '#ops-voided-orders',
             '#finance-payroll-net',
             '#finance-budget-released',
             '#finance-po-spending',
@@ -111,6 +112,7 @@
             '#inventory-out-of-stock',
             '#crm-upcoming-bookings',
             '#crm-pending-bookings',
+            '#crm-today-active',
             '#crm-pending-feedback',
             '#crm-average-rating',
             '#exec-best-sellers-weekly-range',
@@ -621,6 +623,7 @@
                 setText('#ops-completed-orders', operations.completedOrders, formatNumber, '0');
                 setText('#ops-avg-order-value', operations.avgOrderValue, formatCurrency);
                 setText('#ops-orders-in-progress', operations.ordersInProgress, formatNumber, '0');
+                setText('#ops-voided-orders', operations.voidedOrders, formatNumber, '0');
 
                 renderList(
                     '#ops-top-products',
@@ -692,6 +695,7 @@
 
                 setText('#crm-upcoming-bookings', crm.upcomingBookings, formatNumber, '0');
                 setText('#crm-pending-bookings', crm.pendingBookings, formatNumber, '0');
+                setText('#crm-today-active', crm.todayActiveBookings, formatNumber, '0');
                 setText('#crm-pending-feedback', crm.pendingFeedback, formatNumber, '0');
                 setText('#crm-average-rating', crm.averageRating, formatRating, 'Pending');
 
@@ -704,6 +708,9 @@
                         var time = booking.time || '—';
                         var people = formatNumber(booking.people || 0);
                         var table = booking.table || 'TBD';
+                        var tableNum = booking.table_number ? ' #' + booking.table_number : '';
+                        var duration = booking.duration_hours ? booking.duration_hours + 'h' : '';
+                        var tableLabel = table + tableNum + (duration ? ' · ' + duration : '');
 
                         return $('<li class="list-group-item px-0"></li>').append(
                             $('<div class="d-flex justify-content-between"></div>')
@@ -719,7 +726,7 @@
                                                 people + ' pax'
                                             )
                                         )
-                                        .append($('<div class="text-muted small"></div>').text(table))
+                                        .append($('<div class="text-muted small"></div>').text(tableLabel))
                                 )
                         );
                     },

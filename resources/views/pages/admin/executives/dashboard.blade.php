@@ -224,6 +224,12 @@
                                     <h4 class="mb-0" id="ops-orders-in-progress">—</h4>
                                 </div>
                             </div>
+                            <div class="col-6">
+                                <div class="p-3 surface-segment rounded">
+                                    <p class="text-muted mb-1">Voided Orders</p>
+                                    <h4 class="mb-0" id="ops-voided-orders">—</h4>
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-4">
                             <h6 class="text-muted text-uppercase small mb-2">Top Products Today</h6>
@@ -414,6 +420,12 @@
                                 <div class="p-3 surface-segment rounded">
                                     <p class="text-muted mb-1">Average Rating</p>
                                     <h4 class="mb-0" id="crm-average-rating">—</h4>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 surface-segment rounded">
+                                    <p class="text-muted mb-1">Active Now</p>
+                                    <h4 class="mb-0" id="crm-today-active">—</h4>
                                 </div>
                             </div>
                         </div>

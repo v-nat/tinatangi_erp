@@ -217,31 +217,47 @@ class ExecutivesController extends Controller
 
         $crmAverageRating = ServiceFeedback::avg('overall_rating');
 
+        $todayStr = $today->toDateString();
+        $todayActiveBookings = Booking::where('status', $approvedStatus)
+            ->where('date', $todayStr)
+            ->whereNotNull('table_number')
+            ->get()
+            ->filter(function ($booking) use ($now, $todayStr) {
+                $start = Carbon::parse($todayStr . ' ' . $booking->time);
+                $end   = $start->copy()->addHours($booking->duration_hours ?? 2);
+                return $start->lte($now) && $end->gt($now);
+            })
+            ->count();
+
         $crmUpcomingList = Booking::with('tableForReservation')
             ->whereDate('date', '>=', $today)
+            ->whereIn('status', [$pendingStatus, $approvedStatus])
             ->orderBy('date', 'asc')
             ->orderBy('time', 'asc')
             ->take(5)
             ->get()
             ->map(fn($booking) => [
-                'name'   => $booking->name,
-                'date'   => optional($booking->date) ? Carbon::parse($booking->date)->format('M d, Y') : null,
-                'time'   => $booking->time,
-                'people' => (int) $booking->people,
-                'table'  => optional($booking->tableForReservation)->name,
+                'name'           => $booking->name,
+                'date'           => optional($booking->date) ? Carbon::parse($booking->date)->format('M d, Y') : null,
+                'time'           => $booking->time,
+                'people'         => (int) $booking->people,
+                'table'          => optional($booking->tableForReservation)->name,
+                'table_number'   => $booking->table_number,
+                'duration_hours' => (int) ($booking->duration_hours ?? 2),
             ])
             ->values();
 
         $crm = [
-            'upcomingBookings' => Booking::whereDate('date', '>=', $today)
+            'upcomingBookings'    => Booking::whereDate('date', '>=', $today)
                 ->whereIn('status', [$approvedStatus, $completedStatus])
                 ->count(),
-            'pendingBookings'  => Booking::where('status', $pendingStatus)->count(),
-            'pendingFeedback'  => ServiceFeedback::where('status', $resolveStatus('Hidden', 34))
+            'pendingBookings'     => Booking::where('status', $pendingStatus)->count(),
+            'todayActiveBookings' => $todayActiveBookings,
+            'pendingFeedback'     => ServiceFeedback::where('status', $resolveStatus('Hidden', 34))
                 ->whereColumn('created_at', 'updated_at')
                 ->count(),
-            'averageRating'    => $crmAverageRating ? round($crmAverageRating, 2) : null,
-            'upcomingList'     => $crmUpcomingList,
+            'averageRating'       => $crmAverageRating ? round($crmAverageRating, 2) : null,
+            'upcomingList'        => $crmUpcomingList,
         ];
 
         $summary = [
