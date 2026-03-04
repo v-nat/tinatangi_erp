@@ -20,7 +20,8 @@ $(document).ready(function () {
     const $bookingRejectModal = $("#bookingRejectModal");
     const $bookingVoidModal = $("#bookingVoidModal");
 
-    let tablesCache = null;
+    let tablesCache    = null;
+    let currentViewRow = null;
 
     const buildStatusBadge = (statusValue, fallback) => {
         const option = STATUS_OPTIONS[statusValue];
@@ -155,6 +156,13 @@ $(document).ready(function () {
 
         $("#viewBookingMessage").text(messageText);
         $("#viewBookingNote").text(noteText);
+
+        // Store row and show/hide action buttons based on status
+        currentViewRow = row;
+        const status = String(row.status);
+        $("#viewApproveBtn").toggleClass("d-none", status !== "11");
+        $("#viewRejectBtn").toggleClass("d-none",  status !== "11");
+        $("#viewVoidBtn").toggleClass("d-none",    status !== "13");
     };
 
     const populateApproveModal = (row) => {
@@ -332,25 +340,6 @@ $(document).ready(function () {
                         </button>`
                     );
 
-                    if (String(row.status) === "11") {
-                        actionButtons.push(
-                            `<button type="button" class="btn icon btn-success btn-sm booking-action btn-approve" data-action="approve" data-id="${bookingId}" title="Approve">
-                                <i class="fa-solid fa-check"></i>
-                            </button>`
-                        );
-                        actionButtons.push(
-                            `<button type="button" class="btn icon btn-danger btn-sm booking-action btn-reject" data-action="reject" data-id="${bookingId}" title="Reject">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>`
-                        );
-                    } else if (String(row.status) === "13") {
-                        actionButtons.push(
-                            `<button type="button" class="btn icon btn-warning btn-sm text-white booking-action btn-void" data-action="void" data-id="${bookingId}" title="Void">
-                                <i class="fa-solid fa-ban"></i>
-                            </button>`
-                        );
-                    }
-
                     return `
                         <div class="action-btns justify-content-center">
                             <div class="btn-group btn-group-sm" role="group">
@@ -444,34 +433,30 @@ $(document).ready(function () {
     });
 
     $("#bookings-table").on("click", ".booking-action", function () {
-        const action = $(this).data("action");
         const row = getRowData(this);
-        if (!row) return;
-        const bookingId = getBookingId(row);
+        if (!row || !getBookingId(row)) return;
 
-        if (!bookingId) {
-            return;
-        }
+        populateViewModal(row);
+        $bookingViewModal.modal("show");
+    });
 
-        if (action === "view") {
-            populateViewModal(row);
-            $bookingViewModal.modal("show");
-            return;
-        }
-        if (action === "approve") {
-            populateApproveModal(row);
-            $bookingApproveModal.modal("show");
-            return;
-        }
-        if (action === "reject") {
-            populateRejectModal(row);
-            $bookingRejectModal.modal("show");
-            return;
-        }
-        if (action === "void") {
-            populateVoidModal(row);
-            $bookingVoidModal.modal("show");
-        }
+    // Action buttons inside the view modal
+    $("#viewApproveBtn").on("click", function () {
+        $bookingViewModal.modal("hide");
+        populateApproveModal(currentViewRow);
+        $bookingApproveModal.modal("show");
+    });
+
+    $("#viewRejectBtn").on("click", function () {
+        $bookingViewModal.modal("hide");
+        populateRejectModal(currentViewRow);
+        $bookingRejectModal.modal("show");
+    });
+
+    $("#viewVoidBtn").on("click", function () {
+        $bookingViewModal.modal("hide");
+        populateVoidModal(currentViewRow);
+        $bookingVoidModal.modal("show");
     });
 
     $("#approveBookingForm").on("submit", function (event) {
