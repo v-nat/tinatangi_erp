@@ -27,17 +27,18 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'type'           => 'required|in:announcement,discount',
+            'type'           => 'required|in:announcement,discount,promo',
             'title'          => 'required|string|max:255',
             'content'        => 'nullable|string',
             'badge_text'     => 'nullable|string|max:50',
             'icon'           => 'nullable|string|max:100',
             'theme'          => 'required|in:gold,crimson,forest,ocean,royal,slate',
             'bg_style'       => 'required|in:solid,gradient,glow',
+            'season'         => 'nullable|in:generic,summer,christmas,halloween,valentines,newyear,easter,ramadan',
             'discount_type'  => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric|min:0',
             'min_spend'      => 'nullable|numeric|min:0',
-            'applicable_to'  => 'required_if:type,discount|in:all,specific',
+            'applicable_to'  => 'nullable|in:all,specific',
             'usage_limit'    => 'nullable|integer|min:1',
             'product_ids'    => 'required_if:applicable_to,specific|array',
             'product_ids.*'  => 'integer|exists:products,id',
@@ -77,17 +78,18 @@ class AnnouncementController extends Controller
         }
 
         $validated = $request->validate([
-            'type'           => 'required|in:announcement,discount',
+            'type'           => 'required|in:announcement,discount,promo',
             'title'          => 'required|string|max:255',
             'content'        => 'nullable|string',
             'badge_text'     => 'nullable|string|max:50',
             'icon'           => 'nullable|string|max:100',
             'theme'          => 'required|in:gold,crimson,forest,ocean,royal,slate',
             'bg_style'       => 'required|in:solid,gradient,glow',
+            'season'         => 'nullable|in:generic,summer,christmas,halloween,valentines,newyear,easter,ramadan',
             'discount_type'  => 'nullable|in:percentage,fixed',
             'discount_value' => 'nullable|numeric|min:0',
             'min_spend'      => 'nullable|numeric|min:0',
-            'applicable_to'  => 'required_if:type,discount|in:all,specific',
+            'applicable_to'  => 'nullable|in:all,specific',
             'usage_limit'    => 'nullable|integer|min:1',
             'product_ids'    => 'required_if:applicable_to,specific|array',
             'product_ids.*'  => 'integer|exists:products,id',

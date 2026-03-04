@@ -151,10 +151,7 @@
         opacity: .5;
         margin: 14px 0 8px;
     }
-
-    /* Fix: <form> sits between modal-content and modal-body, breaking
-       Bootstrap's modal-dialog-scrollable flex layout. Make the form
-       itself a flex column so modal-body gets overflow-y: auto. */
+    
     #announcementModal form {
         display: flex;
         flex-direction: column;
@@ -174,6 +171,34 @@
         background: rgba(205,164,94,.08) !important;
         border-color: rgba(205,164,94,.25) !important;
     }
+
+    /* ── Season picker ── */
+    .season-picker-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+    .season-tile {
+        border: 2px solid rgba(255,255,255,.12);
+        border-radius: 10px;
+        cursor: pointer;
+        text-align: center;
+        overflow: hidden;
+        transition: border-color .2s;
+    }
+    .season-tile:hover { border-color: rgba(205,164,94,.6); }
+    .season-tile.selected { border-color: #cda45e; }
+    .season-tile-swatch {
+        height: 42px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.15rem; color: rgba(255,255,255,.85);
+    }
+    .season-tile-label {
+        font-size: .65rem; font-weight: 600;
+        padding: 4px 2px 6px;
+        opacity: .65; line-height: 1;
+    }
+    .season-tile.selected .season-tile-label { opacity: 1; color: #cda45e; }
 </style>
 
 <div class="modal fade" id="announcementModal" tabindex="-1" aria-labelledby="announcementModalLabel" aria-hidden="true">
@@ -202,16 +227,22 @@
                             {{-- Type --}}
                             <p class="modal-section-label">Type</p>
                             <div class="row g-2 mb-3">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <div class="type-card selected" data-type="announcement" id="typeCard-announcement">
                                         <div class="type-icon"><i class="fa-solid fa-bullhorn"></i></div>
                                         <div class="type-label">Announcement</div>
                                     </div>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-4">
                                     <div class="type-card" data-type="discount" id="typeCard-discount">
                                         <div class="type-icon"><i class="fa-solid fa-percent"></i></div>
                                         <div class="type-label">Discount</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="type-card" data-type="promo" id="typeCard-promo">
+                                        <div class="type-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                                        <div class="type-label">Seasonal Promo</div>
                                     </div>
                                 </div>
                             </div>
@@ -257,6 +288,14 @@
                                         'fa-solid fa-gem',
                                         'fa-solid fa-leaf',
                                         'fa-solid fa-clock',
+                                        'fa-solid fa-wand-magic-sparkles',
+                                        'fa-solid fa-sun',
+                                        'fa-solid fa-moon',
+                                        'fa-solid fa-snowflake',
+                                        'fa-solid fa-ghost',
+                                        'fa-solid fa-tree',
+                                        'fa-solid fa-egg',
+                                        'fa-solid fa-umbrella-beach',
                                     ];
                                 @endphp
                                 @foreach($icons as $ic)
@@ -293,6 +332,36 @@
                                 <div class="bg-tile" data-style="glow">
                                     <i class="fa-solid fa-sun d-block mb-1"></i> Glow
                                 </div>
+                            </div>
+
+                            {{-- Seasonal Promo fields --}}
+                            <div id="promoSeasonSection" class="d-none">
+                                <p class="modal-section-label">Season / Holiday</p>
+                                <input type="hidden" id="ann_season" name="season" value="generic">
+                                <div class="season-picker-grid mb-2" id="seasonPickerGrid">
+                                    @php
+                                        $seasons = [
+                                            ['key' => 'generic',    'label' => 'Use Theme',   'icon' => 'fa-solid fa-palette',            'bg' => 'linear-gradient(135deg,#1e1b16,#2d2418)'],
+                                            ['key' => 'summer',     'label' => 'Summer',      'icon' => 'fa-solid fa-sun',                'bg' => 'linear-gradient(135deg,#6b2800,#c07a00)'],
+                                            ['key' => 'christmas',  'label' => 'Christmas',   'icon' => 'fa-solid fa-tree',               'bg' => 'linear-gradient(135deg,#7a0000,#162e00)'],
+                                            ['key' => 'halloween',  'label' => 'Halloween',   'icon' => 'fa-solid fa-ghost',              'bg' => 'linear-gradient(135deg,#3a0060,#7a3200)'],
+                                            ['key' => 'valentines', 'label' => "Valentine's", 'icon' => 'fa-solid fa-heart',             'bg' => 'linear-gradient(135deg,#85002c,#be0060)'],
+                                            ['key' => 'newyear',    'label' => 'New Year',    'icon' => 'fa-solid fa-champagne-glasses', 'bg' => 'linear-gradient(135deg,#0b1840,#c0a000)'],
+                                            ['key' => 'easter',     'label' => 'Easter',      'icon' => 'fa-solid fa-egg',                'bg' => 'linear-gradient(135deg,#3c1a58,#083a1c)'],
+                                            ['key' => 'ramadan',    'label' => 'Ramadan',     'icon' => 'fa-solid fa-moon',               'bg' => 'linear-gradient(135deg,#0a3040,#7a6800)'],
+                                        ];
+                                    @endphp
+                                    @foreach($seasons as $s)
+                                        <div class="season-tile {{ $s['key'] === 'generic' ? 'selected' : '' }}"
+                                             data-season="{{ $s['key'] }}">
+                                            <div class="season-tile-swatch" style="background:{{ $s['bg'] }}">
+                                                <i class="{{ $s['icon'] }}"></i>
+                                            </div>
+                                            <div class="season-tile-label">{{ $s['label'] }}</div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <p class="small mb-3" style="opacity:.4;font-size:.7rem">Season sets the banner gradient &amp; decorative overlay. &ldquo;Use Theme&rdquo; falls back to your Theme &amp; BG Style selection above.</p>
                             </div>
 
                             {{-- Discount / Voucher specific fields --}}
@@ -417,6 +486,7 @@
                                     <ul class="mb-0 ps-3" style="opacity:.65">
                                         <li><strong>Announcements</strong> → rotating ticker bar at the top</li>
                                         <li><strong>Discounts</strong> → Promotions section card grid</li>
+                                        <li><strong>Seasonal Promos</strong> → full-width holiday banner</li>
                                     </ul>
                                 </div>
                             </div>

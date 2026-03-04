@@ -1,7 +1,3 @@
-/* =========================================================
-   announcementManagement.js
-   Admin CRUD for announcements / discounts
-   ========================================================= */
 
 $(function () {
 
@@ -16,7 +12,18 @@ $(function () {
         slate:   '#5d8aa8',
     };
 
-    /* ─── DataTable ─── */
+    // Season → gradient for live preview
+    const SEASON_GRADIENTS = {
+        summer:     'linear-gradient(135deg, #1c0900 0%, #6b2800 40%, #b86a00 100%)',
+        christmas:  'linear-gradient(135deg, #080e00 0%, #7a0000 50%, #162e00 100%)',
+        halloween:  'linear-gradient(135deg, #0a0015 0%, #3a0060 45%, #7a3200 100%)',
+        valentines: 'linear-gradient(135deg, #180010 0%, #85002c 50%, #be0060 100%)',
+        newyear:    'linear-gradient(135deg, #020810 0%, #0b1840 55%, #c0a000 100%)',
+        easter:     'linear-gradient(135deg, #120920 0%, #3c1a58 50%, #083a1c 100%)',
+        ramadan:    'linear-gradient(135deg, #041018 0%, #0a3040 50%, #7a6800 100%)',
+    };
+
+
     const table = $('#announcementsTable').DataTable({
         ajax: {
             url: '/customer-service/announcements/list',
@@ -35,8 +42,13 @@ $(function () {
             {
                 data: 'type',
                 render: function (v) {
-                    var map = { announcement: 'primary', discount: 'warning' };
-                    return `<span class="badge bg-${map[v] || 'secondary'}">${v}</span>`;
+                    var styles = {
+                        announcement: 'background:#1a3a6b;color:#6ea8fe;border:1px solid #6ea8fe',
+                        discount:     'background:#3a2e00;color:#ffc107;border:1px solid #ffc107',
+                        promo:        'background:#1a003a;color:#d399f5;border:1px solid #d399f5',
+                    };
+                    var s = styles[v] || 'background:#2a2a2a;color:#aaa;border:1px solid #aaa';
+                    return `<span class="badge" style="${s}">${v}</span>`;
                 },
             },
             { data: 'title' },
@@ -80,7 +92,7 @@ $(function () {
         language: { emptyTable: 'No announcements found.' },
     });
 
-    /* ─── Filters ─── */
+
     $('#filter_type').on('change', function () {
         table.column(2).search(this.value).draw();
     });
@@ -88,7 +100,6 @@ $(function () {
         table.column(8).search(this.value).draw();
     });
 
-    /* ─── Modal ─── */
     const annModal  = new bootstrap.Modal(document.getElementById('announcementModal'));
     const $form     = $('#announcementForm');
     const $modalLbl = $('#announcementModalLabel');
@@ -100,6 +111,7 @@ $(function () {
         setIcon('fa-solid fa-bullhorn');
         setTheme('gold');
         setBgStyle('solid');
+        setSeason('generic');
         setApplicableTo('all');
         $('#ann_status').val('34');
         $('#ann_order').val('0');
@@ -108,24 +120,32 @@ $(function () {
         $('#ann_discount_value, #ann_min_spend').val('');
         $('#ann_usage_limit').val('');
         $('#usage_count_info').addClass('d-none');
-        // reset product selection
+
         selectedProductIds = [];
         $('#product-ids-container').html('');
         $('#product-selection-summary').css('color', 'rgba(255,255,255,.35)').text('No products selected');
         updatePreview();
     }
 
-    /* ─── Type ─── */
+
     function setType(type) {
         $('#ann_type').val(type);
         $('.type-card').each(function () {
             $(this).toggleClass('selected', $(this).data('type') === type);
         });
-        var isDiscount = type === 'discount';
-        $('#discountFields').toggleClass('d-none', !isDiscount);
-        $('#applicableToSection').toggleClass('d-none', !isDiscount);
-        if (!isDiscount) {
+        var isDiscount      = type === 'discount';
+        var isPromo         = type === 'promo';
+        var hasDiscountArea = isDiscount || isPromo;
+
+        $('#discountFields').toggleClass('d-none', !hasDiscountArea);
+        $('#applicableToSection').toggleClass('d-none', !hasDiscountArea);
+        $('#promoSeasonSection').toggleClass('d-none', !isPromo);
+
+        if (!hasDiscountArea) {
             $('#productPickerSection').addClass('d-none');
+        }
+        if (!isPromo) {
+            setSeason('generic');
         }
     }
 
@@ -134,7 +154,7 @@ $(function () {
         updatePreview();
     });
 
-    /* ─── Icon ─── */
+
     function setIcon(iconClass) {
         $('#ann_icon').val(iconClass);
         $('.icon-tile').each(function () {
@@ -147,7 +167,7 @@ $(function () {
         updatePreview();
     });
 
-    /* ─── Theme ─── */
+
     function setTheme(theme) {
         $('#ann_theme').val(theme);
         $('.theme-swatch').each(function () {
@@ -160,7 +180,7 @@ $(function () {
         updatePreview();
     });
 
-    /* ─── Background style ─── */
+
     function setBgStyle(style) {
         $('#ann_bg_style').val(style);
         $('#bgStyleTiles .bg-tile').each(function () {
@@ -168,7 +188,20 @@ $(function () {
         });
     }
 
-    /* ─── Applicable To ─── */
+
+    function setSeason(season) {
+        $('#ann_season').val(season);
+        $('.season-tile').each(function () {
+            $(this).toggleClass('selected', $(this).data('season') === season);
+        });
+    }
+
+    $(document).on('click', '.season-tile', function () {
+        setSeason($(this).data('season'));
+        updatePreview();
+    });
+
+
     function setApplicableTo(scope) {
         $('#ann_applicable_to').val(scope);
         $('#applicableToTiles .bg-tile').each(function () {
@@ -177,7 +210,7 @@ $(function () {
         $('#productPickerSection').toggleClass('d-none', scope !== 'specific');
     }
 
-    /* Route clicks to the correct handler based on tile type */
+
     $(document).on('click', '.bg-tile', function () {
         var style = $(this).data('style');
         var scope = $(this).data('scope');
@@ -189,7 +222,7 @@ $(function () {
         }
     });
 
-    /* ─── Product Picker Modal ─── */
+
     var productsCache    = null;
     var selectedProductIds = [];
     var $pickerModal     = null;
@@ -204,7 +237,7 @@ $(function () {
         return $pickerModal;
     }
 
-    // Fix backdrop z-index when stacking over announcement modal
+
     document.getElementById('productPickerModal').addEventListener('show.bs.modal', function () {
         var self = this;
         setTimeout(function () {
@@ -300,17 +333,17 @@ $(function () {
         return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    /* Open picker */
+
     $(document).on('click', '#btn-open-product-picker', function () {
         openProductPicker();
     });
 
-    /* Checkbox change → update count */
+
     $(document).on('change', '.picker-product-check', function () {
         updatePickerCount();
     });
 
-    /* Live search filter */
+
     $(document).on('input', '#product-picker-search', function () {
         var q = $(this).val().toLowerCase().trim();
         $('.picker-product-row').each(function () {
@@ -320,24 +353,24 @@ $(function () {
         });
     });
 
-    /* Select All (visible only) */
+
     $(document).on('click', '#btn-picker-select-all', function () {
         $('.picker-product-row:visible .picker-product-check').prop('checked', true);
         updatePickerCount();
     });
 
-    /* Clear All */
+
     $(document).on('click', '#btn-picker-clear', function () {
         $('.picker-product-check').prop('checked', false);
         updatePickerCount();
     });
 
-    /* Cancel / close */
+
     $(document).on('click', '#btn-picker-cancel, #btn-picker-close', function () {
         getPickerModal().hide();
     });
 
-    /* Confirm selection */
+
     $(document).on('click', '#btn-picker-confirm', function () {
         selectedProductIds = [];
         $('.picker-product-check:checked').each(function () {
@@ -347,11 +380,12 @@ $(function () {
         getPickerModal().hide();
     });
 
-    /* ─── Live preview ─── */
+
     function updatePreview() {
         var theme    = $('#ann_theme').val() || 'gold';
         var bgStyle  = $('#ann_bg_style').val() || 'solid';
         var type     = $('#ann_type').val() || 'announcement';
+        var season   = $('#ann_season').val() || 'generic';
         var icon     = $('#ann_icon').val() || 'fa-solid fa-bullhorn';
         var title    = $('#ann_title').val() || 'Your announcement title';
         var content  = $('#ann_content').val();
@@ -360,13 +394,20 @@ $(function () {
         var discVal  = $('#ann_discount_value').val();
 
         var $card = $('#ann-preview-card');
-        $card.attr('class', 'ann-card ann-theme-' + theme + ' ann-style-' + bgStyle);
 
-        if (bgStyle === 'glow') {
-            var accent = THEME_ACCENTS[theme] || '#cda45e';
-            $card.css('box-shadow', '0 0 35px ' + accent + '33 inset, 0 0 20px ' + accent + '22');
+
+        if (type === 'promo' && season !== 'generic' && SEASON_GRADIENTS[season]) {
+            $card.attr('class', 'ann-card');
+            $card.css({ background: SEASON_GRADIENTS[season], 'box-shadow': '' });
         } else {
-            $card.css('box-shadow', '');
+            $card.attr('class', 'ann-card ann-theme-' + theme + ' ann-style-' + bgStyle);
+            $card.css('background', '');
+            if (bgStyle === 'glow') {
+                var accent = THEME_ACCENTS[theme] || '#cda45e';
+                $card.css('box-shadow', '0 0 35px ' + accent + '33 inset, 0 0 20px ' + accent + '22');
+            } else {
+                $card.css('box-shadow', '');
+            }
         }
 
         var $badge = $('#prev-badge');
@@ -387,7 +428,7 @@ $(function () {
         }
 
         var $dBlock = $('#prev-discount-block');
-        if (type === 'discount' && discVal) {
+        if ((type === 'discount' || type === 'promo') && discVal) {
             var sym   = discType === 'percentage' ? '%' : '₱';
             var label = discType === 'percentage' ? 'OFF' : 'DISCOUNT';
             var val   = discType === 'percentage' ? (discVal + sym) : (sym + discVal);
@@ -401,14 +442,14 @@ $(function () {
 
     $('#ann_title, #ann_content, #ann_badge, #ann_discount_type, #ann_discount_value').on('input change', updatePreview);
 
-    /* ─── Add ─── */
+
     $('#btn-add-announcement').on('click', function () {
         resetModal();
         $modalLbl.html('<i class="fa-solid fa-bullhorn me-2" style="color:#cda45e"></i> Create Announcement');
         annModal.show();
     });
 
-    /* ─── Edit ─── */
+
     $('#announcementsTable tbody').on('click', '.btn-edit-ann', function () {
         var id = $(this).data('id');
         $.get('/customer-service/announcements/edit/' + id, function (data) {
@@ -419,6 +460,7 @@ $(function () {
             setIcon(data.icon || 'fa-solid fa-bullhorn');
             setTheme(data.theme || 'gold');
             setBgStyle(data.bg_style || 'solid');
+            setSeason(data.season || 'generic');
             $('#ann_title').val(data.title);
             $('#ann_content').val(data.content);
             $('#ann_badge').val(data.badge_text);
@@ -431,8 +473,8 @@ $(function () {
             $('#ann_status').val(data.status || 34);
             $('#ann_usage_limit').val(data.usage_limit || '');
 
-            // Discount-specific fields
-            if (data.type === 'discount') {
+
+            if (data.type === 'discount' || data.type === 'promo') {
                 setApplicableTo(data.applicable_to || 'all');
 
                 if (data.usage_count > 0) {
@@ -454,7 +496,7 @@ $(function () {
         });
     });
 
-    /* ─── Submit ─── */
+
     $form.on('submit', function (e) {
         e.preventDefault();
         var id  = $('#ann_id').val();
@@ -484,7 +526,7 @@ $(function () {
         });
     });
 
-    /* ─── Toggle status ─── */
+
     $('#announcementsTable tbody').on('click', '.btn-toggle-status', function () {
         var id = $(this).data('id');
         $.ajax({
@@ -496,7 +538,7 @@ $(function () {
         });
     });
 
-    /* ─── Delete ─── */
+
     $('#announcementsTable tbody').on('click', '.btn-delete-ann', function () {
         var id = $(this).data('id');
         Swal.fire({
@@ -521,7 +563,7 @@ $(function () {
         });
     });
 
-    /* ─── Batch delete ─── */
+
     var $batchBtn = $('#btn-batch-delete-announcements');
 
     $(document).on('change', '.row-check', function () {
@@ -565,12 +607,12 @@ $(function () {
         $batchBtn.addClass('d-none');
     });
 
-    /* ─── Refresh ─── */
+    
     $('#btn-refresh-announcements').on('click', function () {
         table.ajax.reload(null, false);
     });
 
-    /* ─── Init preview ─── */
+
     updatePreview();
 
 });

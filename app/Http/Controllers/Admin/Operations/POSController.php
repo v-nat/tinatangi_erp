@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\Operations;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\ProductCategory;
 use App\Models\Status;
 use Illuminate\Http\Request;
@@ -132,7 +131,8 @@ class POSController extends Controller
     {
         $today = Carbon::today()->toDateString();
 
-        $discounts = Announcement::where('type', 'discount')
+        $discounts = Announcement::whereIn('type', ['discount', 'promo'])
+            ->whereNotNull('discount_value')
             ->where('status', 35)
             ->where(function ($q) use ($today) {
                 $q->whereNull('valid_from')->orWhere('valid_from', '<=', $today);
@@ -241,7 +241,6 @@ class POSController extends Controller
 
             $newOrderId = 'ORD-' . str_pad($nextNum, 4, '0', STR_PAD_LEFT);
 
-            // ── Discount calculation ──────────────────────────────────────
             $discountId     = $validatedData['discount_id'] ?? null;
             $totalDiscount  = 0.0;
 
@@ -249,13 +248,13 @@ class POSController extends Controller
                 $discount = Announcement::with('products')->find($discountId);
 
                 if ($discount &&
-                    $discount->type   === 'discount' &&
+                    in_array($discount->type, ['discount', 'promo']) &&
                     $discount->status === 35 &&
                     (is_null($discount->usage_limit) || $discount->usage_count < $discount->usage_limit)
                 ) {
                     $qualifyingProductIds = $discount->applicable_to === 'specific'
                         ? $discount->products->pluck('id')->toArray()
-                        : null; // null = all products
+                        : null;
 
                     $qualifyingSubtotal = 0.0;
                     foreach ($itemsToSave as $item) {
@@ -267,15 +266,14 @@ class POSController extends Controller
                     if ($discount->discount_type === 'percentage') {
                         $totalDiscount = round($qualifyingSubtotal * ((float) $discount->discount_value / 100), 2);
                     } else {
-                        // fixed: cap at qualifying subtotal
                         $totalDiscount = min((float) $discount->discount_value, $qualifyingSubtotal);
                     }
                 } else {
-                    $discountId = null; // discount no longer valid — ignore
+                    $discountId = null;
                 }
             }
 
-            // ── Government discount calculation ──────────────────────────
+
             $govDiscountTypeId = $validatedData['gov_discount_type_id'] ?? null;
             $govDiscountAmount = 0.0;
 
@@ -286,10 +284,10 @@ class POSController extends Controller
                 if ($govType) {
                     $govDiscountAmount = round($calculatedGrandTotal * ($govType->percentage / 100), 2);
                 } else {
-                    $govDiscountTypeId = null; // type no longer active — ignore
+                    $govDiscountTypeId = null;
                 }
             }
-            // ─────────────────────────────────────────────────────────────
+            
 
             $order = Order::create([
                 'order_id'             => $newOrderId,

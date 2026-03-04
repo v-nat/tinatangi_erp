@@ -161,6 +161,97 @@
         .promo-min-spend { font-size: .7rem; opacity: .5; margin-bottom: 6px; }
         .promo-validity { font-size: .68rem; opacity: .4; margin-top: 10px; }
 
+        /* ── Seasonal Promo Banners ── */
+        #seasonal-promos { display: none; }
+        .seasonal-banner {
+            position: relative; overflow: hidden;
+            border-radius: 20px; padding: 48px 44px;
+            color: #f8f5f0; font-family: 'Poppins', sans-serif;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,.07);
+            transition: transform .3s, box-shadow .3s;
+        }
+        .seasonal-banner:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+        .seasonal-banner-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+        .seasonal-banner-inner   { position: relative; z-index: 1; }
+        /* Season gradients */
+        .promo-season-summer    { background: linear-gradient(135deg, #1c0900 0%, #6b2800 40%, #b86a00 100%); }
+        .promo-season-christmas { background: linear-gradient(135deg, #080e00 0%, #7a0000 50%, #162e00 100%); }
+        .promo-season-halloween { background: linear-gradient(135deg, #0a0015 0%, #3a0060 45%, #7a3200 100%); }
+        .promo-season-valentines{ background: linear-gradient(135deg, #180010 0%, #85002c 50%, #be0060 100%); }
+        .promo-season-newyear   { background: linear-gradient(135deg, #020810 0%, #0b1840 55%, #c0a000 100%); }
+        .promo-season-easter    { background: linear-gradient(135deg, #120920 0%, #3c1a58 50%, #083a1c 100%); }
+        .promo-season-ramadan   { background: linear-gradient(135deg, #041018 0%, #0a3040 50%, #7a6800 100%); }
+        /* Decorative CSS-only overlay patterns */
+        .promo-season-summer .seasonal-banner-overlay {
+            background-image:
+                repeating-linear-gradient(0deg,  transparent, transparent 40px, rgba(255,170,50,.04) 40px, rgba(255,170,50,.04) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,170,50,.03) 40px, rgba(255,170,50,.03) 41px);
+        }
+        .promo-season-christmas .seasonal-banner-overlay {
+            background-image: radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+        .promo-season-halloween .seasonal-banner-overlay {
+            background-image:
+                radial-gradient(ellipse at 15% 50%, rgba(140,0,200,.1) 0%, transparent 45%),
+                repeating-linear-gradient(45deg, rgba(255,120,0,.03) 0px, rgba(255,120,0,.03) 2px, transparent 2px, transparent 22px);
+        }
+        .promo-season-valentines .seasonal-banner-overlay {
+            background-image: radial-gradient(circle, rgba(255,100,140,.06) 2px, transparent 2px);
+            background-size: 26px 26px;
+        }
+        .promo-season-newyear .seasonal-banner-overlay {
+            background-image:
+                radial-gradient(circle, rgba(220,190,50,.08) 1px, transparent 1px),
+                radial-gradient(circle, rgba(220,190,50,.05) 2px, transparent 2px);
+            background-size: 24px 24px, 48px 48px;
+            background-position: 0 0, 12px 12px;
+        }
+        .promo-season-easter .seasonal-banner-overlay {
+            background-image: radial-gradient(ellipse, rgba(180,120,255,.06) 2px, transparent 2px);
+            background-size: 32px 32px;
+        }
+        .promo-season-ramadan .seasonal-banner-overlay {
+            background-image:
+                repeating-linear-gradient( 60deg, transparent, transparent 30px, rgba(180,160,50,.04) 30px, rgba(180,160,50,.04) 31px),
+                repeating-linear-gradient(-60deg, transparent, transparent 30px, rgba(180,160,50,.03) 30px, rgba(180,160,50,.03) 31px);
+        }
+        /* Banner inner elements */
+        .seasonal-icon-wrap {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: rgba(255,255,255,.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-bottom: 16px;
+        }
+        .seasonal-badge {
+            display: inline-block;
+            font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase; padding: 3px 10px;
+            border-radius: 20px; margin-bottom: 14px;
+            background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25);
+            color: rgba(255,255,255,.85);
+        }
+        .seasonal-title {
+            font-size: 2rem; font-weight: 800; line-height: 1.2;
+            margin-bottom: 10px; color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,.45);
+        }
+        .seasonal-content  { font-size: .9rem; opacity: .8; margin-bottom: 16px; }
+        .seasonal-discount-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+        .seasonal-discount-value {
+            font-size: 3.2rem; font-weight: 900; line-height: 1; color: #fff;
+            text-shadow: 0 0 24px rgba(255,255,255,.28);
+        }
+        .seasonal-discount-label { font-size: .95rem; opacity: .75; font-weight: 600; }
+        .seasonal-min-spend { font-size: .72rem; opacity: .5; }
+        .seasonal-validity  { font-size: .7rem;  opacity: .42; margin-top: 12px; }
+        @media (max-width: 767px) {
+            .seasonal-banner { padding: 32px 24px; }
+            .seasonal-title  { font-size: 1.5rem; }
+            .seasonal-discount-value { font-size: 2.4rem; }
+        }
+
         /* Theme presets */
         .ann-theme-gold    { --ann-bg:#1e1b16; --ann-accent:#cda45e; --ann-bg2:#2d2418; }
         .ann-theme-crimson { --ann-bg:#1a0a0a; --ann-accent:#c0392b; --ann-bg2:#2e0f0f; }
@@ -248,6 +339,13 @@
                 </div>
             </div>
 
+        </section>
+
+        {{-- ── Seasonal Promo Banners (populated by JS) ── --}}
+        <section id="seasonal-promos" class="section" style="padding: 50px 0 10px">
+            <div class="container" id="seasonal-promos-container">
+                {{-- Loaded by landingPageAnnouncements.js --}}
+            </div>
         </section>
 
         <section id="promotions" class="section" style="padding: 60px 0;">

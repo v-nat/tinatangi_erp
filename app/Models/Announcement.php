@@ -18,6 +18,7 @@ class Announcement extends Model
         'icon',
         'theme',
         'bg_style',
+        'season',
         'discount_type',
         'discount_value',
         'min_spend',
