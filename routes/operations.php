@@ -24,6 +24,7 @@ Route::prefix('/operations')->middleware(['auth', 'isEmployee'])->group(function
     Route::get('/pos/categories', [POSController::class, 'getProductCategories']);
     Route::get('/pos/products', [POSController::class, 'getProducts']);
     Route::get('/pos/monthly-best-sellers', [POSController::class, 'monthlyBestSellers']);
+    Route::get('/pos/active-discounts', [POSController::class, 'getActiveDiscounts']);
     Route::post('/pos/submit-order', [POSController::class, 'submitOrder']);
     Route::get('/pos/recent-orders', [POSController::class, 'recentOrders']);
 

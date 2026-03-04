@@ -29,3 +29,9 @@
         <span>FAQ Management</span>
     </a>
 </li>
+<li class="sidebar-item @yield('crmAnnouncements') ">
+    <a href="{{route('crm.announcements')}}" class='sidebar-link'>
+        <i class="fa-solid fa-bullhorn"></i>
+        <span>Announcements</span>
+    </a>
+</li>

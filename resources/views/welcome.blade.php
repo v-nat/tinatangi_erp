@@ -72,6 +72,109 @@
             border: 1px solid rgba(205, 164, 94, 0.35);
             font-size: 0.9rem;
         }
+
+        /* ── Announcement Ticker Bar ── */
+        #announcement-ticker {
+            background: #1a150e;
+            border-bottom: 1px solid rgba(205, 164, 94, 0.25);
+            color: #f8f5f0;
+            font-family: 'Poppins', sans-serif;
+            font-size: .85rem;
+            padding: 10px 0;
+            display: none;
+            position: fixed;
+            top: 80px; /* sits directly below the fixed navbar (60px min-height + 10px*2 padding) */
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 996;
+        }
+        #announcement-ticker .ticker-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        #announcement-ticker .ticker-icon { color: #cda45e; flex-shrink: 0; }
+        #announcement-ticker .ticker-badge {
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: rgba(205, 164, 94, .15);
+            border: 1px solid rgba(205, 164, 94, .4);
+            color: #cda45e;
+            flex-shrink: 0;
+        }
+        #announcement-ticker .ticker-text { flex: 1; text-align: center; opacity: .9; font-weight: 500; }
+        #announcement-ticker .ticker-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,.4);
+            font-size: 1rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            padding: 0 4px;
+            line-height: 1;
+            transition: color .2s;
+        }
+        #announcement-ticker .ticker-close:hover { color: #fff; }
+        #ticker-dots { display: flex; gap: 5px; justify-content: center; margin-top: 6px; }
+        #ticker-dots .tdot {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: rgba(205,164,94,.25); cursor: pointer; transition: background .2s;
+        }
+        #ticker-dots .tdot.active { background: #cda45e; }
+
+        /* ── Promotions Section ── */
+        #promotions { display: none; }
+        .promo-card {
+            border-radius: 18px;
+            padding: 26px 22px;
+            color: #f8f5f0;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            height: 100%;
+            transition: transform .25s, box-shadow .25s;
+            border: 1px solid rgba(255,255,255,.06);
+        }
+        .promo-card:hover { transform: translateY(-5px); }
+        .promo-card-inner { position: relative; z-index: 1; }
+        .promo-badge {
+            display: inline-block;
+            font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase; padding: 3px 10px;
+            border-radius: 20px; margin-bottom: 12px;
+        }
+        .promo-icon-wrap {
+            width: 46px; height: 46px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; margin-bottom: 12px; background: rgba(255,255,255,.1);
+        }
+        .promo-title  { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+        .promo-content { font-size: .8rem; opacity: .8; margin-bottom: 8px; }
+        .promo-discount-value { font-size: 2.2rem; font-weight: 800; line-height: 1; margin-bottom: 2px; }
+        .promo-discount-label { font-size: .72rem; opacity: .65; margin-bottom: 8px; }
+        .promo-min-spend { font-size: .7rem; opacity: .5; margin-bottom: 6px; }
+        .promo-validity { font-size: .68rem; opacity: .4; margin-top: 10px; }
+
+        /* Theme presets */
+        .ann-theme-gold    { --ann-bg:#1e1b16; --ann-accent:#cda45e; --ann-bg2:#2d2418; }
+        .ann-theme-crimson { --ann-bg:#1a0a0a; --ann-accent:#c0392b; --ann-bg2:#2e0f0f; }
+        .ann-theme-forest  { --ann-bg:#0a1a0f; --ann-accent:#27ae60; --ann-bg2:#0f2818; }
+        .ann-theme-ocean   { --ann-bg:#0a0f1a; --ann-accent:#2980b9; --ann-bg2:#0f1a2e; }
+        .ann-theme-royal   { --ann-bg:#110a1a; --ann-accent:#8e44ad; --ann-bg2:#1c0f2e; }
+        .ann-theme-slate   { --ann-bg:#0f1219; --ann-accent:#5d8aa8; --ann-bg2:#171d2e; }
+        .ann-style-solid    { background: var(--ann-bg); }
+        .ann-style-gradient { background: linear-gradient(135deg, var(--ann-bg) 0%, var(--ann-bg2) 100%); }
+        .ann-style-glow     { background: var(--ann-bg); }
+
+        .promo-card .promo-badge       { background: rgba(255,255,255,.1); color: var(--ann-accent); border: 1px solid var(--ann-accent); }
+        .promo-card .promo-icon-wrap   { color: var(--ann-accent); }
+        .promo-card .promo-discount-value { color: var(--ann-accent); }
     </style>
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
@@ -108,6 +211,21 @@
 
     </header>
 
+    {{-- ── Announcement Ticker Bar ── --}}
+    <div id="announcement-ticker">
+        <div class="container">
+            <div class="ticker-inner">
+                <i id="ticker-icon" class="fa-solid fa-bullhorn ticker-icon"></i>
+                <span id="ticker-badge" class="ticker-badge d-none"></span>
+                <span id="ticker-text" class="ticker-text">Loading...</span>
+                <button class="ticker-close" id="ticker-close-btn" title="Dismiss">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="ticker-dots"></div>
+        </div>
+    </div>
+
     <main class="main">
 
         <section id="hero" class="hero section dark-background">
@@ -131,6 +249,19 @@
             </div>
 
         </section>
+
+        <section id="promotions" class="section" style="padding: 60px 0;">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Promotions & Offers</h2>
+                <p>Exclusive deals just for you</p>
+            </div>
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
+                <div class="row gy-4" id="promotions-grid">
+                    {{-- Loaded by JS --}}
+                </div>
+            </div>
+        </section>
+
         <section id="best-sellers" class="best-sellers section">
 
             <div class="container section-title" data-aos="fade-up">
@@ -177,6 +308,7 @@
             </div>
 
         </section>
+
         <section id="about" class="about section">
 
             <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -652,6 +784,7 @@
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('js/landingPage.js') }}"></script>
     <script src="{{ asset('js/bookingTable.js') }}"></script>
+    <script src="{{ asset('js/landingPageAnnouncements.js') }}"></script>
 
 </body>
 

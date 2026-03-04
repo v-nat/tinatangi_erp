@@ -6,11 +6,13 @@ use App\Http\Controllers\Admin\CRM\FaqController;
 use App\Http\Controllers\Admin\CRM\BookingController;
 use App\Http\Controllers\Admin\CRM\FeedbackController;
 use App\Http\Controllers\Admin\CRM\TableForReservationController;
+use App\Http\Controllers\Admin\CRM\AnnouncementController;
 
 Route::get('/customer-service', [CrmController::class, 'index'])->middleware('auth', 'isEmployee')->name('crm');
 
 Route::prefix('/customer-service')->group(function () {
     Route::post('/submit-feedback', [FeedbackController::class, 'submitFeedback']);
+    Route::get('/announcements-public', [AnnouncementController::class, 'fetchPublicAnnouncements']);
 });
 
 Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(function () {
@@ -44,4 +46,14 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::post('/tables/update/{table}', [TableForReservationController::class, 'update']);
     Route::delete('/tables/destroy/{table}', [TableForReservationController::class, 'destroy']);
     Route::delete('/tables/batch-destroy', [TableForReservationController::class, 'batchDestroy']);
+
+    Route::get('/announcements', [AnnouncementController::class, 'index'])->name('crm.announcements');
+    Route::get('/announcements/list', [AnnouncementController::class, 'list']);
+    Route::get('/announcements/products', [AnnouncementController::class, 'getAvailableProducts']);
+    Route::post('/announcements/store', [AnnouncementController::class, 'store']);
+    Route::get('/announcements/edit/{id}', [AnnouncementController::class, 'edit']);
+    Route::post('/announcements/update/{id}', [AnnouncementController::class, 'update']);
+    Route::delete('/announcements/destroy/{id}', [AnnouncementController::class, 'destroy']);
+    Route::delete('/announcements/batch-destroy', [AnnouncementController::class, 'batchDestroy']);
+    Route::post('/announcements/toggle-status/{id}', [AnnouncementController::class, 'toggleStatus']);
 });

@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(php artisan make:migration add_employer_shares_to_payrolls_table)",
-      "Bash(php artisan migrate)"
+      "Bash(php artisan migrate)",
+      "Bash(xargs grep -l \"landing\")"
     ]
   }
 }

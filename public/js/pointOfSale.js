@@ -978,6 +978,124 @@ $(document).ready(function () {
         let orderItems = [];
         let grandTotal = 0;
 
+        /* ─── Discount state ─── */
+        let activeDiscounts = [];
+        let appliedDiscount = null;
+        let discountAmount  = 0;
+
+        function fetchActiveDiscounts() {
+            $.get('/operations/pos/active-discounts', function (res) {
+                activeDiscounts = res.data || [];
+            });
+        }
+        fetchActiveDiscounts();
+
+        function calcDiscountAmount(discount) {
+            var productIds = (discount.product_ids || []).map(Number);
+            var isAll = discount.applicable_to !== 'specific';
+            var qualifying = 0;
+            orderItems.forEach(function (item) {
+                if (isAll || productIds.indexOf(Number(item.product_id)) !== -1) {
+                    qualifying += parseFloat(item.total_price);
+                }
+            });
+            if (discount.discount_type === 'percentage') {
+                return Math.round(qualifying * (parseFloat(discount.discount_value) / 100) * 100) / 100;
+            } else {
+                return Math.min(parseFloat(discount.discount_value), qualifying);
+            }
+        }
+
+        function applyDiscount(discount) {
+            appliedDiscount = discount;
+            discountAmount  = calcDiscountAmount(discount);
+            var netTotal    = Math.max(0, grandTotal - discountAmount);
+
+            $('#discount-label').text(discount.title);
+            $('#discount-amount-display').text('-₱' + discountAmount.toFixed(2));
+            $('#discount-panel').removeClass('d-none');
+            $('#discount-chooser').addClass('d-none');
+            $('#applied_discount_id').val(discount.id);
+            $('#applied_discount_amount').val(discountAmount.toFixed(2));
+
+            $('#modalGrandTotal').text('₱ ' + netTotal.toFixed(2));
+            // Recalculate change
+            var cash = parseFloat($('#cashReceivedInput').val()) || 0;
+            if (cash >= netTotal) {
+                $('#modalChange').text('₱ ' + (cash - netTotal).toFixed(2));
+                $('#confirmSubmitOrder').prop('disabled', false);
+            } else {
+                $('#modalChange').text('₱ 0.00');
+                $('#confirmSubmitOrder').prop('disabled', true);
+            }
+        }
+
+        function clearDiscount() {
+            appliedDiscount = null;
+            discountAmount  = 0;
+            $('#discount-panel').addClass('d-none');
+            $('#discount-chooser').addClass('d-none');
+            $('#applied_discount_id').val('');
+            $('#applied_discount_amount').val('0');
+            $('#modalGrandTotal').text('₱ ' + grandTotal.toFixed(2));
+            var cash = parseFloat($('#cashReceivedInput').val()) || 0;
+            if (cash >= grandTotal) {
+                $('#modalChange').text('₱ ' + (cash - grandTotal).toFixed(2));
+                $('#confirmSubmitOrder').prop('disabled', false);
+            } else {
+                $('#modalChange').text('₱ 0.00');
+                $('#confirmSubmitOrder').prop('disabled', true);
+            }
+        }
+
+        function evaluateDiscounts() {
+            if (!orderItems.length) { clearDiscount(); return; }
+
+            var eligible = activeDiscounts.filter(function (d) {
+                // product match
+                if (d.applicable_to === 'specific') {
+                    var pids = (d.product_ids || []).map(Number);
+                    var hasMatch = orderItems.some(function (item) {
+                        return pids.indexOf(Number(item.product_id)) !== -1;
+                    });
+                    if (!hasMatch) return false;
+                }
+                // min spend
+                if (d.min_spend && grandTotal < parseFloat(d.min_spend)) return false;
+                return true;
+            });
+
+            if (eligible.length === 1) {
+                applyDiscount(eligible[0]);
+            } else if (eligible.length > 1) {
+                // Show chooser
+                clearDiscount();
+                var html = '';
+                eligible.forEach(function (d) {
+                    var amt = calcDiscountAmount(d);
+                    html += `<button type="button" class="btn btn-sm btn-outline-warning text-start discount-option-btn" data-idx="${activeDiscounts.indexOf(d)}">
+                                <strong>${d.title}</strong>
+                                <span class="float-end text-success">-₱${amt.toFixed(2)}</span>
+                             </button>`;
+                });
+                $('#discount-options-list').html(html);
+                $('#discount-chooser').removeClass('d-none');
+            } else {
+                clearDiscount();
+            }
+        }
+
+        $(document).on('click', '.discount-option-btn', function () {
+            var idx = parseInt($(this).data('idx'));
+            if (activeDiscounts[idx]) {
+                applyDiscount(activeDiscounts[idx]);
+            }
+        });
+
+        $(document).on('click', '#btn-remove-discount', function () {
+            clearDiscount();
+        });
+
         $(document).on("click", "#submit-order-btn", function (e) {
             e.preventDefault();
             orderItems = [];
@@ -1039,6 +1157,9 @@ $(document).ready(function () {
                     .prop("disabled", true)
                     .removeClass("d-none");
                 $("#printReceiptBtn").addClass("d-none");
+                // Reset discount state then evaluate
+                clearDiscount();
+                evaluateDiscounts();
                 $("#orderFinalization").modal("show");
             } else {
                 Toast.fire({
@@ -1051,9 +1172,10 @@ $(document).ready(function () {
 
         $("#cashReceivedInput").on("keyup input", function () {
             const cashReceived = parseFloat($(this).val()) || 0;
-            const change = cashReceived - grandTotal;
+            const netTotal     = Math.max(0, grandTotal - discountAmount);
+            const change       = cashReceived - netTotal;
 
-            if (cashReceived >= grandTotal) {
+            if (cashReceived >= netTotal) {
                 $("#modalChange").text("₱ " + change.toFixed(2));
                 $("#confirmSubmitOrder").prop("disabled", false);
             } else {
@@ -1066,16 +1188,19 @@ $(document).ready(function () {
             e.preventDefault();
             $("#LoadingScreen").fadeIn(200);
 
-            const orderType = $("#order_type_input").val();
+            const orderType   = $("#order_type_input").val();
             const cashReceived = parseFloat($("#cashReceivedInput").val()) || 0;
-            const changeDue = cashReceived - grandTotal;
+            const netTotal    = Math.max(0, grandTotal - discountAmount);
+            const changeDue   = cashReceived - netTotal;
 
             const orderData = {
-                order_items: orderItems,
-                grand_total: parseFloat(grandTotal).toFixed(2),
-                order_type: orderType,
-                cash_received: cashReceived.toFixed(2),
-                change_due: changeDue.toFixed(2),
+                order_items:     orderItems,
+                grand_total:     parseFloat(grandTotal).toFixed(2),
+                order_type:      orderType,
+                cash_received:   cashReceived.toFixed(2),
+                change_due:      Math.max(0, changeDue).toFixed(2),
+                discount_id:     parseInt($('#applied_discount_id').val()) || null,
+                discount_amount: parseFloat($('#applied_discount_amount').val()) || 0,
             };
 
             $.ajax({
@@ -1094,6 +1219,7 @@ $(document).ready(function () {
                     });
                     renderActiveCategoryProducts();
                     loadPosCategories();
+                    fetchActiveDiscounts(); // refresh discount list after each order
                     const cashierName =
                         $("#cashierNameDisplay").text().trim() || "N/A";
                     generateReceipt(

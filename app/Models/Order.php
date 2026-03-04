@@ -24,6 +24,8 @@ class Order extends Model
         'order_type',
         'payment_method',
         'payment_status',
+        'discount_id',
+        'discount_amount',
     ];
 
     /*
@@ -53,5 +55,10 @@ class Order extends Model
     public function salesReport(): HasOne
     {
         return $this->hasOne(SalesReport::class, 'order_id');
+    }
+
+    public function discount(): BelongsTo
+    {
+        return $this->belongsTo(Announcement::class, 'discount_id');
     }
 }

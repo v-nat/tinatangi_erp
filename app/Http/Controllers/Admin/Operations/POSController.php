@@ -16,6 +16,7 @@ use App\Models\InventoryItem;
 use App\Models\StockTransaction;
 use App\Enums\TransactionType;
 use Illuminate\Support\Str;
+use App\Models\Announcement;
 use App\Services\BestSellerService;
 
 class POSController extends Controller
@@ -118,16 +119,43 @@ class POSController extends Controller
         return $this->getProductsByCategory($categoryName);
     }
 
+    public function getActiveDiscounts()
+    {
+        $today = Carbon::today()->toDateString();
+
+        $discounts = Announcement::where('type', 'discount')
+            ->where('status', 35)
+            ->where(function ($q) use ($today) {
+                $q->whereNull('valid_from')->orWhere('valid_from', '<=', $today);
+            })
+            ->where(function ($q) use ($today) {
+                $q->whereNull('valid_until')->orWhere('valid_until', '>=', $today);
+            })
+            ->where(function ($q) {
+                $q->whereNull('usage_limit')->orWhereRaw('usage_count < usage_limit');
+            })
+            ->with('products:id')
+            ->get(['id', 'title', 'discount_type', 'discount_value', 'min_spend', 'applicable_to', 'usage_limit', 'usage_count'])
+            ->map(function ($d) {
+                return array_merge($d->toArray(), [
+                    'product_ids' => $d->products->pluck('id')->values(),
+                ]);
+            });
+
+        return response()->json(['data' => $discounts]);
+    }
+
     public function submitOrder(Request $request)
     {
         $validatedData = $request->validate([
-            'order_items' => 'required|array',
+            'order_items'              => 'required|array',
             'order_items.*.product_id' => 'required|integer|exists:products,id',
-            'order_items.*.quantity' => 'required|integer|min:1',
-            'grand_total' => 'required|numeric|min:0',
-            'order_type' => 'required|string|in:dine-in,take-out',
-            'cash_received' => 'required|numeric|min:0',
-            'change_due' => 'required|numeric|min:0',
+            'order_items.*.quantity'   => 'required|integer|min:1',
+            'grand_total'              => 'required|numeric|min:0',
+            'order_type'               => 'required|string|in:dine-in,take-out',
+            'cash_received'            => 'required|numeric|min:0',
+            'change_due'               => 'required|numeric|min:0',
+            'discount_id'              => 'nullable|integer|exists:announcements,id',
         ]);
 
         $orderItems = $validatedData['order_items'];
@@ -203,17 +231,58 @@ class POSController extends Controller
 
             $newOrderId = 'ORD-' . str_pad($nextNum, 4, '0', STR_PAD_LEFT);
 
+            // ── Discount calculation ──────────────────────────────────────
+            $discountId     = $validatedData['discount_id'] ?? null;
+            $totalDiscount  = 0.0;
+
+            if ($discountId) {
+                $discount = Announcement::with('products')->find($discountId);
+
+                if ($discount &&
+                    $discount->type   === 'discount' &&
+                    $discount->status === 35 &&
+                    (is_null($discount->usage_limit) || $discount->usage_count < $discount->usage_limit)
+                ) {
+                    $qualifyingProductIds = $discount->applicable_to === 'specific'
+                        ? $discount->products->pluck('id')->toArray()
+                        : null; // null = all products
+
+                    $qualifyingSubtotal = 0.0;
+                    foreach ($itemsToSave as $item) {
+                        if ($qualifyingProductIds === null || in_array($item['product_id'], $qualifyingProductIds)) {
+                            $qualifyingSubtotal += $item['subtotal'];
+                        }
+                    }
+
+                    if ($discount->discount_type === 'percentage') {
+                        $totalDiscount = round($qualifyingSubtotal * ((float) $discount->discount_value / 100), 2);
+                    } else {
+                        // fixed: cap at qualifying subtotal
+                        $totalDiscount = min((float) $discount->discount_value, $qualifyingSubtotal);
+                    }
+                } else {
+                    $discountId = null; // discount no longer valid — ignore
+                }
+            }
+            // ─────────────────────────────────────────────────────────────
+
             $order = Order::create([
-                'order_id' => $newOrderId,
-                'user_id' => auth('')->id(),
-                'total_amount' => $calculatedGrandTotal,
-                'status' => 28,
-                'order_type' => $orderType,
-                'payment_method' => 'Cash',
-                'payment_status' => 'Paid',
+                'order_id'        => $newOrderId,
+                'user_id'         => auth('')->id(),
+                'total_amount'    => max(0, $calculatedGrandTotal - $totalDiscount),
+                'status'          => 28,
+                'order_type'      => $orderType,
+                'payment_method'  => 'Cash',
+                'payment_status'  => 'Paid',
+                'discount_id'     => $discountId,
+                'discount_amount' => $totalDiscount,
             ]);
 
             $order->items()->createMany($itemsToSave);
+
+            if ($discountId) {
+                Announcement::where('id', $discountId)->increment('usage_count');
+            }
 
             $affectedInventoryIds = [];
 
