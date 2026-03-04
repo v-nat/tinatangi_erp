@@ -108,7 +108,7 @@ class HR_Controller extends Controller
         // --- Payroll net pay per month (last 6 months) ---
         $payrollTrend = Payroll::where('created_at', '>=', $sixMonthsAgo)
             ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(net_pay) as total")
-            ->groupBy('month')
+            ->groupByRaw("DATE_FORMAT(created_at, '%Y-%m')")
             ->orderBy('month')
             ->get();
 
