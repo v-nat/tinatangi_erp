@@ -14,7 +14,7 @@
 
     <section class="section mb-4">
         <div class="row g-3">
-            <div class="col-12 col-sm-6 col-lg-3">
+            <div class="col-12 col-sm-6 col-lg">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -31,7 +31,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-sm-6 col-lg-3">
+            <div class="col-12 col-sm-6 col-lg">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -48,7 +48,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-sm-6 col-lg-3">
+            <div class="col-12 col-sm-6 col-lg">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -65,7 +65,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-sm-6 col-lg-3">
+            <div class="col-12 col-sm-6 col-lg">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -77,6 +77,23 @@
                             <div>
                                 <h6 class="text-muted font-semibold">Feedback Pending</h6>
                                 <h5 class="font-extrabold mb-0" id="kpi-feedback-pending">...</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="stats-icon-wrapper me-3">
+                                <div class="stats-icon green">
+                                    <i class="fa-solid fa-bullhorn"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="text-muted font-semibold">Active Promotions</h6>
+                                <h5 class="font-extrabold mb-0" id="kpi-active-announcements">...</h5>
                             </div>
                         </div>
                     </div>
@@ -104,6 +121,49 @@
                     </div>
                     <div class="card-body">
                         <div id="chart-booking-status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section mb-4">
+        <div class="row g-3">
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">7-Day Booking Forecast</h4>
+                        <span class="badge bg-warning text-dark">
+                            <i class="fa-solid fa-chart-line me-1"></i>Predictive
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div id="chart-booking-forecast"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0">Forecast Insights</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center mb-3">
+                            <div class="col-6 border-end">
+                                <div class="text-muted small">Peak Day</div>
+                                <div class="fw-bold" id="forecast-peak-day">—</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small">Weekly Total</div>
+                                <div class="fw-bold" id="forecast-total-week">—</div>
+                            </div>
+                        </div>
+                        <hr class="mt-0">
+                        <div id="forecast-insights-list"></div>
+                        <p class="text-muted small mt-2 mb-0">
+                            <i class="fa-solid fa-circle-info me-1"></i>
+                            Based on same-day-of-week averages over the last 12 weeks.
+                        </p>
                     </div>
                 </div>
             </div>
