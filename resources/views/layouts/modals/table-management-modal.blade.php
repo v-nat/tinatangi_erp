@@ -17,10 +17,11 @@
                         <div class="invalid-feedback" id="name_error"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="location" class="form-label">Table Location <span
-                                class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="location" name="location" required>
-                        <div class="invalid-feedback" id="location_error"></div>
+                        <label for="table_location_id" class="form-label">Table Location <span class="text-danger">*</span></label>
+                        <select class="form-select" id="table_location_id" name="table_location_id" required>
+                            <option value="">— Select location —</option>
+                        </select>
+                        <div class="invalid-feedback" id="table_location_id_error"></div>
                     </div>
 
                     <div class="row">
@@ -118,6 +119,31 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Location Add/Edit Modal --}}
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="locationModalLabel">Add Location</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="location_id">
+                <div class="mb-3">
+                    <label for="location_name" class="form-label">Location Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="location_name" name="location_name"
+                        placeholder="e.g. Main Hall" maxlength="255" required>
+                    <div class="invalid-feedback" id="location_name_error"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveLocationBtn">Save</button>
             </div>
         </div>
     </div>

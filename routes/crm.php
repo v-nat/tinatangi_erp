@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CRM\FeedbackController;
 use App\Http\Controllers\Admin\CRM\TableForReservationController;
 use App\Http\Controllers\Admin\CRM\AnnouncementController;
 use App\Http\Controllers\Admin\CRM\GovernmentDiscountController;
+use App\Http\Controllers\Admin\CRM\TableLocationController;
 
 Route::get('/customer-service', [CrmController::class, 'index'])->middleware('auth', 'isEmployee')->name('crm');
 
@@ -50,6 +51,12 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::post('/tables/update/{table}', [TableForReservationController::class, 'update']);
     Route::delete('/tables/destroy/{table}', [TableForReservationController::class, 'destroy']);
     Route::delete('/tables/batch-destroy', [TableForReservationController::class, 'batchDestroy']);
+
+    Route::get('/table-locations/list', [TableLocationController::class, 'list']);
+    Route::post('/table-locations/store', [TableLocationController::class, 'store']);
+    Route::get('/table-locations/edit/{location}', [TableLocationController::class, 'edit']);
+    Route::post('/table-locations/update/{location}', [TableLocationController::class, 'update']);
+    Route::delete('/table-locations/destroy/{location}', [TableLocationController::class, 'destroy']);
 
     Route::get('/announcements', [AnnouncementController::class, 'index'])->name('crm.announcements');
     Route::get('/announcements/list', [AnnouncementController::class, 'list']);

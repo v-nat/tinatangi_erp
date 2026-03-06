@@ -15,7 +15,7 @@ class TableForReservationController extends Controller
 {
     public function list(): JsonResponse
     {
-        $tables = TableForReservation::all();
+        $tables = TableForReservation::with('tableLocation')->get();
         return response()->json(['data' => $tables]);
     }
 
@@ -40,7 +40,7 @@ class TableForReservationController extends Controller
 
     public function edit(TableForReservation $table): JsonResponse
     {
-        return response()->json($table);
+        return response()->json($table->load('tableLocation'));
     }
 
     public function update(UpdateTableForReservationRequest $request, TableForReservation $table): JsonResponse
