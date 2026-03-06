@@ -34,13 +34,13 @@
 
                             <div style="background-color: #1a1816; border: 1px solid #444; border-radius: 5px; padding: 20px; font-size: 16px; line-height: 2.0; color: #eeeeee;">
                                 <strong style="color: #cda45e;">SSS:</strong>
-                                <span style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 18px; color: #eeeeee;">₱{{ number_format($contributions['sss'], 2) }}</span>
+                                <span style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 18px; color: #eeeeee;">₱{{ number_format($contributions['sss_employee_rate'], 2) }}</span>
                                 <br>
                                 <strong style="color: #cda45e;">PhilHealth:</strong>
-                                <span style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 18px; color: #eeeeee;">₱{{ number_format($contributions['philhealth'], 2) }}</span>
+                                <span style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 18px; color: #eeeeee;">₱{{ number_format($contributions['philhealth_employee_rate'], 2) }}</span>
                                 <br>
                                 <strong style="color: #cda45e;">Pag-IBIG:</strong>
-                                <span style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 18px; color: #eeeeee;">₱{{ number_format($contributions['pagibig'], 2) }}</span>
+                                <span style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 18px; color: #eeeeee;">₱{{ number_format($contributions['pagibig_employee_rate'], 2) }}</span>
                             </div>
 
                             <p style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; color: #eeeeee; margin: 25px 0 25px 0; font-size: 16px; line-height: 1.6;">
