@@ -329,15 +329,13 @@ $(document).ready(function () {
             const available = slot.status === "available";
             const isWalkIn  = slot.status === "walk_in";
 
-            let labelText  = available ? "Free" : (isWalkIn ? "Walk-In" : "Taken");
-            let titleText  = available ? "Available" : (isWalkIn ? "Currently occupied by a walk-in customer" : "Already booked");
+            let labelText = available ? "Free" : (isWalkIn ? "Walk-In" : "Taken");
 
             const btn = $(`
                 <button type="button"
                     class="cafe-slot-btn slot-btn ${available ? "" : "taken"}"
                     data-slot="${slot.number}"
-                    ${available ? "" : "disabled aria-disabled='true'"}
-                    title="${titleText}">
+                    ${(!available && !isWalkIn) ? "disabled aria-disabled='true'" : ""}>
                     Table ${slot.number}
                     <small>${labelText}</small>
                 </button>
@@ -349,6 +347,15 @@ $(document).ready(function () {
                     $(this).addClass("selected");
                     selectedSlot = slot.number;
                     $confirmSlotBtn.prop("disabled", false);
+                });
+            } else if (isWalkIn) {
+                btn.on("click", function () {
+                    Swal.fire({
+                        title: "Table Unavailable",
+                        text: "This table is currently occupied by a walk-in customer and cannot be reserved right now.",
+                        icon: "warning",
+                        confirmButtonColor: "#cda45e",
+                    });
                 });
             }
 

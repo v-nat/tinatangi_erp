@@ -148,7 +148,12 @@ class BookingController extends Controller
                 if ($conflict) {
                     $status = 'taken';
                 } elseif ($walkIn) {
-                    $status = 'walk_in';
+                    // Block the slot only if the requested booking starts within 1.5 hours of the walk-in start
+                    $walkInStart = Carbon::parse($walkIn->occupied_at)->setTimezone('Asia/Manila');
+                    $clearAt     = $walkInStart->copy()->addMinutes(90);
+                    if ($requestStart->lt($clearAt)) {
+                        $status = 'walk_in';
+                    }
                 }
 
                 $slots[] = [
