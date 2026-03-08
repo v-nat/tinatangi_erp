@@ -327,14 +327,19 @@ $(document).ready(function () {
 
         slots.forEach((slot) => {
             const available = slot.status === "available";
+            const isWalkIn  = slot.status === "walk_in";
+
+            let labelText  = available ? "Free" : (isWalkIn ? "Walk-In" : "Taken");
+            let titleText  = available ? "Available" : (isWalkIn ? "Currently occupied by a walk-in customer" : "Already booked");
+
             const btn = $(`
                 <button type="button"
                     class="cafe-slot-btn slot-btn ${available ? "" : "taken"}"
                     data-slot="${slot.number}"
                     ${available ? "" : "disabled aria-disabled='true'"}
-                    title="${available ? "Available" : "Already booked"}">
+                    title="${titleText}">
                     Table ${slot.number}
-                    <small>${available ? "Free" : "Taken"}</small>
+                    <small>${labelText}</small>
                 </button>
             `);
 

@@ -31,13 +31,15 @@
 
             {{-- Legend --}}
             <div class="d-flex flex-wrap gap-3 mt-2" style="font-size:.8rem;">
-                <span><span class="badge" style="background:#198754;">&#9679;</span> Active</span>
-                <span><span class="badge" style="background:#dc3545;">&#9679;</span> No-Show Risk</span>
-                <span><span class="badge" style="background:#0d6efd;">&#9679;</span> Upcoming</span>
-                <span><span class="badge" style="background:#ffc107;color:#000;">&#9679;</span> Soon (&le;30 min)</span>
-                <span><span class="badge bg-warning text-dark">&#9679;</span> Pending</span>
+                <span><span class="badge bg-success">&#9679;</span> Active</span>
+                <span><span class="badge" style="background:#fd7e14;">&#9679;</span> Awaiting Arrival</span>
+                <span><span class="badge bg-danger">&#9679;</span> No-Show Risk</span>
+                <span><span class="badge bg-primary">&#9679;</span> Upcoming</span>
+                <span><span class="badge bg-warning text-dark">&#9679;</span> Soon (&le;30 min) / Pending</span>
+                <span><span class="badge" style="background:#6f42c1;">&#9679;</span> Walk-In</span>
                 <span><span class="badge bg-secondary">&#9679;</span> Free</span>
-                <span><span class="badge" style="background:#6c757d;">&#9679;</span> Overdue</span>
+                <span><span class="badge" style="background:#adb5bd;">&#9679;</span> Overdue (grace)</span>
+                <span><span class="badge bg-success">&#9679;</span> Done (auto)</span>
             </div>
         </div>
         <div class="card-body">

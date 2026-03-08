@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Models\TableForReservation;
+use App\Models\WalkInOccupancy;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 
@@ -124,6 +125,12 @@ class BookingController extends Controller
                 ->whereNotNull('table_number')
                 ->get();
 
+            // Active walk-in occupancies for this table (only relevant for today)
+            $today = Carbon::now('Asia/Manila')->toDateString();
+            $walkIns = ($date === $today)
+                ? WalkInOccupancy::where('table_id', $table->id)->active()->get()
+                : collect();
+
             $slots = [];
             for ($slot = 1; $slot <= $table->quantity; $slot++) {
                 $conflict = $existingBookings->first(function ($booking) use ($slot, $date, $requestStart, $requestEnd) {
@@ -135,9 +142,18 @@ class BookingController extends Controller
                     return $bookingStart < $requestEnd && $requestStart < $bookingEnd;
                 });
 
+                $walkIn = $walkIns->first(fn($w) => (int) $w->table_number === $slot);
+
+                $status = 'available';
+                if ($conflict) {
+                    $status = 'taken';
+                } elseif ($walkIn) {
+                    $status = 'walk_in';
+                }
+
                 $slots[] = [
                     'number' => $slot,
-                    'status' => $conflict ? 'taken' : 'available',
+                    'status' => $status,
                 ];
             }
 
@@ -163,6 +179,8 @@ class BookingController extends Controller
             ->whereNotNull('table_number')
             ->get();
 
+        $walkIns = WalkInOccupancy::whereIn('table_id', $tables->pluck('id'))->active()->get();
+
         $result = [];
         foreach ($tables as $table) {
             $slots = [];
@@ -172,7 +190,10 @@ class BookingController extends Controller
                         && (int) $b->table_number === $slot;
                 });
 
-                $slotData = ['slot' => $slot, 'booking' => null];
+                $walkIn = $walkIns->first(fn($w) => (int) $w->table_id === (int) $table->id
+                    && (int) $w->table_number === $slot);
+
+                $slotData = ['slot' => $slot, 'table_id' => $table->id, 'booking' => null, 'walk_in' => null];
 
                 if ($booking) {
                     $startTs = Carbon::parse($today . ' ' . $booking->time, 'Asia/Manila');
@@ -188,6 +209,14 @@ class BookingController extends Controller
                         'start_ts'       => $startTs->timestamp,
                         'end_ts'         => $endTs->timestamp,
                         'no_show_ts'     => $startTs->copy()->addMinutes(15)->timestamp,
+                        'arrived_at'     => $booking->arrived_at?->timestamp,
+                    ];
+                }
+
+                if ($walkIn) {
+                    $slotData['walk_in'] = [
+                        'id'          => $walkIn->id,
+                        'occupied_at' => $walkIn->occupied_at->timestamp,
                     ];
                 }
 
@@ -222,6 +251,37 @@ class BookingController extends Controller
         return response()->json(['success' => 'Booking marked as completed. Table is now free.']);
     }
 
+    public function confirmArrival(Booking $booking): JsonResponse
+    {
+        if ((int) $booking->status !== 13) {
+            return response()->json(['error' => 'Only approved bookings can be confirmed.'], 422);
+        }
+
+        if ($booking->arrived_at) {
+            return response()->json(['error' => 'Arrival already confirmed for this booking.'], 422);
+        }
+
+        $booking->arrived_at = Carbon::now('Asia/Manila');
+        $booking->save();
+
+        return response()->json(['success' => 'Arrival confirmed. Table is now active.']);
+    }
+
+    public function quickVoid(Booking $booking): JsonResponse
+    {
+        if (!in_array((int) $booking->status, [11, 13])) {
+            return response()->json(['error' => 'Only pending or approved bookings can be voided.'], 422);
+        }
+
+        $booking->status      = 31;
+        $booking->status_note = 'Voided by staff from occupancy panel.';
+        $booking->save();
+
+        Mail::to($booking->email)->send(new BookingStatusMail($booking));
+
+        return response()->json(['success' => 'Booking voided. Table is now available.']);
+    }
+
     public function markNoShow(Booking $booking): JsonResponse
     {
         if ((int) $booking->status !== 13) {
@@ -242,6 +302,44 @@ class BookingController extends Controller
         Mail::to($booking->email)->send(new BookingStatusMail($booking));
 
         return response()->json(['success' => 'Booking marked as no-show. Table is now available.']);
+    }
+
+    public function walkInOccupy(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'table_id'     => 'required|exists:table_for_reservations,id',
+            'table_number' => 'required|integer|min:1',
+        ]);
+
+        // Prevent duplicate active walk-in on same slot
+        $exists = WalkInOccupancy::where('table_id', $validated['table_id'])
+            ->where('table_number', $validated['table_number'])
+            ->active()
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['error' => 'This slot already has an active walk-in.'], 422);
+        }
+
+        WalkInOccupancy::create([
+            'table_id'     => $validated['table_id'],
+            'table_number' => $validated['table_number'],
+            'occupied_at'  => Carbon::now('Asia/Manila'),
+        ]);
+
+        return response()->json(['success' => 'Table marked as occupied by walk-in customer.']);
+    }
+
+    public function walkInFree(WalkInOccupancy $occupancy): JsonResponse
+    {
+        if ($occupancy->freed_at) {
+            return response()->json(['error' => 'This walk-in slot is already free.'], 422);
+        }
+
+        $occupancy->freed_at = Carbon::now('Asia/Manila');
+        $occupancy->save();
+
+        return response()->json(['success' => 'Table freed and now available for reservations.']);
     }
 
     public function bookingPage()

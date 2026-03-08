@@ -617,12 +617,14 @@ $(document).ready(function () {
 
     // ── Occupancy Panel ──────────────────────────────────────────────────
 
-    const REFRESH_INTERVAL = 60; // seconds
-    let occupancyData      = null;
-    let serverTsDelta      = 0;  // difference: client unix - server unix at load time
-    let countdownVal       = REFRESH_INTERVAL;
-    let countdownTimer     = null;
-    let autoRefreshTimer   = null;
+    const REFRESH_INTERVAL  = 60; // seconds
+    const OVERDUE_GRACE_SEC = 5 * 60; // 5-minute grace before auto-complete
+    let occupancyData       = null;
+    let serverTsDelta       = 0;  // difference: client unix - server unix at load time
+    let countdownVal        = REFRESH_INTERVAL;
+    let countdownTimer      = null;
+    let autoRefreshTimer    = null;
+    const autoCompletedIds  = new Set(); // guard: prevent duplicate auto-complete calls
 
     function nowTs() {
         // Returns current unix timestamp adjusted to match server time
@@ -652,11 +654,15 @@ $(document).ready(function () {
         const end    = booking.end_ts;
         const noShow = booking.no_show_ts;
 
-        if (now > end)    return "overdue";   // window passed, not yet completed
+        if (now > end + OVERDUE_GRACE_SEC) return "overdue_grace"; // 5-min grace passed → auto-complete
+        if (now > end)                       return "overdue";        // within 5-min grace window
+
+        if (booking.arrived_at) return "active"; // staff confirmed arrival
+
         if (now >= start) {
-            if (booking.status === 11) return "pending";     // approved but still pending in system
-            if (now >= noShow)          return "no_show";    // 15 min past, still there
-            return "active";
+            if (booking.status === 11) return "pending";  // still needs admin approval
+            if (now >= noShow)          return "no_show"; // 15 min past, never confirmed
+            return "awaiting";                            // time has come, waiting for confirmation
         }
         // upcoming
         const mins = (start - now) / 60;
@@ -664,18 +670,44 @@ $(document).ready(function () {
     }
 
     const STATE_STYLES = {
-        free:         { border: "#6c757d", badge: '<span class="badge bg-secondary">Free</span>',                         dim: true  },
-        active:       { border: "#198754", badge: '<span class="badge bg-success">Active</span>',                         dim: false },
-        no_show:      { border: "#dc3545", badge: '<span class="badge bg-danger">No-Show Risk</span>',                    dim: false },
-        pending:      { border: "#ffc107", badge: '<span class="badge bg-warning text-dark">Pending</span>',              dim: false },
-        upcoming:     { border: "#0d6efd", badge: '<span class="badge bg-primary">Upcoming</span>',                       dim: true  },
-        upcoming_soon:{ border: "#ffc107", badge: '<span class="badge bg-warning text-dark">Soon</span>',                 dim: false },
-        overdue:      { border: "#adb5bd", badge: '<span class="badge" style="background:#adb5bd;">Overdue</span>',       dim: true  },
+        free:         { border: "#6c757d", badge: '<span class="badge bg-secondary">Free</span>',                                   dim: true  },
+        active:       { border: "#198754", badge: '<span class="badge bg-success">Active</span>',                                   dim: false },
+        awaiting:     { border: "#fd7e14", badge: '<span class="badge" style="background:#fd7e14;">Awaiting Arrival</span>',         dim: false },
+        no_show:      { border: "#dc3545", badge: '<span class="badge bg-danger">No-Show Risk</span>',                              dim: false },
+        pending:      { border: "#ffc107", badge: '<span class="badge bg-warning text-dark">Pending</span>',                        dim: false },
+        upcoming:     { border: "#0d6efd", badge: '<span class="badge bg-primary">Upcoming</span>',                                 dim: true  },
+        upcoming_soon:{ border: "#ffc107", badge: '<span class="badge bg-warning text-dark">Soon</span>',                           dim: false },
+        overdue:      { border: "#adb5bd", badge: '<span class="badge" style="background:#adb5bd;">Overdue</span>',                 dim: true  },
+        overdue_grace:{ border: "#198754", badge: '<span class="badge bg-success">Done</span>',                                      dim: true  },
+        walk_in:      { border: "#6f42c1", badge: '<span class="badge" style="background:#6f42c1;">Walk-In</span>',                   dim: false },
     };
+
+    function autoCompleteBooking(bookingId) {
+        if (autoCompletedIds.has(bookingId)) return;
+        autoCompletedIds.add(bookingId);
+
+        $.ajax({
+            url: `/customer-service/bookings/complete-early/${bookingId}`,
+            method: "POST",
+            headers: { "X-CSRF-TOKEN": csrfToken },
+        })
+            .done(() => {
+                Toast.fire({ icon: "success", title: "Booking auto-completed and table freed." });
+                loadOccupancy(true);
+                table.ajax.reload(null, false);
+                startCountdown();
+            })
+            .fail(() => {
+                // Allow retry on next cycle if it failed
+                autoCompletedIds.delete(bookingId);
+            });
+    }
 
     function buildSlotCard(slot) {
         const b     = slot.booking;
-        const state = getSlotState(b);
+        const w     = slot.walk_in;
+        // Walk-in takes precedence only when there is no booking on this slot
+        const state = (!b && w) ? "walk_in" : getSlotState(b);
         const style = STATE_STYLES[state] || STATE_STYLES.free;
         const dim   = style.dim ? "opacity:.55;" : "";
 
@@ -696,7 +728,7 @@ $(document).ready(function () {
                     : `<div class="text-muted small">Should have ended</div>`;
             } else if (state === "upcoming" || state === "upcoming_soon") {
                 timeInfo = `<div class="text-primary small">In ${minsUntil} min</div>`;
-            } else if (state === "overdue") {
+            } else if (state === "overdue" || state === "overdue_grace") {
                 timeInfo = `<div class="text-muted small">Ended ${Math.abs(minsLeft)} min ago</div>`;
             } else if (state === "pending") {
                 timeInfo = `<div class="text-warning small">Pending arrival</div>`;
@@ -711,9 +743,23 @@ $(document).ready(function () {
                 </div>`;
 
             // Action buttons
+            if (state === "awaiting") {
+                actions += `<button class="btn btn-sm btn-success occ-confirm-arrival mt-2 me-1" data-id="${b.id}" style="font-size:.75rem;">
+                                <i class="fa-solid fa-circle-check me-1"></i>Confirm Arrival
+                            </button>
+                            <button class="btn btn-sm btn-danger occ-quick-void mt-2" data-id="${b.id}" style="font-size:.75rem;">
+                                <i class="fa-solid fa-ban me-1"></i>Void
+                            </button>`;
+            }
             if (state === "active" || state === "upcoming_soon" || state === "pending" || state === "overdue") {
                 actions += `<button class="btn btn-sm btn-success occ-complete-early mt-2" data-id="${b.id}" style="font-size:.75rem;">
                                 <i class="fa-solid fa-check me-1"></i>Complete Early
+                            </button>`;
+            }
+            if (state === "overdue_grace") {
+                autoCompleteBooking(b.id);
+                actions += `<button class="btn btn-sm btn-success mt-2 disabled" style="font-size:.75rem;" disabled>
+                                <i class="fa-solid fa-check me-1"></i>Done
                             </button>`;
             }
             if (state === "no_show") {
@@ -724,6 +770,27 @@ $(document).ready(function () {
                                 <i class="fa-solid fa-user-slash me-1"></i>No-Show
                             </button>`;
             }
+        }
+
+        // Walk-in slot (no booking assigned)
+        if (state === "walk_in" && w) {
+            const minsOccupied = Math.round((nowTs() - w.occupied_at) / 60);
+            detail = `
+                <div class="mt-1 small">
+                    <div class="fw-semibold" style="color:#6f42c1;">Walk-In Customer</div>
+                    <div class="text-muted">Occupied ${minsOccupied} min ago</div>
+                </div>`;
+            actions = `<button class="btn btn-sm btn-outline-secondary occ-walk-in-free mt-2" data-id="${w.id}" style="font-size:.75rem;">
+                           <i class="fa-solid fa-door-open me-1"></i>Free Table
+                       </button>`;
+        }
+
+        // "Walk-In" button on free slots
+        if (state === "free") {
+            actions = `<button class="btn btn-sm btn-outline-secondary occ-walk-in mt-2"
+                            data-table-id="${slot.table_id}" data-slot="${slot.slot}" style="font-size:.75rem;">
+                           <i class="fa-solid fa-person-walking me-1"></i>Walk-In
+                       </button>`;
         }
 
         return `
@@ -867,6 +934,118 @@ $(document).ready(function () {
                 })
                 .fail((xhr) => {
                     Swal.fire("Error", xhr.responseJSON?.error || "Failed to mark as no-show.", "error");
+                });
+        });
+    });
+
+    $("#occupancy-container").on("click", ".occ-confirm-arrival", function () {
+        const bookingId = $(this).data("id");
+        Swal.fire({
+            title: "Confirm Client Arrival?",
+            text: "This marks the client as present and the table as actively occupied.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#198754",
+            confirmButtonText: "Yes, they're here",
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+            $.ajax({
+                url: `/customer-service/bookings/confirm-arrival/${bookingId}`,
+                method: "POST",
+                headers: { "X-CSRF-TOKEN": csrfToken },
+            })
+                .done((res) => {
+                    Toast.fire({ icon: "success", title: res.success || "Arrival confirmed." });
+                    loadOccupancy(true);
+                    table.ajax.reload(null, false);
+                    startCountdown();
+                })
+                .fail((xhr) => {
+                    Swal.fire("Error", xhr.responseJSON?.error || "Failed to confirm arrival.", "error");
+                });
+        });
+    });
+
+    $("#occupancy-container").on("click", ".occ-quick-void", function () {
+        const bookingId = $(this).data("id");
+        Swal.fire({
+            title: "Void this Reservation?",
+            text: "The booking will be cancelled and the table freed immediately. An email will be sent to the customer.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#dc3545",
+            confirmButtonText: "Yes, void it",
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+            $.ajax({
+                url: `/customer-service/bookings/quick-void/${bookingId}`,
+                method: "POST",
+                headers: { "X-CSRF-TOKEN": csrfToken },
+            })
+                .done((res) => {
+                    Toast.fire({ icon: "success", title: res.success || "Booking voided." });
+                    loadOccupancy(true);
+                    table.ajax.reload(null, false);
+                    startCountdown();
+                })
+                .fail((xhr) => {
+                    Swal.fire("Error", xhr.responseJSON?.error || "Failed to void booking.", "error");
+                });
+        });
+    });
+
+    $("#occupancy-container").on("click", ".occ-walk-in", function () {
+        const tableId   = $(this).data("table-id");
+        const slotNum   = $(this).data("slot");
+        Swal.fire({
+            title: "Mark as Walk-In?",
+            text: `Table #${slotNum} will be marked as occupied by a walk-in customer.`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#6f42c1",
+            confirmButtonText: "Yes, walk-in",
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+            $.ajax({
+                url: "/customer-service/bookings/walk-in/occupy",
+                method: "POST",
+                headers: { "X-CSRF-TOKEN": csrfToken },
+                data: { table_id: tableId, table_number: slotNum },
+            })
+                .done((res) => {
+                    Toast.fire({ icon: "success", title: res.success || "Table marked as walk-in." });
+                    loadOccupancy(true);
+                    startCountdown();
+                })
+                .fail((xhr) => {
+                    Swal.fire("Error", xhr.responseJSON?.error || "Failed to mark walk-in.", "error");
+                });
+        });
+    });
+
+    $("#occupancy-container").on("click", ".occ-walk-in-free", function () {
+        const occupancyId = $(this).data("id");
+        Swal.fire({
+            title: "Free this Table?",
+            text: "The walk-in occupancy will be cleared and the table will be available for reservations.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#198754",
+            confirmButtonText: "Yes, free it",
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+            $.ajax({
+                url: `/customer-service/bookings/walk-in/free/${occupancyId}`,
+                method: "POST",
+                headers: { "X-CSRF-TOKEN": csrfToken },
+            })
+                .done((res) => {
+                    Toast.fire({ icon: "success", title: res.success || "Table freed." });
+                    loadOccupancy(true);
+                    startCountdown();
+                })
+                .fail((xhr) => {
+                    Swal.fire("Error", xhr.responseJSON?.error || "Failed to free table.", "error");
                 });
         });
     });
