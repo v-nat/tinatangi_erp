@@ -96,7 +96,7 @@ class LeaveController extends Controller
             $records = [];
 
             for ($i = 0; ($day = $startDate->copy()->addDays($i))->lte($endDate); $i++) {
-           
+
                 if (!in_array($day->dayOfWeek, $scheduledDays)) continue;
 
                 $records[] = [
@@ -184,7 +184,7 @@ class LeaveController extends Controller
                                             : 0,
                     'reason'         => $leave->reason ?? 'N/A',
                     'is_paid'        => (bool) $leave->is_paid,
-                    'attachment_url' => $leave->attachment ? asset('storage/' . $leave->attachment) : null,
+                    'attachment_url' => $leave->attachment ? asset($leave->attachment) : null,
                     'status'         => Status::getStatusText($leave->status),
                 ];
             });
@@ -227,7 +227,7 @@ class LeaveController extends Controller
                 $filename       = $file->hashName();
                 $path           = 'img/leave_attachments/' . $filename;
                 Storage::disk('public')->put($path, $file->get());
-                $attachmentPath = '/storage/app/public/' . $path;
+                $attachmentPath = 'storage/app/public/' . $path;
             }
 
             $isPaid = $this->determineIsPaid($validated['reason']);
