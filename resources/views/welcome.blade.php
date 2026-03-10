@@ -14,19 +14,29 @@
     <link href="assets/img/favicon.png" rel="icon">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-    <link rel="stylesheet" href="{{ asset('css/font/poppins/stylesheet.css')}}">
-    <link rel="stylesheet" href="{{ asset('css/font/playfairdisplay/stylesheet.css')}}">
-    <link rel="stylesheet" href="{{ asset('css/font/roboto/stylesheet.css')}}">
+    {{-- Preload critical above-the-fold image --}}
+    <link rel="preload" as="image" href="{{ asset('assets/img/hero-bg.jpg') }}">
 
+    {{-- Critical CSS --}}
     <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/aos/aos.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
 
-    <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
-    <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}">
+    {{-- Deferred non-critical CSS --}}
+    <link rel="preload" href="{{ asset('css/font/poppins/stylesheet.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/font/poppins/stylesheet.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('css/font/playfairdisplay/stylesheet.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/font/playfairdisplay/stylesheet.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('css/font/roboto/stylesheet.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/font/roboto/stylesheet.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('assets/vendor/aos/aos.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('assets/vendor/aos/aos.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('assets/vendor/glightbox/css/glightbox.min.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('assets/vendor/glightbox/css/glightbox.min.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('assets/vendor/swiper/swiper-bundle.min.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('assets/vendor/swiper/swiper-bundle.min.css') }}"></noscript>
     <style>
         .best-seller-panel {
             background-color: #1e1b16;
@@ -321,7 +331,7 @@
 
         <section id="hero" class="hero section dark-background">
 
-            <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+            <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in" fetchpriority="high" decoding="sync">
 
             <div class="container">
                 <div class="row">
@@ -413,7 +423,7 @@
 
                 <div class="row gy-4">
                     <div class="col-lg-6 order-1 order-lg-2">
-                        <img src="assets/img/about.jpg" class="img-fluid about-img" alt="">
+                        <img src="assets/img/about.jpg" class="img-fluid about-img" alt="" loading="lazy" decoding="async">
                     </div>
                     <div class="col-lg-6 order-2 order-lg-1 content">
                         <h3>ABOUT TINATANGI</h3>
@@ -585,56 +595,56 @@
                     <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-1.jpg" class="glightbox" data-gallery="images-gallery">
-                                <img src="assets/img/gallery/gallery-1.jpg" alt="" class="img-fluid">
+                                <img src="assets/img/gallery/gallery-1.jpg" alt="" class="img-fluid" loading="lazy" decoding="async">
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-2.jpg" class="glightbox" data-gallery="images-gallery">
-                                <img src="assets/img/gallery/gallery-2.jpg" alt="" class="img-fluid">
+                                <img src="assets/img/gallery/gallery-2.jpg" alt="" class="img-fluid" loading="lazy" decoding="async">
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-3.jpg" class="glightbox" data-gallery="images-gallery">
-                                <img src="assets/img/gallery/gallery-3.jpg" alt="" class="img-fluid">
+                                <img src="assets/img/gallery/gallery-3.jpg" alt="" class="img-fluid" loading="lazy" decoding="async">
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-4.jpg" class="glightbox" data-gallery="images-gallery">
-                                <img src="assets/img/gallery/gallery-4.jpg" alt="" class="img-fluid">
+                                <img src="assets/img/gallery/gallery-4.jpg" alt="" class="img-fluid" loading="lazy" decoding="async">
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-5.jpg" class="glightbox" data-gallery="images-gallery">
-                                <img src="assets/img/gallery/gallery-5.jpg" alt="" class="img-fluid">
+                                <img src="assets/img/gallery/gallery-5.jpg" alt="" class="img-fluid" loading="lazy" decoding="async">
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-6.jpg" class="glightbox" data-gallery="images-gallery">
-                                <img src="assets/img/gallery/gallery-6.jpg" alt="" class="img-fluid">
+                                <img src="assets/img/gallery/gallery-6.jpg" alt="" class="img-fluid" loading="lazy" decoding="async">
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-7.jpg" class="glightbox" data-gallery="images-gallery">
-                                <img src="assets/img/gallery/gallery-7.jpg" alt="" class="img-fluid">
+                                <img src="assets/img/gallery/gallery-7.jpg" alt="" class="img-fluid" loading="lazy" decoding="async">
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-4">
                         <div class="gallery-item">
                             <a href="assets/img/gallery/gallery-8.jpg" class="glightbox" data-gallery="images-gallery">
-                                <img src="assets/img/gallery/gallery-8.jpg" alt="" class="img-fluid">
+                                <img src="assets/img/gallery/gallery-8.jpg" alt="" class="img-fluid" loading="lazy" decoding="async">
                             </a>
                         </div>
                     </div>
@@ -870,6 +880,8 @@
 
     <div id="preloader"></div>
 
+    <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
     <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
