@@ -47,7 +47,7 @@ class LeaveController extends Controller
                                             : 0,
                     'reason'         => $leave->reason ?? 'N/A',
                     'is_paid'        => (bool) $leave->is_paid,
-                    'attachment_url' => $leave->attachment ? asset('storage/' . $leave->attachment) : null,
+                    'attachment_url' => $leave->attachment ? asset('storage/app/public' . $leave->attachment) : null,
                     'status'         => Status::getStatusText($leave->status),
                     'status_id'      => $leave->status,
                 ];
