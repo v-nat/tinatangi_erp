@@ -26,7 +26,6 @@
 
 # === 4. Laravel Public Assets ===
 # These are built from your source files or are symlinks.
-/public/build/
 /public/hot
 /public/storage
 
