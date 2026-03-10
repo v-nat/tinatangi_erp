@@ -397,5 +397,5 @@
 
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/hrManage.js') }}"></script>
+    @vite('resources/js/hrManage.js')
 @endsection

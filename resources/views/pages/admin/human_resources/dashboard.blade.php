@@ -184,5 +184,5 @@
 @endsection
 @section('scripts')
     <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
-    <script type="module" src="{{ asset('js/hrDashboard.js') }}"></script>
+    @vite('resources/js/hrDashboard.js')
 @endsection

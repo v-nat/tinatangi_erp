@@ -75,5 +75,5 @@
     </section>
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/stockTransactions.js') }}"></script>
+    @vite('resources/js/stockTransactions.js')
 @endsection

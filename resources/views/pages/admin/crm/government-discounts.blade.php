@@ -115,5 +115,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/governmentDiscountManagement.js') }}"></script>
+    @vite('resources/js/governmentDiscountManagement.js')
 @endsection

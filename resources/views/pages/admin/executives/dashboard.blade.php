@@ -445,5 +445,5 @@
 
 @section('scripts')
     <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
-    <script src="{{ asset('js/executivesDashboard.js') }}"></script>
+    @vite('resources/js/executivesDashboard.js')
 @endsection

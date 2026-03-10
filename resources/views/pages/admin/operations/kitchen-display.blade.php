@@ -98,5 +98,5 @@
     </style>
 @endsection
 @section('scripts')
-    <script src="{{ asset('js/kitchenDisplay.js') }}"></script>
+    @vite('resources/js/kitchenDisplay.js')
 @endsection

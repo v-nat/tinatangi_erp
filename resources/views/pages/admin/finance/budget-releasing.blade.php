@@ -116,7 +116,7 @@
 @endsection
 @section('scripts')
     <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
-    <script type="module" src="{{ asset('js/budgetRelease.js') }}"></script>
+    @vite('resources/js/budgetRelease.js')
 @endsection
 
 @push('styles')

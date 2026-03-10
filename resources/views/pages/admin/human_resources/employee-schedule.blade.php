@@ -115,5 +115,5 @@
 </style>
 
 @section('scripts')
-    <script type="module" src="{{ asset('js/employeeSchedule.js') }}"></script>
+    @vite('resources/js/employeeSchedule.js')
 @endsection

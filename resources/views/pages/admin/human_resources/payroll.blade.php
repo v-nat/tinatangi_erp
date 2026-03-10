@@ -91,5 +91,5 @@
     </style>
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/hrPayroll.js') }}"></script>
+    @vite('resources/js/hrPayroll.js')
 @endsection

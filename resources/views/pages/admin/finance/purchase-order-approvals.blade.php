@@ -46,5 +46,5 @@
     @include('layouts.modals.invoice-modal')
 @endsection
 @section('scripts')]
-    <script type="module" src="{{ asset('js/purchaseRequest.js') }}   "></script>
+    @vite('resources/js/purchaseRequest.js')
 @endsection

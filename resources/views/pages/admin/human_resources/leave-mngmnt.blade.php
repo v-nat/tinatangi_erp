@@ -50,5 +50,5 @@
     @include('layouts.modals.hr-leave-mngmnt-modal')
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/leaveMngt.js') }}"></script>
+    @vite('resources/js/leaveMngt.js')
 @endsection

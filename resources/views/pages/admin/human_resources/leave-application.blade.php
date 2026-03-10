@@ -115,5 +115,5 @@
 
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/leaveApplication.js') }}"></script>
+    @vite('resources/js/leaveApplication.js')
 @endsection

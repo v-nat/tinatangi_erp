@@ -57,5 +57,5 @@
 @endsection
 
 @section('scripts')
-    <script type="module" src="{{ asset('js/faqManagement.js') }}"></script>
+    @vite('resources/js/faqManagement.js')
 @endsection

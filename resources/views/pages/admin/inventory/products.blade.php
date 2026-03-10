@@ -54,6 +54,6 @@
         @include('layouts.modals.inventory-modal')
 @endsection
     @section('scripts')
-        <script type="module" src="{{ asset('js/inventoryProducts.js') }}"></script>
-        <script type="module" src="{{ asset('js/recipeManagement.js') }}"></script>
+        @vite('resources/js/inventoryProducts.js')
+        @vite('resources/js/recipeManagement.js')
     @endsection

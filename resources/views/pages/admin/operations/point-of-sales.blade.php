@@ -179,5 +179,5 @@
     <script>
         const DEFAULT_PRODUCT_IMAGE = "{{ asset('img/default-product.png') }}";
     </script>
-    <script type="module" src="{{ asset('js/pointOfSale.js') }}   "></script>
+    @vite('resources/js/pointOfSale.js')
 @endsection

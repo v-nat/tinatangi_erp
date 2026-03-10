@@ -76,5 +76,5 @@
     </style>
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/financePayroll.js') }}   "></script>
+    @vite('resources/js/financePayroll.js')
 @endsection

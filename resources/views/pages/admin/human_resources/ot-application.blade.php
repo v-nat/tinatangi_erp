@@ -104,5 +104,5 @@
 
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/overtimeApplication.js') }}"></script>
+    @vite('resources/js/overtimeApplication.js')
 @endsection

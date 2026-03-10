@@ -880,9 +880,9 @@
 
     <script src="{{ asset('source/rater-js-1.0.1/index.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
-    <script src="{{ asset('js/landingPage.js') }}"></script>
-    <script src="{{ asset('js/bookingTable.js') }}"></script>
-    <script src="{{ asset('js/landingPageAnnouncements.js') }}"></script>
+    @vite('resources/js/landingPage.js')
+    @vite('resources/js/bookingTable.js')
+    @vite('resources/js/landingPageAnnouncements.js')
 
 </body>
 

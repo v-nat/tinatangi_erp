@@ -270,5 +270,5 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/apexcharts/apexcharts.css') }}">
     <script src="{{ asset('assets/vendors/dayjs/dayjs.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
-    <script src="{{ asset('js/procurementDashboard.js') }}"></script>
+    @vite('resources/js/procurementDashboard.js')
 @endsection

@@ -104,5 +104,5 @@
 @endsection
 
 @section('scripts')
-    <script type="module" src="{{ asset('js/feedbackManagement.js') }}"></script>
+    @vite('resources/js/feedbackManagement.js')
 @endsection

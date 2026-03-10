@@ -75,5 +75,5 @@
 @endsection
 
 @section('scripts')
-    <script type="module" src="{{ asset('js/announcementManagement.js') }}"></script>
+    @vite('resources/js/announcementManagement.js')
 @endsection

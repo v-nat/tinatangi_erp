@@ -48,5 +48,5 @@
 
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
+    @vite('resources/js/employeeAttendance.js')
 @endsection

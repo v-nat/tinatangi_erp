@@ -47,5 +47,5 @@
     @include('layouts.modals.supplier-return-modal')
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/supplier.js') }}   "></script>
+    @vite('resources/js/supplier.js')
 @endsection

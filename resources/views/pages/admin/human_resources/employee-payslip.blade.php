@@ -46,5 +46,5 @@
     @include('layouts.modals.hr-payroll-modal')
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/employeePayslip.js') }}"></script>
+    @vite('resources/js/employeePayslip.js')
 @endsection

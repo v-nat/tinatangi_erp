@@ -51,7 +51,7 @@
                                                 $position = $employee->position->name;
                                                                                                                                                                                 ?>
                                                                 {{ \Illuminate\Support\Str::upper($position) }}
-                                                                <script type="module" src="{{ asset('js/employeeAttendance.js') }}"></script>
+                                                                @vite('resources/js/employeeAttendance.js')
                                                                 <?php
                                             }
                                             break;

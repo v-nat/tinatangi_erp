@@ -89,5 +89,5 @@
 @endsection
 
 @section('scripts')
-    <script type="module" src="{{ asset('js/operationsSalesReporting.js') }}"></script>
+    @vite('resources/js/operationsSalesReporting.js')
 @endsection

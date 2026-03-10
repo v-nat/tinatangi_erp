@@ -112,5 +112,5 @@
 @endsection
 
 @section('scripts')
-    <script type="module" src="{{ asset('js/bookingTableManagement.js') }}"></script>
+    @vite('resources/js/bookingTableManagement.js')
 @endsection

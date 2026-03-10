@@ -135,6 +135,6 @@
 @endsection
 
 @section('scripts')
-    <script type="module" src="{{ asset('js/hrScheduleManager.js') }}"></script>
+    @vite('resources/js/hrScheduleManager.js')
 @endsection
 

@@ -190,5 +190,5 @@
 @endsection
 
 @section('scripts')
-    <script type="module" src="{{ asset('js/supplierDashboard.js') }}"></script>
+    @vite('resources/js/supplierDashboard.js')
 @endsection

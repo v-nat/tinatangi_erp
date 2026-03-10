@@ -49,5 +49,5 @@
     @include('layouts.modals.hr-ot-mngmnt-modal')
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/overtimeMngt.js') }}"></script>
+    @vite('resources/js/overtimeMngt.js')
 @endsection

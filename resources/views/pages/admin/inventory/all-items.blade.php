@@ -62,5 +62,5 @@
     </section>
 @endsection
 @section('scripts')
-    <script type="module" src="{{ asset('js/inventoryAllItems.js') }}"></script>
+    @vite('resources/js/inventoryAllItems.js')
 @endsection

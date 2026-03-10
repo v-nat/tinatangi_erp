@@ -79,5 +79,5 @@
 
 @section('scripts')
     <script src="{{ asset('assets/vendors/apexcharts/apexcharts.js') }}"></script>
-    <script type="module" src="{{ asset('js/financeSalesTransactions.js') }}"></script>
+    @vite('resources/js/financeSalesTransactions.js')
 @endsection
