@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import obfuscatorPlugin from 'rollup-plugin-obfuscator';
 
 export default defineConfig({
     plugins: [
@@ -59,6 +60,16 @@ export default defineConfig({
                 'resources/js/utils/reloadTable.js',
             ],
             refresh: true,
+        }),
+        obfuscatorPlugin({
+            options: {
+                compact: true,
+                controlFlowFlattening: false,
+                deadCodeInjection: false,
+                stringArray: true,
+                stringArrayEncoding: ['base64'],
+                rotateStringArray: true,
+            },
         }),
     ],
 });
