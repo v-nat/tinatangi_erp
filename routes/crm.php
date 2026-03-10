@@ -6,11 +6,15 @@ use App\Http\Controllers\Admin\CRM\FaqController;
 use App\Http\Controllers\Admin\CRM\BookingController;
 use App\Http\Controllers\Admin\CRM\FeedbackController;
 use App\Http\Controllers\Admin\CRM\TableForReservationController;
+use App\Http\Controllers\Admin\CRM\AnnouncementController;
+use App\Http\Controllers\Admin\CRM\GovernmentDiscountController;
+use App\Http\Controllers\Admin\CRM\TableLocationController;
 
 Route::get('/customer-service', [CrmController::class, 'index'])->middleware('auth', 'isEmployee')->name('crm');
 
 Route::prefix('/customer-service')->group(function () {
     Route::post('/submit-feedback', [FeedbackController::class, 'submitFeedback']);
+    Route::get('/announcements-public', [AnnouncementController::class, 'fetchPublicAnnouncements']);
 });
 
 Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(function () {
@@ -32,10 +36,17 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
 
     Route::get('/bookings', [BookingController::class, 'bookingPage'])->name('crm.bookings');
     Route::get('/bookings/all', [BookingController::class, 'getBookings']);
+    Route::get('/bookings/live-occupancy', [BookingController::class, 'liveOccupancy']);
     Route::post('/bookings/update-status', [BookingController::class, 'updateBookingStatus']);
     Route::post('/bookings/approve', [BookingController::class, 'approve']);
     Route::post('/bookings/reject', [BookingController::class, 'reject']);
     Route::post('/bookings/void', [BookingController::class, 'void']);
+    Route::post('/bookings/complete-early/{booking}', [BookingController::class, 'completeEarly']);
+    Route::post('/bookings/mark-no-show/{booking}', [BookingController::class, 'markNoShow']);
+    Route::post('/bookings/confirm-arrival/{booking}', [BookingController::class, 'confirmArrival']);
+    Route::post('/bookings/quick-void/{booking}', [BookingController::class, 'quickVoid']);
+    Route::post('/bookings/walk-in/occupy', [BookingController::class, 'walkInOccupy']);
+    Route::post('/bookings/walk-in/free/{occupancy}', [BookingController::class, 'walkInFree']);
 
     Route::get('/table-management', [CrmController::class, 'tableManagement'])->name('crm.tables');
     Route::get('/tables/list', [TableForReservationController::class, 'list']);
@@ -44,4 +55,28 @@ Route::prefix('/customer-service')->middleware(['auth', 'isEmployee'])->group(fu
     Route::post('/tables/update/{table}', [TableForReservationController::class, 'update']);
     Route::delete('/tables/destroy/{table}', [TableForReservationController::class, 'destroy']);
     Route::delete('/tables/batch-destroy', [TableForReservationController::class, 'batchDestroy']);
+
+    Route::get('/table-locations/list', [TableLocationController::class, 'list']);
+    Route::post('/table-locations/store', [TableLocationController::class, 'store']);
+    Route::get('/table-locations/edit/{location}', [TableLocationController::class, 'edit']);
+    Route::post('/table-locations/update/{location}', [TableLocationController::class, 'update']);
+    Route::delete('/table-locations/destroy/{location}', [TableLocationController::class, 'destroy']);
+
+    Route::get('/announcements', [AnnouncementController::class, 'index'])->name('crm.announcements');
+    Route::get('/announcements/list', [AnnouncementController::class, 'list']);
+    Route::get('/announcements/products', [AnnouncementController::class, 'getAvailableProducts']);
+    Route::post('/announcements/store', [AnnouncementController::class, 'store']);
+    Route::get('/announcements/edit/{id}', [AnnouncementController::class, 'edit']);
+    Route::post('/announcements/update/{id}', [AnnouncementController::class, 'update']);
+    Route::delete('/announcements/destroy/{id}', [AnnouncementController::class, 'destroy']);
+    Route::delete('/announcements/batch-destroy', [AnnouncementController::class, 'batchDestroy']);
+    Route::post('/announcements/toggle-status/{id}', [AnnouncementController::class, 'toggleStatus']);
+
+    Route::get('/government-discounts', [GovernmentDiscountController::class, 'index'])->name('crm.govDiscounts');
+    Route::get('/government-discounts/list', [GovernmentDiscountController::class, 'list']);
+    Route::post('/government-discounts/store', [GovernmentDiscountController::class, 'store']);
+    Route::get('/government-discounts/edit/{id}', [GovernmentDiscountController::class, 'edit']);
+    Route::post('/government-discounts/update/{id}', [GovernmentDiscountController::class, 'update']);
+    Route::delete('/government-discounts/destroy/{id}', [GovernmentDiscountController::class, 'destroy']);
+    Route::post('/government-discounts/toggle-active/{id}', [GovernmentDiscountController::class, 'toggleActive']);
 });

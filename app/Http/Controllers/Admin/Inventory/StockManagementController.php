@@ -22,18 +22,38 @@ class StockManagementController extends Controller
     public function stockTransactions()
     {
         try {
-            $transaction = StockTransaction::with(['inventoryItemRS.itemss', 'user'])
+            $transaction = StockTransaction::with(['inventoryItemRS.itemss', 'inventoryItemRS.unit', 'inventoryItemRS.baseUnit', 'user'])
                 ->orderBy('transaction_date', 'desc')->get();
 
             return response()->json([
                 'data' => $transaction->map(function ($data) {
+                    $inventoryItem = $data->inventoryItemRS;
+                    $unitLabel = $inventoryItem ? $inventoryItem->getDisplayUnitLabel() : '';
+                    $quantityRaw = (float) $data->quantity;
+                    $quantityDisplayValue = $quantityRaw;
+
+                    if ($inventoryItem) {
+                        $shouldConvertToDisplay = in_array($data->reference_type, ['Sale', 'Void Sale'], true)
+                            || $data->transaction_type === TransactionType::OUT->value;
+
+                        if ($shouldConvertToDisplay) {
+                            $quantityDisplayValue = $inventoryItem->convertBaseToDisplayQuantity($quantityRaw);
+                        }
+                    }
+
+                    $quantityFormatted = number_format($quantityDisplayValue, 2);
+                    $quantityDisplay = trim($quantityFormatted . ($unitLabel ? ' ' . $unitLabel : ''));
                     return [
                         'id'                => $data->id,
                         'type'              => $data->transaction_type,
                         'batch'             => $data->batch,
                         'date'              => $data->transaction_date->setTimezone('Asia/Manila')->format('Y-m-d\TH:i:s\Z'),
                         'reference'         => $data->reference_type,
-                        'quantity'          => $data->quantity,
+                        'quantity_raw'      => $quantityRaw,
+                        'quantity'          => $quantityDisplayValue,
+                        'quantity_formatted'=> $quantityFormatted,
+                        'quantity_display'  => $quantityDisplay,
+                        'unit'              => $unitLabel,
                         'item'              => optional(optional($data->inventoryItemRS)->itemss)->name,
                         'receive'           => optional($data->user)->full_name,
                         'status'            => Status::getStatusText($data->status),
@@ -45,7 +65,7 @@ class StockManagementController extends Controller
         }
     }
 
-    public function receiveInventory($id)
+    public function receiveInventory(Request $request, $id)
     {
         try {
             DB::beginTransaction();
@@ -109,6 +129,9 @@ class StockManagementController extends Controller
                     }
 
                     $inventoryItem->status = 24;
+                    if (!empty($detail->expiration_date)) {
+                        $inventoryItem->expiration_date = $detail->expiration_date;
+                    }
                     $inventoryItem->save();
                     $inventoryItem->refreshProductAvailability();
                     ////////////////////////////////////////////////////////////////////////////////////////////

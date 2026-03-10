@@ -20,16 +20,24 @@
                         <h6 class="text-muted mb-1">Status</h6>
                         <div id="viewBookingStatus">—</div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <h6 class="text-muted mb-1">Date</h6>
                         <p class="fw-semibold mb-0" id="viewBookingDate">—</p>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <h6 class="text-muted mb-1">Time</h6>
                         <p class="fw-semibold mb-0" id="viewBookingTime">—</p>
                     </div>
-                    <div class="col-md-4">
-                        <h6 class="text-muted mb-1">Table</h6>
+                    <div class="col-md-3">
+                        <h6 class="text-muted mb-1">Duration</h6>
+                        <p class="fw-semibold mb-0" id="viewBookingDuration">—</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted mb-1">Table #</h6>
+                        <p class="fw-semibold mb-0" id="viewBookingSlot">—</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-1">Table Type</h6>
                         <p class="fw-semibold mb-0" id="viewBookingTable">—</p>
                         <small class="text-muted d-block" id="viewBookingTableDetails"></small>
                         <div class="mt-3 d-none" id="viewBookingTableImageWrapper">
@@ -50,6 +58,15 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success d-none" id="viewApproveBtn">
+                    <i class="fa-solid fa-check me-1"></i> Approve
+                </button>
+                <button type="button" class="btn btn-danger d-none" id="viewRejectBtn">
+                    <i class="fa-solid fa-xmark me-1"></i> Reject
+                </button>
+                <button type="button" class="btn btn-warning text-white d-none" id="viewVoidBtn">
+                    <i class="fa-solid fa-ban me-1"></i> Void
+                </button>
             </div>
         </div>
     </div>

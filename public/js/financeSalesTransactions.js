@@ -189,6 +189,8 @@ $(document).ready(function () {
 
         Swal.fire({
             title: action === "approve" ? "Approve reports?" : "Reject reports?",
+            text: action === "approve" ? "Are you sure you want to approve?" : "Are you sure you want to reject?",
+            icon: "question",
             input: action === "reject" ? "textarea" : "hidden",
             inputPlaceholder: "Provide remarks (optional)",
             inputAttributes: {
@@ -197,7 +199,7 @@ $(document).ready(function () {
             inputValue: "",
             showCancelButton: true,
             confirmButtonText: action === "approve" ? "Approve" : "Reject",
-            confirmButtonColor: action === "approve" ? "#198754" : "#dc3545",
+            confirmButtonColor: action === "approve" ? "#3085d6" : "#d33",
         }).then((result) => {
             if (!result.isConfirmed) {
                 return;

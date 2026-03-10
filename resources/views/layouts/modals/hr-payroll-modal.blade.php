@@ -17,6 +17,12 @@
                     <i class="bx bx-x d-block d-sm-none"></i>
                     <span class="d-none d-sm-block">Close</span>
                 </button>
+                <button id="hr-modal-print-btn" type="button" class="btn btn-primary ml-1 d-none">
+                    <span class="d-none d-sm-block">Print Payslip</span>
+                </button>
+                <button id="hr-modal-release-btn" type="button" class="btn btn-success ml-1 d-none">
+                    <span class="d-none d-sm-block">Release</span>
+                </button>
             </div>
         </div>
     </div>
@@ -34,36 +40,130 @@
                     @csrf
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Contribution Information</h4>
+                            <h4 class="card-title">Contribution Rates</h4>
+                            <p class="text-muted mb-0 small">Enter rates as percentages (e.g., 4.5 for 4.5%). Only employee shares are deducted from net pay. Employer shares are for record-keeping.</p>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4 col-12">
+                            <div class="row g-3">
+                                {{-- SSS --}}
+                                <div class="col-12">
+                                    <label class="fw-semibold">SSS</label>
+                                </div>
+                                <div class="col-md-6 col-12">
                                     <div class="form-group">
-                                        <label for="sss">SSS</label>
-                                        <input type="text" id="sss" class="form-control" placeholder="₱0.00"
-                                            inputmode="decimal" name="sss">
+                                        <label for="sss_employee_rate">Employee Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="sss_employee_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="sss_employee_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-12">
+                                <div class="col-md-6 col-12">
                                     <div class="form-group">
-                                        <label for="pagibig">Pag-ibig</label>
-                                        <input type="text" id="pagibig" class="form-control" placeholder="₱0.00"
-                                            inputmode="decimal" name="pagibig">
+                                        <label for="sss_employer_rate">Employer Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="sss_employer_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="sss_employer_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-12">
+
+                                {{-- PhilHealth --}}
+                                <div class="col-12 mt-2">
+                                    <label class="fw-semibold">PhilHealth</label>
+                                </div>
+                                <div class="col-md-6 col-12">
                                     <div class="form-group">
-                                        <label for="philhealth">Philhealth</label>
-                                        <input type="text" id="philhealth" class="form-control" placeholder="₱0.00"
-                                            inputmode="decimal" name="philhealth">
+                                        <label for="philhealth_employee_rate">Employee Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="philhealth_employee_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="philhealth_employee_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="philhealth_employer_rate">Employer Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="philhealth_employer_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="philhealth_employer_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Pag-IBIG --}}
+                                <div class="col-12 mt-2">
+                                    <label class="fw-semibold">Pag-IBIG</label>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="pagibig_employee_rate">Employee Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="pagibig_employee_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="pagibig_employee_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="pagibig_employer_rate">Employer Share (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" id="pagibig_employer_rate" class="form-control"
+                                                placeholder="0.00" step="0.01" min="0" max="100"
+                                                name="pagibig_employer_rate">
+                                            <span class="input-group-text">%</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary mt-2">Apply Contribution Changes</button>
+                            <button type="submit" class="btn btn-primary mt-3">Apply Rate Changes</button>
                         </div>
                     </div>
                 </form>
+
+                <hr>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">Contribution Rate History</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="contributionHistoryTable" class="table table-sm table-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Effective Date</th>
+                                        <th colspan="2" class="text-center">SSS</th>
+                                        <th colspan="2" class="text-center">PhilHealth</th>
+                                        <th colspan="2" class="text-center">Pag-IBIG</th>
+                                        <th>Set By</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    <tr class="small text-muted">
+                                        <th></th>
+                                        <th>EE %</th><th>ER %</th>
+                                        <th>EE %</th><th>ER %</th>
+                                        <th>EE %</th><th>ER %</th>
+                                        <th></th><th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contributionHistoryBody">
+                                    <tr><td colspan="9" class="text-center text-muted">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
                 <hr>
 
@@ -194,9 +294,47 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="cancelAddPosition" type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="cancelAddPosition" type="button" class="btn btn-light-secondary"
+                    data-bs-dismiss="modal">Cancel</button>
                 <button id="submitAddPosition" type="submit" form="addPositionForm" class="btn btn-primary">Create
                     Position</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Proof of Payment Modal -->
+<div class="modal fade" id="proofOfPaymentModal" tabindex="-1" aria-labelledby="proofOfPaymentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="proofOfPaymentModalLabel">Confirm Receipt of Salary</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    By printing this payslip, you are declaring that you have <strong>received your salary</strong> for
+                    this period.
+                </div>
+                <p class="mb-3">Please upload a photo/screenshot as proof of payment (e.g., bank transfer receipt, cash
+                    acknowledgement) to proceed.</p>
+
+                <form id="proofOfPaymentForm" enctype="multipart/form-data">
+                    <input type="hidden" id="proof_payroll_id" name="payroll_id">
+                    <div class="mb-3">
+                        <label for="proof_file" class="form-label fw-bold">Upload Proof (Image)</label>
+                        <input class="form-control" type="file" id="proof_file" name="proof" accept="image/*" required>
+                        <div class="form-text text-muted">Allowed formats: JPG, PNG, JPEG.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-submit-proof">
+                    <i class="fa-solid fa-check me-1"></i> Confirm & Print
+                </button>
             </div>
         </div>
     </div>

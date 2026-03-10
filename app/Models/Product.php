@@ -67,7 +67,7 @@ class Product extends Model
                 return INF;
             }
 
-            $stockInBaseUnit = $ingredient->base_unit_stock_level ?? $ingredient->stock_level ?? 0;
+            $stockInBaseUnit = $ingredient->getAvailableBaseUnits();
 
             if ($stockInBaseUnit <= 0) {
                 return 0;

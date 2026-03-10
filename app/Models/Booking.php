@@ -18,11 +18,14 @@ class Booking extends Model
      */
     protected $fillable = [
         'table_id',
+        'table_number',
         'name',
         'email',
         'phone',
         'date',
         'time',
+        'duration_hours',
+        'arrived_at',
         'people',
         'message',
         'status',
@@ -35,7 +38,8 @@ class Booking extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'date' => 'date',
+        'date'       => 'date',
+        'arrived_at' => 'datetime',
     ];
 
     /**

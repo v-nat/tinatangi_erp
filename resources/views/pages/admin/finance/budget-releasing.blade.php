@@ -13,7 +13,7 @@
     <section class="section row g-3">
         <div class="col-lg-8">
             <div class="card shadow-sm border-0 rounded-4 h-100">
-                <div class="card-header bg-white border-0 pb-0">
+                <div class="card-header border-0 pb-0">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <div>
                             <h4 class="card-title mb-1">Approved Requests</h4>
@@ -51,7 +51,7 @@
         </div>
         <div class="col-lg-4">
             <div class="card shadow-sm border-0 rounded-4 h-100">
-                <div class="card-header bg-white border-0 pb-0">
+                <div class="card-header border-0 pb-0">
                     <h4 class="card-title mb-1">Budget Releases Overview</h4>
                     <p class="text-muted small mb-0">
                         Track the volume of approved requests versus released amounts over time.
@@ -69,7 +69,7 @@
 
     <section class="section mt-4">
         <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-header bg-white border-0 pb-0">
+            <div class="card-header border-0 pb-0">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <div>
                         <h4 class="card-title mb-1">Released Budget History</h4>

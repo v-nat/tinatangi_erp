@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\CRM;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\Status;
 use App\Models\Booking;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Models\TableForReservation;
+use App\Models\WalkInOccupancy;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 
@@ -94,6 +96,255 @@ class BookingController extends Controller
             }
             return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function getTableSlots(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'table_id'       => 'required|exists:table_for_reservations,id',
+            'date'           => 'required|date',
+            'time'           => 'required',
+            'duration_hours' => 'required|integer|min:1|max:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        try {
+            $table        = TableForReservation::findOrFail($request->table_id);
+            $date         = $request->date;
+            $duration     = (int) $request->duration_hours;
+            $requestStart = Carbon::parse($date . ' ' . $request->time);
+            $requestEnd   = $requestStart->copy()->addHours($duration);
+
+            // Fetch all active bookings for this table on this date
+            $existingBookings = Booking::where('table_id', $table->id)
+                ->where('date', $date)
+                ->whereIn('status', [11, 13])
+                ->whereNotNull('table_number')
+                ->get();
+
+            // Active walk-in occupancies for this table (only relevant for today)
+            $today = Carbon::now('Asia/Manila')->toDateString();
+            $walkIns = ($date === $today)
+                ? WalkInOccupancy::where('table_id', $table->id)->active()->get()
+                : collect();
+
+            $slots = [];
+            for ($slot = 1; $slot <= $table->quantity; $slot++) {
+                $conflict = $existingBookings->first(function ($booking) use ($slot, $date, $requestStart, $requestEnd) {
+                    if ((int) $booking->table_number !== $slot) {
+                        return false;
+                    }
+                    $bookingStart = Carbon::parse($date . ' ' . $booking->time);
+                    $bookingEnd   = $bookingStart->copy()->addHours($booking->duration_hours ?? 2);
+                    return $bookingStart < $requestEnd && $requestStart < $bookingEnd;
+                });
+
+                $walkIn = $walkIns->first(fn($w) => (int) $w->table_number === $slot);
+
+                $status = 'available';
+                if ($conflict) {
+                    $status = 'taken';
+                } elseif ($walkIn) {
+                    // Block the slot only if the requested booking starts within 1.5 hours of the walk-in start
+                    $walkInStart = Carbon::parse($walkIn->occupied_at)->setTimezone('Asia/Manila');
+                    $clearAt     = $walkInStart->copy()->addMinutes(90);
+                    if ($requestStart->lt($clearAt)) {
+                        $status = 'walk_in';
+                    }
+                }
+
+                $slots[] = [
+                    'number' => $slot,
+                    'status' => $status,
+                ];
+            }
+
+            return response()->json([
+                'slots'      => $slots,
+                'table_name' => $table->name,
+                'table_id'   => $table->id,
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Server error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function liveOccupancy(): JsonResponse
+    {
+        $now   = Carbon::now('Asia/Manila');
+        $today = $now->toDateString();
+
+        $tables = TableForReservation::where('status', 1)->orderBy('name')->get();
+
+        $bookings = Booking::where('date', $today)
+            ->whereIn('status', [11, 13])
+            ->whereNotNull('table_number')
+            ->get();
+
+        $walkIns = WalkInOccupancy::whereIn('table_id', $tables->pluck('id'))->active()->get();
+
+        $result = [];
+        foreach ($tables as $table) {
+            $slots = [];
+            for ($slot = 1; $slot <= $table->quantity; $slot++) {
+                $booking = $bookings->first(function ($b) use ($table, $slot) {
+                    return (int) $b->table_id === (int) $table->id
+                        && (int) $b->table_number === $slot;
+                });
+
+                $walkIn = $walkIns->first(fn($w) => (int) $w->table_id === (int) $table->id
+                    && (int) $w->table_number === $slot);
+
+                $slotData = ['slot' => $slot, 'table_id' => $table->id, 'booking' => null, 'walk_in' => null];
+
+                if ($booking) {
+                    $startTs = Carbon::parse($today . ' ' . $booking->time, 'Asia/Manila');
+                    $endTs   = $startTs->copy()->addHours((int) ($booking->duration_hours ?? 2));
+
+                    $slotData['booking'] = [
+                        'id'             => $booking->id,
+                        'name'           => $booking->name,
+                        'people'         => $booking->people,
+                        'time'           => $booking->time,
+                        'duration_hours' => (int) ($booking->duration_hours ?? 2),
+                        'status'         => (int) $booking->status,
+                        'start_ts'       => $startTs->timestamp,
+                        'end_ts'         => $endTs->timestamp,
+                        'no_show_ts'     => $startTs->copy()->addMinutes(15)->timestamp,
+                        'arrived_at'     => $booking->arrived_at?->timestamp,
+                    ];
+                }
+
+                if ($walkIn) {
+                    $slotData['walk_in'] = [
+                        'id'          => $walkIn->id,
+                        'occupied_at' => $walkIn->occupied_at->timestamp,
+                    ];
+                }
+
+                $slots[] = $slotData;
+            }
+
+            $result[] = [
+                'id'       => $table->id,
+                'name'     => $table->name,
+                'capacity' => $table->capacity,
+                'quantity' => $table->quantity,
+                'slots'    => $slots,
+            ];
+        }
+
+        return response()->json([
+            'tables'           => $result,
+            'server_timestamp' => $now->timestamp,
+        ]);
+    }
+
+    public function completeEarly(Booking $booking): JsonResponse
+    {
+        if (!in_array((int) $booking->status, [11, 13])) {
+            return response()->json(['error' => 'Only active bookings can be completed early.'], 422);
+        }
+
+        $booking->status      = 23;
+        $booking->status_note = 'Completed early by staff.';
+        $booking->save();
+
+        return response()->json(['success' => 'Booking marked as completed. Table is now free.']);
+    }
+
+    public function confirmArrival(Booking $booking): JsonResponse
+    {
+        if ((int) $booking->status !== 13) {
+            return response()->json(['error' => 'Only approved bookings can be confirmed.'], 422);
+        }
+
+        if ($booking->arrived_at) {
+            return response()->json(['error' => 'Arrival already confirmed for this booking.'], 422);
+        }
+
+        $booking->arrived_at = Carbon::now('Asia/Manila');
+        $booking->save();
+
+        return response()->json(['success' => 'Arrival confirmed. Table is now active.']);
+    }
+
+    public function quickVoid(Booking $booking): JsonResponse
+    {
+        if (!in_array((int) $booking->status, [11, 13])) {
+            return response()->json(['error' => 'Only pending or approved bookings can be voided.'], 422);
+        }
+
+        $booking->status      = 31;
+        $booking->status_note = 'Voided by staff from occupancy panel.';
+        $booking->save();
+
+        Mail::to($booking->email)->send(new BookingStatusMail($booking));
+
+        return response()->json(['success' => 'Booking voided. Table is now available.']);
+    }
+
+    public function markNoShow(Booking $booking): JsonResponse
+    {
+        if ((int) $booking->status !== 13) {
+            return response()->json(['error' => 'Only approved bookings can be marked as no-show.'], 422);
+        }
+
+        $now       = Carbon::now('Asia/Manila');
+        $startTime = Carbon::parse($booking->date->toDateString() . ' ' . $booking->time, 'Asia/Manila');
+
+        if ($now->lt($startTime->copy()->addMinutes(15))) {
+            return response()->json(['error' => 'No-show can only be marked 15 minutes after the booking time.'], 422);
+        }
+
+        $booking->status      = 31;
+        $booking->status_note = 'No-show: customer did not arrive within 15 minutes.';
+        $booking->save();
+
+        Mail::to($booking->email)->send(new BookingStatusMail($booking));
+
+        return response()->json(['success' => 'Booking marked as no-show. Table is now available.']);
+    }
+
+    public function walkInOccupy(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'table_id'     => 'required|exists:table_for_reservations,id',
+            'table_number' => 'required|integer|min:1',
+        ]);
+
+        // Prevent duplicate active walk-in on same slot
+        $exists = WalkInOccupancy::where('table_id', $validated['table_id'])
+            ->where('table_number', $validated['table_number'])
+            ->active()
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['error' => 'This slot already has an active walk-in.'], 422);
+        }
+
+        WalkInOccupancy::create([
+            'table_id'     => $validated['table_id'],
+            'table_number' => $validated['table_number'],
+            'occupied_at'  => Carbon::now('Asia/Manila'),
+        ]);
+
+        return response()->json(['success' => 'Table marked as occupied by walk-in customer.']);
+    }
+
+    public function walkInFree(WalkInOccupancy $occupancy): JsonResponse
+    {
+        if ($occupancy->freed_at) {
+            return response()->json(['error' => 'This walk-in slot is already free.'], 422);
+        }
+
+        $occupancy->freed_at = Carbon::now('Asia/Manila');
+        $occupancy->save();
+
+        return response()->json(['success' => 'Table freed and now available for reservations.']);
     }
 
     public function bookingPage()

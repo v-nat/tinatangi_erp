@@ -15,13 +15,17 @@ return new class extends Migration
             $table->id();
             $table->string('sku')->unique();
             $table->foreignId('item_id')->references('id')->on('items')->onDelete('cascade');
-            $table->foreignId('inventory_location_id')->references('id')->on('inventory_locations')->onDelete('cascade');
+           
+            $table->foreignId('inventory_location_id')
+                ->nullable()
+                ->constrained('inventory_locations')
+                ->onDelete('cascade');
             $table->unsignedBigInteger('unit_id')->nullable();
             $table->unsignedBigInteger('base_unit_id')->nullable();
             $table->foreign('unit_id')->references('id')->on('item_units')->onDelete('cascade');
             $table->foreign('base_unit_id')->references('id')->on('item_units')->onDelete('cascade');
             $table->foreignId('category_id')->references('id')->on('categories')->onDelete('cascade');
-            $table->decimal('cost_price', 10,2)->default(0);
+            $table->decimal('cost_price', 10, 2)->default(0);
             $table->decimal('unit_cost', 12, 5)->default(0);
             $table->decimal('stock_level', 12, 4)->default(0);
             $table->decimal('base_unit_stock_level', 12, 4)->default(0);

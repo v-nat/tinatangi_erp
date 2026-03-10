@@ -18,10 +18,27 @@ $(document).ready(function () {
             },
             { data: "sku", className: "dt-left" },
             { data: "item_name", className: "dt-left" },
-            { data: "unit", className: "dt-left" },
-            { data: "inventory_location", className: "dt-left" },
             { data: "category", className: "dt-left" },
-            { data: "stock_level", className: "dt-left" },
+            {
+                data: "stock_level",
+                className: "dt-left",
+                render: function (data, type, row) {
+                    if (type === "display" || type === "filter") {
+                        if (row.stock_display) {
+                            return row.stock_display;
+                        }
+                        const formatted =
+                            row.stock_level_formatted ??
+                            Number(data || 0).toLocaleString("en-PH", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            });
+                        const unitLabel = row.unit ? ` ${row.unit}` : "";
+                        return `${formatted}${unitLabel}`.trim();
+                    }
+                    return data;
+                },
+            },
             {
                 data: "cost_price",
                 className: "dt-left",
@@ -33,6 +50,24 @@ $(document).ready(function () {
                             maximumFractionDigits: 2,
                         })
                     );
+                },
+            },
+            {
+                data: "expiration_date",
+                className: "dt-left",
+                render: function (data, type, row) {
+                    if (!data) return '<span class="text-muted">—</span>';
+                    if (type === "sort" || type === "type") return data;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const expDate = new Date(data);
+                    const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                    if (diffDays < 0) {
+                        return `<span class="badge bg-danger">Expired (${data})</span>`;
+                    } else if (diffDays <= 30) {
+                        return `<span class="badge bg-warning text-dark">Expiring Soon (${data})</span>`;
+                    }
+                    return `<span class="text-success">${data}</span>`;
                 },
             },
             {
@@ -51,7 +86,7 @@ $(document).ready(function () {
                 });
         },
         initComplete: function () {
-            const column = this.api().column(5);
+            const column = this.api().column(3);
             const select = $("#category_filter");
 
             column
@@ -66,7 +101,7 @@ $(document).ready(function () {
                     }
                 });
 
-            const statusColumn = this.api().column(8);
+            const statusColumn = this.api().column(7);
             const statusSelect = $("#status_filter");
             const statusSet = new Set();
 
@@ -94,7 +129,7 @@ $(document).ready(function () {
         const selectedCategory = $(this).val();
 
         allItems
-            .column(5)
+            .column(3)
             .search(
                 selectedCategory ? "^" + selectedCategory + "$" : "",
                 true,
@@ -105,7 +140,7 @@ $(document).ready(function () {
 
     $("#status_filter").on("change", function () {
         const selectedStatus = $(this).val();
-        const statusColumn = allItems.column(8);
+        const statusColumn = allItems.column(7);
 
         statusColumn
             .search(

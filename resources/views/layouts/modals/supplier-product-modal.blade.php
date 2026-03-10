@@ -36,6 +36,15 @@
                             <option value="0">Inactive</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="product_is_perishable" name="is_perishable" value="1">
+                            <label class="form-check-label" for="product_is_perishable">
+                                Perishable Item
+                                <small class="text-muted d-block">Enable if this product has an expiration date.</small>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>

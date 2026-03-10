@@ -43,7 +43,12 @@
                         </div>
                     </div>
                     <div class="text-center">
-                        <a href="{{route('employee.attendance.list', ['id' => Auth::user()->id])}}" class="self-center">My Attendance Records</a>
+                        <a href="{{route('employee.attendance.list', ['id' => Auth::user()->id])}}"
+                            class="self-center">My Attendance Records</a>
+                        <div class="mt-2">
+                            <a href="{{ route('hr.employee-schedule', ['id' => Auth::user()->id]) }}"
+                                class="self-center">View My Schedule</a>
+                        </div>
                     </div>
                 </div>
             </div>

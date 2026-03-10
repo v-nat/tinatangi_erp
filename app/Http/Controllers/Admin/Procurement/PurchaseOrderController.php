@@ -140,21 +140,72 @@ class PurchaseOrderController extends Controller
     {
         try {
             $id = $request->order_id;
-            $supplier = $request->supplier;
             DB::beginTransaction();
+
+            /** @var PurchaseRequest|null $purchase_req */
             $purchase_req = PurchaseRequest::where('id', $id)->first();
+            if (!$purchase_req) {
+                DB::rollBack();
+                return response()->json(['error' => 'Purchase Request not found.'], 404);
+            }
+
+            $purchaseOrders = PurchaseOrder::where('purchase_request_id', $id)->get();
+            $purchaseOrderIds = $purchaseOrders->pluck('id');
+
+            $supplier = $request->supplier;
+            if (!$supplier) {
+                $supplier = $purchase_req->supplier_id;
+            }
+            if (!$supplier) {
+                $supplier = $purchaseOrders
+                    ->pluck('supplier_id')
+                    ->filter()
+                    ->first();
+            }
+
+            if (!$supplier && $purchaseOrderIds->isNotEmpty()) {
+                $detailSupplierIds = PurchaseOrderDetail::whereIn('purchase_order_id', $purchaseOrderIds)
+                    ->with('itemss')
+                    ->get()
+                    ->map(function ($detail) {
+                        return optional($detail->itemss)->supplier_id;
+                    })
+                    ->filter()
+                    ->unique();
+
+                if ($detailSupplierIds->count() === 1) {
+                    $supplier = $detailSupplierIds->first();
+                } elseif ($detailSupplierIds->count() > 1) {
+                    DB::rollBack();
+                    return response()->json(['error' => 'Unable to determine supplier for this request. Multiple suppliers found.'], 422);
+                }
+            }
+
+            if (!$supplier) {
+                DB::rollBack();
+                return response()->json(['error' => 'Unable to determine supplier for this request.'], 422);
+            }
+
             $purchase_req->type = 'Purchase Order Request';
             $purchase_req->supplier_id = $supplier;
             $purchase_req->status = 11;
             $purchase_req->save();
-            $purchase_order = PurchaseOrder::where('purchase_request_id', $id)->first();
-            $purchase_order->supplier_id = $supplier;
-            $purchase_order->remarks = 'pending request';
-            $purchase_order->status = 11;
-            $purchase_order->save();
-            $purchase_order_detail = PurchaseOrderDetail::where('purchase_order_id', $purchase_order->id)->first();
-            $purchase_order_detail->status = 11;
-            $purchase_order_detail->save();
+
+            if ($purchaseOrders->isNotEmpty()) {
+                foreach ($purchaseOrders as $purchase_order) {
+                    $purchase_order->supplier_id = $supplier;
+                    $purchase_order->remarks = 'pending request';
+                    $purchase_order->status = 11;
+                    $purchase_order->save();
+
+                    $purchase_order_details = PurchaseOrderDetail::where('purchase_order_id', $purchase_order->id)->get();
+                    foreach ($purchase_order_details as $detail) {
+                        $detail->status = 11;
+                        $detail->save();
+                    }
+                }
+            }
+
             DB::commit();
 
             return response()->json(['message' => 'Purchase Request submitted successfully!'], 201);
@@ -272,6 +323,7 @@ class PurchaseOrderController extends Controller
                 $orderInstances = PurchaseOrder::where('purchase_request_id', $id)->pluck('id');
                 $supplier_id = null;
                 $firstIteration = true;
+                $expirationDates = $request->input('expiration_dates', []);
                 foreach ($orderInstances as $orderInstance) {
                     $prpo = PurchaseOrder::where('id', $orderInstance)->first();
                     $prpo->remarks = 'order accepted';
@@ -281,6 +333,9 @@ class PurchaseOrderController extends Controller
                     $prpod = PurchaseOrderDetail::where('purchase_order_id', $orderInstance)->get();
                     foreach ($prpod as $detail) {
                         $detail->status = $status;
+                        if (!empty($expirationDates[$detail->id])) {
+                            $detail->expiration_date = $expirationDates[$detail->id];
+                        }
                         $detail->save();
                     }
 
@@ -373,13 +428,13 @@ class PurchaseOrderController extends Controller
     public function receiveDelivery(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'pr_id' => 'required|exists:purchase_requests,id',
-            'overall_delivery_photo' => 'required|image|max:5120',
-            'items' => 'required|array|min:1',
-            'items.*.pod_id' => 'required|exists:purchase_order_details,id',
-            'items.*.status' => 'required|in:received,returned',
-            'items.*.return_reason' => 'required_if:items.*.status,returned',
-            'items.*.return_photo' => 'nullable|image|max:5120',
+            'pr_id'                      => 'required|exists:purchase_requests,id',
+            'overall_delivery_photo'     => 'required|image|max:5120',
+            'items'                      => 'required|array|min:1',
+            'items.*.pod_id'             => 'required|exists:purchase_order_details,id',
+            'items.*.received_qty'       => 'required|integer|min:0',
+            'items.*.return_reason'      => 'nullable|string',
+            'items.*.return_photo'       => 'nullable|image|max:5120',
         ]);
 
         if ($validator->fails()) {
@@ -389,82 +444,95 @@ class PurchaseOrderController extends Controller
         try {
             DB::beginTransaction();
 
-            $pr_id = $request->pr_id;
-            $pr = PurchaseRequest::findOrFail($pr_id);
+            $pr_id   = $request->pr_id;
+            $pr      = PurchaseRequest::findOrFail($pr_id);
             $invoice = Invoice::findOrFail($pr->invoice_id);
 
-            $file = $request->file('overall_delivery_photo');
-            $filename = $file->hashName();
+            // Store overall delivery photo
+            $file        = $request->file('overall_delivery_photo');
+            $filename    = $file->hashName();
             $overallPath = 'img/delivery_proof/' . $filename;
             Storage::disk('public')->put($overallPath, $file->get());
             $invoice->overall_photo_path = '/storage/app/public/' . $overallPath;
-            $invoice->date_received = now();
-            $invoice->delivery_no = GenerateIdController::generateID('delivery_no');
+            $invoice->date_received      = now();
+            $invoice->delivery_no        = GenerateIdController::generateID('delivery_no');
             $invoice->save();
 
-
-            $receivedCount = 0;
-            $returnedCount = 0;
-            $totalItems = count($request->items);
+            $fullyReceivedCount = 0;
+            $hasReturnCount     = 0;
 
             foreach ($request->items as $index => $itemData) {
-                $pod = PurchaseOrderDetail::findOrFail($itemData['pod_id']);
+                $pod          = PurchaseOrderDetail::findOrFail($itemData['pod_id']);
+                $received_qty = (int) $itemData['received_qty'];
 
-                if ($itemData['status'] == 'received') {
+                if ($received_qty > $pod->quantity) {
+                    $received_qty = (int) $pod->quantity;
+                }
+
+                $return_qty = (int) $pod->quantity - $received_qty;
+
+                if ($return_qty > 0 && empty($itemData['return_reason'])) {
+                    DB::rollBack();
+                    return response()->json([
+                        'error' => "Return reason is required for items with returned quantity (item index {$index}).",
+                    ], 422);
+                }
+
+                $pod->delivered_qnty = $received_qty;
+                $pod->backorder_qnty = $return_qty;
+
+                if ($return_qty === 0) {
+                    // Fully received
                     $pod->status = 16;
-                    $pod->delivered_qnty = $pod->quantity;
                     $pod->save();
-                    $receivedCount++;
-                } else if ($itemData['status'] == 'returned') {
+                    $fullyReceivedCount++;
+                } else {
+                    // Has returned quantity (partial or full return)
                     $pod->status = 22;
-                    $pod->delivered_qnty = 0;
                     $pod->save();
-                    $returnedCount++;
+                    $hasReturnCount++;
 
                     $returnPhotoPath = null;
                     if ($request->hasFile("items.{$index}.return_photo")) {
-                        $file = $request->file("items.{$index}.return_photo");
-                        $filename = $file->hashName();
-                        $path = 'img/return_proof/' . $filename;
+                        $file            = $request->file("items.{$index}.return_photo");
+                        $filename        = $file->hashName();
+                        $path            = 'img/return_proof/' . $filename;
                         Storage::disk('public')->put($path, $file->get());
-
                         $returnPhotoPath = '/storage/app/public/' . $path;
                     }
 
                     DeliveryReturn::create([
                         'purchase_order_detail_id' => $pod->id,
-                        'reason' => $itemData['return_reason'],
-                        'photo_path' => $returnPhotoPath,
+                        'reason'                   => $itemData['return_reason'],
+                        'photo_path'               => $returnPhotoPath,
                     ]);
                 }
             }
 
-            $newStatus = null;
-            $newRemarks = '';
-
-            if ($returnedCount == 0 && $receivedCount > 0) {
-                $newStatus = 16;
+            // Determine overall status
+            if ($hasReturnCount === 0 && $fullyReceivedCount > 0) {
+                $newStatus  = 16;
                 $newRemarks = 'All items received successfully.';
-            } else if ($receivedCount > 0 && $returnedCount > 0) {
-                $newStatus = 17;
-                $newRemarks = "Partially received. {$receivedCount} items accepted, {$returnedCount} items returned.";
-            } else if ($receivedCount == 0 && $returnedCount > 0) {
-                $newStatus = 22;
-                $newRemarks = 'All items returned to supplier.';
+            } elseif ($fullyReceivedCount > 0 && $hasReturnCount > 0) {
+                $newStatus  = 17;
+                $newRemarks = "Partially received. {$fullyReceivedCount} items fully accepted, {$hasReturnCount} items have returned quantities.";
+            } elseif ($fullyReceivedCount === 0 && $hasReturnCount > 0) {
+                $newStatus  = 22;
+                $newRemarks = 'Items returned to supplier.';
             } else {
-                $newStatus = $pr->status;
+                $newStatus  = $pr->status;
                 $newRemarks = 'No items processed.';
             }
 
-            $pr->status = $newStatus;
+            $pr->status  = $newStatus;
             $pr->remarks = $newRemarks;
             $pr->save();
 
             PurchaseOrder::where('purchase_request_id', $pr_id)
                 ->update([
-                    'status' => $newStatus,
-                    'remarks' => $newRemarks,
-                    'delivery_date' => now()
+                    'status'        => $newStatus,
+                    'remarks'       => $newRemarks,
+                    'delivery_date' => now(),
                 ]);
 
             DB::commit();
@@ -493,10 +561,11 @@ class PurchaseOrderController extends Controller
 
             $mappedItems = $items->map(function ($detail) {
                 return [
-                    'pod_id'            => $detail->id,
-                    'item_name'         => optional($detail->itemss)->name ?? 'Unknown Item',
-                    'quantity_ordered'  => (int)$detail->quantity,
-                    'item_unit'         => optional(optional($detail->itemss)->unit)->abbreviation ?? 'pcs',
+                    'pod_id'           => $detail->id,
+                    'item_name'        => optional($detail->itemss)->name ?? 'Unknown Item',
+                    'quantity_ordered' => (int) $detail->quantity,
+                    'backorder_qnty'   => (int) $detail->backorder_qnty,
+                    'item_unit'        => optional(optional($detail->itemss)->unit)->abbreviation ?? 'pcs',
                 ];
             });
 
@@ -510,12 +579,12 @@ class PurchaseOrderController extends Controller
     public function receiveRedelivery(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'pr_id' => 'required|exists:purchase_requests,id',
-            'items' => 'required|array|min:1',
-            'items.*.pod_id' => 'required|exists:purchase_order_details,id',
-            'items.*.status' => 'required|in:received,returned_again',
-            'items.*.return_reason' => 'required_if:items.*.status,returned_again',
-            'items.*.return_photo' => 'nullable|image|max:5120',
+            'pr_id'                  => 'required|exists:purchase_requests,id',
+            'items'                  => 'required|array|min:1',
+            'items.*.pod_id'         => 'required|exists:purchase_order_details,id',
+            'items.*.received_qty'   => 'required|integer|min:0',
+            'items.*.return_reason'  => 'nullable|string',
+            'items.*.return_photo'   => 'nullable|image|max:5120',
         ]);
 
         if ($validator->fails()) {
@@ -526,10 +595,10 @@ class PurchaseOrderController extends Controller
             DB::beginTransaction();
 
             $pr_id = $request->pr_id;
-            $pr = PurchaseRequest::findOrFail($pr_id);
+            $pr    = PurchaseRequest::findOrFail($pr_id);
 
-            $receivedCount = 0;
-            $returnedAgainCount = 0;
+            $fullyReceivedCount = 0;
+            $hasReturnCount     = 0;
 
             foreach ($request->items as $index => $itemData) {
                 $pod = PurchaseOrderDetail::findOrFail($itemData['pod_id']);
@@ -538,30 +607,47 @@ class PurchaseOrderController extends Controller
                     continue;
                 }
 
-                if ($itemData['status'] == 'received') {
-                    $pod->status = 16; // Delivered
-                    $pod->delivered_qnty = $pod->quantity;
+                $backorder                = (int) $pod->backorder_qnty;
+                $redelivery_received_qty  = (int) $itemData['received_qty'];
+
+                if ($redelivery_received_qty > $backorder) {
+                    $redelivery_received_qty = $backorder;
+                }
+
+                $new_return_qty = $backorder - $redelivery_received_qty;
+
+                if ($new_return_qty > 0 && empty($itemData['return_reason'])) {
+                    DB::rollBack();
+                    return response()->json([
+                        'error' => "Return reason is required for items with returned quantity (item index {$index}).",
+                    ], 422);
+                }
+
+                $pod->delivered_qnty = (int) $pod->delivered_qnty + $redelivery_received_qty;
+                $pod->backorder_qnty = $new_return_qty;
+
+                if ($new_return_qty === 0) {
+                    $pod->status = 16;
                     $pod->save();
-                    $receivedCount++;
-                } else if ($itemData['status'] == 'returned_again') {
-                    $pod->status = 22; // Back to Return status
-                    $pod->delivered_qnty = 0;
+                    $fullyReceivedCount++;
+                } else {
+                    $pod->status = 22;
                     $pod->save();
-                    $returnedAgainCount++;
+                    $hasReturnCount++;
 
                     $returnPhotoPath = null;
                     if ($request->hasFile("items.{$index}.return_photo")) {
-                        $file = $request->file("items.{$index}.return_photo");
-                        $filename = $file->hashName();
-                        $path = 'img/return_proof/' . $filename;
+                        $file            = $request->file("items.{$index}.return_photo");
+                        $filename        = $file->hashName();
+                        $path            = 'img/return_proof/' . $filename;
                         Storage::disk('public')->put($path, $file->get());
                         $returnPhotoPath = '/storage/app/public/' . $path;
                     }
 
                     DeliveryReturn::create([
                         'purchase_order_detail_id' => $pod->id,
-                        'reason' => $itemData['return_reason'],
-                        'photo_path' => $returnPhotoPath,
+                        'reason'                   => $itemData['return_reason'],
+                        'photo_path'               => $returnPhotoPath,
                     ]);
                 }
             }
@@ -570,35 +656,35 @@ class PurchaseOrderController extends Controller
                 ->pluck('status')
                 ->all();
 
-            $newStatus = null;
+            $newStatus  = null;
             $newRemarks = '';
 
-            if (in_array(22, $allPodStatuses) || in_array(36, $allPodStatuses)) {
-                $newStatus = in_array(22, $allPodStatuses) ? 22 : 36;
-                $newRemarks = "Redelivery processed. {$receivedCount} items accepted, {$returnedAgainCount} items returned again.";
-                if (in_array(36, $allPodStatuses)) $newRemarks .= " Still awaiting redelivery for some items.";
+            if (in_array(36, $allPodStatuses)) {
+                $newStatus  = 36;
+                $newRemarks = "Redelivery processed. {$fullyReceivedCount} items fully accepted, {$hasReturnCount} items returned again. Still awaiting redelivery for some items.";
+            } elseif (in_array(22, $allPodStatuses)) {
+                $newStatus  = 22;
+                $newRemarks = "Redelivery processed. {$fullyReceivedCount} items fully accepted, {$hasReturnCount} items returned again.";
             } else {
-                $allCompleted = collect($allPodStatuses)->every(function ($status) {
-                    return in_array($status, [16, 37]);
-                });
+                $allCompleted = collect($allPodStatuses)->every(fn($s) => in_array($s, [16, 37]));
 
                 if ($allCompleted) {
-                    $newStatus = 16;
-                    $newRemarks = 'All items, including redeliveries, have been processed. Order completed.';
+                    $newStatus  = 16;
+                    $newRemarks = 'All items, including redeliveries, have been received. Order completed.';
                 } else {
-                    $newStatus = 17;
-                    $newRemarks = 'Redelivery items processed.';
+                    $newStatus  = 17;
+                    $newRemarks = 'Redelivery items processed. Partial delivery.';
                 }
             }
 
-            $pr->status = $newStatus;
+            $pr->status  = $newStatus;
             $pr->remarks = $newRemarks;
             $pr->save();
 
             PurchaseOrder::where('purchase_request_id', $pr_id)
                 ->update([
-                    'status' => $newStatus,
-                    'remarks' => $newRemarks
+                    'status'  => $newStatus,
+                    'remarks' => $newRemarks,
                 ]);
 
             DB::commit();

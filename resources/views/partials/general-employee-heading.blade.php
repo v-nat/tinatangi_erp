@@ -1,6 +1,6 @@
 @section('title')Tinatangi Cafe ERP Management System @endsection
 @section('sidebar-title') @endsection
-@section('admin') d-none @endsection
+@section('executives') d-none @endsection
 @section('human_resources') d-none @endsection
 @section('finance') d-none @endsection
 @section('procurement') d-none @endsection

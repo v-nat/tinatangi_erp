@@ -54,6 +54,18 @@
                                             rows="3"></textarea>
                                     </div>
 
+                                    <div class="w-100 mb-3">
+                                        <label for="attachment" class="form-label">
+                                            Supporting Document <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="file" class="form-control py-2" id="attachment" name="attachment"
+                                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                                        <div class="form-text text-muted">
+                                            Accepted: PDF, DOC, DOCX, JPG, PNG &mdash; max 10 MB
+                                        </div>
+                                        <div class="invalid-feedback">Supporting document is required.</div>
+                                    </div>
+
                                     <div class="d-flex justify-content-start">
                                         <button id="reqLeave" type="submit"
                                             class="btn icon icon-left btn-primary me-1 mb-1 w-100 py-3">
@@ -87,6 +99,7 @@
                                 <th>Date Start</th>
                                 <th>Date End</th>
                                 <th>Reason</th>
+                                <th>Attachment</th>
                                 <th>Status</th>
                             </tr>
                         </thead>

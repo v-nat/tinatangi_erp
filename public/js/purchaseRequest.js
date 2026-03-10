@@ -6,6 +6,15 @@ import {
 import { reloadTable } from "./utils/reloadTable.js";
 
 $(document).ready(function () {
+    let currentRequestId = null;
+
+    const COMPLETED_STATUSES = [
+        '<span class="badge bg-success">Completed</span>',
+        '<span class="badge bg-success">Delivered</span>',
+        '<span class="badge bg-success">Accepted<br>Supplier</span>',
+    ];
+    const PENDING_STATUS = '<span class="badge bg-warning">Pending</span>';
+
     const purchaseReqTable = $("#purchaseReqTable").DataTable({
         autoWidth: false,
         processing: true,
@@ -50,62 +59,28 @@ $(document).ready(function () {
             {
                 data: "id",
                 render: function (data, type, row) {
-                    let invoice_id = null;
-                    if (row.invoice_id) {
-                        invoice_id = row.invoice_id;
-                    }
-                    if (
-                        row.status ==
-                            '<span class="badge bg-success">Completed</span>' ||
-                        row.status ==
-                            '<span class="badge bg-success">Delivered</span>' ||
-                        row.status ==
-                            '<span class="badge bg-success">Accepted<br>Supplier</span>'
-                    ) {
+                    if (COMPLETED_STATUSES.includes(row.status)) {
                         return `
                         <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-invoice bs-tooltip me-2"
-                            data-id="${invoice_id}"
+                            <a href="#" class="btn icon btn-sm btn-info btn-invoice bs-tooltip"
+                            data-id="${row.invoice_id}"
                             title="Invoice">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                         </div>
                         `;
                     }
-                    if (
-                        row.status !==
-                        '<span class="badge bg-warning">Pending</span>'
-                    ) {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}"
-                            title="View">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                        </div>
-                        `;
-                    } else {
-                        return `
-                        <div class="action-btns">
-                            <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip me-2"
-                            data-id="${data}"
-                            title="View">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                            <a href="#" class="btn icon btn-sm btn-primary bs-tooltip me-2 process-btn"
-                                data-id="${data}"
-                                title="Process">
-                                    <i class="fa-solid fa-check"></i>
-                            </a>
-                            <a href="#" class="btn icon btn-sm btn-danger bs-tooltip me-2 reject-btn"
-                                data-id="${data}"
-                                title="Reject">
-                                    <i class="fa-solid fa-x"></i>
-                            </a>
-                        </div>
-                        `;
-                    }
+                    const isPending = row.status === PENDING_STATUS ? "1" : "0";
+                    return `
+                    <div class="action-btns">
+                        <a href="#" class="btn icon btn-sm btn-info btn-view bs-tooltip"
+                        data-id="${data}"
+                        data-is-pending="${isPending}"
+                        title="View">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                    </div>
+                    `;
                 },
                 className: "text-center",
                 width: "200px",
@@ -121,9 +96,40 @@ $(document).ready(function () {
         purchaseReqTable.ajax.reload();
     });
 
-    $(document).on("click", ".process-btn", function () {
-        const req_id = $(this).data("id");
+    $(document).on("click", ".btn-view", function () {
+        const id = $(this).data("id");
+        const isPending = $(this).data("is-pending") == "1";
+        currentRequestId = id;
+        $("#LoadingScreen").fadeIn(200);
 
+        $.get(`/finance/purchases/get-details/${id}`, function (response) {
+            if (response.data && response.data.length > 0) {
+                buildPOmodal(response.data[0]);
+
+                if (isPending) {
+                    $("#po-modal-approve-btn").removeClass("d-none");
+                    $("#po-modal-reject-btn").removeClass("d-none");
+                } else {
+                    $("#po-modal-approve-btn").addClass("d-none");
+                    $("#po-modal-reject-btn").addClass("d-none");
+                }
+            } else {
+                Toast.fire("Error", "Purchase Request not found.", "error");
+            }
+        })
+            .fail(function (xhr) {
+                const errorMsg = xhr.responseJSON
+                    ? xhr.responseJSON.error
+                    : "Failed to load purchase request details.";
+                Toast.fire("Error", errorMsg, "error");
+            })
+            .always(function () {
+                $("#LoadingScreen").fadeOut(200);
+            });
+    });
+
+    // Approve from inside the modal
+    $("#po-modal-approve-btn").on("click", function () {
         Swal.fire({
             title: "Process Purchase Request?",
             text: "You are about to put on process this purchase order request.",
@@ -133,17 +139,16 @@ $(document).ready(function () {
             cancelButtonColor: "#d33",
             confirmButtonText: "Confirm!",
         }).then((result) => {
-            if (!result.isConfirmed) {
-                return;
-            }
+            if (!result.isConfirmed) return;
+
+            $("#viewPO").modal("hide");
             $("#LoadingScreen").fadeIn(200);
+
             $.ajax({
                 headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                        "content"
-                    ),
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
                 },
-                url: `/finance/purchases/process/${req_id}/14`,
+                url: `/finance/purchases/process/${currentRequestId}/14`,
                 type: "PUT",
                 data: null,
                 processData: false,
@@ -159,94 +164,71 @@ $(document).ready(function () {
                 error: function (xhr) {
                     $("#LoadingScreen").fadeOut(200);
                     if (xhr.responseJSON?.errors) {
-                        let errorMessages = Object.values(
-                            xhr.responseJSON.errors
-                        )
+                        let errorMessages = Object.values(xhr.responseJSON.errors)
                             .flat()
                             .join("\n");
                         Toast.fire("Validation Error", errorMessages, "error");
                     } else {
-                        Toast.fire(
-                            "Error",
-                            "An unexpected error occurred.",
-                            "error"
-                        );
+                        Toast.fire("Error", "An unexpected error occurred.", "error");
                     }
                 },
             });
         });
     });
 
-    $(document).on("click", ".reject-btn", function (e) {
-        e.preventDefault();
-        const id = $(this).data("id");
-        $("#rejectionRequestId").val(id);
+    // Reject button in view modal — open the rejection modal
+    $("#po-modal-reject-btn").on("click", function () {
+        $("#rejectionRequestId").val(currentRequestId);
+        $("#rejectionNotes").val("");
+        $("#viewPO").modal("hide");
         $("#RejectionConfirmation").modal("show");
     });
 
-    $("#reject-btn-confirmed").click(function (e) {
-        e.preventDefault();
-        let id = $("#rejectionRequestId").val();
-        let remarks = $("#rejectionNotes").val();
-        if (remarks) {
-            $("#LoadingScreen").fadeIn(200);
-            $("#rejectionModal").modal("hide");
-            $.ajax({
-                url: `/finance/purchases/process/${id}/12`,
-                method: "PUT",
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr("content"),
-                    id: id,
-                    remarks: remarks,
-                },
-                success: function (response) {
-                    if (response.success) {
-                        $("#LoadingScreen").fadeOut(200);
-                        reloadTable("purchaseReqTable");
-                        Toast.fire("Rejected!", response.message, "success");
-                    } else {
-                        Toast.fire("Error", response.message, "error");
-                    }
-                },
-                error: function (xhr) {
-                    Toast.fire(
-                        "Error",
-                        xhr.responseJSON?.message || "Something went wrong",
-                        "error"
-                    );
-                },
-            });
-        } else {
-            Toast.fire({
-                icon: "error",
-                title: "Error",
-                text: "Please provide a remarks",
-                timer: 1500,
-            });
-        }
-    });
+    // Confirm rejection from the rejection modal
+    $("#reject-btn-confirmed").on("click", function () {
+        const id = $("#rejectionRequestId").val();
+        const remarks = $("#rejectionNotes").val().trim();
 
-    $(document).on("click", ".btn-view", function () {
-        const id = $(this).data("id");
+        if (!remarks) {
+            Toast.fire("Error", "Please provide a rejection reason.", "error");
+            return;
+        }
+
+        $("#RejectionConfirmation").modal("hide");
         $("#LoadingScreen").fadeIn(200);
 
-        $.get(`/finance/purchases/get-details/${id}`, function (response) {
-            if (response.data && response.data.length > 0) {
-                const requestData = response.data[0];
-                buildPOmodal(requestData);
-            } else {
-                alert("Error: Purchase Request not found.");
-            }
-        })
-            .fail(function (xhr) {
-                const errorMsg = xhr.responseJSON
-                    ? xhr.responseJSON.error
-                    : "Failed to load purchase request details.";
-                alert(errorMsg);
-            })
-            .always(function () {
-                $("#LoadingScreen").fadeOut(200);
-            });
+        $.ajax({
+            url: `/finance/purchases/process/${id}/12`,
+            method: "PUT",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr("content"),
+                id: id,
+                remarks: remarks,
+            },
+            success: function (response) {
+                if (response.success) {
+                    $("#LoadingScreen").fadeOut(200);
+                    reloadTable("purchaseReqTable");
+                    Toast.fire("Rejected!", response.message, "success");
+                } else {
+                    Toast.fire("Error", response.message, "error");
+                }
+            },
+            error: function (xhr) {
+                Toast.fire(
+                    "Error",
+                    xhr.responseJSON?.message || "Something went wrong",
+                    "error"
+                );
+            },
+        });
+    });
+
+    // Reset modal state when closed
+    $("#viewPO").on("hidden.bs.modal", function () {
+        currentRequestId = null;
+        $("#po-modal-approve-btn").addClass("d-none");
+        $("#po-modal-reject-btn").addClass("d-none");
     });
 
     $(document).on("click", ".btn-invoice", function () {
@@ -255,17 +237,16 @@ $(document).ready(function () {
 
         $.get(`/finance/purchases/get-invoice/${id}`, function (response) {
             if (response.data) {
-                const requestData = response.data;
-                buildInvoiceModal(requestData);
+                buildInvoiceModal(response.data);
             } else {
-                alert("Error: Invoice not found.");
+                Toast.fire("Error", "Invoice not found.", "error");
             }
         })
             .fail(function (xhr) {
                 const errorMsg = xhr.responseJSON
                     ? xhr.responseJSON.error
                     : "Failed to load purchase invoice details.";
-                alert(errorMsg);
+                Toast.fire("Error", errorMsg, "error");
             })
             .always(function () {
                 $("#LoadingScreen").fadeOut(200);
@@ -275,5 +256,4 @@ $(document).ready(function () {
     $(document).on("click", "#print", function () {
         printInvoice();
     });
-
 });

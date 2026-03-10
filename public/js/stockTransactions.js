@@ -27,36 +27,37 @@ $(document).ready(function () {
                     columns: ":visible:not(:eq(0)):not(:eq(-1))",
                 },
                 customize: function (win) {
-                    win.document.title = 'https://tinatangi.site/inventory/stock-transactions/';
+                    win.document.title =
+                        "https://tinatangi.site/inventory/stock-transactions/";
 
                     $(win.document.head).append(
                         "<style>" +
-                        "body { font-family: Arial, sans-serif; font-size: 8pt; }" +
-                        ".print-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ccc; }" +
-                        ".print-header-left { font-weight: bold; }" +
-                        ".print-header-right { font-size: 8pt; color: #555; }" +
-                        ".print-title { text-align: center; font-size: 12pt; font-weight: bold; margin-bottom: 5px; }" +
-                        ".print-subtitle { text-align: center; font-size: 10pt; font-weight: normal; margin-bottom: 20px; }" +
-                        "table { width: 100%; margin-top: 20px; border: 2px solid #000; }" +
-                        "table th, table td { text-align: left; padding: 4px; border: 2px solid #000; }" +
-                        "</style>"
+                            "body { font-family: Arial, sans-serif; font-size: 8pt; }" +
+                            ".print-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ccc; }" +
+                            ".print-header-left { font-weight: bold; }" +
+                            ".print-header-right { font-size: 8pt; color: #555; }" +
+                            ".print-title { text-align: center; font-size: 12pt; font-weight: bold; margin-bottom: 5px; }" +
+                            ".print-subtitle { text-align: center; font-size: 10pt; font-weight: normal; margin-bottom: 20px; }" +
+                            "table { width: 100%; margin-top: 20px; border: 2px solid #000; }" +
+                            "table th, table td { text-align: left; padding: 4px; border: 2px solid #000; }" +
+                            "</style>"
                     );
 
                     $(win.document.body).prepend(
                         '<div class="print-header">' +
                             '<div class="print-header-left">Tinatangi Cafe ERP Management System</div>' +
                             '<div class="print-header-right">' +
-                            new Date().toLocaleString('en-US', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
+                            new Date().toLocaleString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
                             }) +
                             "</div>" +
-                        "</div>" +
-                        '<div class="print-title">Tinatangi Cafe | Inventory Department</div>' +
-                        '<div class="print-subtitle">Stocks Transaction Records</div>'
+                            "</div>" +
+                            '<div class="print-title">Tinatangi Cafe | Inventory Department</div>' +
+                            '<div class="print-subtitle">Stocks Transaction Records</div>'
                     );
 
                     $(win.document.body).find("h1").remove();
@@ -103,12 +104,27 @@ $(document).ready(function () {
                 className: "dt-left",
                 width: "20%",
                 render: function (data) {
-                    console.log("Final raw data received by browser:", data);
                     return formatToManilaTime(data);
                 },
             },
-            { data: "reference", className: "dt-left", width: "14%" },
-            { data: "quantity", className: "dt-left", width: "8%" },
+            { data: "reference", className: "dt-left", width: "10%" },
+            {
+                data: "quantity",
+                className: "dt-left",
+                width: "12%",
+                render: function (data, type, row) {
+                    const quantityValue = Number(row.quantity || 0);
+
+                    const withUnit = row.unit
+                        ? `${quantityValue} ${row.unit}`
+                        : quantityValue;
+
+                    if (type === "display" || type === "filter") {
+                        return withUnit;
+                    }
+                    return quantityValue;
+                },
+            },
             { data: "item", className: "dt-left", width: "22%" },
             { data: "receive", className: "dt-left", width: "22%" },
             {

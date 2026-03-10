@@ -47,8 +47,8 @@
             <ul class="menu">
                 <li class="sidebar-title">@yield('sidebar-title')</li>
 
-                <div class="@yield('admin')">
-                    @include('layouts.modules-sidebar.admin-sidebar')
+                <div class="@yield('executives')">
+                    @include('layouts.modules-sidebar.executives-sidebar')
                 </div>
 
                 <div class="@yield('human_resources')">

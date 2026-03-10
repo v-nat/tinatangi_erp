@@ -12,11 +12,25 @@ export function buildInvoiceModal(data) {
             if (details.length > 0) {
                 details.forEach((item) => {
                     itemIndex++;
-                    const isReturned = Boolean(item.is_returned);
-                    const rowClass = isReturned ? " class=\"table-danger\"" : "";
-                    const statusBadge = isReturned
-                        ? '<span class="badge bg-danger ms-2">Returned</span>'
-                        : "";
+                    const isReturned      = Boolean(item.is_returned);
+                    const isPartialReturn = Boolean(item.is_partial_return);
+
+                    let rowClass    = "";
+                    let statusBadge = "";
+                    if (isReturned) {
+                        rowClass    = ' class="table-danger"';
+                        statusBadge = '<span class="badge bg-danger ms-2">Returned</span>';
+                    } else if (isPartialReturn) {
+                        rowClass    = ' class="table-warning"';
+                        statusBadge = '<span class="badge bg-warning text-dark ms-2">Partial Return</span>';
+                    }
+
+                    // For partial returns show "received / ordered" so the viewer
+                    // can see how many units are still pending return resolution.
+                    const qtyDisplay = isPartialReturn
+                        ? `${item.delivered_qty}/${item.ordered_qty} ${item.item_unit || ""}`
+                        : `${item.quantity || 0} ${item.item_unit || "N/A"}`;
+
                     allDetailRowsHtml += `
                         <tr${rowClass}>
                             <td>${itemIndex}</td>
@@ -25,9 +39,7 @@ export function buildInvoiceModal(data) {
                             <td class="text-end">₱${parseFloat(
                                 item.unit_price || 0
                             ).toFixed(2)}</td>
-                            <td class="text-end">${item.quantity || 0} ${
-                        item.item_unit || "N/A"
-                    }</td>
+                            <td class="text-end">${qtyDisplay}</td>
                             <td class="text-end">₱${parseFloat(
                                 item.total_amount || 0
                             ).toFixed(2)}</td>
@@ -130,11 +142,23 @@ export function buildPOmodal(data) {
             if (details.length > 0) {
                 details.forEach((item) => {
                     itemIndex++;
-                    const isReturned = Boolean(item.is_returned);
-                    const rowClass = isReturned ? " class=\"table-danger\"" : "";
-                    const statusBadge = isReturned
-                        ? '<span class="badge bg-danger ms-2">Returned</span>'
-                        : "";
+                    const isReturned      = Boolean(item.is_returned);
+                    const isPartialReturn = Boolean(item.is_partial_return);
+
+                    let rowClass    = "";
+                    let statusBadge = "";
+                    if (isReturned) {
+                        rowClass    = ' class="table-danger"';
+                        statusBadge = '<span class="badge bg-danger ms-2">Returned</span>';
+                    } else if (isPartialReturn) {
+                        rowClass    = ' class="table-warning"';
+                        statusBadge = '<span class="badge bg-warning text-dark ms-2">Partial Return</span>';
+                    }
+
+                    const qtyDisplay = isPartialReturn
+                        ? `${item.delivered_qty}/${item.ordered_qty} ${item.item_unit || ""}`
+                        : `${item.quantity || 0} ${item.item_unit || "N/A"}`;
+
                     allDetailRowsHtml += `
                         <tr${rowClass}>
                             <td>${itemIndex}</td>
@@ -143,9 +167,7 @@ export function buildPOmodal(data) {
                             <td class="text-end">₱${parseFloat(
                                 item.unit_price || 0
                             ).toFixed(2)}</td>
-                            <td class="text-end">${item.quantity || 0} ${
-                        item.item_unit || "N/A"
-                    }</td>
+                            <td class="text-end">${qtyDisplay}</td>
                             <td class="text-end">₱${parseFloat(
                                 item.total_amount || 0
                             ).toFixed(2)}</td>

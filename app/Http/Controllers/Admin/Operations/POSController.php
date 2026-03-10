@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\Operations;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\ProductCategory;
 use App\Models\Status;
 use Illuminate\Http\Request;
@@ -15,9 +14,19 @@ use Carbon\Carbon;
 use App\Models\InventoryItem;
 use App\Models\StockTransaction;
 use App\Enums\TransactionType;
+use Illuminate\Support\Str;
+use App\Models\Announcement;
+use App\Services\BestSellerService;
 
 class POSController extends Controller
 {
+    protected BestSellerService $bestSellerService;
+
+    public function __construct(BestSellerService $bestSellerService)
+    {
+        $this->bestSellerService = $bestSellerService;
+    }
+
     private function getProductsByCategory($categoryName = null)
     {
         try {
@@ -78,16 +87,85 @@ class POSController extends Controller
          return $this->getProductsByCategory('Snacks & Sides');
     }
 
+    public function getProductCategories()
+    {
+        try {
+            $categories = ProductCategory::orderBy('name')
+                ->get(['id', 'name'])
+                ->map(function (ProductCategory $category) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'slug' => Str::slug($category->name),
+                    ];
+                });
+
+            return response()->json(['data' => $categories]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching product categories for POS: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load product categories.'], 500);
+        }
+    }
+
+    public function getProducts(Request $request)
+    {
+        $categoryName = $request->query('category');
+
+        if (is_null($categoryName) || strtolower($categoryName) === 'all') {
+            return $this->getProductsByCategory(null);
+        }
+
+        return $this->getProductsByCategory($categoryName);
+    }
+
+    public function getGovernmentDiscountTypes()
+    {
+        $types = \App\Models\GovernmentDiscountType::where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'percentage', 'description']);
+
+        return response()->json(['data' => $types]);
+    }
+
+    public function getActiveDiscounts()
+    {
+        $today = Carbon::today()->toDateString();
+
+        $discounts = Announcement::whereIn('type', ['discount', 'promo'])
+            ->whereNotNull('discount_value')
+            ->where('status', 35)
+            ->where(function ($q) use ($today) {
+                $q->whereNull('valid_from')->orWhere('valid_from', '<=', $today);
+            })
+            ->where(function ($q) use ($today) {
+                $q->whereNull('valid_until')->orWhere('valid_until', '>=', $today);
+            })
+            ->where(function ($q) {
+                $q->whereNull('usage_limit')->orWhereRaw('usage_count < usage_limit');
+            })
+            ->with('products:id')
+            ->get(['id', 'title', 'discount_type', 'discount_value', 'min_spend', 'applicable_to', 'usage_limit', 'usage_count'])
+            ->map(function ($d) {
+                return array_merge($d->toArray(), [
+                    'product_ids' => $d->products->pluck('id')->values(),
+                ]);
+            });
+
+        return response()->json(['data' => $discounts]);
+    }
+
     public function submitOrder(Request $request)
     {
         $validatedData = $request->validate([
-            'order_items' => 'required|array',
+            'order_items'              => 'required|array',
             'order_items.*.product_id' => 'required|integer|exists:products,id',
-            'order_items.*.quantity' => 'required|integer|min:1',
-            'grand_total' => 'required|numeric|min:0',
-            'order_type' => 'required|string|in:dine-in,take-out',
-            'cash_received' => 'required|numeric|min:0',
-            'change_due' => 'required|numeric|min:0',
+            'order_items.*.quantity'   => 'required|integer|min:1',
+            'grand_total'              => 'required|numeric|min:0',
+            'order_type'               => 'required|string|in:dine-in,take-out',
+            'cash_received'            => 'required|numeric|min:0',
+            'change_due'               => 'required|numeric|min:0',
+            'discount_id'              => 'nullable|integer|exists:announcements,id',
+            'gov_discount_type_id'     => 'nullable|integer|exists:government_discount_types,id',
         ]);
 
         $orderItems = $validatedData['order_items'];
@@ -150,17 +228,86 @@ class POSController extends Controller
                 throw new \Exception("Grand total mismatch. Client total: {$submittedGrandTotal}, Server total: {$calculatedGrandTotal}");
             }
 
+            $today = Carbon::today()->toDateString();
+            $lastOrder = Order::whereDate('created_at', $today)
+                ->where('order_id', 'like', 'ORD-%')
+                ->orderBy('id', 'desc')
+                ->first();
+
+            $nextNum = 100;
+            if ($lastOrder && preg_match('/^ORD-(\d{4})$/', $lastOrder->order_id, $matches)) {
+                $nextNum = (int) $matches[1] + 1;
+            }
+
+            $newOrderId = 'ORD-' . str_pad($nextNum, 4, '0', STR_PAD_LEFT);
+
+            $discountId     = $validatedData['discount_id'] ?? null;
+            $totalDiscount  = 0.0;
+
+            if ($discountId) {
+                $discount = Announcement::with('products')->find($discountId);
+
+                if ($discount &&
+                    in_array($discount->type, ['discount', 'promo']) &&
+                    $discount->status === 35 &&
+                    (is_null($discount->usage_limit) || $discount->usage_count < $discount->usage_limit)
+                ) {
+                    $qualifyingProductIds = $discount->applicable_to === 'specific'
+                        ? $discount->products->pluck('id')->toArray()
+                        : null;
+
+                    $qualifyingSubtotal = 0.0;
+                    foreach ($itemsToSave as $item) {
+                        if ($qualifyingProductIds === null || in_array($item['product_id'], $qualifyingProductIds)) {
+                            $qualifyingSubtotal += $item['subtotal'];
+                        }
+                    }
+
+                    if ($discount->discount_type === 'percentage') {
+                        $totalDiscount = round($qualifyingSubtotal * ((float) $discount->discount_value / 100), 2);
+                    } else {
+                        $totalDiscount = min((float) $discount->discount_value, $qualifyingSubtotal);
+                    }
+                } else {
+                    $discountId = null;
+                }
+            }
+
+
+            $govDiscountTypeId = $validatedData['gov_discount_type_id'] ?? null;
+            $govDiscountAmount = 0.0;
+
+            if ($govDiscountTypeId) {
+                $govType = \App\Models\GovernmentDiscountType::where('id', $govDiscountTypeId)
+                    ->where('is_active', true)
+                    ->first();
+                if ($govType) {
+                    $govDiscountAmount = round($calculatedGrandTotal * ($govType->percentage / 100), 2);
+                } else {
+                    $govDiscountTypeId = null;
+                }
+            }
+            
+
             $order = Order::create([
-                'order_id' => 'ORD-' . time() . '-' . rand(100, 999),
-                'user_id' => auth('')->id(),
-                'total_amount' => $calculatedGrandTotal,
-                'status' => 28,
-                'order_type' => $orderType,
-                'payment_method' => 'Cash',
-                'payment_status' => 'Paid',
+                'order_id'             => $newOrderId,
+                'user_id'              => auth('')->id(),
+                'total_amount'         => max(0, $calculatedGrandTotal - $totalDiscount - $govDiscountAmount),
+                'status'               => 28,
+                'order_type'           => $orderType,
+                'payment_method'       => 'Cash',
+                'payment_status'       => 'Paid',
+                'discount_id'          => $discountId,
+                'discount_amount'      => $totalDiscount,
+                'gov_discount_type_id' => $govDiscountTypeId,
+                'gov_discount_amount'  => $govDiscountAmount,
             ]);
 
             $order->items()->createMany($itemsToSave);
+
+            if ($discountId) {
+                Announcement::where('id', $discountId)->increment('usage_count');
+            }
 
             $affectedInventoryIds = [];
 
@@ -182,23 +329,16 @@ class POSController extends Controller
                         }
 
                         $totalQuantityToDeduct = $quantityUsedPerProduct * $item['quantity'];
-                        $availableBaseStock = $inventoryItem->base_unit_stock_level ?? $inventoryItem->stock_level ?? 0;
+                        $availableBaseStock = $inventoryItem->getAvailableBaseUnits();
 
                         if ($availableBaseStock < $totalQuantityToDeduct) {
                             throw new \Exception("Insufficient stock for: " . optional($inventoryItem->itemss)->name);
                         }
 
-                        $oldBaseQuantity = $inventoryItem->base_unit_stock_level ?? $inventoryItem->stock_level;
-                        $oldQuantity = $inventoryItem->stock_level;
+                        $oldBaseQuantity = $availableBaseStock;
+                        $newBaseQuantity = $availableBaseStock - $totalQuantityToDeduct;
 
-                        if (! is_null($inventoryItem->base_unit_stock_level)) {
-                            $inventoryItem->base_unit_stock_level = max(
-                                0,
-                                $inventoryItem->base_unit_stock_level - $totalQuantityToDeduct
-                            );
-                        }
-
-                        $inventoryItem->stock_level = max(0, $inventoryItem->stock_level - $totalQuantityToDeduct);
+                        $inventoryItem->setBaseStockFromQuantity($newBaseQuantity);
                         $inventoryItem->save();
 
                         $affectedInventoryIds[] = $inventoryItem->id;
@@ -354,6 +494,69 @@ class POSController extends Controller
             return response()->json(['message' => 'This order has already been voided.'], 400);
         } else {
             return response()->json(['message' => 'This order cannot be voided at its current status.'], 400);
+        }
+    }
+
+    public function monthlyBestSellers(Request $request)
+    {
+        $limit = (int) $request->query('limit', 5);
+
+        if ($limit <= 0) {
+            $limit = 5;
+        }
+
+        $limit = min($limit, 10);
+
+        try {
+            $bestSellerData = $this->bestSellerService->getMonthlyBestSellers($limit);
+
+            $topItems = collect($bestSellerData['categories'] ?? [])
+                ->flatMap(fn ($category) => $category['items'] ?? [])
+                ->sortByDesc(fn ($item) => (int) ($item['total_units'] ?? 0))
+                ->take($limit)
+                ->values();
+
+            if ($topItems->isEmpty()) {
+                return response()->json(['data' => []]);
+            }
+
+            $productIds = $topItems->pluck('product_id')->all();
+
+            $products = Product::whereIn('id', $productIds)
+                ->with('productCategoryRS')
+                ->select('id', 'name', 'base_price', 'image', 'servings', 'product_category_id')
+                ->get()
+                ->keyBy('id');
+
+            $orderedProducts = $topItems
+                ->map(function ($item) use ($products) {
+                    $product = $products->get($item['product_id']);
+
+                    if (! $product) {
+                        return null;
+                    }
+
+                    $availableServings = $product->syncAvailability();
+
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'base_price' => (float) $product->base_price,
+                        'image' => $product->image,
+                        'servings' => $product->servings,
+                        'available_servings' => $availableServings,
+                        'product_category_id' => $product->product_category_id,
+                        'total_units' => (int) ($item['total_units'] ?? 0),
+                    ];
+                })
+                ->filter()
+                ->values();
+
+            return response()->json(['data' => $orderedProducts]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching monthly best sellers for POS: ' . $e->getMessage());
+
+            return response()->json(['error' => 'Failed to load monthly best sellers.'], 500);
         }
     }
 }

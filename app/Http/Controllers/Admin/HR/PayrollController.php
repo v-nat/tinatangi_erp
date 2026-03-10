@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\AuthController;
 use App\Services\CompensationCalculator;
 use App\Http\Requests\StorePayrollRequest;
+use App\Models\ContributionRate;
 use App\Http\Controllers\GenerateIdController;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\StoreBatchPayrollRequest;
@@ -74,6 +75,7 @@ class PayrollController extends Controller
                 'employee',
             ])->where('employee_id', $id)
                 ->where('status', 15)
+                ->orWhere('status', 38)
                 ->orderBy('updated_at', 'desc');
             $payroll = $query->get();
             $result = $payroll->map(function ($payroll) {
@@ -88,6 +90,7 @@ class PayrollController extends Controller
                     'gross_pay' => $payroll->gross_pay ?? '',
                     'gross_deduction' => $payroll->deduction + $payroll->days_absent_deduction ?? '',
                     'net_pay' => $payroll->net_pay ?? '',
+                    'proof_of_payment' => $payroll->proof_of_payment ?? null,
                     'status' => Status::getStatusText($payroll->status),
                 ];
             });
@@ -111,6 +114,8 @@ class PayrollController extends Controller
                 $remarks = '<div class="alert alert-success">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
             } else if ($payroll->remarks == 'requesting budget') {
                 $remarks = '<div class="alert alert-info">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
+            } else if ($payroll->remarks == 'payslip acknowledged') {
+                $remarks = '<div class="alert alert-success">' . \Illuminate\Support\Str::upper($payroll->remarks) . '</div>';
             } else if ($payroll->remarks) {
                 $remarks = '<div class="alert alert-danger"> Rejected: ' . $payroll->remarks . '</div>';
             }
@@ -131,19 +136,26 @@ class PayrollController extends Controller
                 'reg_pay' => $payroll->regular_hour_pay ?? '',
                 'total_hours' => $payroll->total_hours_worked ?? '',
                 'overtime_pay' => $payroll->overtime_pay ?? '',
-                'leave_pay' => $payroll->leave_pay ?? '',
+                'leave_pay'         => $payroll->leave_pay ?? '',
+                'paid_leave_days'   => $payroll->paid_leave_days ?? 0,
+                'unpaid_leave_days' => $payroll->unpaid_leave_days ?? 0,
                 'gross_pay' => $payroll->gross_pay ?? '',
                 'absent_deduction' => $payroll->days_absent_deduction ?? '',
                 'tardiness_deduction' => $payroll->tardiness_deduction ?? '',
-                'sss' => $payrollSettings->sss ?? 0,
-                'philhealth' => $payrollSettings->philhealth ?? 0,
-                'pagibig' => $payrollSettings->pagibig ?? 0,
+                'sss' => $payroll->sss ?? 0,
+                'philhealth' => $payroll->philhealth ?? 0,
+                'pagibig' => $payroll->pagibig ?? 0,
+                'sss_employer' => $payroll->sss_employer_share ?? 0,
+                'philhealth_employer' => $payroll->philhealth_employer_share ?? 0,
+                'pagibig_employer' => $payroll->pagibig_employer_share ?? 0,
                 'mandatory_deduction' => $payroll->deduction,
                 'tax_deduction' => $payroll->tardiness_deduction,
                 'salary_before_tax' => $payroll->salary_before_tax,
                 'gross_deduction' => $payroll->deduction + $payroll->days_absent_deduction ?? '',
                 'net_pay' => $payroll->net_pay ?? '',
                 'remarks' => $remarks ?? '',
+                'proof_of_payment' => $payroll->proof_of_payment ?? null,
+                'status_id' => $payroll->status,
                 'status' => Status::getStatusText($payroll->status),
             ];
 
@@ -229,6 +241,64 @@ class PayrollController extends Controller
         }
     }
 
+    public function batchReleasePayroll(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            if (!AuthController::checkAuthorization()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized for this action.'
+                ], 401);
+            }
+
+            $request->validate([
+                'ids' => 'required|array',
+                'ids.*' => 'required|integer|exists:payrolls,id'
+            ]);
+
+            $ids = $request->ids;
+            $payrolls = Payroll::whereIn('id', $ids)
+                ->where('status', 13)
+                ->get();
+
+            if ($payrolls->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No approved payrolls found to release.'
+                ], 400);
+            }
+
+            $releasedCount = 0;
+            foreach ($payrolls as $payroll) {
+                if (auth('')->user()->id != $payroll->employee_id) {
+                    $payroll->remarks = 'payroll released';
+                    $payroll->status = 15;
+                    $payroll->save();
+                    $releasedCount++;
+                } else if (auth('')->user()->id == $payroll->employee_id || !AuthController::checkAuthorization()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You are not authorized for this action. you cannot release your own payroll, uncheck your own payroll to proceed.'
+                    ], 401);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully released {$releasedCount} payroll(s)!"
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function getMonthString($month)
     {
         switch ($month) {
@@ -281,7 +351,7 @@ class PayrollController extends Controller
             $payroll_start_date = Carbon::parse($validated['start_date']);
             $payroll_end_date = Carbon::parse($validated['end_date']);
 
-            $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date, $payrollSettings);
+            $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date);
             $breakdown = $this->calculator->fromPayrollAttributes($data);
 
             $payroll = Payroll::create(array_merge($data, $breakdown));
@@ -322,7 +392,7 @@ class PayrollController extends Controller
             foreach ($employeeIds as $employeeId) {
                 $employee = Employee::findOrFail($employeeId);
 
-                $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date, $payrollSettings);
+                $data = $this->initialComputation($employee, $payroll_start_date, $payroll_end_date);
                 $breakdown = $this->calculator->fromPayrollAttributes($data);
 
                 $payroll = Payroll::create(array_merge($data, $breakdown));
@@ -344,48 +414,103 @@ class PayrollController extends Controller
         }
     }
 
-    protected function initialComputation($employee, $start_date, $end_date, PayrollSettings $payrollSettings)
+    protected function initialComputation($employee, $start_date, $end_date)
     {
+        $hasAttendance = Attendance::where('employee_id', $employee->id)
+            ->whereBetween('date', [$start_date, $end_date])
+            ->exists();
+
+        if (!$hasAttendance) {
+            return [
+                'days_present'            => 0,
+                'total_hours_worked'      => 0,
+                'regular_hour_pay'        => 0,
+                'overtime_pay'            => 0,
+                'leave_pay'               => 0,
+                'paid_leave_days'         => 0,
+                'unpaid_leave_days'       => 0,
+                'days_absent'             => 0,
+                'days_absent_deduction'   => 0,
+                'tardiness_deduction'     => 0,
+                'mandatory_deduction'     => [
+                    'sss' => 0, 'sss_employer' => 0,
+                    'philhealth' => 0, 'philhealth_employer' => 0,
+                    'pagibig' => 0, 'pagibig_employer' => 0,
+                    'total' => 0, 'contribution_rate_id' => null,
+                ],
+                'deduction'               => 0,
+                'sss'                     => 0,
+                'philhealth'              => 0,
+                'pagibig'                 => 0,
+                'sss_employer_share'      => 0,
+                'philhealth_employer_share' => 0,
+                'pagibig_employer_share'  => 0,
+                'contribution_rate_id'    => null,
+                'per_hour_rate'           => $this->ratePerHour($employee->base_salary),
+                'daily_rate'              => 0,
+                'working_days'            => $this->getTotalWorkingDays($start_date, $end_date),
+                'tardiness_total'         => 0,
+                'employee_id'             => $employee->id,
+                'month'                   => Carbon::parse($start_date)->format('m'),
+                'start_date'              => $start_date,
+                'end_date'                => $end_date,
+                'payroll_date'            => now(),
+                'status'                  => 11,
+            ];
+        }
+
         $per_hour_rate = $this->ratePerHour($employee->base_salary);
         $working_days = $this->getTotalWorkingDays($start_date, $end_date);
-        $daily_rate = $employee->base_salary / $working_days;
+        $daily_rate = $employee->base_salary / self::WORKING_DAYS_PER_MONTH;
 
         $days_present = $this->getTotalPresentDays($employee->id, $start_date, $end_date);
         $total_hours_worked = $this->totalHoursWorked($employee->id, $start_date, $end_date);
         $regular_pay = $this->regularPay($employee, $working_days, $days_present);
         $overtime_pay = $this->overtimePay($employee, $start_date, $end_date, $per_hour_rate);
-        $leave_pay = $this->leavePay($employee->id, $start_date, $end_date, $daily_rate, $working_days);
+        $leave_pay         = $this->leavePay($employee->id, $start_date, $end_date, $daily_rate, $working_days);
+        $paid_leave_days   = $this->paidLeaveDays($employee->id, $start_date, $end_date);
+        $unpaid_leave_days = $this->unpaidLeaveDays($employee->id, $start_date, $end_date);
 
         $days_absent = $this->absencesTotal($employee->id, $start_date, $end_date, $working_days);
         $days_absent_deduction = $this->absentDeduction($days_absent, $daily_rate);
         $tardiness_total = $this->tardinessTotal($employee->id, $start_date, $end_date);
         $tardiness_deduction = $this->tardinessDeduction($employee->id, $start_date, $end_date, $per_hour_rate);
-        $mandatory_deduction = $this->totalMandatoryDeductions($payrollSettings);
+
+        $mandatory_deduction = $this->totalMandatoryDeductions($employee);
 
         return [
-            'days_present' => $days_present,
-            'total_hours_worked' => $total_hours_worked,
-            'regular_hour_pay' => $regular_pay,
-            'overtime_pay' => $overtime_pay,
-            'leave_pay' => $leave_pay,
+            'days_present'              => $days_present,
+            'total_hours_worked'        => $total_hours_worked,
+            'regular_hour_pay'          => $regular_pay,
+            'overtime_pay'              => $overtime_pay,
+            'leave_pay'                 => $leave_pay,
+            'paid_leave_days'           => $paid_leave_days,
+            'unpaid_leave_days'         => $unpaid_leave_days,
 
-            'days_absent' => $days_absent,
-            'days_absent_deduction' => $days_absent_deduction,
-            'tardiness_deduction' => $tardiness_deduction,
-            'mandatory_deduction' => $mandatory_deduction,
-            'deduction' => $mandatory_deduction['total'],
+            'days_absent'               => $days_absent,
+            'days_absent_deduction'     => $days_absent_deduction,
+            'tardiness_deduction'       => $tardiness_deduction,
+            'mandatory_deduction'       => $mandatory_deduction,
+            'deduction'                 => $mandatory_deduction['total'],
+            'sss'                       => $mandatory_deduction['sss'],
+            'philhealth'                => $mandatory_deduction['philhealth'],
+            'pagibig'                   => $mandatory_deduction['pagibig'],
+            'sss_employer_share'        => $mandatory_deduction['sss_employer'],
+            'philhealth_employer_share' => $mandatory_deduction['philhealth_employer'],
+            'pagibig_employer_share'    => $mandatory_deduction['pagibig_employer'],
+            'contribution_rate_id'      => $mandatory_deduction['contribution_rate_id'],
 
-            'per_hour_rate' => $per_hour_rate,
-            'daily_rate' => $daily_rate,
-            'working_days' => $working_days,
-            'tardiness_total' => $tardiness_total,
+            'per_hour_rate'             => $per_hour_rate,
+            'daily_rate'                => $daily_rate,
+            'working_days'              => $working_days,
+            'tardiness_total'           => $tardiness_total,
 
-            'employee_id' => $employee->id,
-            'month' => Carbon::parse($start_date)->format('m'),
-            'start_date' => $start_date,
-            'end_date' => $end_date,
-            'payroll_date' => now(),
-            'status' => 11,
+            'employee_id'               => $employee->id,
+            'month'                     => Carbon::parse($start_date)->format('m'),
+            'start_date'                => $start_date,
+            'end_date'                  => $end_date,
+            'payroll_date'              => now(),
+            'status'                    => 11,
         ];
     }
 
@@ -458,11 +583,32 @@ class PayrollController extends Controller
         return $minutes / 60;
     }
 
+    protected function paidLeaveDays($employeeID, $start_date, $end_date): int
+    {
+        return Attendance::where('employee_id', $employeeID)
+            ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
+            ->where('is_leave', 1)
+            ->where('is_paid_leave', 1)
+            ->distinct('date')
+            ->count('date');
+    }
+
+    protected function unpaidLeaveDays($employeeID, $start_date, $end_date): int
+    {
+        return Attendance::where('employee_id', $employeeID)
+            ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
+            ->where('is_leave', 1)
+            ->where('is_paid_leave', 0)
+            ->distinct('date')
+            ->count('date');
+    }
+
     protected function leavePay($employeeID, $start_date, $end_date, $daily_rate, $working_days)
     {
         $daysLeave = Attendance::where('employee_id', $employeeID)
             ->whereBetween('date', [$start_date->toDateString(), $end_date->toDateString()])
             ->where('is_leave', 1)
+            ->where('is_paid_leave', 1)
             ->pluck('date')
             ->map(fn($d) => Carbon::parse($d)->toDateString())
             ->unique()
@@ -517,17 +663,38 @@ class PayrollController extends Controller
             ->sum('tardiness_minutes');
     }
 
-    protected function totalMandatoryDeductions(PayrollSettings $payrollSettings)
+    protected function totalMandatoryDeductions($employee)
     {
-        $sss = $payrollSettings->sss;
-        $philhealth = $payrollSettings->philhealth;
-        $pagibig = $payrollSettings->pagibig;
-        $total = $sss + $philhealth + $pagibig;
+        $rate = ContributionRate::where('is_active', 1)->first();
+
+        if (!$rate) {
+            return [
+                'sss' => 0, 'sss_employer' => 0,
+                'philhealth' => 0, 'philhealth_employer' => 0,
+                'pagibig' => 0, 'pagibig_employer' => 0,
+                'total' => 0,
+                'contribution_rate_id' => null,
+            ];
+        }
+
+        $salary = $employee->base_salary ?? 0;
+
+        $sss_ee      = round($salary * $rate->sss_employee_rate, 2);
+        $sss_er      = round($salary * $rate->sss_employer_rate, 2);
+        $ph_ee       = round($salary * $rate->philhealth_employee_rate, 2);
+        $ph_er       = round($salary * $rate->philhealth_employer_rate, 2);
+        $pi_ee       = round($salary * $rate->pagibig_employee_rate, 2);
+        $pi_er       = round($salary * $rate->pagibig_employer_rate, 2);
+
         return [
-            'sss' => $sss,
-            'philhealth' => $philhealth,
-            'pagibig' => $pagibig,
-            'total' => $total
+            'sss'                  => $sss_ee,
+            'sss_employer'         => $sss_er,
+            'philhealth'           => $ph_ee,
+            'philhealth_employer'  => $ph_er,
+            'pagibig'              => $pi_ee,
+            'pagibig_employer'     => $pi_er,
+            'total'                => $sss_ee + $ph_ee + $pi_ee,
+            'contribution_rate_id' => $rate->id,
         ];
     }
 }

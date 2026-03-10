@@ -1,8 +1,8 @@
-<li class="sidebar-title">@yield('hr-admin')</li>
+<li class="sidebar-title">@yield('hr-executives')</li>
 
 <li class="sidebar-item @yield('dsh') ">
     <a href="{{route('hr.dashboard')}}" class='sidebar-link'>
-        @yield('human_resources-admin')
+        @yield('human_resources-executives')
     </a>
 </li>
 <li class="sidebar-item @yield('emplMngt') has-sub">
@@ -16,6 +16,9 @@
         </li>
         <li class="submenu-item @yield('sbi2') ">
             <a href="{{ route('hr.manage') }}">Manage Emloyee</a>
+        </li>
+        <li class="submenu-item @yield('sbi5') ">
+            <a href="{{ route('hr.schedules.manage') }}">Schedule Management</a>
         </li>
     </ul>
 </li>

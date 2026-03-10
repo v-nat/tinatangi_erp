@@ -3,10 +3,13 @@ $(document).ready(function () {
 
     const tableModal = new bootstrap.Modal(document.getElementById('tableModal'));
     const viewTableModal = new bootstrap.Modal(document.getElementById('viewTableModal'));
+    const locationModal = new bootstrap.Modal(document.getElementById('locationModal'));
 
     const $tableForm = $('#tableForm');
     const $modalTitle = $('#tableModalLabel');
     const $saveBtn = $('#saveTableBtn');
+
+    // ─── Tables DataTable ──────────────────────────────────────────────────────
 
     const table = $("#tables-table").DataTable({
         processing: true,
@@ -33,7 +36,7 @@ $(document).ready(function () {
             {
                 data: "status",
                 width: "10%",
-                render: function (data, type, row) {
+                render: function (data) {
                     return data == 1 ? '<span class="badge bg-success">Available</span>' : '<span class="badge bg-danger">Unavailable</span>';
                 }
             },
@@ -42,7 +45,7 @@ $(document).ready(function () {
                 width: "15%",
                 orderable: false,
                 searchable: false,
-                render: function (data, type, row) {
+                render: function (data) {
                     return `
                         <div class="btn-group btn-group-sm" role="group">
                             <button class="btn btn-success view-btn" data-id="${data}" title="View">
@@ -64,6 +67,28 @@ $(document).ready(function () {
         }
     });
 
+    // ─── Locations helper ──────────────────────────────────────────────────────
+
+    function fetchAndPopulateLocations(selectedId) {
+        return $.ajax({
+            url: '/customer-service/table-locations/list',
+            type: 'GET',
+            success: function (response) {
+                const locations = response.data ?? response;
+                const $sel = $('#table_location_id');
+                $sel.find('option:not(:first)').remove();
+                locations.forEach(function (loc) {
+                    $sel.append(`<option value="${loc.id}">${loc.name}</option>`);
+                });
+                if (selectedId) {
+                    $sel.val(selectedId);
+                }
+            }
+        });
+    }
+
+    // ─── Add Table ─────────────────────────────────────────────────────────────
+
     $('#addTableBtn').on('click', function () {
         $tableForm[0].reset();
         $tableForm.find('.is-invalid').removeClass('is-invalid');
@@ -72,8 +97,11 @@ $(document).ready(function () {
         $('#form_method').val('POST');
         $('#image_preview').hide();
         $saveBtn.text('Save Table').prop('disabled', false);
+        fetchAndPopulateLocations(null);
         tableModal.show();
     });
+
+    // ─── View Table ────────────────────────────────────────────────────────────
 
     $('#tables-table').on('click', '.view-btn', function () {
         const rowData = table.row($(this).closest('tr')).data();
@@ -86,7 +114,7 @@ $(document).ready(function () {
         $('#viewModalLabel').text('Details for ' + rowData.name);
         $('#viewImage').attr('src', '/storage/app/public/' + imgUrl).attr('alt', rowData.name);
         $('#viewName').text(rowData.name);
-        $('#viewLocation').text(rowData.location);
+        $('#viewLocation').text(rowData.location ?? '—');
         $('#viewCapacity').text(rowData.capacity);
         $('#viewQuantity').text(rowData.quantity);
         $('#viewStatus').html(statusBadge);
@@ -94,6 +122,8 @@ $(document).ready(function () {
 
         viewTableModal.show();
     });
+
+    // ─── Edit Table ────────────────────────────────────────────────────────────
 
     $('#tables-table').on('click', '.edit-btn', function () {
         const tableId = $(this).data('id');
@@ -107,7 +137,6 @@ $(document).ready(function () {
                 $modalTitle.text('Edit Table');
                 $('#table_id').val(data.id);
                 $('#name').val(data.name);
-                $('#location').val(data.location);
                 $('#capacity').val(data.capacity);
                 $('#quantity').val(data.quantity);
                 $('#status').val(data.status);
@@ -120,14 +149,18 @@ $(document).ready(function () {
                     $('#image_preview').hide();
                 }
 
+                fetchAndPopulateLocations(data.table_location_id);
+
                 $saveBtn.text('Update Table').prop('disabled', false);
                 tableModal.show();
             },
-            error: function (xhr) {
+            error: function () {
                 Swal.fire('Error', 'Failed to fetch table data.', 'error');
             }
         });
     });
+
+    // ─── Submit Table Form ─────────────────────────────────────────────────────
 
     $tableForm.on('submit', function (e) {
         e.preventDefault();
@@ -135,7 +168,7 @@ $(document).ready(function () {
         $tableForm.find('.is-invalid').removeClass('is-invalid');
 
         const tableId = $('#table_id').val();
-        let url = tableId
+        const url = tableId
             ? `/customer-service/tables/update/${tableId}`
             : '/customer-service/tables/store';
 
@@ -161,8 +194,7 @@ $(document).ready(function () {
                 if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     for (const key in errors) {
-                        const input = $(`#${key}`);
-                        input.addClass('is-invalid');
+                        $(`#${key}`).addClass('is-invalid');
                         $(`#${key}_error`).text(errors[key][0]).show();
                     }
                 } else {
@@ -174,6 +206,8 @@ $(document).ready(function () {
             }
         });
     });
+
+    // ─── Delete Table ──────────────────────────────────────────────────────────
 
     $('#tables-table').on('click', '.delete-btn', function () {
         const tableId = $(this).data('id');
@@ -204,18 +238,22 @@ $(document).ready(function () {
         });
     });
 
+    // ─── Image preview ─────────────────────────────────────────────────────────
+
     $('#image').on('change', function () {
         const file = this.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
                 $('#image_preview').attr('src', e.target.result).show();
-            }
+            };
             reader.readAsDataURL(file);
         } else {
             $('#image_preview').hide();
         }
     });
+
+    // ─── Bulk delete ───────────────────────────────────────────────────────────
 
     function updateDeleteButtonState() {
         const anyChecked = $(".table-checkbox:checked").length > 0;
@@ -231,10 +269,7 @@ $(document).ready(function () {
     $("#tables-table tbody").on("change", ".table-checkbox", function () {
         const totalCheckboxes = $(".table-checkbox").length;
         const checkedCheckboxes = $(".table-checkbox:checked").length;
-        $("#select-all-tables").prop(
-            "checked",
-            totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes
-        );
+        $("#select-all-tables").prop("checked", totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes);
         updateDeleteButtonState();
     });
 
@@ -244,11 +279,9 @@ $(document).ready(function () {
     });
 
     $("#btn-delete-selected-tables").on("click", function () {
-        const selectedIds = $(".table-checkbox:checked")
-            .map(function () {
-                return $(this).val();
-            })
-            .get();
+        const selectedIds = $(".table-checkbox:checked").map(function () {
+            return $(this).val();
+        }).get();
 
         if (selectedIds.length === 0) {
             Toast.fire("No Selection", "Please select tables to delete.", "info");
@@ -275,12 +308,7 @@ $(document).ready(function () {
                         table.ajax.reload(null, false);
                     },
                     error: function (xhr) {
-                        Toast.fire(
-                            "Error",
-                            xhr.responseJSON.message ||
-                            "Could not delete the selected tables.",
-                            "error"
-                        );
+                        Toast.fire("Error", xhr.responseJSON.message || "Could not delete the selected tables.", "error");
                     },
                 });
             }
@@ -289,5 +317,156 @@ $(document).ready(function () {
 
     $("#btn-refresh-tables").on("click", function () {
         table.ajax.reload(null, false);
+    });
+
+    // ─── Locations DataTable ───────────────────────────────────────────────────
+
+    const locationsTable = $("#locations-table").DataTable({
+        processing: true,
+        serverSide: false,
+        ajax: "/customer-service/table-locations/list",
+        order: [[0, "asc"]],
+        columns: [
+            { data: "name" },
+            {
+                data: "id",
+                width: "15%",
+                orderable: false,
+                searchable: false,
+                render: function (data) {
+                    return `
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button class="btn btn-info loc-edit-btn" data-id="${data}" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger loc-delete-btn" data-id="${data}" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                },
+            },
+        ],
+        drawCallback: function () {
+            $('#locations-table [title]').tooltip({ container: 'body' });
+        }
+    });
+
+    // ─── Add Location ──────────────────────────────────────────────────────────
+
+    $('#addLocationBtn').on('click', function () {
+        $('#locationModalLabel').text('Add Location');
+        $('#location_id').val('');
+        $('#location_name').val('').removeClass('is-invalid');
+        $('#location_name_error').text('');
+        locationModal.show();
+    });
+
+    // ─── Edit Location ─────────────────────────────────────────────────────────
+
+    $('#locations-table').on('click', '.loc-edit-btn', function () {
+        const locId = $(this).data('id');
+
+        $.ajax({
+            url: `/customer-service/table-locations/edit/${locId}`,
+            type: 'GET',
+            success: function (data) {
+                $('#locationModalLabel').text('Edit Location');
+                $('#location_id').val(data.id);
+                $('#location_name').val(data.name).removeClass('is-invalid');
+                $('#location_name_error').text('');
+                locationModal.show();
+            },
+            error: function () {
+                Toast.fire('Error', 'Failed to fetch location data.', 'error');
+            }
+        });
+    });
+
+    // ─── Save Location ─────────────────────────────────────────────────────────
+
+    $('#saveLocationBtn').on('click', function () {
+        const locId = $('#location_id').val();
+        const name = $('#location_name').val().trim();
+        const $btn = $(this);
+
+        $('#location_name').removeClass('is-invalid');
+        $('#location_name_error').text('');
+
+        if (!name) {
+            $('#location_name').addClass('is-invalid');
+            $('#location_name_error').text('Location name is required.');
+            return;
+        }
+
+        $btn.prop('disabled', true).text('Saving...');
+
+        const url = locId
+            ? `/customer-service/table-locations/update/${locId}`
+            : '/customer-service/table-locations/store';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { name: name, _token: csrfToken },
+            success: function (response) {
+                locationModal.hide();
+                locationsTable.ajax.reload(null, false);
+                Toast.fire('Success!', locId ? 'Location updated.' : 'Location added.', 'success');
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    if (errors && errors.name) {
+                        $('#location_name').addClass('is-invalid');
+                        $('#location_name_error').text(errors.name[0]);
+                    }
+                } else {
+                    Toast.fire('Error', 'An unexpected error occurred.', 'error');
+                }
+            },
+            complete: function () {
+                $btn.prop('disabled', false).text('Save');
+            }
+        });
+    });
+
+    // ─── Delete Location ───────────────────────────────────────────────────────
+
+    $('#locations-table').on('click', '.loc-delete-btn', function () {
+        const locId = $(this).data('id');
+        const rowData = locationsTable.row($(this).closest('tr')).data();
+
+        Swal.fire({
+            title: 'Delete location?',
+            text: `"${rowData.name}" will be permanently removed.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/customer-service/table-locations/destroy/${locId}`,
+                    type: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': csrfToken },
+                    success: function () {
+                        locationsTable.ajax.reload(null, false);
+                        Toast.fire('Deleted!', 'Location removed.', 'success');
+                    },
+                    error: function (xhr) {
+                        const msg = xhr.responseJSON?.message || 'Failed to delete location.';
+                        Toast.fire('Error', msg, 'error');
+                    }
+                });
+            }
+        });
+    });
+
+    // ─── Refresh Locations ─────────────────────────────────────────────────────
+
+    $("#btn-refresh-locations").on("click", function () {
+        locationsTable.ajax.reload(null, false);
     });
 });

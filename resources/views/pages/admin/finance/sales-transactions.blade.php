@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @include('partials.finance-accounting-heading')
-
 @section('financeSales') active @endsection
 @section('headings') Sales Transactions @endsection
 

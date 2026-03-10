@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\ContributionRate;
 
 class Payroll extends Model
 {
@@ -25,15 +26,25 @@ class Payroll extends Model
         'regular_hour_pay',
         'overtime_pay',
         'leave_pay',
+        'paid_leave_days',
+        'unpaid_leave_days',
         'days_absent',
         'days_absent_deduction',
         'tardiness_deduction',
         'deduction',
+        'sss',
+        'philhealth',
+        'pagibig',
         'tax_deduction',
         'gross_pay',
         'salary_before_tax',
         'net_pay',
+        'sss_employer_share',
+        'philhealth_employer_share',
+        'pagibig_employer_share',
+        'contribution_rate_id',
         'remarks',
+        'proof_of_payment',
         'status',
     ];
 
@@ -54,5 +65,9 @@ class Payroll extends Model
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    public function contributionRate(): BelongsTo
+    {
+        return $this->belongsTo(ContributionRate::class, 'contribution_rate_id');
+    }
 
 }

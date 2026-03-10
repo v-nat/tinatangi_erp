@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\HR\EmployeeController;
 use App\Http\Controllers\Admin\HR\OvertimeController;
 use App\Http\Controllers\Admin\HR\AttendanceController;
 use App\Http\Controllers\Admin\HR\DepartmentController;
+use App\Http\Controllers\Admin\HR\ScheduleController;
 use App\Http\Controllers\Admin\HR\PayrollSettingsController;
 
 /////////////////////////////////// EMPLOYEE ATTENDANCE /////////////////////////////////////////////
@@ -36,6 +37,11 @@ Route::prefix('/employee')->middleware(['auth', 'isEmployee'])->group(function (
     Route::get('/payslip/{id}', [HR_Controller::class, 'employeePayslip'])->name('hr.payslip');
     Route::get('/payslip/list/{id}', [PayrollController::class, 'getPayslipList']);
     Route::get('/payslip/data/{id}', [PayrollController::class, 'getPayrollview']);
+    Route::post('/payslip/acknowledge', [EmployeeController::class, 'acknowledgePayslip']);
+
+    ///////////////////////////////// SCHEDULE ///////////////////////////////////////
+    Route::get('/schedule/{id}', [ScheduleController::class, 'viewEmployeeSchedule'])->name('hr.employee-schedule');
+    Route::get('/schedule/events/{id}', [ScheduleController::class, 'getEmployeeScheduleEvents'])->name('hr.employee-schedule.events');
 });
 
 
@@ -48,6 +54,7 @@ Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(fun
 
     ///////////////////////////////////// DASHBOARD ////////////////////////////////////////////////
     Route::get('/schedules', [HR_Controller::class, 'getSchedules'])->name('hr.schedules');
+    Route::get('/dashboard/analytics', [HR_Controller::class, 'getDashboardAnalytics'])->name('hr.dashboard.analytics');
 
     ////////////////////////////////// EMPLOYEE MANAGEMENT //////////////////////////
     Route::get('/employees', [HR_Controller::class, 'employees'])->name('hr.employees');
@@ -56,12 +63,19 @@ Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(fun
     Route::get('/edit-employee/{id}', [EmployeeController::class, 'editEmployee'])->name('edit.employee');
     Route::put('/update-employee/{id}', [EmployeeController::class, 'updateEmployee'])->name('update.employee');
 
+    Route::get('/schedules/manage', [ScheduleController::class, 'manage'])->name('hr.schedules.manage');
+    Route::get('/schedules/manage/employees', [ScheduleController::class, 'employeesWithSchedules']);
+    Route::get('/schedules/manage/employees/{employee}', [ScheduleController::class, 'showEmployeeSchedule']);
+    Route::post('/schedules/manage/employees/{employee}', [ScheduleController::class, 'upsertEmployeeSchedule']);
+    Route::delete('/schedules/manage/schedule/{schedule}', [ScheduleController::class, 'destroySchedule'])->whereNumber('schedule');
+
     Route::get('/manage', [EmployeeController::class, 'manage'])->name('hr.manage');
     Route::get('/supervisors-by-department-and-position', [EmployeeController::class, 'getSupervisorForPosition']);
     Route::get('/positions-by-department', [EmployeeController::class, 'getPositions']);
 
     ////////////////////////////////// PAYROLL SETTINGS AND POSITIONS SALARIES //////////////////////////
     Route::get('/get-payroll-settings', [EmployeeController::class, 'getPayrollSettings']);
+    Route::get('/contribution-rates/history', [PayrollSettingsController::class, 'getContributionRateHistory']);
     Route::get('/get-salary-by-position', [EmployeeController::class, 'getSalaryByPosition']);
     Route::get('/get-salary-settings', [EmployeeController::class, 'getSalarySettings']);
     Route::post('/update-payroll-settings', [PayrollSettingsController::class, 'updatePayrollSettings']);
@@ -69,7 +83,7 @@ Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(fun
     Route::put('/update-salary-setting/{id}', [PayrollSettingsController::class, 'updateSalarySetting']);
     Route::get('/departments/list', [DepartmentController::class, 'getDepartmentList']);
     Route::post('/store-position-and-salary', [PayrollSettingsController::class, 'storePositionAndSalary']);
-    Route::get('/ceo', [EmployeeController::class, 'getCEO']);
+    // Route::get('/ceo', [EmployeeController::class, 'getCEO']);
 
     //////////////////////////////// OVERTIME ///////////////////////////////////////////
     Route::get('/overtimes', [HR_Controller::class, 'otMngmnt'])->name('hr.ot-app');
@@ -88,6 +102,7 @@ Route::prefix('/human-resources')->middleware(['auth', 'isEmployee'])->group(fun
     Route::get('/payroll/list', [PayrollController::class, 'getPayrollList']);
     Route::get('/payroll/view/{id}', [PayrollController::class, 'getPayrollview']);
     Route::put('/payroll/release/{id}', [PayrollController::class, 'releasePayroll']);
+    Route::put('/payroll/batch-release', [PayrollController::class, 'batchReleasePayroll']);
     Route::post('/payroll/generate', [PayrollController::class, 'generatePayroll'])->name('hr.payroll.generate');
     Route::post('/payroll/batch-generate', [PayrollController::class, 'generateBatchPayroll']);
 });

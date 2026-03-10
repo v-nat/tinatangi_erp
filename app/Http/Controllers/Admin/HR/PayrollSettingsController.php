@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin\HR;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Mail\SalaryUpdated;
-use App\Models\PayrollSettings;
 use App\Mail\ContributionUpdated;
+use App\Models\ContributionRate;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
@@ -30,13 +30,18 @@ class PayrollSettingsController extends Controller
             $validatedData = $request->validated();
 
             DB::transaction(function () use ($validatedData) {
-                $settings = PayrollSettings::firstOrCreate(['id' => 1]);
-                $settings->update($validatedData);
+                ContributionRate::where('is_active', 1)->update(['is_active' => 0]);
 
-                Employee::query()->update([
-                    'sss' => $validatedData['sss'],
-                    'philhealth' => $validatedData['philhealth'],
-                    'pagibig' => $validatedData['pagibig'],
+                ContributionRate::create([
+                    'sss_employee_rate'        => $validatedData['sss_employee_rate'],
+                    'sss_employer_rate'        => $validatedData['sss_employer_rate'],
+                    'philhealth_employee_rate' => $validatedData['philhealth_employee_rate'],
+                    'philhealth_employer_rate' => $validatedData['philhealth_employer_rate'],
+                    'pagibig_employee_rate'    => $validatedData['pagibig_employee_rate'],
+                    'pagibig_employer_rate'    => $validatedData['pagibig_employer_rate'],
+                    'effective_date'           => now()->toDateString(),
+                    'is_active'                => 1,
+                    'created_by'               => auth('')->id(),
                 ]);
             });
 
@@ -51,10 +56,55 @@ class PayrollSettingsController extends Controller
                 }
             }
 
-            return response()->json(['message' => 'Contribution settings updated and notifications are being sent!']);
+            return response()->json(['message' => 'Contribution rates updated and notifications are being sent!']);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
+    }
+
+    public function getPayrollSettings()
+    {
+        $rate = ContributionRate::where('is_active', 1)->first();
+
+        if (!$rate) {
+            return response()->json([
+                'sss_employee_rate'        => 0,
+                'sss_employer_rate'        => 0,
+                'philhealth_employee_rate' => 0,
+                'philhealth_employer_rate' => 0,
+                'pagibig_employee_rate'    => 0,
+                'pagibig_employer_rate'    => 0,
+            ]);
+        }
+
+        return response()->json($rate);
+    }
+
+    public function getContributionRateHistory()
+    {
+        $rates = ContributionRate::withTrashed()
+            ->with('creator:id,first_name,last_name')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($rate) {
+                return [
+                    'id'                       => $rate->id,
+                    'sss_employee_rate'        => $rate->sss_employee_rate,
+                    'sss_employer_rate'        => $rate->sss_employer_rate,
+                    'philhealth_employee_rate' => $rate->philhealth_employee_rate,
+                    'philhealth_employer_rate' => $rate->philhealth_employer_rate,
+                    'pagibig_employee_rate'    => $rate->pagibig_employee_rate,
+                    'pagibig_employer_rate'    => $rate->pagibig_employer_rate,
+                    'effective_date'           => $rate->effective_date?->format('M d, Y'),
+                    'is_active'                => $rate->is_active,
+                    'set_by'                   => $rate->creator
+                        ? $rate->creator->first_name . ' ' . $rate->creator->last_name
+                        : 'System',
+                    'created_at'               => $rate->created_at?->format('M d, Y h:i A'),
+                ];
+            });
+
+        return response()->json(['data' => $rates]);
     }
 
     public function getSingleSalarySetting($id)

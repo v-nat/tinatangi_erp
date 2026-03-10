@@ -45,11 +45,10 @@
                                 <th>#</th>
                                 <th>SKU</th>
                                 <th>Item Name</th>
-                                <th>Unit</th>
-                                <th>Location</th>
                                 <th>Category</th>
                                 <th>Stocks</th>
                                 <th>Cost Price</th>
+                                <th>Exp. Date</th>
                                 <th>Status</th>
                             </tr>
                         </thead>

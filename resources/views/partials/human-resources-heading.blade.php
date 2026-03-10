@@ -1,13 +1,13 @@
-@include('partials.admin-heading')
+@include('partials.executives-heading')
 
-@section('human_resources-admin')
+@section('human_resources-executives')
     <i class="bi bi-grid-1x2-fill"></i>
     <span>Dashboard</span>
 @endsection
 
 @section('title') Human Resources Dashboard @endsection
 @section('sidebar-title') Human Resources Management @endsection
-@section('admin') d-none @endsection
+@section('executives') d-none @endsection
 @section('human_resources') d-block @endsection
 @section('finance') d-none @endsection
 @section('procurement') d-none @endsection

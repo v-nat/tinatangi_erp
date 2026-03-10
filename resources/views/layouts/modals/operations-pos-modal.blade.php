@@ -123,7 +123,52 @@
             <form id="finalizeOrderForm" onsubmit="return false;">
                 @csrf
                 <div class="modal-body">
-                    <div id="orderSummaryList" class="mb-3"></div>
+                    <div id="orderSummaryList" class="mb-2"></div>
+
+                    {{-- Discount panel --}}
+                    <div id="discount-panel" class="d-none mb-2 p-2 rounded" style="background:rgba(205,164,94,.08);border:1px solid rgba(205,164,94,.3)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span id="discount-label" class="small fw-semibold" style="color:#cda45e"></span>
+                            <button type="button" id="btn-remove-discount" class="btn btn-link btn-sm p-0 text-danger" style="font-size:.75rem">Remove</button>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mt-1">
+                            <span>Discount</span>
+                            <span id="discount-amount-display" class="fw-semibold text-success">-₱0.00</span>
+                        </div>
+                    </div>
+
+                    {{-- Multiple discount chooser --}}
+                    <div id="discount-chooser" class="d-none mb-2">
+                        <p class="small mb-1" style="opacity:.6">Multiple discounts available — select one:</p>
+                        <div id="discount-options-list" class="d-flex flex-column gap-1"></div>
+                    </div>
+
+                    {{-- Hidden discount submission fields --}}
+                    <input type="hidden" id="applied_discount_id" name="discount_id" value="">
+                    <input type="hidden" id="applied_discount_amount" name="discount_amount" value="0">
+
+                    {{-- Government Discount Section --}}
+                    <div id="gov-discount-section" class="d-none mb-2">
+                        <div id="gov-discount-buttons" class="d-flex align-items-center gap-1 flex-wrap">
+                            <span class="small me-1" style="opacity:.5;font-size:.72rem">Gov't Discount:</span>
+                            {{-- Buttons populated by JS --}}
+                        </div>
+                        <div id="gov-discount-panel" class="d-none mt-2 p-2 rounded"
+                             style="background:rgba(92,184,92,.08);border:1px solid rgba(92,184,92,.3)">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="gov-discount-label" class="small fw-semibold" style="color:#5cb85c"></span>
+                                <button type="button" id="btn-remove-gov-discount"
+                                        class="btn btn-link btn-sm p-0 text-danger" style="font-size:.75rem">Remove</button>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mt-1">
+                                <span id="gov-discount-sublabel"></span>
+                                <span id="gov-discount-amount-display" class="fw-semibold text-success">-₱0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="applied_gov_discount_type_id" name="gov_discount_type_id" value="">
+                    <input type="hidden" id="applied_gov_discount_amount" name="gov_discount_amount" value="0">
+
                     <div class="d-flex justify-content-between">
                         <h5 class="fw-bold">Total:</h5>
                         <h5 class="fw-bold" id="modalGrandTotal">₱ 0.00</h5>

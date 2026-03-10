@@ -17,9 +17,15 @@ class Leave extends Model
         'start_date',
         'end_date',
         'reason',
+        'attachment',
+        'is_paid',
         'status',
         'approved_by',
         'approval_date',
+    ];
+
+    protected $casts = [
+        'is_paid' => 'boolean',
     ];
 
     /*

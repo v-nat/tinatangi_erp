@@ -220,6 +220,226 @@ $(document).ready(function () {
         $summaryList.html(items.map((item) => `<li class="mb-2">${item}</li>`).join(""));
     }
 
+    // ── Forecasting ──────────────────────────────────────────────────────────
+
+    let monthlySpendChart = null;
+
+    // Filter state — defaults match the blade view (current year, Jan–Dec, period mode)
+    let forecastYear       = new Date().getFullYear();
+    let forecastMonthStart = 1;
+    let forecastMonthEnd   = 12;
+    let chartViewMode      = "period"; // "period" | "yearly"
+
+    function updateForecastKpi(forecastedSpend, forecastedLabel, granularity) {
+        const $kpiSpend = $("#kpi-forecast-spend");
+        const $kpiMonth = $("#kpi-forecast-month");
+        const $note     = $("#forecast-avg-note");
+
+        if ($kpiSpend.length) {
+            $kpiSpend.text(forecastedSpend > 0 ? formatCurrency(forecastedSpend) : "No data yet");
+        }
+        if ($kpiMonth.length) {
+            $kpiMonth.text(forecastedLabel ? escapeHTML(forecastedLabel) : "");
+        }
+        if ($note.length) {
+            const noteMap = {
+                quarterly : "2-quarter moving average of completed PO spend.",
+                monthly   : "3-month moving average of completed PO spend.",
+                yearly    : "3-year moving average of completed PO spend.",
+            };
+            $note.text(noteMap[granularity] ?? "Moving average of completed PO spend.");
+        }
+    }
+
+    function updateTopReorderedItems(items) {
+        const $list = $("#top-reordered-items");
+        if (!$list.length) return;
+
+        if (!items || items.length === 0) {
+            $list.html('<li class="list-group-item text-muted">No reorder data available.</li>');
+            return;
+        }
+
+        const html = items
+            .map((item) => {
+                const name  = escapeHTML(item.item_name ?? "Unknown item");
+                const count = formatNumber(item.order_count ?? 0);
+                const qty   = formatNumber(item.total_qty ?? 0);
+                return `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>${name}</span>
+                        <span class="text-muted small">${count} order${item.order_count !== 1 ? "s" : ""} &middot; ${qty} units</span>
+                    </li>
+                `;
+            })
+            .join("");
+
+        $list.html(html);
+    }
+
+    function renderSpendChart(spendData, forecastedSpend, forecastedLabel, granularity) {
+        const chartEl = document.getElementById("chart-monthly-spend");
+        if (!chartEl || typeof ApexCharts === "undefined") return;
+
+        const labels  = spendData.map((d) => d.label);
+        const actuals = spendData.map((d) => parseFloat(d.spend) || 0);
+
+        // Append forecast data point
+        labels.push(forecastedLabel ?? "Next Period");
+        const forecastSeries = new Array(spendData.length).fill(null);
+        forecastSeries.push(parseFloat(forecastedSpend) || 0);
+        const actualSeries = [...actuals, null];
+
+        // Update chart subtitle in the card header
+        const $subtitle = $("#forecast-chart-subtitle");
+        if ($subtitle.length) {
+            const subtitleMap = {
+                quarterly : "Quarterly view",
+                monthly   : "Monthly view",
+                yearly    : "Yearly view (5 years)",
+            };
+            $subtitle.text(subtitleMap[granularity] ?? "");
+        }
+
+        const options = {
+            series: [
+                { name: "Actual Spend", data: actualSeries },
+                { name: "Forecast",     data: forecastSeries },
+            ],
+            chart: {
+                type: "bar",
+                height: 300,
+                toolbar: { show: false },
+                stacked: false,
+            },
+            plotOptions: {
+                bar: { columnWidth: "55%", borderRadius: 4 },
+            },
+            dataLabels: { enabled: false },
+            colors: ["#435ebe", "#f9c74f"],
+            stroke: { show: true, width: 2, colors: ["transparent"] },
+            xaxis: {
+                categories: labels,
+                labels: { style: { fontSize: "11px" } },
+            },
+            yaxis: {
+                labels: {
+                    formatter: (val) => {
+                        if (val === null || val === undefined) return "";
+                        if (val >= 1000) return "₱" + (val / 1000).toFixed(0) + "k";
+                        return "₱" + val.toFixed(0);
+                    },
+                },
+            },
+            tooltip: {
+                y: { formatter: (val) => (val !== null ? formatCurrency(val) : "—") },
+            },
+            legend: { position: "top", horizontalAlign: "right" },
+        };
+
+        if (monthlySpendChart) {
+            monthlySpendChart.updateOptions(options);
+        } else {
+            monthlySpendChart = new ApexCharts(chartEl, options);
+            monthlySpendChart.render();
+        }
+    }
+
+    function loadForecastData() {
+        setListLoading($("#top-reordered-items"), "Loading items...");
+
+        const params = { view: chartViewMode };
+        if (chartViewMode === "period") {
+            params.year        = forecastYear;
+            params.month_start = forecastMonthStart;
+            params.month_end   = forecastMonthEnd;
+        }
+
+        $.ajax({
+            url: "/procurement/spend-forecast",
+            type: "GET",
+            dataType: "json",
+            data: params,
+            success: function (response) {
+                const granularity = response?.granularity ?? "quarterly";
+                updateForecastKpi(
+                    response?.forecastedNextPeriod ?? 0,
+                    response?.forecastedLabel ?? "",
+                    granularity
+                );
+                updateTopReorderedItems(response?.topReorderedItems ?? []);
+                renderSpendChart(
+                    response?.spendData ?? [],
+                    response?.forecastedNextPeriod ?? 0,
+                    response?.forecastedLabel ?? "Next Period",
+                    granularity
+                );
+            },
+            error: function () {
+                $("#top-reordered-items").html(
+                    '<li class="list-group-item text-danger">Unable to load forecast data.</li>'
+                );
+                $("#kpi-forecast-spend").text("Error");
+            },
+        });
+    }
+
+    // ── Filter change handlers ────────────────────────────────────────────────
+
+    $("#forecast-year").on("change", function () {
+        forecastYear = parseInt($(this).val(), 10);
+        loadForecastData();
+    });
+
+    $("#forecast-month-start").on("change", function () {
+        forecastMonthStart = parseInt($(this).val(), 10);
+        // Clamp end month so it never goes below start
+        if (forecastMonthEnd < forecastMonthStart) {
+            forecastMonthEnd = forecastMonthStart;
+            $("#forecast-month-end").val(forecastMonthEnd);
+        }
+        loadForecastData();
+    });
+
+    $("#forecast-month-end").on("change", function () {
+        forecastMonthEnd = parseInt($(this).val(), 10);
+        // Clamp start month so it never exceeds end
+        if (forecastMonthStart > forecastMonthEnd) {
+            forecastMonthStart = forecastMonthEnd;
+            $("#forecast-month-start").val(forecastMonthStart);
+        }
+        loadForecastData();
+    });
+
+    // ── Chart view toggle (Period / Yearly) ───────────────────────────────────
+
+    $("#chart-view-toggle").on("click", "button[data-view]", function () {
+        const newMode = $(this).data("view");
+        if (newMode === chartViewMode) return;
+
+        chartViewMode = newMode;
+
+        // Update button active states
+        $("#chart-view-toggle button").each(function () {
+            const isActive = $(this).data("view") === chartViewMode;
+            $(this)
+                .toggleClass("btn-primary", isActive)
+                .toggleClass("btn-outline-primary", !isActive)
+                .toggleClass("active", isActive);
+        });
+
+        // Show/hide year & month filters — not applicable in yearly mode
+        if (chartViewMode === "yearly") {
+            $("#forecast-period-filters").hide();
+        } else {
+            $("#forecast-period-filters").show();
+        }
+
+        loadForecastData();
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────
+
     function loadDashboardData() {
         setTableLoading($recentPrBody, 4);
         setTableLoading($recentPoBody, 4);
@@ -262,8 +482,10 @@ $(document).ready(function () {
 
     $refreshButton.on("click", function () {
         loadDashboardData();
+        loadForecastData();
     });
 
     loadDashboardData();
+    loadForecastData();
 });
 

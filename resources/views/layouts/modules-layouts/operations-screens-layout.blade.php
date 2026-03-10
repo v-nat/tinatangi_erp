@@ -12,12 +12,18 @@
                 <div class="collapse navbar-collapse justify-content-start m-0">
                     <h3 class="card-title">@yield('topTitle')</h3>
                 </div>
+                <div class="collapse navbar-collapse justify-content-center d-none d-lg-flex">
+                    @yield('navSearch')
+                </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+                    <div class="w-100 d-lg-none mb-2">
+                        @yield('navSearch')
+                    </div>
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <div class="@yield('posTopNav')">
                             <li class="nav-item dropdown me-3">

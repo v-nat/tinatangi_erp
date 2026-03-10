@@ -1,8 +1,8 @@
 $(function() {
     var mode = "";
-    let defaultSss, defaultPhilhealth, defaultPagibig;
+    let activeRates = null;
 
-    const currencyFields = ['#base_salary', '#sss', '#philhealth', '#pagibig'];
+    const currencyFields = ['#base_salary'];
 
     function formatToCurrency(value) {
         if (value === null || value === undefined || value === '') return '';
@@ -25,6 +25,11 @@ $(function() {
         },
         blur: function() {
             $(this).val(formatToCurrency($(this).val()));
+
+            if ($(this).is('#base_salary')) {
+                const salary = parseFloat(formatToNumber($(this).val()));
+                computeContributionPreview(isNaN(salary) ? 0 : salary);
+            }
         }
     });
 
@@ -35,21 +40,38 @@ $(function() {
             dataType: 'json',
             success: function(data) {
                 if (data) {
-                    defaultSss = parseFloat(data.sss).toFixed(2);
-                    defaultPhilhealth = parseFloat(data.philhealth).toFixed(2);
-                    defaultPagibig = parseFloat(data.pagibig).toFixed(2);
+                    activeRates = data;
+                    // Populate rate columns immediately
+                    $('#prev-sss-ee-rate').text((parseFloat(data.sss_employee_rate) * 100).toFixed(2) + '%');
+                    $('#prev-sss-er-rate').text((parseFloat(data.sss_employer_rate) * 100).toFixed(2) + '%');
+                    $('#prev-ph-ee-rate').text((parseFloat(data.philhealth_employee_rate) * 100).toFixed(2) + '%');
+                    $('#prev-ph-er-rate').text((parseFloat(data.philhealth_employer_rate) * 100).toFixed(2) + '%');
+                    $('#prev-pi-ee-rate').text((parseFloat(data.pagibig_employee_rate) * 100).toFixed(2) + '%');
+                    $('#prev-pi-er-rate').text((parseFloat(data.pagibig_employer_rate) * 100).toFixed(2) + '%');
 
-                    if (mode === 'add') {
-                        $("#sss").val(formatToCurrency(defaultSss));
-                        $("#philhealth").val(formatToCurrency(defaultPhilhealth));
-                        $("#pagibig").val(formatToCurrency(defaultPagibig));
-                    }
+                    // Compute amounts if a salary is already set (edit mode)
+                    const salary = parseFloat(formatToNumber($('#base_salary').val()));
+                    computeContributionPreview(isNaN(salary) ? 0 : salary);
                 }
             },
             error: function(xhr, status, error) {
                 console.error('Error fetching payroll settings:', error);
             }
         });
+    }
+
+    function computeContributionPreview(salary) {
+        if (!activeRates || isNaN(salary) || salary <= 0) {
+            $('#prev-sss-ee, #prev-sss-er, #prev-ph-ee, #prev-ph-er, #prev-pi-ee, #prev-pi-er').text('—');
+            return;
+        }
+        const fmt = (v) => formatToCurrency(Math.round(v * 100) / 100);
+        $('#prev-sss-ee').text(fmt(salary * parseFloat(activeRates.sss_employee_rate)));
+        $('#prev-sss-er').text(fmt(salary * parseFloat(activeRates.sss_employer_rate)));
+        $('#prev-ph-ee').text(fmt(salary * parseFloat(activeRates.philhealth_employee_rate)));
+        $('#prev-ph-er').text(fmt(salary * parseFloat(activeRates.philhealth_employer_rate)));
+        $('#prev-pi-ee').text(fmt(salary * parseFloat(activeRates.pagibig_employee_rate)));
+        $('#prev-pi-er').text(fmt(salary * parseFloat(activeRates.pagibig_employer_rate)));
     }
 
     $("#birth_date").on("change", function() {
@@ -202,9 +224,12 @@ $(function() {
                 dataType: 'json',
                 success: function(data) {
                     if (data && data.base_salary) {
-                        $("#base_salary").val(formatToCurrency(data.base_salary));
+                        const rawSalary = parseFloat(data.base_salary);
+                        $("#base_salary").val(formatToCurrency(rawSalary));
+                        computeContributionPreview(isNaN(rawSalary) ? 0 : rawSalary);
                     } else {
                         $("#base_salary").val("");
+                        computeContributionPreview(0);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -223,9 +248,7 @@ $(function() {
         $form.find(".invalid-feedback").hide().text('');
 
         setTimeout(function() {
-            $("#sss").val(formatToCurrency(defaultSss || '0.00'));
-            $("#philhealth").val(formatToCurrency(defaultPhilhealth || '0.00'));
-            $("#pagibig").val(formatToCurrency(defaultPagibig || '0.00'));
+            computeContributionPreview(0);
             $('#schedule_color').val('#3788D8');
             $('#age').val('');
             $('#employeeForm .day-checkboxes .form-check-input').prop('checked', false);

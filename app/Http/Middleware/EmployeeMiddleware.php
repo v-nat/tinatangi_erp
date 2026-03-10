@@ -43,6 +43,7 @@ class EmployeeMiddleware
                 }
             }
             $requiredPrefix = match ((int) $departmentId) {
+                0 => '/',
                 1 => '/',
                 2 => 'human-resources',
                 3 => 'finance',

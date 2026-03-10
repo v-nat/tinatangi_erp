@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -14,15 +13,13 @@ class Attendance extends Seeder
      */
     public function run(): void
     {
-        //
-        $employeeId = 6;
+        $employeeId = 4;
 
-        // Start date:
-        $startDate = Carbon::create(2025, 10, 1);
+        $startDate = Carbon::create(2026, 02, 1);
 
         $records = [];
 
-        for ($i = 0; $i < 22; $i++) {
+        for ($i = 0; $i < 25; $i++) {
             $date = $startDate->copy()->addDays($i)->toDateString();
 
             $records[] = [

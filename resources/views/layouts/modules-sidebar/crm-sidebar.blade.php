@@ -1,4 +1,4 @@
-<li class="sidebar-title">@yield('crm-admin')</li>
+<li class="sidebar-title">@yield('crm-executives')</li>
 
 <li class="sidebar-item @yield('crmIndex') ">
     <a href="{{route('crm')}}" class='sidebar-link'>
@@ -27,5 +27,17 @@
     <a href="{{route('crm.faqs')}}" class='sidebar-link'>
         <i class="fa-solid fa-circle-question"></i>
         <span>FAQ Management</span>
+    </a>
+</li>
+<li class="sidebar-item @yield('crmAnnouncements') ">
+    <a href="{{route('crm.announcements')}}" class='sidebar-link'>
+        <i class="fa-solid fa-bullhorn"></i>
+        <span>Announcements</span>
+    </a>
+</li>
+<li class="sidebar-item @yield('crmGovDiscounts') ">
+    <a href="{{route('crm.govDiscounts')}}" class='sidebar-link'>
+        <i class="fa-solid fa-id-card"></i>
+        <span>Government Discounts</span>
     </a>
 </li>

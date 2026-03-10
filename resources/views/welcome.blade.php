@@ -27,6 +27,246 @@
     <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('css/fontawesome-free-7.0.1-web/css/all.min.css') }}">
+    <style>
+        .best-seller-panel {
+            background-color: #1e1b16;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.28);
+            color: #f8f5f0;
+            position: relative;
+        }
+
+        .best-seller-panel h4 {
+            color: #fdf8f2;
+        }
+
+        .best-seller-panel .range-label {
+            color: rgba(248, 245, 240, 0.65);
+        }
+
+        .best-seller-panel .text-muted {
+            color: rgba(248, 245, 240, 0.6) !important;
+        }
+
+        .best-seller-panel .text-danger {
+            color: #f28a7a !important;
+        }
+
+        .best-seller-panel .swiper-pagination-bullet {
+            background: rgba(255, 255, 255, 0.45);
+            opacity: 1;
+        }
+
+        .best-seller-panel .swiper-pagination-bullet-active {
+            background: #cda45e;
+        }
+
+        .best-seller-panel .best-seller-slide h5 {
+            color: var(--accent-color);
+        }
+
+        .best-seller-panel .sold-badge {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--accent-color);
+            border: 1px solid rgba(205, 164, 94, 0.35);
+            font-size: 0.9rem;
+        }
+
+        /* ── Announcement Ticker Bar ── */
+        #announcement-ticker {
+            background: #1a150e;
+            border-bottom: 1px solid rgba(205, 164, 94, 0.25);
+            color: #f8f5f0;
+            font-family: 'Poppins', sans-serif;
+            font-size: .85rem;
+            padding: 10px 0;
+            display: none;
+            position: fixed;
+            top: 80px; /* sits directly below the fixed navbar (60px min-height + 10px*2 padding) */
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 996;
+        }
+        #announcement-ticker .ticker-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        #announcement-ticker .ticker-icon { color: #cda45e; flex-shrink: 0; }
+        #announcement-ticker .ticker-badge {
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: rgba(205, 164, 94, .15);
+            border: 1px solid rgba(205, 164, 94, .4);
+            color: #cda45e;
+            flex-shrink: 0;
+        }
+        #announcement-ticker .ticker-text { flex: 1; text-align: center; opacity: .9; font-weight: 500; }
+        #announcement-ticker .ticker-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,.4);
+            font-size: 1rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            padding: 0 4px;
+            line-height: 1;
+            transition: color .2s;
+        }
+        #announcement-ticker .ticker-close:hover { color: #fff; }
+        #ticker-dots { display: flex; gap: 5px; justify-content: center; margin-top: 6px; }
+        #ticker-dots .tdot {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: rgba(205,164,94,.25); cursor: pointer; transition: background .2s;
+        }
+        #ticker-dots .tdot.active { background: #cda45e; }
+
+        /* ── Promotions Section ── */
+        #promotions { display: none; }
+        .promo-card {
+            border-radius: 18px;
+            padding: 26px 22px;
+            color: #f8f5f0;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            height: 100%;
+            transition: transform .25s, box-shadow .25s;
+            border: 1px solid rgba(255,255,255,.06);
+        }
+        .promo-card:hover { transform: translateY(-5px); }
+        .promo-card-inner { position: relative; z-index: 1; }
+        .promo-badge {
+            display: inline-block;
+            font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase; padding: 3px 10px;
+            border-radius: 20px; margin-bottom: 12px;
+        }
+        .promo-icon-wrap {
+            width: 46px; height: 46px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; margin-bottom: 12px; background: rgba(255,255,255,.1);
+        }
+        .promo-title  { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+        .promo-content { font-size: .8rem; opacity: .8; margin-bottom: 8px; }
+        .promo-discount-value { font-size: 2.2rem; font-weight: 800; line-height: 1; margin-bottom: 2px; }
+        .promo-discount-label { font-size: .72rem; opacity: .65; margin-bottom: 8px; }
+        .promo-min-spend { font-size: .7rem; opacity: .5; margin-bottom: 6px; }
+        .promo-validity { font-size: .68rem; opacity: .4; margin-top: 10px; }
+
+        /* ── Seasonal Promo Banners ── */
+        #seasonal-promos { display: none; }
+        .seasonal-banner {
+            position: relative; overflow: hidden;
+            border-radius: 20px; padding: 48px 44px;
+            color: #f8f5f0; font-family: 'Poppins', sans-serif;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,.07);
+            transition: transform .3s, box-shadow .3s;
+        }
+        .seasonal-banner:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+        .seasonal-banner-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+        .seasonal-banner-inner   { position: relative; z-index: 1; }
+        /* Season gradients */
+        .promo-season-summer    { background: linear-gradient(135deg, #1c0900 0%, #6b2800 40%, #b86a00 100%); }
+        .promo-season-christmas { background: linear-gradient(135deg, #080e00 0%, #7a0000 50%, #162e00 100%); }
+        .promo-season-halloween { background: linear-gradient(135deg, #0a0015 0%, #3a0060 45%, #7a3200 100%); }
+        .promo-season-valentines{ background: linear-gradient(135deg, #180010 0%, #85002c 50%, #be0060 100%); }
+        .promo-season-newyear   { background: linear-gradient(135deg, #020810 0%, #0b1840 55%, #c0a000 100%); }
+        .promo-season-easter    { background: linear-gradient(135deg, #120920 0%, #3c1a58 50%, #083a1c 100%); }
+        .promo-season-ramadan   { background: linear-gradient(135deg, #041018 0%, #0a3040 50%, #7a6800 100%); }
+        /* Decorative CSS-only overlay patterns */
+        .promo-season-summer .seasonal-banner-overlay {
+            background-image:
+                repeating-linear-gradient(0deg,  transparent, transparent 40px, rgba(255,170,50,.04) 40px, rgba(255,170,50,.04) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,170,50,.03) 40px, rgba(255,170,50,.03) 41px);
+        }
+        .promo-season-christmas .seasonal-banner-overlay {
+            background-image: radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+        .promo-season-halloween .seasonal-banner-overlay {
+            background-image:
+                radial-gradient(ellipse at 15% 50%, rgba(140,0,200,.1) 0%, transparent 45%),
+                repeating-linear-gradient(45deg, rgba(255,120,0,.03) 0px, rgba(255,120,0,.03) 2px, transparent 2px, transparent 22px);
+        }
+        .promo-season-valentines .seasonal-banner-overlay {
+            background-image: radial-gradient(circle, rgba(255,100,140,.06) 2px, transparent 2px);
+            background-size: 26px 26px;
+        }
+        .promo-season-newyear .seasonal-banner-overlay {
+            background-image:
+                radial-gradient(circle, rgba(220,190,50,.08) 1px, transparent 1px),
+                radial-gradient(circle, rgba(220,190,50,.05) 2px, transparent 2px);
+            background-size: 24px 24px, 48px 48px;
+            background-position: 0 0, 12px 12px;
+        }
+        .promo-season-easter .seasonal-banner-overlay {
+            background-image: radial-gradient(ellipse, rgba(180,120,255,.06) 2px, transparent 2px);
+            background-size: 32px 32px;
+        }
+        .promo-season-ramadan .seasonal-banner-overlay {
+            background-image:
+                repeating-linear-gradient( 60deg, transparent, transparent 30px, rgba(180,160,50,.04) 30px, rgba(180,160,50,.04) 31px),
+                repeating-linear-gradient(-60deg, transparent, transparent 30px, rgba(180,160,50,.03) 30px, rgba(180,160,50,.03) 31px);
+        }
+        /* Banner inner elements */
+        .seasonal-icon-wrap {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: rgba(255,255,255,.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-bottom: 16px;
+        }
+        .seasonal-badge {
+            display: inline-block;
+            font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase; padding: 3px 10px;
+            border-radius: 20px; margin-bottom: 14px;
+            background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25);
+            color: rgba(255,255,255,.85);
+        }
+        .seasonal-title {
+            font-size: 2rem; font-weight: 800; line-height: 1.2;
+            margin-bottom: 10px; color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,.45);
+        }
+        .seasonal-content  { font-size: .9rem; opacity: .8; margin-bottom: 16px; }
+        .seasonal-discount-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+        .seasonal-discount-value {
+            font-size: 3.2rem; font-weight: 900; line-height: 1; color: #fff;
+            text-shadow: 0 0 24px rgba(255,255,255,.28);
+        }
+        .seasonal-discount-label { font-size: .95rem; opacity: .75; font-weight: 600; }
+        .seasonal-min-spend { font-size: .72rem; opacity: .5; }
+        .seasonal-validity  { font-size: .7rem;  opacity: .42; margin-top: 12px; }
+        @media (max-width: 767px) {
+            .seasonal-banner { padding: 32px 24px; }
+            .seasonal-title  { font-size: 1.5rem; }
+            .seasonal-discount-value { font-size: 2.4rem; }
+        }
+
+        /* Theme presets */
+        .ann-theme-gold    { --ann-bg:#1e1b16; --ann-accent:#cda45e; --ann-bg2:#2d2418; }
+        .ann-theme-crimson { --ann-bg:#1a0a0a; --ann-accent:#c0392b; --ann-bg2:#2e0f0f; }
+        .ann-theme-forest  { --ann-bg:#0a1a0f; --ann-accent:#27ae60; --ann-bg2:#0f2818; }
+        .ann-theme-ocean   { --ann-bg:#0a0f1a; --ann-accent:#2980b9; --ann-bg2:#0f1a2e; }
+        .ann-theme-royal   { --ann-bg:#110a1a; --ann-accent:#8e44ad; --ann-bg2:#1c0f2e; }
+        .ann-theme-slate   { --ann-bg:#0f1219; --ann-accent:#5d8aa8; --ann-bg2:#171d2e; }
+        .ann-style-solid    { background: var(--ann-bg); }
+        .ann-style-gradient { background: linear-gradient(135deg, var(--ann-bg) 0%, var(--ann-bg2) 100%); }
+        .ann-style-glow     { background: var(--ann-bg); }
+
+        .promo-card .promo-badge       { background: rgba(255,255,255,.1); color: var(--ann-accent); border: 1px solid var(--ann-accent); }
+        .promo-card .promo-icon-wrap   { color: var(--ann-accent); }
+        .promo-card .promo-discount-value { color: var(--ann-accent); }
+    </style>
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
 
 </head>
@@ -62,6 +302,21 @@
 
     </header>
 
+    {{-- ── Announcement Ticker Bar ── --}}
+    <div id="announcement-ticker">
+        <div class="container">
+            <div class="ticker-inner">
+                <i id="ticker-icon" class="fa-solid fa-bullhorn ticker-icon"></i>
+                <span id="ticker-badge" class="ticker-badge d-none"></span>
+                <span id="ticker-text" class="ticker-text">Loading...</span>
+                <button class="ticker-close" id="ticker-close-btn" title="Dismiss">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="ticker-dots"></div>
+        </div>
+    </div>
+
     <main class="main">
 
         <section id="hero" class="hero section dark-background">
@@ -85,6 +340,73 @@
             </div>
 
         </section>
+
+        {{-- ── Seasonal Promo Banners (populated by JS) ── --}}
+        <section id="seasonal-promos" class="section" style="padding: 50px 0 10px">
+            <div class="container" id="seasonal-promos-container">
+                {{-- Loaded by landingPageAnnouncements.js --}}
+            </div>
+        </section>
+
+        <section id="promotions" class="section" style="padding: 60px 0;">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Promotions & Offers</h2>
+                <p>Exclusive deals just for you</p>
+            </div>
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
+                <div class="row gy-4" id="promotions-grid">
+                    {{-- Loaded by JS --}}
+                </div>
+            </div>
+        </section>
+
+        <section id="best-sellers" class="best-sellers section">
+
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Best Sellers</h2>
+                <p>Discover the crowd favorites this week and month</p>
+            </div>
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
+                <div class="row gy-4">
+                    <div class="col-lg-6">
+                        <div class="best-seller-panel h-100 p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">Weekly Favorites</h4>
+                                <span class="small range-label" id="public-weekly-range">Loading...</span>
+                            </div>
+                            <div class="swiper best-seller-swiper" id="weekly-best-seller-swiper">
+                                <div class="swiper-wrapper" id="weekly-best-seller-wrapper">
+                                    <div class="swiper-slide">
+                                        <div class="py-5 text-center text-muted">Gathering this week's popular picks...
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-pagination" id="weekly-best-seller-pagination"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="best-seller-panel h-100 p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">Monthly Favorites</h4>
+                                <span class="small range-label" id="public-monthly-range">Loading...</span>
+                            </div>
+                            <div class="swiper best-seller-swiper" id="monthly-best-seller-swiper">
+                                <div class="swiper-wrapper" id="monthly-best-seller-wrapper">
+                                    <div class="swiper-slide">
+                                        <div class="py-5 text-center text-muted">Checking our monthly best sellers...
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-pagination" id="monthly-best-seller-pagination"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
         <section id="about" class="about section">
 
             <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -504,14 +826,11 @@
                 </div>
 
                 <div class="col-lg-2 col-md-3 footer-links">
-                    {{-- <h4>Our Services</h4>
+                    <h4>Login</h4>
                     <ul>
-                        <li><a href="#">Web Design</a></li>
-                        <li><a href="#">Web Development</a></li>
-                        <li><a href="#">Product Management</a></li>
-                        <li><a href="#">Marketing</a></li>
-                        <li><a href="#">Graphic Design</a></li>
-                    </ul> --}}
+                        <li><a href="{{ route('login')  }}">Login as Employee</a></li>
+                        <li><a href="{{ route('login')  }}">Login as Supplier</a></li>
+                    </ul>
                 </div>
 
                 <div class="col-lg-4 col-md-12 d-flex justify-content-end">
@@ -563,6 +882,7 @@
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script src="{{ asset('js/landingPage.js') }}"></script>
     <script src="{{ asset('js/bookingTable.js') }}"></script>
+    <script src="{{ asset('js/landingPageAnnouncements.js') }}"></script>
 
 </body>
 

@@ -65,6 +65,276 @@ $(document).ready(function () {
 
     loadFaqs();
 
+    const numberFormatter = new Intl.NumberFormat("en-US");
+    const currencyFormatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+    const DEFAULT_PRODUCT_IMAGE = "/logo.png";
+
+    const formatNumber = (value) => {
+        if (value === undefined || value === null || isNaN(value)) {
+            return "0";
+        }
+        return numberFormatter.format(Number(value));
+    };
+
+    const formatCurrency = (value) => {
+        if (value === undefined || value === null || isNaN(value)) {
+            return currencyFormatter.format(0);
+        }
+        return currencyFormatter.format(Number(value));
+    };
+
+    const bestSellerSwipers = {
+        weekly: null,
+        monthly: null,
+    };
+
+    function destroyBestSellerSwiper(type) {
+        if (bestSellerSwipers[type]) {
+            bestSellerSwipers[type].destroy(true, true);
+            bestSellerSwipers[type] = null;
+        }
+    }
+
+    function setBestSellerPlaceholder(type, message, isError = false) {
+        const wrapper = document.getElementById(`${type}-best-seller-wrapper`);
+        if (!wrapper) return;
+        destroyBestSellerSwiper(type);
+        wrapper.innerHTML = `
+            <div class="swiper-slide">
+                <div class="py-5 text-center ${isError ? "text-danger" : "text-muted"}">${message}</div>
+            </div>
+        `;
+    }
+
+    function resolveProductImage(imagePath) {
+        if (!imagePath || imagePath === "N/A") {
+            return DEFAULT_PRODUCT_IMAGE;
+        }
+
+        if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+            return imagePath;
+        }
+
+        const sanitized = imagePath.replace(/^\/+/, "");
+
+        if (sanitized.startsWith("storage/")) {
+            return `/${sanitized}`;
+        }
+
+        if (sanitized.startsWith("app/public/")) {
+            const trimmed = sanitized.replace(/^app\/public\//, "");
+            return `/storage/${trimmed}`;
+        }
+
+        if (sanitized.startsWith("public/")) {
+            const trimmed = sanitized.replace(/^public\//, "");
+            return `/storage/${trimmed}`;
+        }
+
+        return `/storage/app/public/${sanitized}`;
+    }
+
+    function renderBestSellerSlides(type, periodData) {
+        const wrapper = document.getElementById(`${type}-best-seller-wrapper`);
+        const pagination = document.getElementById(`${type}-best-seller-pagination`);
+        const swiperEl = document.getElementById(`${type}-best-seller-swiper`);
+
+        if (!wrapper || !swiperEl || !pagination) {
+            return;
+        }
+
+        const categories = Array.isArray(periodData?.categories)
+            ? periodData.categories
+            : [];
+
+        const flattenedItems = categories.flatMap((category) =>
+            (category.items || []).map((item) => ({
+                ...item,
+                category_name: category.category_name,
+            }))
+        );
+
+        if (flattenedItems.length === 0) {
+            setBestSellerPlaceholder(
+                type,
+                "No sales data available yet. Check back soon!"
+            );
+            return;
+        }
+
+        destroyBestSellerSwiper(type);
+        wrapper.innerHTML = flattenedItems
+            .map((item) => {
+                const imageUrl = resolveProductImage(item.image);
+                const avgPrice = parseFloat(item.average_unit_price || 0);
+                const avgPriceText =
+                    avgPrice > 0
+                        ? `<small class="d-block mt-2" style="color: rgba(255,255,255,0.75);">Avg ${formatCurrency(avgPrice)}</small>`
+                        : "";
+                const withinLabel = periodData?.label
+                    ? `<small class="d-block mt-1 text-uppercase" style="letter-spacing: 0.08em; color: rgba(255,255,255,0.6);">${periodData.label}</small>`
+                    : "";
+
+                return `
+                    <div class="swiper-slide">
+                        <div class="best-seller-slide h-100 d-flex flex-column justify-content-between align-items-center text-center p-4"
+                            style="border-radius: 16px; background-color: rgba(36, 31, 25, 0.95); color: #fff; box-shadow: 0 18px 35px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08);">
+                            <div class="best-seller-image mb-3 rounded-circle overflow-hidden position-relative"
+                                style="width: 140px; height: 140px; border: 3px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.2);">
+                                <span class="badge bg-success position-absolute" style="top: -6px; left: -6px; font-size: 0.85rem; border-radius: 999px; padding: 0.35rem 0.6rem;">#${item.global_rank || item.rank || 1}</span>
+                                <img src="${imageUrl}" alt="${item.product_name}"
+                                    class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <div class="w-100">
+                                <h5 class="fw-semibold mb-1">${item.product_name}</h5>
+                                <small class="text-uppercase" style="letter-spacing: 0.1em; color: rgba(255,255,255,0.75);">${item.category_name}</small>
+                            </div>
+                            <div class="mt-3">
+                                <span class="sold-badge rounded-pill px-3 py-2">
+                                    ${formatNumber(item.total_units)} sold
+                                </span>
+                                ${avgPriceText}
+                                ${withinLabel}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            })
+            .join("");
+
+        bestSellerSwipers[type] = new Swiper(swiperEl, {
+            loop: flattenedItems.length > 1,
+            speed: 600,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            slidesPerView: 1,
+            spaceBetween: 20,
+            pagination: {
+                el: pagination,
+                clickable: true,
+            },
+            breakpoints: {
+                992: {
+                    slidesPerView: 1,
+                    spaceBetween: 24,
+                },
+            },
+        });
+    }
+
+    function loadBestSellers() {
+        const weeklyWrapper = document.getElementById("weekly-best-seller-wrapper");
+        const monthlyWrapper = document.getElementById("monthly-best-seller-wrapper");
+
+        if (!weeklyWrapper || !monthlyWrapper) {
+            return;
+        }
+
+        setBestSellerPlaceholder(
+            "weekly",
+            "Gathering this week's popular picks..."
+        );
+        setBestSellerPlaceholder(
+            "monthly",
+            "Checking our monthly best sellers..."
+        );
+
+        $.ajax({
+            url: "/best-sellers/highlights",
+            type: "GET",
+            data: {
+                limit: 1,
+            },
+            dataType: "json",
+            success: function (response) {
+        function assignGlobalRanks(periodData) {
+            if (!periodData || !Array.isArray(periodData.categories)) {
+                return periodData;
+            }
+
+            const categories = periodData.categories.map((category) => {
+                const items = Array.isArray(category.items) ? category.items : [];
+                if (!items.length) {
+                    return null;
+                }
+                const best = [...items]
+                    .sort((a, b) => Number(b.total_units || 0) - Number(a.total_units || 0))
+                    .slice(0, 1)
+                    .map((item) => ({ ...item }));
+                if (!best.length || Number(best[0].total_units || 0) <= 0) {
+                    return null;
+                }
+                return {
+                    ...category,
+                    items: best,
+                };
+            }).filter(Boolean);
+
+            const flattened = categories.flatMap((category) =>
+                (category.items || []).map((item) => ({
+                    ...item,
+                    category_id: category.category_id,
+                }))
+            );
+            const sorted = [...flattened].sort(
+                (a, b) => Number(b.total_units || 0) - Number(a.total_units || 0)
+            );
+            const rankMap = new Map();
+            sorted.forEach((item, index) => {
+                rankMap.set(
+                    `${item.category_id}-${item.product_id}`,
+                    index + 1
+                );
+            });
+
+            const rankedCategories = categories.map((category) => ({
+                ...category,
+                items: (category.items || []).map((item) => ({
+                    ...item,
+                    global_rank:
+                        rankMap.get(`${category.category_id}-${item.product_id}`) || 1,
+                })),
+            }));
+
+            return {
+                ...periodData,
+                categories: rankedCategories,
+            };
+        }
+
+        const weekly = assignGlobalRanks(response.weekly || {});
+        const monthly = assignGlobalRanks(response.monthly || {});
+
+                $("#public-weekly-range").text(weekly.label || "No data yet");
+                $("#public-monthly-range").text(monthly.label || "No data yet");
+
+                renderBestSellerSlides("weekly", weekly);
+                renderBestSellerSlides("monthly", monthly);
+            },
+            error: function () {
+                setBestSellerPlaceholder(
+                    "weekly",
+                    "Unable to load weekly best sellers right now.",
+                    true
+                );
+                setBestSellerPlaceholder(
+                    "monthly",
+                    "Unable to load monthly best sellers right now.",
+                    true
+                );
+            },
+        });
+    }
+
+    loadBestSellers();
+
     var food_rating = raterJs({
         starSize: 28,
         step: 0.5,
@@ -346,7 +616,6 @@ $(document).ready(function () {
 
 $(document).ready(function () {
 
-    const DEFAULT_PRODUCT_IMAGE = '/path/to/your/default-image.jpg';
 
     const $menuContainer = $('.isotope-container');
     const $filterContainer = $('.menu-filters');

@@ -180,6 +180,8 @@ $(document).ready(function () {
             return;
         }
 
+        formMode = FORM_MODES.COMPLETE_REQUEST;
+
         $("#category").prop("disabled", true);
         $("#item_search_input").prop("readonly", true);
         $("#qnty").prop("readonly", true);
@@ -188,7 +190,9 @@ $(document).ready(function () {
         $("#submit-PO").parent("div").addClass("d-none");
         $("#submit-PR").parent("div").removeClass("d-none");
 
-        $("#supplier").val("");
+        const supplierIdsFromData = new Set();
+        const supplierNamesFromData = new Set();
+
         $("#unit").val("");
         $("#unit_price").val("");
 
@@ -200,14 +204,40 @@ $(document).ready(function () {
             ) {
                 requestData.purchase_orders.forEach((order) => {
                     const details = order.details || [];
+                    const orderSupplierId =
+                        order.supplier_id ?? requestData.supplier_id ?? "";
+                    const orderSupplierName =
+                        order.supplier_name ?? requestData.supplier_name ?? "";
+
+                    if (orderSupplierId) {
+                        supplierIdsFromData.add(String(orderSupplierId));
+                    }
+                    if (orderSupplierName) {
+                        supplierNamesFromData.add(orderSupplierName);
+                    }
 
                     if (Array.isArray(details) && details.length > 0) {
                         details.forEach((item) => {
                             const orderId = order.purchase_order_id;
+                            const itemSupplierId =
+                                item.supplier_id ?? orderSupplierId ?? "";
+                            const supplierName =
+                                item.supplier_name ??
+                                orderSupplierName ??
+                                "";
+
+                            if (itemSupplierId) {
+                                supplierIdsFromData.add(
+                                    String(itemSupplierId)
+                                );
+                            }
+                            if (supplierName) {
+                                supplierNamesFromData.add(supplierName);
+                            }
 
                             const newRowData = {
-                                supplier: "",
-                                supplier_id: "",
+                                supplier: supplierName,
+                                supplier_id: itemSupplierId,
                                 order_id: orderId,
                                 category: item.category_name,
                                 item: item.item_name,
@@ -237,6 +267,46 @@ $(document).ready(function () {
         itemHiddenInput.value = "";
         availableItems = [];
         itemResultsContainer.classList.add("d-none");
+
+        const supplierConfig = {};
+        if (supplierIdsFromData.size > 0) {
+            supplierConfig.allowedIds = supplierIdsFromData;
+            if (supplierIdsFromData.size === 1) {
+                supplierConfig.defaultValue = Array.from(
+                    supplierIdsFromData
+                )[0];
+                supplierConfig.disableWhenSingle = true;
+            }
+        } else if (supplierNamesFromData.size > 0) {
+            supplierConfig.allowedNames = supplierNamesFromData;
+            supplierConfig.disableWhenSingle =
+                supplierNamesFromData.size === 1;
+        } else {
+            supplierConfig.disableWhenSingle = false;
+        }
+
+        if (requestData && requestData.supplier_id) {
+            const supplierIdString = String(requestData.supplier_id);
+            supplierIdsFromData.add(supplierIdString);
+            supplierConfig.allowedIds = supplierIdsFromData;
+            supplierConfig.defaultValue = supplierIdString;
+            supplierConfig.disableWhenSingle = true;
+        } else if (requestData && requestData.purchase_orders) {
+            const firstOrderWithSupplier = requestData.purchase_orders.find(
+                (order) => order.supplier_id
+            );
+            if (firstOrderWithSupplier && firstOrderWithSupplier.supplier_id) {
+                const supplierIdString = String(
+                    firstOrderWithSupplier.supplier_id
+                );
+                supplierIdsFromData.add(supplierIdString);
+                supplierConfig.allowedIds = supplierIdsFromData;
+                supplierConfig.defaultValue = supplierIdString;
+            }
+        }
+
+        configureSupplierOptions(supplierConfig);
+        getSuppliers();
 
         $("#createPrModal").modal("show");
     }
@@ -548,6 +618,83 @@ $(document).ready(function () {
         ],
     });
 
+    function clearItemFormFields() {
+        $("#category").val("");
+        itemSearchInput.value = "";
+        itemHiddenInput.value = "";
+        availableItems = [];
+        itemResultsContainer.classList.add("d-none");
+        $("#unit").val("");
+        $("#unit_price").val("");
+        $("#qnty").val("");
+    }
+
+    function isSupplierCompatibleWithItems(supplierId) {
+        if (!supplierId || typeof orderTable === "undefined") {
+            return true;
+        }
+
+        const rows = orderTable.rows().data().toArray();
+        if (!rows.length) {
+            return true;
+        }
+
+        const mismatch = rows.find((row) => {
+            if (
+                row.supplier_id === null ||
+                row.supplier_id === undefined ||
+                row.supplier_id === ""
+            ) {
+                return false;
+            }
+            return String(row.supplier_id) !== String(supplierId);
+        });
+
+        if (mismatch) {
+            Toast.fire({
+                title: "Supplier Mismatch",
+                text: "Some items are assigned to a different supplier.",
+                icon: "warning",
+            });
+            return false;
+        }
+
+        return true;
+    }
+
+    function resetModalState() {
+        formMode = FORM_MODES.CREATE;
+        resetSupplierOptions();
+        suppressSupplierChange = true;
+        $("#supplier").val("");
+        suppressSupplierChange = false;
+        selectedSupplierId = null;
+        previousSupplierId = null;
+
+        $("#supplier").prop("disabled", false);
+        $("#category").prop("disabled", false);
+        $("#item_search_input").prop("readonly", false);
+        $("#qnty").prop("readonly", false);
+        $("#addItem").prop("disabled", false);
+
+        $("#submit-PO").parent("div").removeClass("d-none");
+        $("#submit-PR").parent("div").addClass("d-none");
+
+        if (typeof orderTable !== "undefined") {
+            orderTable.clear().draw();
+        }
+
+        clearItemFormFields();
+        getSuppliers();
+        setTimeout(() => {
+            loadCategories();
+        }, 0);
+    }
+
+    $("#createPrModal").on("hidden.bs.modal", function () {
+        resetModalState();
+    });
+
     const itemSearchInput = document.getElementById("item_search_input");
     const itemHiddenInput = document.getElementById("item");
     const itemResultsContainer = document.getElementById(
@@ -557,6 +704,47 @@ $(document).ready(function () {
     let availableItems = [];
     let selectedSupplierId = null;
     let previousSupplierId = null;
+
+    const FORM_MODES = {
+        CREATE: "create",
+        COMPLETE_REQUEST: "complete_request",
+    };
+
+    let formMode = FORM_MODES.CREATE;
+    let supplierOptionsConfig = {
+        allowedIds: null,
+        allowedNames: null,
+        defaultValue: null,
+        disableWhenSingle: false,
+    };
+    let suppressSupplierChange = false;
+
+    function configureSupplierOptions({
+        allowedIds = null,
+        allowedNames = null,
+        defaultValue = null,
+        disableWhenSingle = false,
+    } = {}) {
+        supplierOptionsConfig = {
+            allowedIds: allowedIds
+                ? new Set(
+                      Array.from(allowedIds).map((value) => String(value))
+                  )
+                : null,
+            allowedNames: allowedNames
+                ? new Set(Array.from(allowedNames))
+                : null,
+            defaultValue:
+                defaultValue !== null && defaultValue !== undefined
+                    ? String(defaultValue)
+                    : null,
+            disableWhenSingle: Boolean(disableWhenSingle),
+        };
+    }
+
+    function resetSupplierOptions() {
+        configureSupplierOptions();
+    }
 
     function loadCategories(supplierId = null) {
         let url = `/procurement/create-purchase-request/get-categories`;
@@ -740,17 +928,153 @@ $(document).ready(function () {
     function getSuppliers() {
         const supplierSelect = document.getElementById("supplier");
 
-        fetch(`/procurement/create-purchase-request/get-active-supplier`)
+        let {
+            allowedIds,
+            allowedNames,
+            defaultValue,
+            disableWhenSingle,
+        } = supplierOptionsConfig;
+
+        const isRestockMode = formMode === FORM_MODES.COMPLETE_REQUEST;
+        let restockSupplierId = null;
+
+        if (isRestockMode && typeof orderTable !== "undefined") {
+            const tableSupplierIds = new Set();
+            orderTable
+                .rows()
+                .data()
+                .toArray()
+                .forEach((row) => {
+                    if (
+                        row &&
+                        row.supplier_id !== null &&
+                        row.supplier_id !== undefined &&
+                        row.supplier_id !== ""
+                    ) {
+                        const supplierId = String(row.supplier_id);
+                        tableSupplierIds.add(supplierId);
+                        if (!restockSupplierId) {
+                            restockSupplierId = supplierId;
+                        }
+                    }
+                });
+
+            if (tableSupplierIds.size > 0) {
+                allowedIds = tableSupplierIds;
+                allowedNames = null;
+                defaultValue = restockSupplierId ?? defaultValue;
+                disableWhenSingle = true;
+            }
+        }
+
+        const allowedIdSet = allowedIds
+            ? new Set(Array.from(allowedIds).map(String))
+            : null;
+        const allowedNameSet = allowedNames
+            ? new Set(Array.from(allowedNames))
+            : null;
+
+        let url = `/procurement/create-purchase-request/get-active-supplier`;
+        const params = new URLSearchParams();
+        if (allowedIdSet && allowedIdSet.size > 0) {
+            params.set("supplier_ids", Array.from(allowedIdSet).join(","));
+        } else if (allowedNameSet && allowedNameSet.size > 0) {
+            params.set("supplier_names", Array.from(allowedNameSet).join(","));
+        }
+        if (params.toString()) {
+            url += `?${params.toString()}`;
+        }
+
+        fetch(url)
             .then((response) => response.json())
             .then((data) => {
-                supplierSelect.innerHTML =
-                    '<option value="" disabled selected>Choose...</option>';
+                supplierSelect.innerHTML = "";
+
+                const placeholderOption = document.createElement("option");
+                placeholderOption.value = "";
+                placeholderOption.disabled = true;
+                placeholderOption.selected = true;
+                placeholderOption.textContent = "Choose...";
+                supplierSelect.appendChild(placeholderOption);
+
+                let appendedCount = 0;
+
                 data.forEach((s) => {
+                    const id = String(s.id);
+                    const name = s.supplier_name || s.name || "";
+                    if (allowedIdSet && allowedIdSet.size > 0 && !allowedIdSet.has(id)) {
+                        return;
+                    }
+                    if (allowedNameSet && allowedNameSet.size > 0 && !allowedNameSet.has(name)) {
+                        return;
+                    }
                     const option = document.createElement("option");
-                    option.value = s.id;
-                    option.textContent = s.supplier_name;
+                    option.value = id;
+                    option.textContent = name;
                     supplierSelect.appendChild(option);
+                    appendedCount += 1;
                 });
+
+                if (!isRestockMode && appendedCount === 0) {
+                    data.forEach((s) => {
+                        const option = document.createElement("option");
+                        option.value = String(s.id);
+                        option.textContent = s.supplier_name || s.name || "";
+                        supplierSelect.appendChild(option);
+                    });
+                    appendedCount = data.length;
+                }
+
+                let nextValue = null;
+
+                if (
+                    defaultValue &&
+                    Array.from(supplierSelect.options).some(
+                        (opt) => opt.value === defaultValue
+                    )
+                ) {
+                    nextValue = defaultValue;
+                } else if (
+                    allowedIdSet &&
+                    allowedIdSet.size === 1 &&
+                    Array.from(supplierSelect.options).some((opt) =>
+                        allowedIdSet.has(opt.value)
+                    )
+                ) {
+                    nextValue = Array.from(allowedIdSet)[0];
+                } else if (
+                    (!allowedIdSet || allowedIdSet.size === 0) &&
+                    allowedNameSet &&
+                    allowedNameSet.size === 1
+                ) {
+                    const targetName = Array.from(allowedNameSet)[0];
+                    const matchedOption = Array.from(
+                        supplierSelect.options
+                    ).find((opt) => opt.text === targetName);
+                    if (matchedOption) {
+                        nextValue = matchedOption.value;
+                    }
+                }
+
+                suppressSupplierChange = true;
+                if (nextValue) {
+                    supplierSelect.value = nextValue;
+                    selectedSupplierId = nextValue;
+                    previousSupplierId = nextValue;
+                } else {
+                    supplierSelect.value = "";
+                    selectedSupplierId = null;
+                    previousSupplierId = null;
+                }
+                suppressSupplierChange = false;
+
+                if (isRestockMode) {
+                    $("#supplier").prop("disabled", true);
+                } else if (disableWhenSingle && appendedCount === 1) {
+                    $("#supplier").prop("disabled", true);
+                } else {
+                    $("#supplier").prop("disabled", false);
+                }
             });
     }
 
@@ -759,18 +1083,31 @@ $(document).ready(function () {
     });
 
     $("#supplier").change(function () {
+        if (suppressSupplierChange) {
+            const currentValue = $(this).val();
+            selectedSupplierId = currentValue;
+            previousSupplierId = currentValue;
+            return;
+        }
+
         const newSupplierId = $(this).val();
+
+        if (formMode === FORM_MODES.COMPLETE_REQUEST) {
+            if (newSupplierId && !isSupplierCompatibleWithItems(newSupplierId)) {
+                suppressSupplierChange = true;
+                $(this).val(previousSupplierId || "");
+                suppressSupplierChange = false;
+                return;
+            }
+            selectedSupplierId = newSupplierId;
+            previousSupplierId = newSupplierId;
+            return;
+        }
+
         const resetFormForSupplier = () => {
             selectedSupplierId = newSupplierId;
             loadCategories(selectedSupplierId);
-            $("#category").val("");
-            itemSearchInput.value = "";
-            itemHiddenInput.value = "";
-            availableItems = [];
-            itemResultsContainer.classList.add("d-none");
-            $("#unit").val("");
-            $("#unit_price").val("");
-            $("#qnty").val("");
+            clearItemFormFields();
             orderTable.clear().draw();
         };
 
@@ -792,11 +1129,13 @@ $(document).ready(function () {
                         return;
                     }
                     resetFormForSupplier();
+                    previousSupplierId = newSupplierId;
                 });
                 return;
             }
         }
         resetFormForSupplier();
+        previousSupplierId = newSupplierId;
     });
 
     $(document).ready(function () {
@@ -1066,7 +1405,11 @@ $(document).ready(function () {
 
     $("#submit-PR").click(function (e) {
         e.preventDefault();
-        const supplier_id = $("#supplier").val();
+        let supplier_id = $("#supplier").val();
+        if ((!supplier_id || String(supplier_id).trim() === "") && selectedSupplierId) {
+            $("#supplier").val(selectedSupplierId);
+            supplier_id = selectedSupplierId;
+        }
 
         let isValid = true;
         const $form = $("#submitPORequest");
@@ -1104,6 +1447,24 @@ $(document).ready(function () {
                     total: parseFloat(item.total),
                 };
             });
+            const mismatchedRow = allTableData.find(function (item) {
+                if (
+                    item.supplier_id === null ||
+                    item.supplier_id === undefined ||
+                    item.supplier_id === ""
+                ) {
+                    return false;
+                }
+                return String(item.supplier_id) !== String(supplier_id);
+            });
+            if (mismatchedRow) {
+                Toast.fire({
+                    title: "Supplier Mismatch",
+                    text: "All items must belong to the selected supplier.",
+                    icon: "warning",
+                });
+                return;
+            }
             if (cleanedData.length === 0) {
                 Toast.fire({
                     title: "The order is empty. Please add items before submitting.",

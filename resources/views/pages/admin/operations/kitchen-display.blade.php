@@ -3,6 +3,7 @@
 @section('topTitle') Tinatangi Cafe | Kitchen Display @endsection
 @section('screen') KDS @endsection
 @section('posTopNav') d-none @endsection
+@section('navSearch') @endsection
 @section('content')
 
     <div class="row align-items-center min-vh-90 g-2 justify-content-center">

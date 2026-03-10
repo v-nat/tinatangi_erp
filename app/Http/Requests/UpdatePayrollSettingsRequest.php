@@ -25,9 +25,12 @@ class UpdatePayrollSettingsRequest extends FormRequest
     public function rules()
     {
         return [
-            'sss' => 'required|numeric|min:0',
-            'philhealth' => 'required|numeric|min:0',
-            'pagibig' => 'required|numeric|min:0',
+            'sss_employee_rate'        => 'required|numeric|min:0|max:1',
+            'sss_employer_rate'        => 'required|numeric|min:0|max:1',
+            'philhealth_employee_rate' => 'required|numeric|min:0|max:1',
+            'philhealth_employer_rate' => 'required|numeric|min:0|max:1',
+            'pagibig_employee_rate'    => 'required|numeric|min:0|max:1',
+            'pagibig_employer_rate'    => 'required|numeric|min:0|max:1',
         ];
     }
 }

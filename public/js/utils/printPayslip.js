@@ -71,29 +71,36 @@ export function buildPayslipModal(data) {
                                     data.tardiness_deduction
                                 ).toLocaleString()}</td>
                             </tr>
-                            <tr>
-                                <td class="text-bold-500">SSS</td>
-                                <td>₱ ${parseFloat(
-                                    data.sss
-                                ).toLocaleString()}</td>
+                            <tr class="table-light">
+                                <td colspan="2" class="small text-muted fw-semibold">Mandatory Contributions</td>
                             </tr>
                             <tr>
-                                <td class="text-bold-500">Pagibig</td>
-                                <td>₱ ${parseFloat(
-                                    data.pagibig
-                                ).toLocaleString()}</td>
+                                <td class="text-bold-500">SSS <span class="badge bg-primary" style="font-size:0.65rem">EE</span></td>
+                                <td>₱ ${parseFloat(data.sss ?? 0).toLocaleString()}</td>
                             </tr>
                             <tr>
-                                <td class="text-bold-500">Philhealth</td>
-                                <td>₱ ${parseFloat(
-                                    data.philhealth
-                                ).toLocaleString()}</td>
+                                <td class="text-bold-500">SSS <span class="badge bg-secondary" style="font-size:0.65rem">ER</span></td>
+                                <td class="text-muted">₱ ${parseFloat(data.sss_employer ?? 0).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold-500">PhilHealth <span class="badge bg-primary" style="font-size:0.65rem">EE</span></td>
+                                <td>₱ ${parseFloat(data.philhealth ?? 0).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold-500">PhilHealth <span class="badge bg-secondary" style="font-size:0.65rem">ER</span></td>
+                                <td class="text-muted">₱ ${parseFloat(data.philhealth_employer ?? 0).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold-500">Pag-IBIG <span class="badge bg-primary" style="font-size:0.65rem">EE</span></td>
+                                <td>₱ ${parseFloat(data.pagibig ?? 0).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold-500">Pag-IBIG <span class="badge bg-secondary" style="font-size:0.65rem">ER</span></td>
+                                <td class="text-muted">₱ ${parseFloat(data.pagibig_employer ?? 0).toLocaleString()}</td>
                             </tr>
                             <tr>
                                 <td class="text-bold-500">Tax</td>
-                                <td>₱ ${parseFloat(
-                                    data.tax_deduction
-                                ).toLocaleString()}</td>
+                                <td>₱ ${parseFloat(data.tax_deduction ?? 0).toLocaleString()}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -168,8 +175,8 @@ export function printPayslip(data) {
         { label: "Days Absent Deduction", value: data.absent_deduction },
         { label: "Tardiness Deduction", value: data.tardiness_deduction },
         { label: "SSS", value: data.sss },
-        { label: "Pagibig", value: data.pagibig },
-        { label: "Philhealth", value: data.philhealth },
+        { label: "PhilHealth", value: data.philhealth },
+        { label: "Pag-IBIG", value: data.pagibig },
         { label: "Tax", value: data.tax_deduction },
     ];
 
@@ -211,11 +218,9 @@ export function printPayslip(data) {
                 }
                 ${
                     deduction
-                        ? `<td class="text-bold-500">${
-                              deduction.label
-                          }</td><td>₱ ${parseFloat(
-                              deduction.value
-                          ).toLocaleString()}</td>`
+                        ? deduction.employer
+                            ? `<td style="color:#666;font-style:italic">${deduction.label}</td><td style="color:#666;font-style:italic">₱ ${parseFloat(deduction.value ?? 0).toLocaleString()}</td>`
+                            : `<td class="text-bold-500">${deduction.label}</td><td>₱ ${parseFloat(deduction.value ?? 0).toLocaleString()}</td>`
                         : "<td></td><td></td>"
                 }
             </tr>
