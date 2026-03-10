@@ -3,7 +3,17 @@
     "allow": [
       "Bash(php artisan make:migration add_employer_shares_to_payrolls_table)",
       "Bash(php artisan migrate)",
-      "Bash(xargs grep -l \"landing\")"
+      "Bash(xargs grep -l \"landing\")",
+      "Bash(ls resources/js/*.js)",
+      "Bash(grep '\\\\.js$')",
+      "Bash(for f in announcementManagement.js bookingTable.js bookingTableManagement.js budgetRelease.js createPurchaseRequest.js employeeAttendance.js employeeSchedule.js faqManagement.js feedbackManagement.js financeSalesTransactions.js financePayroll.js governmentDiscountManagement.js hrEmployees.js hrManage.js hrPayroll.js hrScheduleManager.js inventoryProducts.js kitchenDisplay.js leaveApplication.js leaveMngt.js login.js logout.js manageSupplier.js operationsDashboard.js overtimeApplication.js overtimeMngt.js pointOfSale.js procurementDashboard.js purchaseOrders.js purchaseRequest.js recipeManagement.js supplier.js supplierProducts.js tableReservationManagement.js crmDashboard.js employeePayslip.js executivesDashboard.js financeDashboard.js hrDashboard.js inventoryAllItems.js inventoryDashboard.js landingPage.js operationsSalesReporting.js stockTransactions.js)",
+      "Bash(do echo \"=== $f ===\")",
+      "Read(//c/Users/Nathaniel/Documents/Nathaniel/Thesis A/tinatangi_erp/**)",
+      "Bash(done)",
+      "Bash(npm run build)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\resources\\js"
     ]
   }
 }

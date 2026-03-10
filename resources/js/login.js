@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 $(document).ready(function () {
     var loginResponseData = null;
     var isUpdatingPassword = false;

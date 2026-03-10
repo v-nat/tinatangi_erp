@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 $(document).on("click", "#logout-btn", function (e) {
     e.preventDefault(); // Prevent the default form submission if wrapped
     Swal.fire({

@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 /* =========================================================
    governmentDiscountManagement.js
    Admin CRUD for government-mandated discount types

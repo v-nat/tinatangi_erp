@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 $(document).ready(function () {
     const $form          = $("#booking-form");
     const $loading       = $("#loading-message");

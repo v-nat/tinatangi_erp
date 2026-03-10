@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 const csrfToken = $('meta[name="csrf-token"]').attr("content") || "";
 
 const requestJson = (url, settings = {}) =>

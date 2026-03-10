@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import { printPayslip, buildPayslipModal } from "./utils/printPayslip.js";
 
 $(document).ready(function () {

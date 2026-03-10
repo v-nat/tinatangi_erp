@@ -1,8 +1,15 @@
 import { defineConfig } from 'vite';
+import { fileURLToPath } from 'url';
 import laravel from 'laravel-vite-plugin';
 import obfuscatorPlugin from 'rollup-plugin-obfuscator';
 
 export default defineConfig({
+    resolve: {
+        alias: {
+            'jquery':      fileURLToPath(new URL('./resources/js/shims/jquery.js',      import.meta.url)),
+            'sweetalert2': fileURLToPath(new URL('./resources/js/shims/sweetalert2.js', import.meta.url)),
+        },
+    },
     plugins: [
         laravel({
             input: [

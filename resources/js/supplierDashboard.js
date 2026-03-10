@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 const DASHBOARD_ROOT_ID = "supplier-dashboard-root";
 
 document.addEventListener("DOMContentLoaded", () => {

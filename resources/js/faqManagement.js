@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 $(document).ready(function () {
     const csrfToken = $('meta[name="csrf-token"]').attr("content");
     const faqModal = new bootstrap.Modal(document.getElementById("faqModal"));

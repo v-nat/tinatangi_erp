@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 $(document).ready(function () {
     $(document).on("click", "#exit-pos-btn", function (e) {
         e.preventDefault();

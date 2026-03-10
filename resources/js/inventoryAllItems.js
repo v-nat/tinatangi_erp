@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 $(document).ready(function () {
     const allItems = $("#allInventoryItems").DataTable({
         autoWidth: false,

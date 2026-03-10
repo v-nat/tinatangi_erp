@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 $(function() {
     var mode = "";
     let activeRates = null;

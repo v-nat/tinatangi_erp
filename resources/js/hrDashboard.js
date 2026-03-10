@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import { formatDate, formatMinutesToHours } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {

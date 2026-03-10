@@ -1,3 +1,5 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
 import { formatDate2, formatDateString } from "./utils/formatDateAndTime.js";
 
 $(document).ready(function () {

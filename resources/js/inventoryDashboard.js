@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import { reloadTable } from "./utils/reloadTable.js";
 
 $(document).ready(function () {

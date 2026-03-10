@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 ;(function () {
     var $ = window.jQuery;
 

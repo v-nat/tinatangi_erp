@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 $(document).ready(function () {
     const csrfToken = $('meta[name="csrf-token"]').attr("content");
     if (csrfToken) {

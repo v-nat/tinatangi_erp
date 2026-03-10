@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 const getInitialView = () =>
     window.innerWidth < 768 ? "listWeek" : "dayGridMonth";
 

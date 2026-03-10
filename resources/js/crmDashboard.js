@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 $(document).ready(function () {
     const numberFormatter = new Intl.NumberFormat('en-US');
 

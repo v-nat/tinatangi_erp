@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 $(document).ready(function () {
     if ($("#chart-budget-spending").length === 0) {
         return;

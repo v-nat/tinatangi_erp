@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
+
 $(document).ready(function () {
     const CSRF_TOKEN = $('meta[name="csrf-token"]').attr("content");
     if (CSRF_TOKEN) {

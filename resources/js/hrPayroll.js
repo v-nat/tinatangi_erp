@@ -1,3 +1,5 @@
+import $ from 'jquery';
+import Swal from 'sweetalert2';
 import { reloadTable } from "./utils/reloadTable.js";
 import { printPayslip, buildPayslipModal } from "./utils/printPayslip.js";
 
