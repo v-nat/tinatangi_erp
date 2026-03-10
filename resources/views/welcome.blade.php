@@ -871,6 +871,9 @@
 
     </footer>
 
+    <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
+
     @include('layouts.landing-page-loader')
     @include('layouts.toast-swal')
     @include('layouts.modals.landing-page-modal')
@@ -879,9 +882,6 @@
             class="bi bi-arrow-up-short"></i></a>
 
     <div id="preloader"></div>
-
-    <script src="{{ asset('source/jquery/jquery-3.6.0.min.js') }}"></script>
-    <script src="{{ asset('assets/js/swal/dist/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
     <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
