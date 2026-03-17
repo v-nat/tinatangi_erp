@@ -20,6 +20,9 @@ Route::get('/hmmm', function () {
 Route::get('/garden', function () {
     return view('flowers');
 });
+Route::get('/donna', function () {
+    return view('donna');
+});
 
 
 Route::get('/admintest', function () {
