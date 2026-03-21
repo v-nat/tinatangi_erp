@@ -35,7 +35,6 @@ class ScheduleController extends Controller
                     'employee_id' => $schedule->employee_id,
                     'description' => $schedule->description,
                 ],
-                // You might need 'startRecur' and 'endRecur' if shifts have specific date ranges
                 // 'startRecur' => '2025-11-01',
                 // 'endRecur' => '2026-05-01',
             ];

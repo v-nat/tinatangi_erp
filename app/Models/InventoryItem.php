@@ -30,12 +30,6 @@ class InventoryItem extends Model
         'expiration_date',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     * Ensures prices are treated as floating point numbers.
-     *
-     * @var array
-     */
     protected $casts = [
         'cost_price' => 'float',
         'selling_price' => 'float',
@@ -91,9 +85,6 @@ class InventoryItem extends Model
             ->withPivot('quantity_used');
     }
 
-    /**
-     * Retrieve the preferred ItemUnit for stock display (base unit if available).
-     */
     public function getDisplayUnitModel(): ?ItemUnit
     {
         if ($this->relationLoaded('unit') || $this->unit_id) {
@@ -107,9 +98,6 @@ class InventoryItem extends Model
         return null;
     }
 
-    /**
-     * Get the unit label (abbreviation fallback to name) for display.
-     */
     public function getDisplayUnitLabel(): string
     {
         $unit = $this->getDisplayUnitModel();
@@ -121,17 +109,11 @@ class InventoryItem extends Model
         return $unit->abbreviation ?: $unit->name ?: '';
     }
 
-    /**
-     * Format the quantity (in base units) with fixed decimals.
-     */
     public function formatStockQuantity(int $decimals = 2): string
     {
         return number_format($this->getDisplayQuantity(), $decimals);
     }
 
-    /**
-     * Provide a single string combining quantity and unit for display.
-     */
     public function formatStockDisplay(int $decimals = 2): string
     {
         $quantity = $this->formatStockQuantity($decimals);
@@ -140,9 +122,6 @@ class InventoryItem extends Model
         return trim($quantity . ($unitLabel ? ' ' . $unitLabel : ''));
     }
 
-    /**
-     * Get the quantity expressed in the item's original unit if available.
-     */
     public function getDisplayQuantity(): float
     {
         if (! is_null($this->stock_level)) {
@@ -158,9 +137,6 @@ class InventoryItem extends Model
         return $this->convertBaseToDisplayQuantity($this->getAvailableBaseUnits());
     }
 
-    /**
-     * Convert a base-unit quantity into the item's display unit quantity.
-     */
     public function convertBaseToDisplayQuantity(float $baseQuantity): float
     {
         $conversionFactor = $this->getBaseConversionFactor();
@@ -172,9 +148,6 @@ class InventoryItem extends Model
         return $baseQuantity;
     }
 
-    /**
-     * Retrieve the conversion factor that converts the stored unit into the base unit.
-     */
     protected function getBaseConversionFactor(): ?float
     {
         if (! $this->unit_id || ! $this->base_unit_id || $this->unit_id === $this->base_unit_id) {
@@ -195,9 +168,6 @@ class InventoryItem extends Model
         return $conversionCache[$cacheKey];
     }
 
-    /**
-     * Get the current available quantity translated into the item's base unit.
-     */
     public function getAvailableBaseUnits(): float
     {
         if (! is_null($this->base_unit_stock_level)) {
@@ -213,9 +183,6 @@ class InventoryItem extends Model
         return (float) $this->stock_level;
     }
 
-    /**
-     * Persist the provided base-unit quantity, keeping the tracked stock level in sync.
-     */
     public function setBaseStockFromQuantity(float $baseQuantity): void
     {
         $baseQuantity = max(0.0, $baseQuantity);
@@ -255,9 +222,6 @@ class InventoryItem extends Model
             : null;
     }
 
-    /**
-     * Recalculate availability for all products that use this inventory item.
-     */
     public function refreshProductAvailability(): void
     {
         $this->loadMissing('products.ingredients');

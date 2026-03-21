@@ -4,21 +4,16 @@ namespace App\Services;
 
 class CompensationCalculator
 {
-    /**
-     * Accept raw payroll attributes, return computed fields.
-     */
     public function fromPayrollAttributes(array $attrs): array
     {
         $days_absent_deduction = $attrs['days_absent_deduction'];
         $tardiness_deduction = $attrs['tardiness_deduction'];
         $mandatory_deduction = $attrs['mandatory_deduction']['total'];
 
-        // Earnings before deductions
         $grossPay = $attrs['regular_hour_pay'] + $attrs['overtime_pay'] + $attrs['leave_pay'];
 
         // dd($grossPay);
 
-        // Salary subject to tax (deduct absence/tardiness/etc)
         $salaryBeforeTax = $grossPay
             - $days_absent_deduction
             - $tardiness_deduction
@@ -26,7 +21,6 @@ class CompensationCalculator
 
         $tax = $this->taxAmount($grossPay - $days_absent_deduction - $tardiness_deduction - $mandatory_deduction);
 
-        // Take-home after tax
         $netPay = $salaryBeforeTax - $tax;
 
         return [
@@ -36,9 +30,6 @@ class CompensationCalculator
         ];
     }
 
-    /**
-     * Compute from an existing Payroll model instance.
-     */
     public function fromPayroll(\App\Models\Payroll $payroll): array
     {
         return $this->fromPayrollAttributes($payroll->toArray());

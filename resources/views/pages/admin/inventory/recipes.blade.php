@@ -16,12 +16,10 @@
                 <h4>Recipe Management</h4>
             </div>
             <div class="card-body">
-                {{-- The product name will be inserted here by jQuery --}}
                 <h5 class="card-title">Recipe for: <strong id="product-name">Loading...</strong></h5>
                 <hr>
 
                 <h6>Current Ingredients</h6>
-                {{-- The current ingredients list will be inserted here by jQuery --}}
                 <ul class="list-group mb-4" id="current-ingredients-list">
                     <p id="no-recipe-message">Loading recipe...</p>
                 </ul>
@@ -31,7 +29,6 @@
                 <h6>Update Ingredients</h6>
                 <form action="{{ route('recipes.update', $product) }}" method="POST">
                     @csrf
-                    {{-- The dynamic ingredient form rows will be inserted here by jQuery --}}
                     <div id="ingredient-list"></div>
 
                     <button type="button" id="add-ingredient-btn" class="btn btn-secondary mt-2">Add Ingredient</button>

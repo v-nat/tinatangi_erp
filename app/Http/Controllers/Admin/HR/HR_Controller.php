@@ -49,7 +49,6 @@ class HR_Controller extends Controller
 
     public function getDashboardAnalytics()
     {
-        // --- Attendance status breakdown for the current week (Mon-Sun) ---
         $weekStart = Carbon::now()->startOfWeek();
         $weekEnd   = Carbon::now()->endOfWeek();
 
@@ -64,21 +63,18 @@ class HR_Controller extends Controller
             $days[] = $d->format('D');
         }
 
-        // Map status codes: 6=On Time, 9=Late, 8=On Leave
         $onTime  = array_fill(0, 7, 0);
         $late    = array_fill(0, 7, 0);
         $onLeave = array_fill(0, 7, 0);
 
         foreach ($weeklyAttendance as $row) {
-            $idx = Carbon::parse($row->day)->dayOfWeek; // 0=Sun,1=Mon...
-            // Convert to Mon-based index
+            $idx = Carbon::parse($row->day)->dayOfWeek;
             $idx = ($idx + 6) % 7;
             if ($row->status == 6)      $onTime[$idx]  += $row->count;
             elseif ($row->status == 9)  $late[$idx]    += $row->count;
             elseif ($row->status == 8)  $onLeave[$idx] += $row->count;
         }
 
-        // --- Department headcount ---
         $deptBreakdown = Employee::whereNull('deleted_at')
             ->whereDoesntHave('position', fn($q) => $q->where('level', 'ceo'))
             ->with('deptRS')
@@ -87,7 +83,6 @@ class HR_Controller extends Controller
             ->map->count()
             ->sortDesc();
 
-        // --- Monthly overtime requests (last 6 months) ---
         $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth();
         $overtimeTrend = Overtime::where('created_at', '>=', $sixMonthsAgo)
             ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count")
@@ -105,7 +100,6 @@ class HR_Controller extends Controller
             $otCounts[] = $match ? (int) $match->count : 0;
         }
 
-        // --- Payroll net pay per month (last 6 months) ---
         $payrollTrend = Payroll::where('created_at', '>=', $sixMonthsAgo)
             ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(net_pay) as total")
             ->groupByRaw("DATE_FORMAT(created_at, '%Y-%m')")

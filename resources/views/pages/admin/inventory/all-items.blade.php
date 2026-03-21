@@ -53,7 +53,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Data will be loaded via DataTables -->
                         </tbody>
                     </table>
                 </div>

@@ -9,13 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Add the FK column (nullable so existing rows don't break)
         Schema::table('table_for_reservations', function (Blueprint $table) {
             $table->unsignedBigInteger('table_location_id')->nullable()->after('location');
             $table->foreign('table_location_id')->references('id')->on('table_locations')->nullOnDelete();
         });
 
-        // Migrate existing location text → table_locations rows
         $existing = DB::table('table_for_reservations')
             ->whereNotNull('location')
             ->where('location', '!=', '')
@@ -34,7 +32,6 @@ return new class extends Migration
                 ->update(['table_location_id' => $locationId]);
         }
 
-        // Drop the old free-text column
         Schema::table('table_for_reservations', function (Blueprint $table) {
             $table->dropColumn('location');
         });
@@ -46,7 +43,6 @@ return new class extends Migration
             $table->string('location')->nullable()->after('table_location_id');
         });
 
-        // Restore location text from relation
         $tables = DB::table('table_for_reservations')
             ->join('table_locations', 'table_for_reservations.table_location_id', '=', 'table_locations.id')
             ->select('table_for_reservations.id', 'table_locations.name as location_name')

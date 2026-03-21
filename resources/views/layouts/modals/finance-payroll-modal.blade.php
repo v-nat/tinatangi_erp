@@ -1,4 +1,3 @@
-<!-- view modal-->
 <div class="modal fade text-left w-100" id="viewPayroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
@@ -27,7 +26,6 @@
     </div>
 </div>
 
-<!-- payroll rejection modal -->
 <div class="modal fade text-left" id="payrollRejectionModal" tabindex="-1" role="dialog"
     aria-labelledby="payrollRejectionLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">

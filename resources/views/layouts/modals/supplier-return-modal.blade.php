@@ -1,5 +1,4 @@
 
-<!-- Supplier Process Return Modal -->
 <div class="modal fade text-left" id="processReturnModal" tabindex="-1" role="dialog"
     aria-labelledby="processReturnModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
@@ -28,8 +27,7 @@
                                 </tr>
                             </thead>
                             <tbody id="returnItemsList">
-                                <!-- JS will populate this section -->
-                                <tr>
+                                    <tr>
                                     <td colspan="4" class="text-center">Loading returned items...</td>
                                 </tr>
                             </tbody>

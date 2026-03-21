@@ -76,7 +76,6 @@ class SupplierController extends Controller
 
             $supplier_id = GenerateIdController::generateID('supplier');
 
-            // Create accounts
             $user = User::create([
                 'id' => $supplier_id,
                 'first_name' => $validated['supplier_name'],
@@ -100,7 +99,6 @@ class SupplierController extends Controller
                 'status' => 1,
             ]);
             DB::commit();
-            // Send email with login details
             $content = [
                 'email' => $validated['email'],
                 'title' => 'Welcome aboard to Tinatangi Cafe!',

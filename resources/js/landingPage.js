@@ -520,11 +520,6 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    /**
-     * Helper function to safely escape text for a data attribute.
-     * @param {string} s - The string to escape.
-     * @returns {string} The escaped string.
-     */
     function escapeAttribute(s) {
         if (!s) return "";
         return s

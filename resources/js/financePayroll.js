@@ -224,7 +224,6 @@ $(document).ready(function () {
         });
     });
 
-    // Reject button in view modal — open the rejection modal
     $("#modal-reject-btn").on("click", function () {
         $("#rejectionPayrollId").val(currentPayrollId);
         $("#payrollRejectionNotes").val("");
@@ -232,7 +231,6 @@ $(document).ready(function () {
         $("#payrollRejectionModal").modal("show");
     });
 
-    // Confirm rejection from the rejection modal
     $("#payroll-reject-btn-confirmed").on("click", function () {
         const remarks = $("#payrollRejectionNotes").val().trim();
         const id = $("#rejectionPayrollId").val();
@@ -272,7 +270,6 @@ $(document).ready(function () {
         });
     });
 
-    // Reset modal state when closed
     $("#viewPayroll").on("hidden.bs.modal", function () {
         currentPayrollId = null;
         $("#modal-approve-btn").addClass("d-none");

@@ -45,7 +45,7 @@
                                         @elseif($status->id == 2)
                                             Inactive
                                         @else
-                                            {{ $status->name }} {{-- Fallback for other statuses --}}
+                                            {{ $status->name }}
                                         @endif
                                     </option>
                                 @endforeach
@@ -124,7 +124,6 @@
     </div>
 </div>
 
-{{-- Location Add/Edit Modal --}}
 <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">

@@ -156,12 +156,6 @@ function formatToManilaTime(dateString) {
     return new Intl.DateTimeFormat("en-PH", options).format(date);
 }
 
-/**
- * Builds payslip HTML from data and prints it directly without a modal.
- * This function constructs the payslip, applies print-specific CSS,
- * opens the print dialog, and then cleans up the temporary elements.
- * @param {object} data - The payslip data object.
- */
 export function printPayslip(data) {
     const earnings = [
         { label: "Days Present", days: data.days_present },
@@ -199,22 +193,17 @@ export function printPayslip(data) {
                 ${
                     earning
                         ? earning.value
-                            ? // If earning.value exists
-                              `<td class="text-bold-500">${
+                            ? `<td class="text-bold-500">${
                                   earning.label
                               }</td><td>₱ ${parseFloat(
                                   earning.value
                               ).toLocaleString()}</td>`
                             : earning.days
-                            ? // Else, if earning.days exists
-                              `<td class="text-bold-500">${earning.label}</td><td>${earning.days} days</td>`
+                            ? `<td class="text-bold-500">${earning.label}</td><td>${earning.days} days</td>`
                             : earning.hours
-                            ? // Else, if earning.hours exists
-                              `<td class="text-bold-500">${earning.label}</td><td>${earning.hours} hours</td>`
-                            : // Else, if earning exists but has none of the above
-                              "<td></td><td></td>"
-                        : // Else, if earning does not exist
-                          "<td></td><td></td>"
+                            ? `<td class="text-bold-500">${earning.label}</td><td>${earning.hours} hours</td>`
+                            : "<td></td><td></td>"
+                        : "<td></td><td></td>"
                 }
                 ${
                     deduction
@@ -257,7 +246,6 @@ export function printPayslip(data) {
                     <p class="mb-0">Working Days: ${data.working_days}</p>
                     </div>
                 </div>
-                <!-- Combined Earnings and Deductions Table -->
                 <div class="col-md-12">
                     <div class="table-responsive">
                         <table class="table table-sm">

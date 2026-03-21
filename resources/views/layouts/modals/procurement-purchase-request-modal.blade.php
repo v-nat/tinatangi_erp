@@ -1,4 +1,3 @@
-<!-- view modal-->
 <div class="modal fade text-left w-100" id="createPrModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
@@ -53,33 +52,26 @@
                                                         <div class="invalid-feedback">Category is required.</div>
                                                     </div>
                                                 </div>
-                                                {{-- START OF SEARCHABLE ITEM INPUT REPLACEMENT --}}
                                                 <div class="col-md-4.5 col-4">
                                                     <div class="form-group position-relative">
                                                         <label for="item_search_input">Item</label>
-                                                        {{-- The visible input for searching --}}
                                                         <input type="text" id="item_search_input"
                                                             class="form-control py-3" placeholder="Search Item"
                                                             autocomplete="off">
-                                                        {{-- This hidden input stores the selected item ID for form
-                                                        submission --}}
-                                                        <input type="hidden" id="item" name="item" required>
-
-                                                        {{-- Dropdown container for search results --}}
                                                         {{-- **FIXED: Increased z-index to 999 to ensure it floats above
                                                         the table.** --}}
+                                                        <input type="hidden" id="item" name="item" required>
+
                                                         <div id="item_results_container"
                                                             class="list-group position-absolute w-100 border shadow-lg d-none"
                                                             style="max-height: 250px; overflow-y: auto; z-index: 999; background-color: white;">
                                                             <div id="item_search_list">
-                                                                {{-- Search results will be injected here --}}
                                                             </div>
                                                         </div>
 
                                                         <div class="invalid-feedback">Item is required.</div>
                                                     </div>
                                                 </div>
-                                                {{-- END OF SEARCHABLE ITEM INPUT REPLACEMENT --}}
 
                                                 <div class="col-md-1 col-4">
                                                     <div class="form-group">
@@ -162,7 +154,6 @@
 
 
 
-<!-- view modal-->
 <div class="modal fade text-left w-100" id="viewPO" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">

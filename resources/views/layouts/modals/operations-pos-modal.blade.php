@@ -1,4 +1,3 @@
-<!--warning theme Modal -->
 <div class="modal fade text-left" id="addItemOrder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel120"
     aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
@@ -52,7 +51,6 @@
     </div>
 </div>
 
-<!-- view modal-->
 <div class="modal fade text-left w-100" id="orderTransactions" tabindex="-1" role="dialog"
     aria-labelledby="myModalLabel20" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
@@ -84,7 +82,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Data will be loaded via DataTables -->
                                     </tbody>
                                 </table>
                             </div>
@@ -106,7 +103,6 @@
     </div>
 </div>
 
-<!--warning theme Modal -->
 <span id="cashierNameDisplay" class="d-none">{{ auth()->user()->full_name }}</span>
 <div class="modal fade text-left" id="orderFinalization" tabindex="-1" role="dialog" aria-labelledby="myModalLabel120"
     aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -125,7 +121,6 @@
                 <div class="modal-body">
                     <div id="orderSummaryList" class="mb-2"></div>
 
-                    {{-- Discount panel --}}
                     <div id="discount-panel" class="d-none mb-2 p-2 rounded" style="background:rgba(205,164,94,.08);border:1px solid rgba(205,164,94,.3)">
                         <div class="d-flex justify-content-between align-items-center">
                             <span id="discount-label" class="small fw-semibold" style="color:#cda45e"></span>
@@ -137,21 +132,17 @@
                         </div>
                     </div>
 
-                    {{-- Multiple discount chooser --}}
                     <div id="discount-chooser" class="d-none mb-2">
                         <p class="small mb-1" style="opacity:.6">Multiple discounts available — select one:</p>
                         <div id="discount-options-list" class="d-flex flex-column gap-1"></div>
                     </div>
 
-                    {{-- Hidden discount submission fields --}}
                     <input type="hidden" id="applied_discount_id" name="discount_id" value="">
                     <input type="hidden" id="applied_discount_amount" name="discount_amount" value="0">
 
-                    {{-- Government Discount Section --}}
                     <div id="gov-discount-section" class="d-none mb-2">
                         <div id="gov-discount-buttons" class="d-flex align-items-center gap-1 flex-wrap">
                             <span class="small me-1" style="opacity:.5;font-size:.72rem">Gov't Discount:</span>
-                            {{-- Buttons populated by JS --}}
                         </div>
                         <div id="gov-discount-panel" class="d-none mt-2 p-2 rounded"
                              style="background:rgba(92,184,92,.08);border:1px solid rgba(92,184,92,.3)">

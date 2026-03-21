@@ -8,22 +8,11 @@ use Carbon\Carbon;
 
 class StoreBatchPayrollRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        // Set this to true if you're handling authorization
-        // (e.g., checking if Auth::user()->can('create_payroll'))
-        // For now, true will allow the request to pass.
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -34,12 +23,6 @@ class StoreBatchPayrollRequest extends FormRequest
         ];
     }
 
-    /**
-     * Configure the validator instance.
-     *
-     * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
-     */
     public function withValidator(Validator $validator)
     {
         $validator->after(function ($validator) {

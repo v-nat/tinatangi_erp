@@ -25,8 +25,6 @@ export function buildInvoiceModal(data) {
                         statusBadge = '<span class="badge bg-warning text-dark ms-2">Partial Return</span>';
                     }
 
-                    // For partial returns show "received / ordered" so the viewer
-                    // can see how many units are still pending return resolution.
                     const qtyDisplay = isPartialReturn
                         ? `${item.delivered_qty}/${item.ordered_qty} ${item.item_unit || ""}`
                         : `${item.quantity || 0} ${item.item_unit || "N/A"}`;
@@ -185,7 +183,6 @@ export function buildPOmodal(data) {
     const html = `
         <div class="row mb-4 p-3">
             ${data.status}
-            <!-- Purchase Request Header -->
             <div class="col-md-6">
                 <h6 class="mb-0">Requested By: <strong>${
                     data.requested_by_id || "N/A"
@@ -193,7 +190,7 @@ export function buildPOmodal(data) {
                 <p class="mb-0">Department: ${data.department || "N/A"}</p>
                 <p class="mb-0">Supplier: <strong class="text-success">${
                     data.supplier_name
-                }</strong></p> <!-- SUPPLIER MOVED HERE -->
+                }</strong></p>
             </div>
             <div class="col-md-6 text-md-end">
                 <h6 class="mb-0">Purchase Request ID: <strong>${
@@ -268,7 +265,6 @@ export function printInvoice() {
     const items = [];
     $viewInvoiceModal.find("table tbody tr").each(function () {
         const $row = $(this);
-        // Skip the final "Total Amount" row
         if ($row.find('td:contains("Total Amount:")').length > 0) {
             return;
         }

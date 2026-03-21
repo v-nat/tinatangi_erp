@@ -130,7 +130,6 @@ $(document).ready(function () {
             });
     });
 
-    // Approve from inside the modal
     $("#po-modal-approve-btn").on("click", function () {
         Swal.fire({
             title: "Process Purchase Request?",
@@ -178,7 +177,6 @@ $(document).ready(function () {
         });
     });
 
-    // Reject button in view modal — open the rejection modal
     $("#po-modal-reject-btn").on("click", function () {
         $("#rejectionRequestId").val(currentRequestId);
         $("#rejectionNotes").val("");
@@ -186,7 +184,6 @@ $(document).ready(function () {
         $("#RejectionConfirmation").modal("show");
     });
 
-    // Confirm rejection from the rejection modal
     $("#reject-btn-confirmed").on("click", function () {
         const id = $("#rejectionRequestId").val();
         const remarks = $("#rejectionNotes").val().trim();
@@ -226,7 +223,6 @@ $(document).ready(function () {
         });
     });
 
-    // Reset modal state when closed
     $("#viewPO").on("hidden.bs.modal", function () {
         currentRequestId = null;
         $("#po-modal-approve-btn").addClass("d-none");

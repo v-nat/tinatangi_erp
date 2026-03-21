@@ -282,7 +282,6 @@
                 </button>
             </div>
             <div class="row g-3" id="inventory-best-seller-overlay-grid">
-                <!-- Cards injected via JS -->
             </div>
         </div>
     </div>
@@ -340,7 +339,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Data will be loaded via DataTables -->
                         </tbody>
                     </table>
                 </div>

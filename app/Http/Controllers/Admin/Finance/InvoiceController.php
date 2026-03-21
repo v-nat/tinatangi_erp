@@ -39,13 +39,9 @@ class InvoiceController extends Controller
                         $unitPrice    = (float) $detail->unit_price;
                         $statusCode   = (int) $detail->status;
 
-                        // Once delivery has started, show what was actually received.
-                        // Fall back to ordered qty for items not yet delivered.
                         $displayQty = $deliveredQty > 0 ? $deliveredQty : $orderedQty;
                         $lineTotal  = $displayQty * $unitPrice;
 
-                        // is_returned      → status 22, nothing delivered (full return pending)
-                        // is_partial_return → status 22, some already delivered (partial return pending)
                         $isFullReturn    = $statusCode === 22 && $deliveredQty === 0;
                         $isPartialReturn = $statusCode === 22 && $deliveredQty > 0;
 
@@ -74,9 +70,6 @@ class InvoiceController extends Controller
                 });
             }
 
-            // Recalculate invoice total from actual delivered amounts across all PO details.
-            // This keeps the total accurate for partial deliveries and pending returns
-            // without relying on the stale invoices.total_amount DB value.
             $calculatedTotal = $purchaseOrdersData->sum(function ($po) {
                 return collect($po['details'])->sum('total_amount');
             });

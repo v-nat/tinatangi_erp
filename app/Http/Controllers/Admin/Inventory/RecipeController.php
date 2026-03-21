@@ -15,7 +15,7 @@ class RecipeController extends Controller
     {
         $product->load('ingredients.item.unit');
         $product->setAttribute('available_servings', $product->calculateAvailableServings());
-        $allInventoryItems = InventoryItem::with('item.category', 'item.unit', 'unit')->get(); // Eager load item unit
+        $allInventoryItems = InventoryItem::with('item.category', 'item.unit', 'unit')->get();
         $allUnits = ItemUnit::all()->groupBy('type');
         $allConversions = UnitConversion::all();
 

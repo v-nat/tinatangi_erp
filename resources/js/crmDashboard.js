@@ -340,7 +340,6 @@ $(document).ready(function () {
                     ...forecast.map((d) => d.predicted),
                 ];
 
-                // Annotation line at the boundary between actual and forecast
                 const boundaryLabel =
                     recentActual.length > 0
                         ? allLabels[recentActual.length - 1]

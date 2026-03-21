@@ -6,19 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateEmployeeRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         $employeeId = $this->route('employee_id');
@@ -56,7 +48,7 @@ class UpdateEmployeeRequest extends FormRequest
             'time_in' => [
                 'nullable',
                 'required_with:days_of_week,time_out',
-                'date_format:H:i', // Match HH:MM format
+                'date_format:H:i',
             ],
             'time_out' => [
                 'nullable',
@@ -86,15 +78,8 @@ class UpdateEmployeeRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get the column name for the unique rule.
-     *
-     * @return string
-     */
     protected function getIdColumnName(): string
     {
-        // Determine if the employeeId is the 'id' or 'user_id' in the 'users' table
-        // Adjust this if your 'users' table's primary key is not 'id'
         return 'id';
     }
 }

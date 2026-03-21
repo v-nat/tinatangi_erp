@@ -231,7 +231,6 @@ $(document).ready(function () {
         currentOrderId = id;
         currentInvoiceId = invoiceId;
 
-        // Show appropriate modal footer buttons based on status
         $("#po-process-btn, #po-receive-btn, #po-redeliver-btn, #po-invoice-btn").addClass("d-none");
         if (statusKey === "pending-dispatch") {
             $("#po-process-btn").removeClass("d-none");
@@ -264,7 +263,6 @@ $(document).ready(function () {
             });
     });
 
-    // Process Order from inside the modal
     $("#po-process-btn").on("click", function () {
         Swal.fire({
             title: "Process Purchase Order?",
@@ -309,7 +307,6 @@ $(document).ready(function () {
         });
     });
 
-    // View Invoice from inside the modal
     $("#po-invoice-btn").on("click", function () {
         $("#viewPO").modal("hide");
         $("#LoadingScreen").fadeIn(200);
@@ -332,7 +329,6 @@ $(document).ready(function () {
             });
     });
 
-    // Receive Delivery from inside the modal
     $("#po-receive-btn").on("click", function () {
         const orderId = currentOrderId;
         $("#viewPO").modal("hide");
@@ -402,7 +398,6 @@ $(document).ready(function () {
         });
     });
 
-    // Receive Redelivery from inside the modal
     $("#po-redeliver-btn").on("click", function () {
         const orderId = currentOrderId;
         $("#viewPO").modal("hide");
@@ -475,7 +470,6 @@ $(document).ready(function () {
         });
     });
 
-    // Reset modal state when closed
     $("#viewPO").on("hidden.bs.modal", function () {
         currentOrderId = null;
         currentInvoiceId = null;
@@ -555,7 +549,6 @@ $(document).ready(function () {
         e.preventDefault();
         $("#LoadingScreen").fadeIn(200);
 
-        // Client-side: ensure return reason filled for any returned qty
         let valid = true;
         $("#receiveItemsList .item-row").each(function () {
             const max       = parseInt($(this).find(".item-received-qty").data("max"));
@@ -611,7 +604,6 @@ $(document).ready(function () {
         e.preventDefault();
         $("#LoadingScreen").fadeIn(200);
 
-        // Client-side: ensure return reason filled for any returned qty
         let valid = true;
         $("#redeliveryItemsList .item-row-redelivery").each(function () {
             const max       = parseInt($(this).find(".item-redelivery-received-qty").data("max"));

@@ -129,7 +129,6 @@ class CrmController extends Controller
             ->take(5)
             ->get(['name', 'message', 'overall_rating', 'created_at']);
 
-        // Active promotions (status=35, not yet expired)
         $activeAnnouncementsCount = Announcement::where('status', 35)
             ->where(function ($q) use ($today) {
                 $q->whereNull('valid_until')
@@ -137,12 +136,11 @@ class CrmController extends Controller
             })
             ->count();
 
-        // 7-day booking forecast via day-of-week weighted moving average (last 12 weeks)
         $historicalStart = $today->copy()->subWeeks(12);
         $forecastDays = [];
         for ($i = 1; $i <= 7; $i++) {
             $forecastDate = $today->copy()->addDays($i);
-            $mysqlDow = $forecastDate->dayOfWeek + 1; // Carbon 0-6 → MySQL DAYOFWEEK 1-7
+            $mysqlDow = $forecastDate->dayOfWeek + 1;
 
             $historicalCounts = Booking::selectRaw('DATE(date) as bdate, COUNT(*) as cnt')
                 ->whereDate('date', '>=', $historicalStart)
@@ -161,7 +159,7 @@ class CrmController extends Controller
                 $totalWeight = 0;
                 $weightedSum = 0.0;
                 foreach ($historicalCounts as $idx => $count) {
-                    $weight = $idx + 1; // linear: recent weeks weighted higher
+                    $weight = $idx + 1;
                     $weightedSum += $count * $weight;
                     $totalWeight += $weight;
                 }
@@ -175,7 +173,6 @@ class CrmController extends Controller
             ];
         }
 
-        // Recent 13 days of actual bookings (for forecast chart context)
         $recentActualRaw = Booking::selectRaw('DATE(date) as bdate, COUNT(*) as cnt')
             ->whereDate('date', '>=', $today->copy()->subDays(13))
             ->whereDate('date', '<', $today)

@@ -7,37 +7,22 @@ use Illuminate\Validation\Rule;
 
 class UpdateFeedbackStatusRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
     public function rules()
     {
         return [
             'status' => [
                 'required',
                 'integer',
-                Rule::in([34, 35]) // Ensures status can only be 34 (Hidden) or 35 (Displayed)
+                Rule::in([34, 35])
             ],
         ];
     }
 
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array
-     */
     public function messages()
     {
         return [

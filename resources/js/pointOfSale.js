@@ -1036,7 +1036,6 @@ $(document).ready(function () {
             $('#applied_discount_amount').val(discountAmount.toFixed(2));
 
             $('#modalGrandTotal').text('₱ ' + netTotal.toFixed(2));
-            // Recalculate change
             var cash = parseFloat($('#cashReceivedInput').val()) || 0;
             if (cash >= netTotal) {
                 $('#modalChange').text('₱ ' + (cash - netTotal).toFixed(2));
@@ -1146,7 +1145,6 @@ $(document).ready(function () {
             if (!orderItems.length) { clearDiscount(); return; }
 
             var eligible = activeDiscounts.filter(function (d) {
-                // product match
                 if (d.applicable_to === 'specific') {
                     var pids = (d.product_ids || []).map(Number);
                     var hasMatch = orderItems.some(function (item) {
@@ -1154,7 +1152,6 @@ $(document).ready(function () {
                     });
                     if (!hasMatch) return false;
                 }
-                // min spend
                 if (d.min_spend && grandTotal < parseFloat(d.min_spend)) return false;
                 return true;
             });
@@ -1162,7 +1159,6 @@ $(document).ready(function () {
             if (eligible.length === 1) {
                 applyDiscount(eligible[0]);
             } else if (eligible.length > 1) {
-                // Show chooser
                 clearDiscount();
                 var html = '';
                 eligible.forEach(function (d) {
@@ -1251,7 +1247,6 @@ $(document).ready(function () {
                     .prop("disabled", true)
                     .removeClass("d-none");
                 $("#printReceiptBtn").addClass("d-none");
-                // Reset discount state then evaluate
                 clearDiscount();
                 clearGovDiscount();
                 evaluateDiscounts();
@@ -1316,8 +1311,8 @@ $(document).ready(function () {
                     });
                     renderActiveCategoryProducts();
                     loadPosCategories();
-                    fetchActiveDiscounts(); // refresh discount list after each order
-                    clearGovDiscount();    // reset gov discount state for next order
+                    fetchActiveDiscounts();
+                    clearGovDiscount();
                     const cashierName =
                         $("#cashierNameDisplay").text().trim() || "N/A";
                     generateReceipt(

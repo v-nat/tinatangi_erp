@@ -17,23 +17,19 @@
         </button>
     </div>
 
-    {{-- ── Procurement Forecasting ── --}}
     <section class="section row g-3 mb-4">
 
-        {{-- Section header + filters --}}
         <div class="col-12 d-flex flex-wrap align-items-center justify-content-between gap-2">
             <h5 class="fw-semibold text-muted text-uppercase mb-0" style="letter-spacing:.05em;">
                 <i class="fa-solid fa-chart-line me-2"></i>Procurement Forecasting
             </h5>
             <div class="d-flex align-items-center gap-2 flex-wrap" id="forecast-period-filters">
-                {{-- Year dropdown — last 5 years --}}
                 <select id="forecast-year" class="form-select form-select-sm" style="width:auto;">
                     @for ($y = now()->year; $y >= now()->year - 4; $y--)
                         <option value="{{ $y }}" @selected($y === now()->year)>{{ $y }}</option>
                     @endfor
                 </select>
 
-                {{-- Month range — From --}}
                 @php
                     $months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                 @endphp
@@ -51,11 +47,9 @@
             </div>
         </div>
 
-        {{-- Combined: Forecast KPI + Top Re-ordered Items --}}
         <div class="col-12 col-xl-4">
             <div class="card h-100 shadow-sm border-0">
 
-                {{-- KPI section --}}
                 <div class="card-body border-bottom pb-3">
                     <div class="d-flex align-items-center">
                         <div class="stats-icon-wrapper me-3">
@@ -75,7 +69,6 @@
                     </p>
                 </div>
 
-                {{-- Top Re-ordered Items --}}
                 <div class="card-header border-bottom py-2">
                     <h4 class="mb-0">Top Re-ordered Items</h4>
                 </div>
@@ -88,7 +81,6 @@
             </div>
         </div>
 
-        {{-- Spend Trend Chart (wider) --}}
         <div class="col-12 col-xl-8">
             <div class="card h-100 shadow-sm border-0">
                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">

@@ -8,7 +8,6 @@ class StoreTableForReservationRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Assuming any authenticated employee can store
         return true;
     }
 

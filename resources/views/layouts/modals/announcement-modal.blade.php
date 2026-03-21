@@ -221,10 +221,8 @@
                 <div class="modal-body">
                     <div class="row g-4">
 
-                        {{-- ────────────────── LEFT: FORM ────────────────── --}}
                         <div class="col-lg-7">
 
-                            {{-- Type --}}
                             <p class="modal-section-label">Type</p>
                             <div class="row g-2 mb-3">
                                 <div class="col-4">
@@ -248,25 +246,21 @@
                             </div>
                             <input type="hidden" id="ann_type" name="type" value="announcement">
 
-                            {{-- Title --}}
                             <div class="mb-3">
                                 <label class="form-label">Title <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="ann_title" name="title" maxlength="255" placeholder="e.g. Weekend Flash Sale!" required>
                             </div>
 
-                            {{-- Content --}}
                             <div class="mb-3">
                                 <label class="form-label">Message / Description</label>
                                 <textarea class="form-control" id="ann_content" name="content" rows="3" placeholder="Tell customers about this offer or news..."></textarea>
                             </div>
 
-                            {{-- Badge --}}
                             <div class="mb-3">
                                 <label class="form-label">Badge Text <small class="text-muted">(short label)</small></label>
                                 <input type="text" class="form-control" id="ann_badge" name="badge_text" maxlength="50" placeholder="e.g. HOT, NEW, LIMITED TIME">
                             </div>
 
-                            {{-- Icon picker --}}
                             <p class="modal-section-label">Icon</p>
                             <input type="hidden" id="ann_icon" name="icon" value="fa-solid fa-bullhorn">
                             <div class="icon-grid mb-3" id="iconGrid">
@@ -306,7 +300,6 @@
                                 @endforeach
                             </div>
 
-                            {{-- Theme --}}
                             <p class="modal-section-label">Theme</p>
                             <input type="hidden" id="ann_theme" name="theme" value="gold">
                             <div class="theme-swatches mb-1" id="themeSwatches">
@@ -319,7 +312,6 @@
                                 <span>Gold</span><span>Crimson</span><span>Forest</span><span>Ocean</span><span>Royal</span><span>Slate</span>
                             </div>
 
-                            {{-- Background style --}}
                             <p class="modal-section-label">Background Style</p>
                             <input type="hidden" id="ann_bg_style" name="bg_style" value="solid">
                             <div class="bg-style-tiles mb-3" id="bgStyleTiles">
@@ -334,7 +326,6 @@
                                 </div>
                             </div>
 
-                            {{-- Seasonal Promo fields --}}
                             <div id="promoSeasonSection" class="d-none">
                                 <p class="modal-section-label">Season / Holiday</p>
                                 <input type="hidden" id="ann_season" name="season" value="generic">
@@ -364,7 +355,6 @@
                                 <p class="small mb-3" style="opacity:.4;font-size:.7rem">Season sets the banner gradient &amp; decorative overlay. &ldquo;Use Theme&rdquo; falls back to your Theme &amp; BG Style selection above.</p>
                             </div>
 
-                            {{-- Discount / Voucher specific fields --}}
                             <div id="discountFields" class="d-none">
                                 <p class="modal-section-label">Discount Details</p>
                                 <div class="row g-2 mb-3">
@@ -386,7 +376,6 @@
                                 </div>
                             </div>
 
-                            {{-- Applies To --}}
                             <div id="applicableToSection" class="d-none">
                                 <p class="modal-section-label">Applies To</p>
                                 <input type="hidden" id="ann_applicable_to" name="applicable_to" value="all">
@@ -399,7 +388,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Product Picker --}}
                                 <div id="productPickerSection" class="d-none mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span style="font-size:.7rem;opacity:.5;font-weight:700;text-transform:uppercase;letter-spacing:.07em">Selected Products</span>
@@ -415,7 +403,6 @@
                                     <div id="product-ids-container"></div>
                                 </div>
 
-                                {{-- Usage Limit --}}
                                 <p class="modal-section-label">Usage Limit</p>
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6">
@@ -429,7 +416,6 @@
                                 </div>
                             </div>
 
-                            {{-- Validity + settings --}}
                             <p class="modal-section-label">Schedule & Settings</p>
                             <div class="row g-2 mb-3">
                                 <div class="col-md-4">
@@ -455,7 +441,6 @@
 
                         </div>
 
-                        {{-- ────────────────── RIGHT: LIVE PREVIEW ────────────────── --}}
                         <div class="col-lg-5">
                             <div class="preview-wrapper">
                                 <div class="preview-label">Live Preview</div>
@@ -468,7 +453,6 @@
                                         <div id="prev-title" class="ann-title">Your announcement title</div>
                                         <p id="prev-content" class="ann-content d-none"></p>
 
-                                        {{-- Discount preview --}}
                                         <div id="prev-discount-block" class="d-none">
                                             <div id="prev-discount-value" class="ann-discount-value">0%</div>
                                             <div id="prev-discount-label" class="ann-discount-label">OFF</div>
@@ -477,7 +461,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Mini legend --}}
                                 <div class="mt-3 p-3 rounded" style="background:rgba(255,255,255,.04); font-size:.72rem;">
                                     <div class="d-flex align-items-center gap-2 mb-1">
                                         <i class="fa-solid fa-circle-info" style="color:#cda45e"></i>
@@ -492,8 +475,8 @@
                             </div>
                         </div>
 
-                    </div>{{-- /row --}}
-                </div>{{-- /modal-body --}}
+                    </div>
+                </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -507,7 +490,6 @@
     </div>
 </div>
 
-{{-- ── Product Picker Modal (stacks above announcement modal) ── --}}
 <div class="modal fade" id="productPickerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">

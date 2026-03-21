@@ -19,7 +19,6 @@ class AutoVoidNoShowBookings extends Command
         $today    = $now->toDateString();
         $cutoffTs = $now->copy()->subMinutes(15);
 
-        // Find approved bookings for today where booking time + 15 min has passed
         $noShows = Booking::where('date', $today)
             ->where('status', 13)
             ->whereNotNull('table_number')
@@ -37,7 +36,6 @@ class AutoVoidNoShowBookings extends Command
             try {
                 Mail::to($booking->email)->send(new BookingStatusMail($booking));
             } catch (\Exception $e) {
-                // Silent — don't block the command if mail fails
             }
         }
 

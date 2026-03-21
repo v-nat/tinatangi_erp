@@ -32,7 +32,6 @@
             <div class="col-12">
                 <form id="employeeForm" enctype="multipart/form-data">
                     @csrf
-                    {{-- PERSONAL INFORMATION CARD --}}
                     <div class="card">
                         <div class="card-header">
                             <h4 class="card-title">Personal Information</h4>
@@ -40,7 +39,6 @@
                         <div class="card-content">
                             <div class="card-body">
                                 <div class="row">
-                                    {{-- PERSONAL INFORMATION FIELDS --}}
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label for="first_name">First Name *</label>
@@ -175,7 +173,6 @@
                         </div>
                     </div>
 
-                    {{-- ORGANIZATIONAL INFORMATION CARD --}}
                     <div class="card">
                         <div class="card-header mt-6">
                             <h4 class="card-title">Oraganizational Information</h4>
@@ -208,7 +205,6 @@
                                             <label for="supervisor">Direct Supervisor *</label>
                                             <select id="supervisor" name="supervisor_id" class="form-select" data-value="{{ $data['supervisor'] ?? '' }}|{{$data['supervisor_id'] ?? ''}}" required>
                                                 <option value=""  disabled selected>Choose Supervisor</option>
-                                                {{-- This will be populated dynamically --}}
                                             </select>
                                             @error('supervisor_id')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -222,7 +218,6 @@
                                             <label for="position">Position *</label>
                                             <select class="form-select" id="position" name="position_id" data-value="{{$data['position'] ?? ''}}|{{$data['position_id'] ?? ''}}|{{$data['level'] ?? ''}}" required>
                                                 <option value="" disabled selected>Choose Position</option>
-                                                {{-- This will be populated dynamically --}}
                                             </select>
                                             @error('position_id')
                                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -241,8 +236,6 @@
                             </div>
                         </div>
                     </div>
-
-                    {{-- SCHEDULE --}}
 
                     <div class="card">
                         <div class="card-header mt-6">
@@ -319,7 +312,6 @@
                         </div>
                     </div>
 
-                    {{-- SALARY CARD --}}
                     <div class="card">
                         <div class="card-header mt-6">
                             <h4 class="card-title">Salary Information</h4>

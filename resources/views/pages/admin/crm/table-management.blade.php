@@ -12,7 +12,6 @@
     </nav>
 
     <div class="section">
-        {{-- Tabs --}}
         <ul class="nav nav-tabs mb-3" id="tableManagementTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="tab-tables-btn" data-bs-toggle="tab" data-bs-target="#tab-tables"
@@ -29,7 +28,6 @@
         </ul>
 
         <div class="tab-content">
-            {{-- Tables Tab --}}
             <div class="tab-pane fade show active" id="tab-tables" role="tabpanel">
                 <div class="card mb-4">
                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -62,15 +60,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- Data will be loaded by DataTables --}}
-                                </tbody>
+                                    </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Locations Tab --}}
             <div class="tab-pane fade" id="tab-locations" role="tabpanel">
                 <div class="card mb-4">
                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -94,7 +90,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- Data will be loaded by DataTables --}}
                                 </tbody>
                             </table>
                         </div>

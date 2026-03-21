@@ -127,9 +127,8 @@ class ProcurementController extends Controller
     {
         $completedStatuses = [23];
         $currentYear = Carbon::now()->year;
-        $view        = $request->get('view', 'period'); // 'period' or 'yearly'
+        $view        = $request->get('view', 'period');
 
-        // ── Yearly view: 5-year annual totals ────────────────────────────────
         if ($view === 'yearly') {
             $spendData = [];
             for ($y = $currentYear - 4; $y <= $currentYear; $y++) {
@@ -150,14 +149,12 @@ class ProcurementController extends Controller
                 ];
             }
 
-            // 3-year moving average → forecast next year
             $last3           = array_slice($spendData, -3);
             $forecastedSpend = count($last3) > 0
                 ? array_sum(array_column($last3, 'spend')) / count($last3)
                 : 0;
             $forecastedLabel = (string) ($currentYear + 1);
 
-            // Top re-ordered items across all 5 years
             $topItems = DB::table('purchase_order_details')
                 ->join('purchase_orders', 'purchase_order_details.purchase_order_id', '=', 'purchase_orders.id')
                 ->join('items', 'purchase_order_details.item_id', '=', 'items.id')
@@ -193,7 +190,6 @@ class ProcurementController extends Controller
             ]);
         }
 
-        // ── Period view: quarterly or monthly for selected year/range ─────────
         $year       = (int) $request->get('year', $currentYear);
         $year       = max($currentYear - 4, min($currentYear, $year));
         $monthStart = (int) $request->get('month_start', 1);
@@ -201,7 +197,6 @@ class ProcurementController extends Controller
         $monthEnd   = (int) $request->get('month_end', 12);
         $monthEnd   = max($monthStart, min(12, $monthEnd));
 
-        // Full-year range → quarterly bars; partial range → monthly bars
         $granularity = ($monthStart === 1 && $monthEnd === 12) ? 'quarterly' : 'monthly';
 
         $spendData = [];
@@ -227,7 +222,6 @@ class ProcurementController extends Controller
                 ];
             }
 
-            // 2-quarter moving average → forecast next quarter
             $last2           = array_slice($spendData, -2);
             $forecastedSpend = count($last2) > 0
                 ? array_sum(array_column($last2, 'spend')) / count($last2)
@@ -256,7 +250,6 @@ class ProcurementController extends Controller
                 ];
             }
 
-            // 3-month moving average → forecast month after range
             $last3           = array_slice($spendData, -3);
             $forecastedSpend = count($last3) > 0
                 ? array_sum(array_column($last3, 'spend')) / count($last3)
@@ -264,7 +257,6 @@ class ProcurementController extends Controller
             $forecastedLabel = Carbon::create($year, $monthEnd, 1)->addMonth()->format('M Y');
         }
 
-        // Top re-ordered items scoped to the selected period
         $periodStart = Carbon::create($year, $monthStart, 1)->startOfMonth();
         $periodEnd   = Carbon::create($year, $monthEnd,   1)->endOfMonth();
 

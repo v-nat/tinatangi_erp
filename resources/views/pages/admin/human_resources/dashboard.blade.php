@@ -86,7 +86,6 @@
             </div>
         </div>
 
-        {{-- Analytics Row 1: Weekly Attendance + Department Headcount --}}
         <div class="row g-3 mb-3">
             <div class="col-lg-8">
                 <div class="card h-100">
@@ -112,7 +111,6 @@
             </div>
         </div>
 
-        {{-- Analytics Row 2: Overtime Trend + Payroll Trend --}}
         <div class="row g-3 mb-3">
             <div class="col-lg-6">
                 <div class="card h-100">
@@ -160,7 +158,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Data will be loaded via DataTables -->
                         </tbody>
                     </table>
                 </div>

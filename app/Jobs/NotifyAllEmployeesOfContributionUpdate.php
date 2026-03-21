@@ -23,7 +23,6 @@ class NotifyAllEmployeesOfContributionUpdate implements ShouldQueue
 
     public function handle()
     {
-        // Chunk through employees to avoid memory issues with large numbers
         Employee::with('user:id,email')->chunk(100, function ($employees) {
             foreach ($employees as $employee) {
                 if ($employee->user && $employee->user->email) {

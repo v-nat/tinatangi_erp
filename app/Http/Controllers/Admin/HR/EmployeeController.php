@@ -237,7 +237,6 @@ class EmployeeController extends Controller
 
             DB::commit();
 
-            // --- Send Email ---
             try {
                 $content = [
                     'email' => $validated['email'],
@@ -251,7 +250,7 @@ class EmployeeController extends Controller
             } catch (\Exception $mailError) {
             }
 
-            return response()->json(['message' => 'Employee and schedule added successfully!'], 201); // Updated message
+            return response()->json(['message' => 'Employee and schedule added successfully!'], 201);
 
         } catch (ValidationException $e) {
             DB::rollBack();

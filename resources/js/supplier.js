@@ -144,7 +144,6 @@ $(document).ready(function () {
         currentOrderId = id;
         currentInvoiceId = invoiceId;
 
-        // Show appropriate modal footer buttons based on status
         $("#supplier-approve-btn, #supplier-reject-btn, #supplier-returns-btn, #supplier-invoice-btn").addClass("d-none");
         if (statusKey === "pending-supplier") {
             $("#supplier-approve-btn").removeClass("d-none");
@@ -175,7 +174,6 @@ $(document).ready(function () {
             });
     });
 
-    // Approve & Ship from inside the modal
     $("#supplier-approve-btn").on("click", function () {
         $("#viewPO").modal("hide");
         $("#approveOrderId").val(currentOrderId);
@@ -220,7 +218,6 @@ $(document).ready(function () {
         });
     });
 
-    // Reject from inside the modal — open rejection modal
     $("#supplier-reject-btn").on("click", function () {
         $("#rejectionReqId").val(currentOrderId);
         $("#rejectionNotes").val("");
@@ -228,7 +225,6 @@ $(document).ready(function () {
         $("#RejectionConfirmation").modal("show");
     });
 
-    // View Invoice from inside the modal
     $("#supplier-invoice-btn").on("click", function () {
         $("#viewPO").modal("hide");
         $("#LoadingScreen").fadeIn(200);
@@ -251,7 +247,6 @@ $(document).ready(function () {
             });
     });
 
-    // Process Returns from inside the modal
     $("#supplier-returns-btn").on("click", function () {
         const orderId = currentOrderId;
         $("#viewPO").modal("hide");
@@ -349,7 +344,6 @@ $(document).ready(function () {
         });
     });
 
-    // Confirm rejection from the rejection modal
     $("#reject-btn-confirmed").click(function (e) {
         e.preventDefault();
         let req_id = $("#rejectionReqId").val();
@@ -392,7 +386,6 @@ $(document).ready(function () {
         }
     });
 
-    // Confirm approval from the approve modal
     $(document).on("click", "#confirmApproveBtn", function () {
         const req_id = $("#approveOrderId").val();
         const expirationDates = {};
@@ -434,7 +427,6 @@ $(document).ready(function () {
         });
     });
 
-    // Reset modal state when closed
     $("#viewPO").on("hidden.bs.modal", function () {
         currentOrderId = null;
         currentInvoiceId = null;

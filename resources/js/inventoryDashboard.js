@@ -674,13 +674,7 @@ $(document).ready(function () {
             });
     }
 
-    /**
-     * Builds and inserts HTML alerts for pending Purchase Requests.
-     * @param {Array<Object>} requests - Array of Purchase Request objects.
-     * @param {number} [limit=requests.length] - The maximum number of requests to display.
-     */
     function buildReceiveAlerts(requests, limit = requests.length) {
-        // Clear the container before rendering
         $(ALERT_TO_CLAIM_ID).empty();
 
         if (!Array.isArray(requests) || requests.length === 0) {
@@ -733,7 +727,6 @@ $(document).ready(function () {
             $(ALERT_TO_CLAIM_ID).append(alertHtml);
         });
 
-        // Add the "View All" link if more items are available
         if (hasMore) {
             const remainingCount = requests.length - limit;
             const viewAllHtml = `
@@ -1154,7 +1147,6 @@ $(document).ready(function () {
 
         const html = `
     <div class="row mb-4 p-3">
-        <!-- Invoice Header -->
         <div class="col-md-6">
             <p class="mb-0">Purchase Order #: ${poNum || "N/A"}</p>
             <p class="mb-0">Supplier: ${data.supplier_name}</p>

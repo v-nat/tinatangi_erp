@@ -33,7 +33,7 @@ $(document).ready(function () {
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
-                type: "date", // Ensure proper date sorting
+                type: "date",
             },
             {
                 data: "time_start",

@@ -1,4 +1,3 @@
-<!-- view modal-->
 <div class="modal fade text-left w-100" id="viewPayroll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
@@ -45,7 +44,6 @@
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
-                                {{-- SSS --}}
                                 <div class="col-12">
                                     <label class="fw-semibold">SSS</label>
                                 </div>
@@ -72,7 +70,6 @@
                                     </div>
                                 </div>
 
-                                {{-- PhilHealth --}}
                                 <div class="col-12 mt-2">
                                     <label class="fw-semibold">PhilHealth</label>
                                 </div>
@@ -99,7 +96,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Pag-IBIG --}}
                                 <div class="col-12 mt-2">
                                     <label class="fw-semibold">Pag-IBIG</label>
                                 </div>
@@ -235,13 +231,11 @@
                     </div>
                     <div class="form-group mb-3">
                         <label for="edit_rate_per_hour">Rate per Hour</label>
-                        <!-- Added readonly attribute -->
                         <input type="text" id="edit_rate_per_hour" name="rate_per_hour" class="form-control"
                             inputmode="decimal" readonly>
                     </div>
                     <div class="form-group mb-3">
                         <label for="edit_rate_per_day">Rate per Day</label>
-                        <!-- Added readonly attribute -->
                         <input type="text" id="edit_rate_per_day" name="rate_per_day" class="form-control"
                             inputmode="decimal" readonly>
                     </div>
@@ -303,7 +297,6 @@
     </div>
 </div>
 
-<!-- Proof of Payment Modal -->
 <div class="modal fade" id="proofOfPaymentModal" tabindex="-1" aria-labelledby="proofOfPaymentModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

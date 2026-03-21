@@ -48,7 +48,6 @@ class AnnouncementController extends Controller
             'status'         => 'required|in:34,35',
         ]);
 
-        // Never set usage_count from form
         unset($validated['product_ids']);
 
         $announcement = Announcement::create($validated);

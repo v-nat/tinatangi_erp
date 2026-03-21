@@ -25,8 +25,6 @@
     </div>
 </div>
 
-{{-- ////////////////////////////////////// RESSTOCK ///////////////////////////////////////////////////// --}}
-
 <div class="modal fade text-left" id="stockRequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel120"
     aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
@@ -82,8 +80,6 @@
     </div>
 </div>
 
-{{-- /////////////////////////////////////////////// VIEW PRODUCT //////////////////////////////////////// --}}
-
 <div class="modal fade" id="viewProductModal" tabindex="-1" aria-labelledby="viewProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -121,8 +117,6 @@
     </div>
 </div>
 
-
-{{-- /////////////////////////////////////////////// ADD NEW PRODUCT ////////////////////////////////////// --}}
 
 <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
     aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -174,8 +168,6 @@
     </div>
 </div>
 
-
-{{-- /////////////////////////////////////////////// EDIT PRODUCT /////////////////////////////////////////////////// --}}
 
 <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -236,9 +228,6 @@
     </div>
 </div>
 
-{{-- /////////////////////////////////////////////// MANAGE RECIPE ////////////////////////////////////////////////////
---}}
-
 <div class="modal fade" id="recipeModal" tabindex="-1" aria-labelledby="recipeModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -247,7 +236,6 @@
                 <h5 class="modal-title" id="recipeModalLabel">Manage Recipe</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            {{-- The action URL will be set dynamically by JavaScript --}}
             <form id="recipeForm" method="POST">
                 @csrf
                 <div class="modal-body">

@@ -159,7 +159,6 @@ $(document).ready(function () {
         $("#viewBookingMessage").text(messageText);
         $("#viewBookingNote").text(noteText);
 
-        // Store row and show/hide action buttons based on status
         currentViewRow = row;
         const status = String(row.status);
         $("#viewApproveBtn").toggleClass("d-none", status !== "11");

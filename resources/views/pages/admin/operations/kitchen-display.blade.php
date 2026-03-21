@@ -12,8 +12,6 @@
 
             <div id="ordersToday" class="row row-cols-auto g-3 justify-content-start">
 
-                {{-- WILL BE POPULATED BY JS --}}
-
             </div>
         </div>
     </div>

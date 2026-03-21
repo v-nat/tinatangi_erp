@@ -57,7 +57,6 @@ $(document).ready(function () {
                     return;
                 }
                 $("#category").val("");
-                // Clear item fields after confirmation
                 itemSearchInput.value = "";
                 itemHiddenInput.value = "";
                 availableItems = [];
@@ -198,7 +197,6 @@ $(document).ready(function () {
         $("#unit").val("");
         $("#unit_price").val("");
 
-        // --- POPULATE TABLE ---
         if (requestData) {
             if (
                 Array.isArray(requestData.purchase_orders) &&
@@ -783,10 +781,6 @@ $(document).ready(function () {
             });
     }
 
-    /**
-     * Handles item selection from the dropdown list.
-     * @param {Object} item - The selected item object.
-     */
     function handleItemSelection(item) {
         itemSearchInput.value = item.name;
         itemHiddenInput.value = item.id;
@@ -799,10 +793,6 @@ $(document).ready(function () {
         $(itemSearchInput).removeClass("is-invalid");
     }
 
-    /**
-     * Renders the filtered list of items in the dropdown.
-     * @param {Array<Object>} filteredItems - The items to display.
-     */
     function renderItems(filteredItems) {
         itemSearchList.innerHTML = "";
         if (filteredItems.length === 0) {
@@ -1268,7 +1258,6 @@ $(document).ready(function () {
                 orderTable.row.add(newRowData).draw();
             }
 
-            // Clear input fields after successful addition
             $("#category").val("");
             itemSearchInput.value = "";
             itemHiddenInput.value = "";
@@ -1297,7 +1286,6 @@ $(document).ready(function () {
             $("#LoadingScreen").fadeIn(200);
             row.remove();
             orderTable.draw();
-            // Clear input fields after deletion
             $("#category").val("");
             itemSearchInput.value = "";
             itemHiddenInput.value = "";
@@ -1366,7 +1354,6 @@ $(document).ready(function () {
                     $("#order_id").val("");
                     $("#supplier").val("");
                     $("#category").val("");
-                    // Clear item fields after submission
                     itemSearchInput.value = "";
                     itemHiddenInput.value = "";
                     availableItems = [];
@@ -1509,8 +1496,7 @@ $(document).ready(function () {
                         $("#order_id").val("");
                         $("#supplier").val("");
                         $("#category").val("");
-                        // Clear item fields after submission
-                        itemSearchInput.value = "";
+                            itemSearchInput.value = "";
                         itemHiddenInput.value = "";
                         availableItems = [];
                         itemResultsContainer.classList.add("d-none");

@@ -21,15 +21,13 @@
                             <label for="payroll_department_filter" class="form-label mb-1">Department:</label>
                             <select id="payroll_department_filter" class="form-select form-select-sm" style="width: 200px;">
                                 <option value="">All Departments</option>
-                                <!-- Auto-populated -->
-                            </select>
+                                </select>
                         </div>
 
                         <div>
                             <label for="payroll_period_filter" class="form-label mb-1">Pay Period:</label>
                             <select id="payroll_period_filter" class="form-select form-select-sm" style="width: 200px;">
                                 <option value="">All Periods</option>
-                                <!-- Auto-populated -->
                             </select>
                         </div>
 

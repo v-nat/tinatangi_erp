@@ -1,4 +1,3 @@
-<!--Danger theme Modal -->
 <div class="modal fade text-left" id="RejectionConfirmation" tabindex="-1" role="dialog"
     aria-labelledby="myModalLabel120" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
@@ -35,8 +34,6 @@
         </div>
     </div>
 </div>
-
-{{-- ////////////////////////////////////////// APPROVE WITH EXPIRATION DATES ////////////////////////////////////////// --}}
 
 <div class="modal fade" id="approveOrderModal" tabindex="-1" role="dialog" aria-labelledby="approveOrderModalLabel"
     aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -83,7 +80,6 @@
     </div>
 </div>
 
-<!-- view modal-->
 <div class="modal fade text-left w-100" id="viewPO" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">

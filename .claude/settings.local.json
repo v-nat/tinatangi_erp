@@ -10,7 +10,9 @@
       "Bash(do echo \"=== $f ===\")",
       "Read(//c/Users/Nathaniel/Documents/Nathaniel/Thesis A/tinatangi_erp/**)",
       "Bash(done)",
-      "Bash(npm run build)"
+      "Bash(npm run build)",
+      "Bash(ls \"c:/Users/Nathaniel/Documents/Nathaniel/Thesis A & B/tinatangi_erp/resources\")",
+      "Bash(find /c/Users/Nathaniel/Documents/Nathaniel/\"Thesis A & B\"/tinatangi_erp/resources -type f)"
     ],
     "additionalDirectories": [
       "c:\\Users\\Nathaniel\\Documents\\Nathaniel\\Thesis A\\tinatangi_erp\\resources\\js"

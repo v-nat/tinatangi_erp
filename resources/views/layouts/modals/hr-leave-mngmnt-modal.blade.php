@@ -1,11 +1,9 @@
-{{-- Leave Request Detail Modal --}}
 <div class="modal fade text-left" id="leaveDetailModal" tabindex="-1" role="dialog"
     aria-labelledby="leaveDetailModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
 
-            {{-- Header --}}
             <div class="modal-header">
                 <h5 class="modal-title" id="leaveDetailModalLabel">
                     <i class="fa-solid fa-calendar-days me-1"></i> Leave Request Details
@@ -15,11 +13,9 @@
                 </button>
             </div>
 
-            {{-- Body --}}
             <div class="modal-body">
                 <input type="hidden" id="detail-leave-id">
 
-                {{-- Employee Info --}}
                 <div class="row mb-3">
                     <div class="col-md-5">
                         <small class="text-muted d-block">Employee</small>
@@ -37,7 +33,6 @@
 
                 <hr class="my-2">
 
-                {{-- Dates, Days Count, Pay Type --}}
                 <div class="row mb-3">
                     <div class="col-md-3">
                         <small class="text-muted d-block">Start Date</small>
@@ -54,7 +49,6 @@
                     <div class="col-md-3">
                         <small class="text-muted d-block">Leave Pay</small>
                         <span id="detail-pay-type"></span>
-                        {{-- Editable toggle — only visible for pending leaves --}}
                         <div id="pay-type-toggle" class="btn-group btn-group-sm mt-1" role="group" style="display:none;">
                             <input type="radio" class="btn-check" name="approve-pay-type" id="approve-paid" value="1">
                             <label class="btn btn-outline-success" for="approve-paid">Paid</label>
@@ -64,7 +58,6 @@
                     </div>
                 </div>
 
-                {{-- Reason / Status / Attachment --}}
                 <div class="row mb-2">
                     <div class="col-md-5">
                         <small class="text-muted d-block">Reason</small>
@@ -80,7 +73,6 @@
                     </div>
                 </div>
 
-                {{-- Reject reason textarea (revealed when Reject is clicked) --}}
                 <div id="rejectReasonSection" style="display:none;">
                     <hr>
                     <div class="form-group mb-0">
@@ -94,12 +86,10 @@
                 </div>
             </div>
 
-            {{-- Footer --}}
             <div class="modal-footer">
                 <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
                     Close
                 </button>
-                {{-- Only shown for pending leaves --}}
                 <div id="detail-pending-actions" style="display:none;">
                     <button id="detail-reject-btn" type="button" class="btn btn-danger me-1">
                         <i class="fa-solid fa-x me-1"></i> Reject

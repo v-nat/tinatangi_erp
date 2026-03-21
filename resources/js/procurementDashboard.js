@@ -227,7 +227,6 @@ $(document).ready(function () {
 
     let monthlySpendChart = null;
 
-    // Filter state — defaults match the blade view (current year, Jan–Dec, period mode)
     let forecastYear       = new Date().getFullYear();
     let forecastMonthStart = 1;
     let forecastMonthEnd   = 12;
@@ -287,13 +286,11 @@ $(document).ready(function () {
         const labels  = spendData.map((d) => d.label);
         const actuals = spendData.map((d) => parseFloat(d.spend) || 0);
 
-        // Append forecast data point
         labels.push(forecastedLabel ?? "Next Period");
         const forecastSeries = new Array(spendData.length).fill(null);
         forecastSeries.push(parseFloat(forecastedSpend) || 0);
         const actualSeries = [...actuals, null];
 
-        // Update chart subtitle in the card header
         const $subtitle = $("#forecast-chart-subtitle");
         if ($subtitle.length) {
             const subtitleMap = {
@@ -396,7 +393,6 @@ $(document).ready(function () {
 
     $("#forecast-month-start").on("change", function () {
         forecastMonthStart = parseInt($(this).val(), 10);
-        // Clamp end month so it never goes below start
         if (forecastMonthEnd < forecastMonthStart) {
             forecastMonthEnd = forecastMonthStart;
             $("#forecast-month-end").val(forecastMonthEnd);
@@ -406,7 +402,6 @@ $(document).ready(function () {
 
     $("#forecast-month-end").on("change", function () {
         forecastMonthEnd = parseInt($(this).val(), 10);
-        // Clamp start month so it never exceeds end
         if (forecastMonthStart > forecastMonthEnd) {
             forecastMonthStart = forecastMonthEnd;
             $("#forecast-month-start").val(forecastMonthStart);
@@ -422,7 +417,6 @@ $(document).ready(function () {
 
         chartViewMode = newMode;
 
-        // Update button active states
         $("#chart-view-toggle button").each(function () {
             const isActive = $(this).data("view") === chartViewMode;
             $(this)
@@ -431,7 +425,6 @@ $(document).ready(function () {
                 .toggleClass("active", isActive);
         });
 
-        // Show/hide year & month filters — not applicable in yearly mode
         if (chartViewMode === "yearly") {
             $("#forecast-period-filters").hide();
         } else {

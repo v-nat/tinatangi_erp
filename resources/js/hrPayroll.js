@@ -269,7 +269,6 @@ $(document).ready(function () {
         e.preventDefault();
         const form = $(this);
 
-        // Check whether any rate field has actually changed
         const hasChanges = RATE_FIELDS.some(function (field) {
             return parseFloat($("#" + field).val()) !== parseFloat(originalContributions[field]);
         });
@@ -293,7 +292,6 @@ $(document).ready(function () {
             confirmButtonText: "Yes, apply new rates!",
         }).then((result) => {
             if (result.isConfirmed) {
-                // Convert % values to decimal before POST
                 const postData = { _token: $('meta[name="csrf-token"]').attr("content") };
                 RATE_FIELDS.forEach(function (field) {
                     postData[field] = (parseFloat($("#" + field).val()) / 100).toFixed(4);
@@ -840,7 +838,6 @@ $(document).ready(function () {
                     }
                 }
 
-                // Show the right footer button based on status
                 if (isApproved) {
                     $("#hr-modal-release-btn").removeClass("d-none");
                     $("#hr-modal-print-btn").addClass("d-none");
@@ -860,7 +857,6 @@ $(document).ready(function () {
         });
     });
 
-    // Release payroll from inside the modal
     $("#hr-modal-release-btn").on("click", function () {
         Swal.fire({
             title: "Release Payroll?",
@@ -917,7 +913,6 @@ $(document).ready(function () {
         });
     });
 
-    // Print payslip from inside the modal
     $("#hr-modal-print-btn").on("click", function () {
         $.get(
             `/human-resources/payroll/view/${currentPayrollId}`,
@@ -929,7 +924,6 @@ $(document).ready(function () {
         });
     });
 
-    // Reset modal state when closed
     $("#viewPayroll").on("hidden.bs.modal", function () {
         currentPayrollId = null;
         $("#hr-modal-release-btn").addClass("d-none");

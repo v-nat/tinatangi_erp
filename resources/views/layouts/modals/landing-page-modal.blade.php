@@ -13,7 +13,6 @@
   </div>
 </div>
 
-{{-- Step 1: Choose a table category --}}
 <div class="modal fade" id="tableRecommendationModal" tabindex="-1" aria-labelledby="tableRecommendationModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
     <div class="modal-content cafe-modal-content">
@@ -39,7 +38,6 @@
   </div>
 </div>
 
-{{-- Step 2: Choose a specific table slot + duration --}}
 <div class="modal fade" id="tableSlotModal" tabindex="-1" aria-labelledby="tableSlotModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-md">
     <div class="modal-content cafe-modal-content">
@@ -55,7 +53,6 @@
       </div>
 
       <div class="modal-body px-4 py-3">
-        {{-- Duration selector --}}
         <div class="mb-4">
           <label for="slotDurationSelect" class="cafe-field-label">
             <i class="fa-regular fa-clock me-1" style="color:#cda45e;"></i>
@@ -73,7 +70,6 @@
           </select>
         </div>
 
-        {{-- Slot grid --}}
         <label class="cafe-field-label">
           <i class="fa-solid fa-chair me-1" style="color:#cda45e;"></i>
           Select a table number:

@@ -312,7 +312,6 @@
 
     </header>
 
-    {{-- ── Announcement Ticker Bar ── --}}
     <div id="announcement-ticker">
         <div class="container">
             <div class="ticker-inner">
@@ -351,10 +350,8 @@
 
         </section>
 
-        {{-- ── Seasonal Promo Banners (populated by JS) ── --}}
         <section id="seasonal-promos" class="section" style="padding: 50px 0 10px">
             <div class="container" id="seasonal-promos-container">
-                {{-- Loaded by landingPageAnnouncements.js --}}
             </div>
         </section>
 
@@ -365,7 +362,6 @@
             </div>
             <div class="container" data-aos="fade-up" data-aos-delay="100">
                 <div class="row gy-4" id="promotions-grid">
-                    {{-- Loaded by JS --}}
                 </div>
             </div>
         </section>

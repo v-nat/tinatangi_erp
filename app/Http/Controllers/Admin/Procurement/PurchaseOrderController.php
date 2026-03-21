@@ -142,7 +142,6 @@ class PurchaseOrderController extends Controller
             $id = $request->order_id;
             DB::beginTransaction();
 
-            /** @var PurchaseRequest|null $purchase_req */
             $purchase_req = PurchaseRequest::where('id', $id)->first();
             if (!$purchase_req) {
                 DB::rollBack();
@@ -448,7 +447,6 @@ class PurchaseOrderController extends Controller
             $pr      = PurchaseRequest::findOrFail($pr_id);
             $invoice = Invoice::findOrFail($pr->invoice_id);
 
-            // Store overall delivery photo
             $file        = $request->file('overall_delivery_photo');
             $filename    = $file->hashName();
             $overallPath = 'img/delivery_proof/' . $filename;
@@ -482,12 +480,10 @@ class PurchaseOrderController extends Controller
                 $pod->backorder_qnty = $return_qty;
 
                 if ($return_qty === 0) {
-                    // Fully received
                     $pod->status = 16;
                     $pod->save();
                     $fullyReceivedCount++;
                 } else {
-                    // Has returned quantity (partial or full return)
                     $pod->status = 22;
                     $pod->save();
                     $hasReturnCount++;
@@ -509,7 +505,6 @@ class PurchaseOrderController extends Controller
                 }
             }
 
-            // Determine overall status
             if ($hasReturnCount === 0 && $fullyReceivedCount > 0) {
                 $newStatus  = 16;
                 $newRemarks = 'All items received successfully.';

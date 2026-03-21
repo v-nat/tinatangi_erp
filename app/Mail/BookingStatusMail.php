@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Booking; // <-- Add this
+use App\Models\Booking;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -14,19 +14,8 @@ class BookingStatusMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * The booking instance.
-     *
-     * @var \App\Models\Booking
-     */
     public $booking;
 
-    /**
-     * Create a new message instance.
-     *
-     * @param \App\Models\Booking $booking
-     * @return void
-     */
     public function __construct(Booking $booking)
     {
         $this->booking = $booking;
@@ -64,11 +53,6 @@ class BookingStatusMail extends Mailable
         };
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];

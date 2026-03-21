@@ -193,7 +193,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Data will be populated by JS -->
                                 </tbody>
                             </table>
                         </div>

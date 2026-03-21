@@ -44,7 +44,6 @@ $(function() {
             success: function(data) {
                 if (data) {
                     activeRates = data;
-                    // Populate rate columns immediately
                     $('#prev-sss-ee-rate').text((parseFloat(data.sss_employee_rate) * 100).toFixed(2) + '%');
                     $('#prev-sss-er-rate').text((parseFloat(data.sss_employer_rate) * 100).toFixed(2) + '%');
                     $('#prev-ph-ee-rate').text((parseFloat(data.philhealth_employee_rate) * 100).toFixed(2) + '%');
@@ -52,7 +51,6 @@ $(function() {
                     $('#prev-pi-ee-rate').text((parseFloat(data.pagibig_employee_rate) * 100).toFixed(2) + '%');
                     $('#prev-pi-er-rate').text((parseFloat(data.pagibig_employer_rate) * 100).toFixed(2) + '%');
 
-                    // Compute amounts if a salary is already set (edit mode)
                     const salary = parseFloat(formatToNumber($('#base_salary').val()));
                     computeContributionPreview(isNaN(salary) ? 0 : salary);
                 }

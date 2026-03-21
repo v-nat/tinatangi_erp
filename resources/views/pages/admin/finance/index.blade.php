@@ -216,7 +216,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {{-- Data injected by JS --}}
                                 <tr>
                                     <td colspan="2" class="text-center">Loading...</td>
                                 </tr>

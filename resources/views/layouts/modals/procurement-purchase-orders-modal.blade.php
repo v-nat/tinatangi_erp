@@ -1,4 +1,3 @@
-<!-- view modal-->
 <div class="modal fade text-left w-100" id="viewPO" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
@@ -34,7 +33,6 @@
     </div>
 </div>
 
-<!-- Receive Order Modal -->
 <div class="modal fade text-left w-100" id="receiveOrderModal" tabindex="-1" role="dialog"
     aria-labelledby="receiveOrderModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
@@ -69,7 +67,6 @@
                     @csrf
                     <input type="hidden" id="receive_pr_id" name="pr_id">
 
-                    <!-- Overall Photo Section -->
                     <div class="mb-4">
                         <label for="overall_delivery_photo" class="form-label fs-6 fw-bold">Overall Delivery Photo (Proof of Receipt)</label>
                         <p class="text-muted small">Upload one photo showing all items received, the delivery vehicle, or the signed delivery note.</p>
@@ -79,7 +76,6 @@
 
                     <hr>
 
-                    <!-- Items Table Section -->
                     <h5 class="mb-3">Inspect Individual Items</h5>
                     <p class="text-muted small">Enter how many units were received for each item. Any quantity short of the ordered amount will be marked as returned and requires a reason.</p>
                     <div class="table-responsive">
@@ -143,7 +139,6 @@
                                 </tr>
                             </thead>
                             <tbody id="redeliveryItemsList">
-                                <!-- Items will be dynamically populated here -->
                             </tbody>
                         </table>
                     </div>

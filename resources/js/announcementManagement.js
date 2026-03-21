@@ -323,7 +323,6 @@ $(function () {
             var text = names.length ? names.join(', ') : n + ' product(s) selected';
             $('#product-selection-summary').css('color', '#cda45e').text(text);
         }
-        // Rebuild hidden inputs inside the main form
         var html = '';
         selectedProductIds.forEach(function (id) {
             html += `<input type="hidden" name="product_ids[]" value="${id}">`;

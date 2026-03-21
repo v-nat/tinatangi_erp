@@ -61,7 +61,7 @@ $(document).ready(function () {
             now.toLocaleString("en-US", { timeZone: "Asia/Manila" })
         );
         const diffMs = manilaNow - timeIn;
-        const diffMinutes = Math.floor(diffMs / 60000); // 60000 ms = 1 minute
+        const diffMinutes = Math.floor(diffMs / 60000);
 
         return diffMinutes;
     }
@@ -139,7 +139,6 @@ $(document).ready(function () {
         });
     }
 
-    // Initial check
     hasAttendanceToday();
 
     $("#timeInBtn").click(function (e) {
@@ -183,7 +182,6 @@ $(document).ready(function () {
         });
     });
 
-    // Time Out Handler
     $("#timeOutBtn").click(function (e) {
         e.preventDefault();
 
@@ -247,12 +245,12 @@ $(document).ready(function () {
                 render: function (data) {
                     return data ? formatDate(data) : "N/A";
                 },
-                type: "date", // Ensure proper date sorting
+                type: "date",
             },
             {
                 data: "time_in",
                 className: "dt-left",
-                type: "date", // Ensure proper time sorting
+                type: "date",
             },
             {
                 data: "time_out",

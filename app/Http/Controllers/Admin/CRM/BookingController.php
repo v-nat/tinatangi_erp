@@ -118,14 +118,12 @@ class BookingController extends Controller
             $requestStart = Carbon::parse($date . ' ' . $request->time);
             $requestEnd   = $requestStart->copy()->addHours($duration);
 
-            // Fetch all active bookings for this table on this date
             $existingBookings = Booking::where('table_id', $table->id)
                 ->where('date', $date)
                 ->whereIn('status', [11, 13])
                 ->whereNotNull('table_number')
                 ->get();
 
-            // Active walk-in occupancies for this table (only relevant for today)
             $today = Carbon::now('Asia/Manila')->toDateString();
             $walkIns = ($date === $today)
                 ? WalkInOccupancy::where('table_id', $table->id)->active()->get()
@@ -148,7 +146,6 @@ class BookingController extends Controller
                 if ($conflict) {
                     $status = 'taken';
                 } elseif ($walkIn) {
-                    // Block the slot only if the requested booking starts within 1.5 hours of the walk-in start
                     $walkInStart = Carbon::parse($walkIn->occupied_at)->setTimezone('Asia/Manila');
                     $clearAt     = $walkInStart->copy()->addMinutes(90);
                     if ($requestStart->lt($clearAt)) {
@@ -316,7 +313,6 @@ class BookingController extends Controller
             'table_number' => 'required|integer|min:1',
         ]);
 
-        // Prevent duplicate active walk-in on same slot
         $exists = WalkInOccupancy::where('table_id', $validated['table_id'])
             ->where('table_number', $validated['table_number'])
             ->active()

@@ -15,16 +15,8 @@ class BestSellerService
     protected const MAX_WEEKLY_PERIODS = 12;
     protected const MAX_MONTHLY_PERIODS = 12;
 
-    /**
-     * Order statuses that qualify as completed (counted towards sales).
-     *
-     * @var array<int>
-     */
     protected array $completedStatuses = [23];
 
-    /**
-     * Fetch the best-selling products per category for the current ISO week.
-     */
     public function getWeeklyBestSellers(?int $limit = null): array
     {
         $limit = $this->normalizeLimit($limit);
@@ -45,9 +37,6 @@ class BestSellerService
         ];
     }
 
-    /**
-     * Fetch the best-selling products per category for the current month.
-     */
     public function getMonthlyBestSellers(?int $limit = null): array
     {
         $limit = $this->normalizeLimit($limit);
@@ -68,9 +57,6 @@ class BestSellerService
         ];
     }
 
-    /**
-     * Fetch the best-selling products per category for an arbitrary date range.
-     */
     public function getBestSellersForRange(Carbon $start, Carbon $end, ?int $limit = null): array
     {
         $limit = $this->normalizeLimit($limit);
@@ -87,11 +73,6 @@ class BestSellerService
         ];
     }
 
-    /**
-     * Build time-series data (weekly or monthly) for the provided products.
-     *
-     * @param  array<int>  $productIds
-     */
     public function getProductTrend(array $productIds, string $frequency = 'weekly', int $periods = 8, string $metric = 'units'): array
     {
         $productIds = array_values(array_unique(array_filter($productIds, fn($id) => $id !== null)));
@@ -188,9 +169,6 @@ class BestSellerService
         ];
     }
 
-    /**
-     * Build a simple forecast for the upcoming week using current-week sales totals.
-     */
     public function getUpcomingWeekForecast(): array
     {
         $currentWeekStart = Carbon::now()->copy()->startOfWeek();
@@ -228,7 +206,6 @@ class BestSellerService
             $historical = $currentWeekValues[$weekday] ?? 0.0;
             $baseLine = $historical > 0 ? $historical : $averageDailyRevenue;
 
-            // Apply a modest uplift to account for potential growth.
             $forecastValues[] = round($baseLine * 1.05, 2);
         }
 
@@ -255,9 +232,6 @@ class BestSellerService
         ];
     }
 
-    /**
-     * Ensure the requested limit stays within acceptable bounds.
-     */
     protected function normalizeLimit(?int $limit): int
     {
         $limit = $limit ?? self::DEFAULT_LIMIT;
@@ -269,9 +243,6 @@ class BestSellerService
         return min($limit, self::MAX_LIMIT);
     }
 
-    /**
-     * Fetch category-level sales for the provided range.
-     */
     protected function fetchCategorySales(Carbon $start, Carbon $end): Collection
     {
         $query = $this->baseOrderItemQuery($start, $end)
@@ -300,9 +271,6 @@ class BestSellerService
         return $query->get();
     }
 
-    /**
-     * Transform raw category results into a structured response.
-     */
     protected function transformCategoryResults(Collection $results, int $limit): array
     {
         return $results
@@ -357,9 +325,6 @@ class BestSellerService
             ->toArray();
     }
 
-    /**
-     * Build the underlying query shared by sales aggregations.
-     */
     protected function baseOrderItemQuery(Carbon $start, Carbon $end)
     {
         $startDateTime = $start->copy()->startOfDay();
@@ -373,9 +338,6 @@ class BestSellerService
             ->whereIn('orders.status', $this->completedStatuses);
     }
 
-    /**
-     * Build chronological buckets for trend charts.
-     */
     protected function buildBuckets(Carbon $start, Carbon $end, string $frequency): array
     {
         $buckets = [];
@@ -413,9 +375,6 @@ class BestSellerService
         return $buckets;
     }
 
-    /**
-     * Build the weekday structure (Mon-Sun) for a given week starting point.
-     */
     protected function buildWeekStructure(Carbon $weekStart): array
     {
         $structure = [];
@@ -439,9 +398,6 @@ class BestSellerService
         return $structure;
     }
 
-    /**
-     * Generate a human-readable label for a date range.
-     */
     protected function formatRangeLabel(Carbon $start, Carbon $end): string
     {
         if ($start->isSameDay($end)) {

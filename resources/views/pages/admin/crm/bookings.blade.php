@@ -10,7 +10,6 @@
         </ol>
     </nav>
 
-    {{-- ── Live Table Occupancy Panel ── --}}
     <div class="card mb-4" id="occupancy-panel">
         <div class="card-header py-3">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -29,7 +28,6 @@
                 </div>
             </div>
 
-            {{-- Legend --}}
             <div class="d-flex flex-wrap gap-3 mt-2" style="font-size:.8rem;">
                 <span><span class="badge bg-success">&#9679;</span> Active</span>
                 <span><span class="badge" style="background:#fd7e14;">&#9679;</span> Awaiting Arrival</span>
@@ -99,8 +97,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- Data will be loaded by DataTables --}}
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>

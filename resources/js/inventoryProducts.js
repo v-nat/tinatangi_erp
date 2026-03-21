@@ -691,7 +691,6 @@ $(function () {
                 decimalPart.length >= 2 &&
                 document.getSelection().toString().length === 0
             ) {
-                // If we are not overwriting a selection, prevent typing
                 e.preventDefault();
             }
         }

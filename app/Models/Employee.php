@@ -97,8 +97,6 @@ class Employee extends Model
     }
     public function schedule(): HasOne
     {
-        // An employee has one schedule.
-        // Assumes your 'schedules' table has an 'employee_id' column.
         return $this->hasOne(Schedule::class, 'employee_id');
     }
 }

@@ -64,7 +64,7 @@ class FinanceController extends Controller
                 DB::raw('SUM(total_amount) as total'),
                 DB::raw("DATE_FORMAT(purchase_orders.order_date, '%Y-%m') as month")
             )
-            ->join('purchase_orders', 'purchase_order_details.purchase_order_id', '=', 'purchase_orders.id') // Join to get order_date
+            ->join('purchase_orders', 'purchase_order_details.purchase_order_id', '=', 'purchase_orders.id')
             ->groupBy('month')
             ->orderBy('month', 'asc')
             ->get();

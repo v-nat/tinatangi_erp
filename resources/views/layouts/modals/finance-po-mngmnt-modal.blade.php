@@ -35,7 +35,6 @@
     </div>
 </div>
 
-<!-- view modal-->
 <div class="modal fade text-left w-100" id="viewPO" tabindex="-1" role="dialog" aria-labelledby="myModalLabel20"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">

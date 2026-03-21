@@ -208,7 +208,6 @@ $(document).ready(function () {
         });
     }
 
-    // Reset modal state on close
     $("#leaveDetailModal").on("hidden.bs.modal", function () {
         $("#rejectReasonSection").hide();
         $("#rejectReasonInput").val("").removeClass("is-invalid");

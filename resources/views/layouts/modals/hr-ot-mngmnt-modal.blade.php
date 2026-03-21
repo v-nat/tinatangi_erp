@@ -1,4 +1,3 @@
-<!--warning theme Modal -->
 <div class="modal fade text-left" id="ApprovalConfirmation" tabindex="-1" role="dialog"
     aria-labelledby="myModalLabel120" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
@@ -39,7 +38,6 @@
     </div>
 </div>
 
-<!--Danger theme Modal -->
 <div class="modal fade text-left" id="RejectionConfirmation" tabindex="-1" role="dialog"
     aria-labelledby="myModalLabel120" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
