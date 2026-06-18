@@ -36,8 +36,7 @@
         "DB_HOST" : "127.0.0.1",
         "DB_PORT" : "3306",
         "DB_DATABASE" : "u449751479_tinatangi_erp",
-        "DB_USERNAME" : "u449751479_root",
-        "DB_PASSWORD" : "@swizzlE1989",
+        "DB_USERNAME" : "root",
 
         "BROADCAST_CONNECTION" : "log",
         "FILESYSTEM_DISK" : "local",
