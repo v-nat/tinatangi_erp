@@ -1,0 +1,73 @@
+{
+    "version": 2,
+    "framework" : null,
+    "functions" : {
+        "api/index.php": { "runtime": "vercel-php@0.6.0" }
+    },
+    "routes": [
+        { "src": "/(.*)", "dest": "api/index.php" }
+    ],
+    "env": {
+        "APP_NAME" : "TinatangiCafe-ERP-Management-System",
+        "APP_ENV" : "production",
+        "APP_KEY" : "base64:YIfa+JrTpahfZzQRRIud121daXZ/eg8YHhNRPfRH1k8=",
+        "APP_DEBUG" : "true",
+        "APP_TIMEZONE" : "Asia/Manila",
+        "APP_URL" : "https://localhost:8000/",
+
+        "LOG_CHANNEL": "stack",
+        "CACHE_DRIVER": "array",
+        "SESSION_DRIVER": "cookie",
+
+        "APP_LOCALE" : "en",
+        "APP_FALLBACK_LOCALE" : "en",
+        "APP_FAKER_LOCALE" : "en_US",
+
+        "APP_MAINTENANCE_DRIVER" : "file",
+
+        "PHP_CLI_SERVER_WORKERS" : "4",
+
+        "BCRYPT_ROUNDS" : "12",
+
+        "LOG_STACK" : "single",
+        "LOG_DEPRECATIONS_CHANNEL" : null,
+        "LOG_LEVEL" : "debug",
+
+        "DB_CONNECTION" : "mysql",
+        "DB_HOST" : "127.0.0.1",
+        "DB_PORT" : "3306",
+        "DB_DATABASE" : "u449751479_tinatangi_erp",
+        "DB_USERNAME" : "u449751479_root",
+        "DB_PASSWORD" : "@swizzlE1989",
+
+        "BROADCAST_CONNECTION" : "log",
+        "FILESYSTEM_DISK" : "local",
+        "QUEUE_CONNECTION" : "database",
+
+        "CACHE_STORE" : "database",
+        "CACHE_PREFIX" : "",
+
+        "MEMCACHED_HOST" : "127.0.0.1",
+
+        "REDIS_CLIENT" : "phpredis",
+        "REDIS_HOST" : "127.0.0.1",
+        "REDIS_PASSWORD" : "",
+        "REDIS_PORT" : "6379",
+
+        "MAIL_MAILER" : "smtp",
+        "MAIL_HOST" : "smtp.gmail.com",
+        "MAIL_PORT" : "587",
+        "MAIL_USERNAME" : "v.nathaniel.8213@gmail.com",
+        "MAIL_PASSWORD" : "vxvqgursqssqrfmr",
+        "MAIL_FROM_ADDRESS" : "v.nathaniel.8213@gmail.com",
+        "MAIL_FROM_NAME" : "${APP_NAME}",
+
+        "AWS_ACCESS_KEY_ID" : "",
+        "AWS_SECRET_ACCESS_KEY" : "",
+        "AWS_DEFAULT_REGION" : "us-east-1",
+        "AWS_BUCKET" : "",
+        "AWS_USE_PATH_STYLE_ENDPOINT" : false,
+
+        "VITE_APP_NAME" : "${APP_NAME}"
+    }
+}
