@@ -192,7 +192,7 @@ $(document).ready(function () {
             return `/storage/${sanitized.replace(/^public\//, "")}`;
         }
 
-        return `/storage/app/public/${sanitized}`;
+        return `/storage/${sanitized}`;
     }
 
     function flattenPeriodItems(periodData) {

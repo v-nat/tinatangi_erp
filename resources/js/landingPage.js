@@ -138,7 +138,7 @@ $(document).ready(function () {
             return `/storage/${trimmed}`;
         }
 
-        return `/storage/app/public/${sanitized}`;
+        return `/storage/${sanitized}`;
     }
 
     function renderBestSellerSlides(type, periodData) {
@@ -542,7 +542,7 @@ $(document).ready(function () {
 
                 testimonials.forEach((feedback) => {
                     const imageUrl = feedback.photo
-                        ? `/storage/app/public/${feedback.photo}`
+                        ? `/storage/${feedback.photo}`
                         : "assets/img/default-avatar.png";
 
                     const fullMessage =
@@ -630,7 +630,7 @@ $(document).ready(function () {
                 response.data.forEach(product => {
                     const imagePath = product.image;
                     let imageUrl = (imagePath && imagePath !== "N/A")
-                                 ? "/storage/app/public/" + imagePath
+                                 ? "/storage/" + imagePath
                                  : DEFAULT_PRODUCT_IMAGE;
 
                     const price = parseFloat(product.base_price || 0).toFixed(2);

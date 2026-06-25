@@ -236,7 +236,7 @@ $(document).ready(function () {
 
         tables.forEach((table) => {
             const imageUrl = table.image
-                ? `/storage/app/public/${table.image}`
+                ? `/storage/${table.image}`
                 : "https://placehold.co/600x350/231e17/cda45e?text=No+Image";
 
             const card = `

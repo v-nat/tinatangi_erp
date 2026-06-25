@@ -288,7 +288,7 @@ $(function () {
                 if (product.image) {
                     $("#productViewImage").attr(
                         "src",
-                        `/storage/app/public/${product.image}`
+                        `/storage/${product.image}`
                     );
                 } else {
                     $("#productViewImage").attr(
@@ -389,7 +389,7 @@ $(function () {
                 if (product.image) {
                     $("#current_image_preview").attr(
                         "src",
-                        `/storage/app/public/${product.image}`
+                        `/storage/${product.image}`
                     );
                 } else {
                     $("#current_image_preview").attr(

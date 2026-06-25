@@ -110,7 +110,7 @@ $(document).ready(function () {
             const productNameLower = productName.toLowerCase();
 
             if (imagePath && imagePath !== "N/A") {
-                imageUrl = "/storage/app/public/" + imagePath;
+                imageUrl = "/storage/" + imagePath;
             } else {
                 imageUrl = DEFAULT_PRODUCT_IMAGE;
             }

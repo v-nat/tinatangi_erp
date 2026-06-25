@@ -115,7 +115,7 @@ $(document).ready(function () {
             : '<span class="badge bg-danger">Unavailable</span>';
 
         $('#viewModalLabel').text('Details for ' + rowData.name);
-        $('#viewImage').attr('src', '/storage/app/public/' + imgUrl).attr('alt', rowData.name);
+        $('#viewImage').attr('src', '/storage/' + imgUrl).attr('alt', rowData.name);
         $('#viewName').text(rowData.name);
         $('#viewLocation').text(rowData.location ?? '—');
         $('#viewCapacity').text(rowData.capacity);
@@ -147,7 +147,7 @@ $(document).ready(function () {
                 $('#form_method').val('POST');
 
                 if (data.image) {
-                    $('#image_preview').attr('src', '/storage/app/public/' + data.image).show();
+                    $('#image_preview').attr('src', '/storage/' + data.image).show();
                 } else {
                     $('#image_preview').hide();
                 }

@@ -132,7 +132,7 @@ $(document).ready(function () {
             if (tableInfo.image) {
                 const imageUrl = tableInfo.image.startsWith("http")
                     ? tableInfo.image
-                    : `/storage/app/public/${tableInfo.image.replace(
+                    : `/storage/${tableInfo.image.replace(
                           /^\/|\\/g,
                           ""
                       )}`;
